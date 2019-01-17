@@ -8,6 +8,7 @@ import (
 	"github.com/byuoitav/central-event-system/messenger"
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/v2/events"
+	"github.com/byuoitav/shipwright/repair/alerts"
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo"
 )
@@ -68,6 +69,7 @@ func newManager() *Manager {
 // SetMessenger sets the event Messenger for the websocket manager
 func (m *Manager) SetMessenger(mess *messenger.Messenger) {
 	m.mess = mess
+	go StartMessenger()
 }
 
 // SetEventHandler sets the eventHandler for the websocket manager
@@ -154,4 +156,14 @@ func (eh *eventHandlerStruct) OnClientConnect(sendToClient chan events.Event) {
 // OnEventReceived will be called each time any client sends an event.
 func (eh *eventHandlerStruct) OnEventReceived(event events.Event, sendToAll chan events.Event) {
 	sendToAll <- event
+}
+
+// StartMessenger starts the messenger for reading
+func StartMessenger() {
+	for {
+		event := socketManager.mess.ReceiveEvent()
+
+		alerts.HandleAlertEvent(event)
+		socketManager.WriteToSockets(event)
+	}
 }
