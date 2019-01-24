@@ -1,0 +1,118 @@
+<table mat-table [dataSource]="monitor.alertRowList" multiTemplateDataRows class="mat-elevation-z3" [ngClass]="api?.theme + '-theme'">
+    <ng-container matColumnDef="icon">
+        <th mat-header-cell *matHeaderCellDef> Type </th>
+        <td mat-cell *matCellDef="let alertRow">
+            <mat-icon>{{alertRow.systemTypeIcon}}</mat-icon>
+        </td>
+    </ng-container>
+
+    <ng-container matColumnDef="roomID">
+        <th mat-header-cell *matHeaderCellDef> Room ID </th>
+        <td mat-cell *matCellDef="let alertRow"><button mat-stroked-button>{{alertRow.roomID}}</button></td>
+    </ng-container>
+
+    <ng-container matColumnDef="alertCount">
+        <th mat-header-cell *matHeaderCellDef> # </th>
+        <td mat-cell *matCellDef="let alertRow">{{alertRow.alerts.length}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="alertTypes">
+        <th mat-header-cell *matHeaderCellDef> Alert Types </th>
+        <td mat-cell *matCellDef="let alertRow">{{monitor.GetAlertTypes(alertRow.alerts)}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="incident">
+        <th mat-header-cell *matHeaderCellDef> INC </th>
+        <td mat-cell *matCellDef="let alertRow">{{alertRow.incidentID}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="help-sent">
+        <th mat-header-cell *matHeaderCellDef> Help Sent </th>
+        <td mat-cell *matCellDef="let alertRow">
+            <mat-icon *ngIf="alertRow.helpSent" class="good-status">check_circle</mat-icon>
+            <mat-icon *ngIf="!alertRow.helpSent" class="bad-status">cancel</mat-icon>
+        </td>
+    </ng-container>
+
+    <ng-container matColumnDef="help-arrived">
+        <th mat-header-cell *matHeaderCellDef> Help Arrived </th>
+        <td mat-cell *matCellDef="let alertRow">
+            <mat-icon *ngIf="alertRow.helpArrived" class="good-status">check_circle</mat-icon>
+            <mat-icon *ngIf="!alertRow.helpArrived" class="bad-status">cancel</mat-icon>
+        </td>
+    </ng-container>
+
+    <ng-container matColumnDef="respond" [stickyEnd]=true>
+        <th mat-header-cell *matHeaderCellDef> Respond </th>
+        <td mat-cell *matCellDef="let alertRow"><button mat-raised-button color='accent'>Respond</button></td>
+    </ng-container>
+
+    <ng-container matColumnDef="expandedDetail">
+        <td mat-cell *matCellDef="let alertRow" [attr.colspan]="alertRowColumns.length">
+            <div class="alert-detail" [@detailExpand]="expandedAlertRow === alertRow ? 'expanded' : 'collapsed'">
+                <table mat-table [dataSource]="alertRow.alerts" multiTemplateDataRows>
+                    <ng-container matColumnDef="deviceID">
+                        <th mat-header-cell *matHeaderCellDef> Device ID </th>
+                        <td mat-cell *matCellDef="let alert">{{alert.deviceID}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="alertType">
+                        <th mat-header-cell *matHeaderCellDef> Type </th>
+                        <td mat-cell *matCellDef="let alert">{{alert.type}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="severity">
+                        <th mat-header-cell *matHeaderCellDef> Severity </th>
+                        <td mat-cell *matCellDef="let alert">
+                            <button mat-flat-button [ngClass]="monitor.severityMap[alert.severity] + '-severity'" [disableRipple]=true>{{text.Title(monitor.severityMap[alert.severity])}}</button>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="message">
+                        <th mat-header-cell *matHeaderCellDef> Message </th>
+                        <td mat-cell *matCellDef="let alert">{{alert.message}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="alert-started">
+                        <th mat-header-cell *matHeaderCellDef> Alert Started At </th>
+                        <td mat-cell *matCellDef="let alert">{{alert.helpSentAt.toLocaleString('en-US')}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="alert-resolved">
+                        <th mat-header-cell *matHeaderCellDef> Alert Resolved At </th>
+                        <td mat-cell *matCellDef="let alert">{{alert.helpArrivedAt.toLocaleString('en-US')}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="responders">
+                        <th mat-header-cell *matHeaderCellDef> Responders </th>
+                        <td mat-cell *matCellDef="let alert">
+                            <ng-container *ngIf="alert.responders.length == 0">
+                                --
+                            </ng-container>
+                            <ng-container *ngIf="alert.responders.length > 0">
+                                {{alert.responders}}
+                            </ng-container>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="help-sent-at">
+                        <th mat-header-cell *matHeaderCellDef> Help Sent At </th>
+                        <td mat-cell *matCellDef="let alert">{{alert.helpSentAt.toLocaleString('en-US')}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="help-arrived-at">
+                        <th mat-header-cell *matHeaderCellDef> Help Arrived At </th>
+                        <td mat-cell *matCellDef="let alert">{{alert.helpArrivedAt.toLocaleString('en-US')}}</td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="alertDetailColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: alertDetailColumns;"></tr>
+                </table>
+            </div>
+        </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="alertRowColumns; sticky: true"></tr>
+    <tr mat-row *matRowDef="let alertRow; columns: alertRowColumns;" [ngClass]="api?.theme != 'default' ? 'alert-row-dark' : 'alert-row'" [class.example-expanded-row]="expandedAlertRow === alertRow" (click)="expandedAlertRow = expandedAlertRow === alertRow ? null : alertRow"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="alert-detail-row"></tr>
+</table>

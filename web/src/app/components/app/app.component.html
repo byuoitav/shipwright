@@ -1,0 +1,32 @@
+<div class="base" [ngClass]="api?.theme + '-theme'">
+    <mat-toolbar color="primary">
+        <span style="font: 550 22px/34px Roboto, 'Helvetica Neue', sans-serif">{{text.WebsiteTitle}}</span>
+        <span class="fill-remaining-space"></span>
+
+        <button mat-button style="padding: 0" [matMenuTriggerFor]="options">
+                <span style="font: 500 20px/32px Roboto, 'Helvetica Neue', sans-serif">
+                  Welcome {{currentUsername}}!
+                </span>
+              </button>
+
+        <mat-menu #options>
+            <button mat-menu-item (click)="
+                      api?.theme === 'default'
+                        ? api.switchTheme('dark')
+                        : api.switchTheme('default')">
+                    <span style="font: 500 20px/32px Roboto, 'Helvetica Neue', sans-serif">
+                      Switch Theme
+                    </span>
+                  </button>
+            <button mat-menu-item><span style="font: 500 20px/32px Roboto, 'Helvetica Neue', sans-serif">
+                      Logout
+                    </span></button>
+        </mat-menu>
+    </mat-toolbar>
+    <mat-sidenav-container class="content-container">
+        <nav mat-tab-nav-bar [ngClass]="api?.theme + '-theme'">
+            <a mat-tab-link *ngFor="let link of text.Links" (click)="activeLink = link" routerLink="{{link}}" [active]="activeLink == link"> {{text.Title(link)}} </a>
+        </nav>
+        <router-outlet></router-outlet>
+    </mat-sidenav-container>
+</div>
