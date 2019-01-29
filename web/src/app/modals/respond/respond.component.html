@@ -1,0 +1,41 @@
+<mat-card [ngClass]="api?.theme + '-theme'" class="base mat-elevation-z0">
+    <mat-card-header>
+        <mat-card-title>Responding to {{data.roomID}}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <section class="row">
+            <button mat-raised-button [autofocus]='false' [color]="sentHelp ? '#ffffff' : 'warn'" (click)="SendHelp()" [disabled]="sentHelp">{{sentHelp ? "Help Sent" : "Send Help"}}</button>
+
+            <div>
+                <mat-form-field class="timefield">
+                    <input matInput [matDatepicker]="sentHelpPicker" [(ngModel)]="sentHelpDate">
+                    <mat-datepicker-toggle matSuffix [for]="sentHelpPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #sentHelpPicker></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field class="timefield">
+                    <input type="time" matInput [(ngModel)]="sentTime">
+                </mat-form-field>
+            </div>
+        </section>
+
+        <mat-divider></mat-divider>
+        <section class="row">
+            <button mat-raised-button [autofocus]='false' [color]="helpArrived ? '#ffffff' : 'primary'" (click)="HelpArrived()" [disabled]="helpArrived">{{helpArrived ? "Help Arrived" : "Help Is Here!"}}</button>
+            <div>
+                <mat-form-field class="timefield">
+                    <input matInput [matDatepicker]="helpArrivedPicker" [(ngModel)]="helpArrivedDate">
+                    <mat-datepicker-toggle matSuffix [for]="helpArrivedPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #helpArrivedPicker></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field class="timefield">
+                    <input type="time" matInput [(ngModel)]="arriveTime">
+                </mat-form-field>
+            </div>
+
+        </section>
+    </mat-card-content>
+    <mat-action-row class="row actions">
+        <button mat-flat-button (click)="CloseAndSaveChanges()">SAVE</button>
+        <button mat-flat-button (click)="CloseWithoutSaving()">CANCEL</button>
+    </mat-action-row>
+</mat-card>

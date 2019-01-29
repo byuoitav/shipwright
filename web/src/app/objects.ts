@@ -621,6 +621,8 @@ export class Alert {
 
     @JsonProperty("device-tags", [String], true)
     deviceTags: string[] = Array<string>();
+
+    hide: boolean = false;
 }
 
 export class AlertRow{
@@ -629,6 +631,7 @@ export class AlertRow{
     alerts: Alert[] = Array<Alert>();
     incidentID: string;
     expanded: boolean = false;
-    helpSent: boolean = true
-    helpArrived: boolean = false
+    helpSent: boolean = false;
+    helpArrived: boolean = false;
+    hide: boolean = false;
 }

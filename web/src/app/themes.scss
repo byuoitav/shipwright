@@ -11,7 +11,7 @@ $status-primary: mat-palette($mat-green);
 $status-accent: mat-palette($mat-yellow);
 $status-warn: mat-palette($mat-red);
 $status: mat-light-theme($status-primary, $status-accent, $status-warn);
-#status-theme {
+.status-theme {
     @include angular-material-theme($status);
 }
 

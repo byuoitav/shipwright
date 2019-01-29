@@ -22,6 +22,8 @@ export class MonitoringService {
   FillFakeModel() {
     this.alertMap = new Map();
 
+    let now = new Date();
+
     let a1 = new Alert();
     a1.alertID = "derek1"
     a1.buildingID = "ITB"
@@ -35,8 +37,8 @@ export class MonitoringService {
     a1.roomTags = ["development"]
     a1.deviceTags = ["pi"]
     a1.incidentID = "INC8675309"
-    a1.helpSentAt = new Date()
-    a1.helpArrivedAt = new Date()
+    a1.helpSentAt = new Date(now.toLocaleString() + " UTC");
+    a1.helpArrivedAt = new Date(now.toLocaleString() + " UTC");
 
     let a2 = new Alert();
     a2.alertID = "derek2"
@@ -51,8 +53,8 @@ export class MonitoringService {
     a2.roomTags = ["development"]
     a2.deviceTags = ["projector"]
     a2.incidentID = "INC8675309"
-    a2.helpSentAt = new Date()
-    a2.helpArrivedAt = new Date()
+    a2.helpSentAt = new Date(now.toLocaleString() + " UTC");
+    a2.helpArrivedAt = new Date(now.toLocaleString() + " UTC");
 
     let a3 = new Alert();
     a3.alertID = "derek3"
@@ -66,9 +68,9 @@ export class MonitoringService {
     a3.alertTags = ["user-generated"]
     a3.roomTags = ["development"]
     a3.deviceTags = ["via", "jerk"]
-    a3.incidentID = "INC8675309"
-    a3.helpSentAt = new Date()
-    a3.helpArrivedAt = new Date()
+    a3.incidentID = "INC0430573"
+    a3.helpSentAt = new Date(now.toLocaleString() + " UTC");
+    a3.helpArrivedAt = new Date(now.toLocaleString() + " UTC");
 
     this.alertMap.set("ITB-1101", [a1, a2, a3])
 
@@ -76,7 +78,7 @@ export class MonitoringService {
     row1.roomID = "ITB-1101"
     row1.alerts.push(a1, a2, a3)
     row1.systemTypeIcon = "video_label"
-    row1.incidentID = "INC8675309"
+    row1.incidentID = "INC0430573"
 
     this.alertRowList.push(row1)
 
@@ -93,8 +95,8 @@ export class MonitoringService {
     a4.roomTags = ["development"]
     a4.deviceTags = ["pi"]
     a4.incidentID = "INC0152668"
-    a4.helpSentAt = new Date()
-    a4.helpArrivedAt = new Date()
+    a4.helpSentAt = new Date(now.toLocaleString() + " UTC");
+    a4.helpArrivedAt = new Date(now.toLocaleString() + " UTC");
 
     let a5 = new Alert();
     a5.alertID = "derek5"
@@ -109,8 +111,8 @@ export class MonitoringService {
     a5.roomTags = ["development"]
     a5.deviceTags = ["tv"]
     a5.incidentID = "INC0152668"
-    a5.helpSentAt = new Date()
-    a5.helpArrivedAt = new Date()
+    a5.helpSentAt = new Date(now.toLocaleString() + " UTC");
+    a5.helpArrivedAt = new Date(now.toLocaleString() + " UTC");
 
     let a6 = new Alert();
     a6.alertID = "derek6"
@@ -125,8 +127,8 @@ export class MonitoringService {
     a6.roomTags = ["development"]
     a6.deviceTags = ["mic"]
     a6.incidentID = "INC0152668"
-    a6.helpSentAt = new Date()
-    a6.helpArrivedAt = new Date()
+    a6.helpSentAt = new Date(now.toLocaleString() + " UTC");
+    a6.helpArrivedAt = new Date(now.toLocaleString() + " UTC");
 
     this.alertMap.set("HCEB-401", [a4, a5, a6])
 
@@ -137,6 +139,238 @@ export class MonitoringService {
     row2.incidentID = "INC0152668"
 
     this.alertRowList.push(row2)
+
+    let a7 = new Alert();
+    a7.alertID = "derek7"
+    a7.buildingID = "JFSB"
+    a7.roomID = "JFSB-B1081"
+    a7.deviceID = "JFSB-B1081-CP1"
+    a7.type = "system"
+    a7.severity = 1
+    a7.message = "Heartbeat lost"
+    a7.countBeforeResolution = 15
+    a7.alertTags = ["heartbeat", "auto-generated"]
+    a7.roomTags = ["development"]
+    a7.deviceTags = ["pi"]
+    a7.incidentID = "INC8675309"
+    a7.helpSentAt = new Date(now.toLocaleString() + " UTC");
+    a7.helpArrivedAt = new Date(now.toLocaleString() + " UTC");
+
+    this.alertMap.set("JFSB-B1081", [a7])
+
+    let row3 = new AlertRow();
+    row3.roomID = "JFSB-B1081"
+    row3.alerts.push(a7)
+    row3.systemTypeIcon = "video_label"
+    row3.incidentID = "INC0430573"
+
+    this.alertRowList.push(row3)
+
+    let a8 = new Alert();
+    a8.alertID = "derek8"
+    a8.buildingID = "HFAC"
+    a8.roomID = "HFAC-D400"
+    a8.deviceID = "HFAC-D400-D1"
+    a8.type = "user"
+    a8.severity = 1
+    a8.message = "Gave up and died"
+    a8.countBeforeResolution = 3
+    a8.alertTags = ["heartbeat", "auto-generated"]
+    a8.roomTags = ["development"]
+    a8.deviceTags = ["projector"]
+    a8.incidentID = "INC8675309"
+    a8.helpSentAt = new Date(now.toLocaleString() + " UTC");
+    a8.helpArrivedAt = new Date(now.toLocaleString() + " UTC");
+
+    let a9 = new Alert();
+    a9.alertID = "derek9"
+    a9.buildingID = "HFAC"
+    a9.roomID = "HFAC-D400"
+    a9.deviceID = "HFAC-D400-VIA1"
+    a9.type = "system"
+    a9.severity = 2
+    a9.message = "Acted like a jerk"
+    a9.countBeforeResolution = 77
+    a9.alertTags = ["user-generated"]
+    a9.roomTags = ["development"]
+    a9.deviceTags = ["via", "jerk"]
+    a9.incidentID = "INC0430573"
+    a9.helpSentAt = new Date(now.toLocaleString() + " UTC");
+    a9.helpArrivedAt = new Date(now.toLocaleString() + " UTC");
+
+    this.alertMap.set("HFAC-D400", [a8, a9]);
+
+    let row4 = new AlertRow();
+    row4.roomID = "HFAC-D400"
+    row4.alerts.push(a7)
+    row4.systemTypeIcon = "video_label"
+    row4.incidentID = "INC0430573"
+
+    this.alertRowList.push(row4)
+
+    let a10 = new Alert();
+    a10.alertID = "derek10"
+    a10.buildingID = "EB"
+    a10.roomID = "EB-438"
+    a10.deviceID = "EB-438-CP1"
+    a10.type = "system"
+    a10.severity = 1
+    a10.message = "Heartbeat lost"
+    a10.countBeforeResolution = 20
+    a10.alertTags = ["heartbeat", "auto-generated"]
+    a10.roomTags = ["development"]
+    a10.deviceTags = ["pi"]
+    a10.incidentID = "INC0152668"
+    a10.helpSentAt = new Date(now.toLocaleString() + " UTC");
+    a10.helpArrivedAt = new Date(now.toLocaleString() + " UTC");
+
+    let a11 = new Alert();
+    a11.alertID = "derek11"
+    a11.buildingID = "EB"
+    a11.roomID = "EB-438"
+    a11.deviceID = "HCEB-401-D2"
+    a11.type = "user"
+    a11.severity = 1
+    a11.message = "Gave up and died"
+    a11.countBeforeResolution = 3
+    a11.alertTags = ["heartbeat", "auto-generated"]
+    a11.roomTags = ["development"]
+    a11.deviceTags = ["tv"]
+    a11.incidentID = "INC0152668"
+    a11.helpSentAt = new Date(now.toLocaleString() + " UTC");
+    a11.helpArrivedAt = new Date(now.toLocaleString() + " UTC");
+
+    let a12 = new Alert();
+    a12.alertID = "derek12"
+    a12.buildingID = "EB"
+    a12.roomID = "EB-438"
+    a12.deviceID = "EB-438-MIC1"
+    a12.type = "auto"
+    a12.severity = 3
+    a12.message = "Battery low"
+    a12.countBeforeResolution = 16
+    a12.alertTags = ["auto-generated"]
+    a12.roomTags = ["development"]
+    a12.deviceTags = ["mic"]
+    a12.incidentID = "INC0152668"
+    a12.helpSentAt = new Date(now.toLocaleString() + " UTC");
+    a12.helpArrivedAt = new Date(now.toLocaleString() + " UTC");
+
+    let a13 = new Alert();
+    a13.alertID = "derek13"
+    a13.buildingID = "ITB"
+    a13.roomID = "EB-438"
+    a13.deviceID = "EB-438-CP2"
+    a13.type = "system"
+    a13.severity = 1
+    a13.message = "Heartbeat lost"
+    a13.countBeforeResolution = 20
+    a13.alertTags = ["heartbeat", "auto-generated"]
+    a13.roomTags = ["development"]
+    a13.deviceTags = ["pi"]
+    a13.incidentID = "INC8675309"
+    a13.helpSentAt = new Date(now.toLocaleString() + " UTC");
+    a13.helpArrivedAt = new Date(now.toLocaleString() + " UTC");
+
+    let a14 = new Alert();
+    a14.alertID = "derek14"
+    a14.buildingID = "ITB"
+    a14.roomID = "EB-438"
+    a14.deviceID = "EB-438-D2"
+    a14.type = "user"
+    a14.severity = 1
+    a14.message = "Gave up and died"
+    a14.countBeforeResolution = 1
+    a14.alertTags = ["heartbeat", "auto-generated"]
+    a14.roomTags = ["development"]
+    a14.deviceTags = ["projector"]
+    a14.incidentID = "INC8675309"
+    a14.helpSentAt = new Date(now.toLocaleString() + " UTC");
+    a14.helpArrivedAt = new Date(now.toLocaleString() + " UTC");
+
+    this.alertMap.set("EB-438", [a10, a11, a12, a13, a14])
+
+    let row5 = new AlertRow();
+    row5.roomID = "EB-438"
+    row5.alerts.push(a10, a11, a12, a13, a14)
+    row5.systemTypeIcon = "accessible_forward"
+    row5.incidentID = "INC0152668"
+
+    this.alertRowList.push(row5)
+
+    let a15 = new Alert();
+    a15.alertID = "derek15"
+    a15.buildingID = "ASB"
+    a15.roomID = "ASB-A343"
+    a15.deviceID = "ASB-A343-VIA1"
+    a15.type = "system"
+    a15.severity = 2
+    a15.message = "Acted like a jerk"
+    a15.countBeforeResolution = 4
+    a15.alertTags = ["user-generated"]
+    a15.roomTags = ["development"]
+    a15.deviceTags = ["via", "jerk"]
+    a15.incidentID = "INC0430573"
+    a15.helpSentAt = new Date(now.toLocaleString() + " UTC");
+    a15.helpArrivedAt = new Date(now.toLocaleString() + " UTC");
+
+    let a16 = new Alert();
+    a16.alertID = "derek16"
+    a16.buildingID = "ASB"
+    a16.roomID = "ASB-A343"
+    a16.deviceID = "ASB-A343-CP1"
+    a16.type = "system"
+    a16.severity = 1
+    a16.message = "Heartbeat lost"
+    a16.countBeforeResolution = 20
+    a16.alertTags = ["heartbeat", "auto-generated"]
+    a16.roomTags = ["development"]
+    a16.deviceTags = ["pi"]
+    a16.incidentID = "INC0152668"
+    a16.helpSentAt = new Date(now.toLocaleString() + " UTC");
+    a16.helpArrivedAt = new Date(now.toLocaleString() + " UTC");
+
+    let a17 = new Alert();
+    a17.alertID = "derek17"
+    a17.buildingID = "ASB"
+    a17.roomID = "ASB-A343"
+    a17.deviceID = "ASB-A343-D2"
+    a17.type = "user"
+    a17.severity = 1
+    a17.message = "Gave up and died"
+    a17.countBeforeResolution = 3
+    a17.alertTags = ["heartbeat", "auto-generated"]
+    a17.roomTags = ["development"]
+    a17.deviceTags = ["tv"]
+    a17.incidentID = "INC0152668"
+    a17.helpSentAt = new Date(now.toLocaleString() + " UTC");
+    a17.helpArrivedAt = new Date(now.toLocaleString() + " UTC");
+
+    let a18 = new Alert();
+    a18.alertID = "derek18"
+    a18.buildingID = "ASB"
+    a18.roomID = "ASB-A343"
+    a18.deviceID = "ASB-A343-MIC1"
+    a18.type = "auto"
+    a18.severity = 3
+    a18.message = "Battery low"
+    a18.countBeforeResolution = 16
+    a18.alertTags = ["auto-generated"]
+    a18.roomTags = ["development"]
+    a18.deviceTags = ["mic"]
+    a18.incidentID = "INC0152668"
+    a18.helpSentAt = new Date(now.toLocaleString() + " UTC");
+    a18.helpArrivedAt = new Date(now.toLocaleString() + " UTC");
+
+    this.alertMap.set("ASB-A343", [a15, a16, a17, a18])
+
+    let row6 = new AlertRow();
+    row6.roomID = "ASB-A343"
+    row6.alerts.push(a15, a16, a17, a18)
+    row6.systemTypeIcon = "accessible_forward"
+    row6.incidentID = "INC0152668"
+
+    this.alertRowList.push(row6)
   }
 
   GetAlertTypes(alerts: Alert[]): string[] {

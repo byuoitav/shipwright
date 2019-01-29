@@ -16,7 +16,16 @@ import {
   MatTabsModule,
   MatFormFieldModule,
   MatInputModule,
-  MatTableModule
+  MatTableModule,
+  MatDialogModule,
+  MatCheckboxModule,
+  MatDatepickerModule,
+  MatNativeDateModule,
+  DateAdapter,
+  NativeDateAdapter,
+  MatPaginatorModule,
+  MatSortModule,
+  MatButtonToggleModule
 } from "@angular/material";
 
 import { AppRoutingModule } from './app-routing.module';
@@ -27,13 +36,16 @@ import { APIService } from './services/api.service';
 import { HttpClientModule } from '@angular/common/http';
 import { StringsService } from './services/strings.service';
 import { ConfigurationComponent } from './components/configuration/configuration.component';
-import { CdkTableModule } from '@angular/cdk/table';
+import { ModalService } from './services/modal.service';
+import { RespondComponent } from './modals/respond/respond.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
     MonitoringComponent,
-    ConfigurationComponent
+    ConfigurationComponent,
+    RespondComponent
   ],
   imports: [
     BrowserModule,
@@ -54,12 +66,24 @@ import { CdkTableModule } from '@angular/cdk/table';
     MatInputModule,
     MatTableModule,
     HttpClientModule,
-    CdkTableModule
+    MatDialogModule,
+    MatCheckboxModule,
+    FormsModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatButtonToggleModule
+  ],
+  entryComponents: [
+    RespondComponent
   ],
   providers: [
     MonitoringService,
     APIService,
-    StringsService
+    StringsService,
+    ModalService,
+    {provide: DateAdapter, useClass: NativeDateAdapter}
   ],
   bootstrap: [AppComponent]
 })
