@@ -46,39 +46,43 @@ AppComponent
 
 ## Services
 
-APIService
+### APIService
 
     - Obtains information from the back end using HTTP calls.
     - Used for non-real time data acquisition, i.e. querying information from Couch or ELK.
     - Does not store the information, but merely performs functions to obtain information.
 
-SocketService
+### SocketService
 
     - Obtains information from websocket connections to the back end.
     - Used for real time data acquisition, i.e. alerts, events, and other real-time data.
     - Does not store the information, but merely relays information to interested parties.
 
-DataService
+### DataService
 
     - Essentially a local copy of the database information to be used.
-    - Stores the information that is used by the different components to create and edit new information for Pi Control Systems.
+    - Stores the information that is used by the different components
+      to create and edit new information for Pi Control Systems.
     - Typically uses the APIService to obtain its information since it is not needed in real time.
 
-StaticService
+### StaticService
 
-    - A local copy of the static records needed from ELK for device states, room states, and DMPS room information.
+    - A local copy of the static records needed from ELK for device states, room states,
+      and DMPS room information.
     - Typically uses the APIService to obtain its information since it is not needed in real time.
 
-MonitoringService
+### MonitoringService
 
-    - The front end storage for alert information to be presented in the AlertTable and any other monitoring portions of the front end.
+    - The front end storage for alert information to be presented in the AlertTable
+      and any other monitoring portions of the front end.
     - Typically uses the SocketService to obtain its information since it is needed in real time.
 
-ModalService
+### ModalService
 
-    - A central service for opening, closing, and performing transactions that take place around modals/pop-ups.
+    - A central service for opening, closing, and performing transactions
+      that take place around modals/pop-ups.
 
-StringsService
+### StringsService
 
     - A central service for keeping the text used on the page that is not dynamically created.
     - This includes, but is not limited to, text for:
@@ -86,7 +90,8 @@ StringsService
         - Labels & Links
         - Error Messages
         - Any other static text needed
-    - The idea is that if text needs to be changed then we only have to change it in one location rather than hunt down every reference in every file.
+    - The idea is that if text needs to be changed then we only have to change it in one location
+      rather than hunt down every reference in every file.
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.3.
 
