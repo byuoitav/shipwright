@@ -30,22 +30,57 @@ import {
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app/app.component';
-import { MonitoringComponent } from './components/monitoring/monitoring.component';
-import { MonitoringService } from './services/monitoring.service';
-import { APIService } from './services/api.service';
 import { HttpClientModule } from '@angular/common/http';
-import { StringsService } from './services/strings.service';
-import { ConfigurationComponent } from './components/configuration/configuration.component';
-import { ModalService } from './services/modal.service';
-import { RespondComponent } from './modals/respond/respond.component';
 import { FormsModule } from '@angular/forms';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { ConfigurationComponent } from './components/configuration/configuration.component';
+import { StateComponent } from './components/state/state.component';
+import { AlertTableComponent } from './components/alerttable/alerttable.component';
+import { BatteryReportComponent } from './components/batteryreport/batteryreport.component';
+import { BuildingListComponent } from './components/buildinglist/buildinglist.component';
+import { BuildingComponent } from './components/building/building.component';
+import { RoomListComponent } from './components/roomlist/roomlist.component';
+import { RoomComponent } from './components/room/room.component';
+import { RoomPageComponent } from './components/roompage/roompage.component';
+import { SummaryComponent } from './components/summary/summary.component';
+import { BuilderComponent } from './components/builder/builder.component';
+import { DeviceListComponent } from './components/devicelist/devicelist.component';
+import { DeviceComponent } from './components/device/device.component';
+import { SettingsModalComponent } from './modals/settings/settings.component';
+import { RespondModalComponent } from './modals/respond/respond.component';
+import { BuildingModalComponent } from './modals/buildingmodal/buildingmodal.component';
+import { RoomModalComponent } from './modals/roommodal/roommodal.component';
+import { DeviceModalComponent } from './modals/devicemodal/devicemodal.component';
+import { APIService } from './services/api.service';
+import { SocketService } from './services/socket.service';
+import { DataService } from './services/data.service';
+import { StaticService } from './services/static.service';
+import { MonitoringService } from './services/monitoring.service';
+import { ModalService } from './services/modal.service';
+import { StringsService } from './services/strings.service';
 
 @NgModule({
   declarations: [
     AppComponent,
-    MonitoringComponent,
+    DashboardComponent,
     ConfigurationComponent,
-    RespondComponent
+    StateComponent,
+    AlertTableComponent,
+    BatteryReportComponent,
+    BuildingListComponent,
+    BuildingComponent,
+    RoomListComponent,
+    RoomComponent,
+    RoomPageComponent,
+    SummaryComponent,
+    BuilderComponent,
+    DeviceListComponent,
+    DeviceComponent,
+    SettingsModalComponent,
+    RespondModalComponent,
+    BuildingModalComponent,
+    RoomModalComponent,
+    DeviceModalComponent
   ],
   imports: [
     BrowserModule,
@@ -76,13 +111,20 @@ import { FormsModule } from '@angular/forms';
     MatButtonToggleModule
   ],
   entryComponents: [
-    RespondComponent
+    SettingsModalComponent,
+    RespondModalComponent,
+    BuildingModalComponent,
+    RoomModalComponent,
+    DeviceModalComponent
   ],
   providers: [
-    MonitoringService,
     APIService,
-    StringsService,
+    SocketService,
+    DataService,
+    StaticService,
+    MonitoringService,
     ModalService,
+    StringsService,
     {provide: DateAdapter, useClass: NativeDateAdapter}
   ],
   bootstrap: [AppComponent]

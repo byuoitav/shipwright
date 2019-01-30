@@ -15,8 +15,8 @@ export class AppComponent {
 
   constructor(public api: APIService, public text: StringsService) {
     this.activeLink = window.location.pathname.split("/", 2)[1];
-    this.api.getCurrentUsername().then((res) => {
-      this.currentUsername = res as string;
-    });
+    // this.api.getCurrentUsername().then((res) => {
+    //   this.currentUsername = res as string;
+    // });
   }
 }

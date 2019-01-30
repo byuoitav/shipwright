@@ -2,14 +2,13 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material'
 import { APIService } from 'src/app/services/api.service';
 import { AlertRow } from 'src/app/objects';
-import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'respond-modal',
   templateUrl: './respond.component.html',
   styleUrls: ['./respond.component.scss']
 })
-export class RespondComponent implements OnInit {
+export class RespondModalComponent implements OnInit {
   sentTime: string;
   arriveTime: string;
   sentHelp: boolean = false;
@@ -17,7 +16,7 @@ export class RespondComponent implements OnInit {
   sentHelpDate = new Date(new Date(Date.now().toLocaleString() + " UTC"));
   helpArrivedDate = new Date(new Date(Date.now().toLocaleString() + " UTC"));
 
-  constructor(public dialogRef: MatDialogRef<RespondComponent>, @Inject(MAT_DIALOG_DATA) public data: AlertRow, public api: APIService) {
+  constructor(public dialogRef: MatDialogRef<RespondModalComponent>, @Inject(MAT_DIALOG_DATA) public data: AlertRow, public api: APIService) {
     this.sentHelp = this.data.helpSent;
     this.helpArrived = this.data.helpArrived;
     if(this.data.alerts.length > 0) {
