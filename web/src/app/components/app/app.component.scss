@@ -1,3 +1,6 @@
+$matToolbarHeight: 64px;
+$wideSideNavWidth: 12em;
+$thinSideNavWidth: 3.5em;
 .base {
     position: absolute;
     top: 0;
@@ -13,15 +16,58 @@
     flex: 1 1 auto;
 }
 
+.website-title {
+    font-style: 550 24px/36px Roboto, 'Helvetica Neue', sans-serif;
+}
+
+.menu {
+    &.title {
+        font-style: 500 22px/34px Roboto, 'Helvetica Neue', sans-serif;
+    }
+    &.item {
+        font-style: 450 16px/18px Roboto, 'Helvetica Neue', sans-serif;
+    }
+}
+
+.sidenav-container {
+    height: calc(100% - #{$matToolbarHeight});
+}
+
+.sidenav {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: start;
+    width: $thinSideNavWidth;
+    overflow: hidden;
+    transition: width 0.3s;
+    &.wide {
+        width: $wideSideNavWidth;
+    }
+    button,
+    a {
+        width: 100%;
+        text-align: left;
+        height: 9vh;
+        border-radius: 0px;
+        .material-icons {
+            margin-right: 0.35em;
+        }
+    }
+    .bottom {
+        align-self: flex-end;
+        margin-top: auto;
+    }
+}
+
 .content-container {
-    height: 100%;
-    // width: calc(100% - #{$thinSideNavWidth});
-    // margin-left: $thinSideNavWidth !important;
+    width: calc(100% - #{$thinSideNavWidth});
+    margin-left: $thinSideNavWidth !important;
     transition: margin-left 0.3s;
-    // &.wide-nav {
-    //     width: calc(100% - #{$wideSideNavWidth});
-    //     margin-left: $wideSideNavWidth !important;
-    // }
+    &.wide-nav {
+        width: calc(100% - #{$wideSideNavWidth});
+        margin-left: $wideSideNavWidth !important;
+    }
     &::-webkit-scrollbar {
         width: 0.4em;
     }

@@ -1,32 +1,53 @@
 <div class="base" [ngClass]="api?.theme + '-theme'">
     <mat-toolbar color="primary">
-        <span style="font: 550 22px/34px Roboto, 'Helvetica Neue', sans-serif">{{text.WebsiteTitle}}</span>
+        <span class="website-title">{{text.WebsiteTitle}}</span>
+
         <span class="fill-remaining-space"></span>
 
         <button mat-button style="padding: 0" [matMenuTriggerFor]="options">
-                <span style="font: 500 20px/32px Roboto, 'Helvetica Neue', sans-serif">
-                  Welcome {{currentUsername}}!
-                </span>
-              </button>
+            <span class="menu-title">Welcome {{currentUsername}}</span>
+        </button>
 
         <mat-menu #options>
-            <button mat-menu-item (click)="
-                      api?.theme === 'default'
-                        ? api.switchTheme('dark')
-                        : api.switchTheme('default')">
-                    <span style="font: 450 16px/18px Roboto, 'Helvetica Neue', sans-serif">
-                      Switch Theme
-                    </span>
-                  </button>
-            <button mat-menu-item><span style="font: 450 16px/18px Roboto, 'Helvetica Neue', sans-serif">
-                      Logout
-                    </span></button>
+            <button mat-menu-item (click)="api?.theme === 'default' ? api.switchTheme('dark') : api.switchTheme('default')">
+                <span class="menu-item">Switch Theme</span>
+            </button>
+
+            <button mat-menu-item>
+                <span class="menu-item">Logout</span>
+            </button>
         </mat-menu>
     </mat-toolbar>
-    <mat-sidenav-container class="content-container">
-        <nav mat-tab-nav-bar [ngClass]="api?.theme + '-theme'">
-            <a mat-tab-link *ngFor="let link of text.Links" (click)="activeLink = link" routerLink="{{link}}" [active]="activeLink == link"> {{text.Title(link)}} </a>
-        </nav>
-        <router-outlet></router-outlet>
+    <mat-sidenav-container class="sidenav-container">
+        <mat-sidenav #sidenav mode="side" opened class="sidenav" [class.wide]="wideSidenav()">
+            <!-- Dashboard Side Button -->
+            <button mat-flat-button color="" routerLink="/dashboard" routerLinkActive="mat-accent" queryParamsHandling="merge">
+                <mat-icon>dashboard</mat-icon>
+                <ng-container *ngIf="wideSidenav()">Dashboard</ng-container>
+            </button>
+
+            <!-- Configuration Side Button -->
+            <button mat-flat-button color="" routerLink="/configuration" routerLinkActive="mat-accent" queryParamsHandling="merge">
+                <mat-icon>build</mat-icon>
+                <ng-container *ngIf="wideSidenav()">Config</ng-container>
+            </button>
+
+            <!-- State Side Button -->
+            <button mat-flat-button color="" routerLink="/state" routerLinkActive="mat-accent" queryParamsHandling="merge">
+                <mat-icon>view_list</mat-icon>
+                <ng-container *ngIf="wideSidenav()">State</ng-container>
+            </button>
+
+            <!-- Collapse Button -->
+            <button mat-flat-button color="" class="bottom" (click)="setWideSidenav(!wideSidenav())">
+                <mat-icon *ngIf="wideSidenav()">chevron_left</mat-icon>
+                <mat-icon *ngIf="!wideSidenav()">chevron_right</mat-icon>
+
+                <ng-container *ngIf="wideSidenav()"> Collapse sidebar </ng-container>
+            </button>
+        </mat-sidenav>
+        <mat-sidenav-content class="content-container" [class.wide-nav]="wideSidenav()">
+            <router-outlet></router-outlet>
+        </mat-sidenav-content>
     </mat-sidenav-container>
 </div>

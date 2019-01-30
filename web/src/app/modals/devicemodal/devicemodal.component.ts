@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { StringsService } from 'src/app/services/strings.service';
 
 @Component({
   selector: 'device-modal',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DeviceModalComponent implements OnInit {
 
-  constructor() { }
+  constructor(public text: StringsService) { }
 
   ngOnInit() {
   }

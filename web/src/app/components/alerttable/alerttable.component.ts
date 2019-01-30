@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { StringsService } from 'src/app/services/strings.service';
 
 @Component({
   selector: 'alert-table',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AlertTableComponent implements OnInit {
 
-  constructor() { }
+  constructor(public text: StringsService) { }
 
   ngOnInit() {
   }

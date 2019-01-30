@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { StringsService } from 'src/app/services/strings.service';
 
 @Component({
   selector: 'building-list',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BuildingListComponent implements OnInit {
 
-  constructor() { }
+  constructor(public text: StringsService) { }
 
   ngOnInit() {
   }
