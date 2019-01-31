@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
+import { Device } from 'src/app/objects';
+import { ModalService } from 'src/app/services/modal.service';
 
 @Component({
   selector: 'device',
@@ -7,8 +9,9 @@ import { StringsService } from 'src/app/services/strings.service';
   styleUrls: ['./device.component.scss']
 })
 export class DeviceComponent implements OnInit {
+  @Input() device: Device;
 
-  constructor(public text: StringsService) { }
+  constructor(public text: StringsService, public modal: ModalService) { }
 
   ngOnInit() {
   }

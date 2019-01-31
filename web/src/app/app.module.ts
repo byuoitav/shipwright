@@ -58,6 +58,7 @@ import { StaticService } from './services/static.service';
 import { MonitoringService } from './services/monitoring.service';
 import { ModalService } from './services/modal.service';
 import { StringsService } from './services/strings.service';
+import { OverlayContainer } from '@angular/cdk/overlay';
 
 @NgModule({
   declarations: [
@@ -129,4 +130,11 @@ import { StringsService } from './services/strings.service';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+  constructor(public overlayContainer: OverlayContainer, api: APIService) {
+    api.themeSwitched.subscribe((themes) => {
+      this.overlayContainer.getContainerElement().classList.remove(themes[0]);
+      this.overlayContainer.getContainerElement().classList.add(themes[1]);
+    })
+  }
+}

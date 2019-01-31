@@ -1,3 +1,31 @@
-<p>
-  devicemodal works!
-</p>
+<section>
+    {{data.id}}
+</section>
+<section>
+    {{data.name}}
+</section>
+<section>
+    {{data.description}}
+</section>
+<section>
+    {{data.type.id}}
+</section>
+<section>
+    {{data.displayName}}
+</section>
+<section>
+    {{data.address}}
+</section>
+<section>
+    <div *ngFor="let role of data.roles">
+        {{role.id}}<br>
+    </div>
+</section>
+<section *ngIf="data.ports?.length > 0">
+    <div *ngFor="let port of data.ports">
+        {{port.id}} - {{port.sourceDevice ? port.sourceDevice : 'no source'}} - {{port.destinationDevice ? port.destinationDevice : 'no dest'}}<br>
+    </div>
+</section>
+<section>
+    {{data.tags}}
+</section>

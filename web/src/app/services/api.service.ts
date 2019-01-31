@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { JsonConvert, Any } from 'json2typescript';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Building, DBResponse, Room, RoomConfiguration, Device, DeviceType, Role, UIConfig, BuildingStatus, RoomStatus, Template, MetricsResponse } from '../objects';
@@ -8,6 +8,7 @@ import { Building, DBResponse, Room, RoomConfiguration, Device, DeviceType, Role
 })
 export class APIService {
   public theme = "default";
+  public themeSwitched: EventEmitter<string[]>;
 
   private converter: JsonConvert;
   private urlParams: URLSearchParams;
@@ -15,6 +16,7 @@ export class APIService {
   private headers: HttpHeaders;
 
   constructor(private http: HttpClient) {
+    this.themeSwitched = new EventEmitter<string[]>();
     this.converter = new JsonConvert();
     this.converter.ignorePrimitiveChecks = false;
 
@@ -34,15 +36,21 @@ export class APIService {
   }
 
   public switchTheme(name: string) {
+    let oldTheme = this.theme+"-theme"
+    let newTheme = name+"-theme"
+
     console.log("switching theme to ", name);
 
     this.theme = name;
     this.urlParams.set("theme", name);
+    
+    this.themeSwitched.emit([oldTheme, newTheme]);
+
     window.history.replaceState(
       null,
       "Shipwright",
       window.location.pathname + "?" + this.urlParams.toString()
-    );
+    );    
   }
 
   // Building Functions

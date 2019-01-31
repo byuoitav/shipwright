@@ -1,3 +1,5 @@
-<p>
-  room works!
-</p>
+<section>
+    {{room.id}}
+    <button (click)="modal.OpenRoomModal(room)">Open Room Modal</button>
+    <button routerLink="/configuration/{{room.id}}/roompage">Go to Room Page</button>
+</section>

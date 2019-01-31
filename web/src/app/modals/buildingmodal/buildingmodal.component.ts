@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { Building } from 'src/app/objects';
 
 @Component({
   selector: 'building-modal',
@@ -8,7 +10,7 @@ import { StringsService } from 'src/app/services/strings.service';
 })
 export class BuildingModalComponent implements OnInit {
 
-  constructor(public text: StringsService) { }
+  constructor(public text: StringsService, public dialogRef: MatDialogRef<BuildingModalComponent>, @Inject(MAT_DIALOG_DATA) public data: Building) { }
 
   ngOnInit() {
   }

@@ -1,3 +1,5 @@
 <p>
-  devicelist works!
+    devicelist works!
 </p>
+
+<device *ngFor="let device of data.roomToDevicesMap.get(roomID)" [device]="device"></device>

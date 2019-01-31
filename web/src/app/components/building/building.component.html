@@ -1,3 +1,5 @@
-<p>
-  building works!
-</p>
+<section>
+    {{building.id}}
+    <button (click)="modal.OpenBuildingModal(building)">Open Building Modal</button>
+    <button routerLink="/configuration/{{building.id}}/roomlist">Go to Room List</button>
+</section>
