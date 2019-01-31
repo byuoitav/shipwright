@@ -1,9 +1,34 @@
-import { Type } from '@angular/core';
+import { Component, OnInit, ViewChild, ComponentFactoryResolver, forwardRef } from '@angular/core';
 
-export class CompItem {
-  constructor(public component: Type<any>, public data: any) {}
-}
+import { DashPanelDirective } from './dashpanel.directive';
+import { DashPanelService } from 'src/app/services/dashpanel.service';
+import { IDashPanel } from './idashpanel';
 
-export interface DashPanelComponent {
-  data: any;
+@Component({
+  selector: 'dashpanel',
+  templateUrl: './dashpanel.component.html',
+  styleUrls: ['./dashpanel.component.scss']
+})
+
+export class DashPanelComponent implements OnInit {
+  @ViewChild(forwardRef(()=>DashPanelDirective)) direct: DashPanelDirective;
+
+  constructor(private resolver: ComponentFactoryResolver, private dashServe: DashPanelService) {}
+
+  ngOnInit() {}
+
+  choosePanel(panelType: string) {
+    if(panelType == null) {
+      return
+    }
+    let data: any;
+
+    let panel = this.dashServe.getPanel(panelType, data)
+    let componentFactory = this.resolver.resolveComponentFactory(panel.component);
+    let viewContainerRef = this.direct.viewContainerRef;
+    viewContainerRef.clear();
+
+    let componentRef = viewContainerRef.createComponent(componentFactory);
+    (<IDashPanel>componentRef.instance).data = panel.data;
+  }
 }
