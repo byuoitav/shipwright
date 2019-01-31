@@ -7,10 +7,10 @@ import (
 	"github.com/byuoitav/shipwright/config"
 )
 
-// NewMatchConfig contains the logic for building/matching regex for events that come in
+// MatchConfig contains the logic for building/matching regex for events that come in
 
-func (r *runner) buildNewMatchRegex() *config.NewMatchConfig {
-	m := r.Trigger.NewMatch
+func (r *runner) buildNewMatchRegex() *config.MatchConfig {
+	m := r.Trigger.Match
 	m.Count = 0
 
 	// build the regex for each field

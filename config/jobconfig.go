@@ -21,10 +21,10 @@ type JobConfig struct {
 
 // Trigger .
 type Trigger struct {
-	Type     string          `json:"type"`      // required for all
-	At       string          `json:"at"`        // required for 'time and state'
-	Every    string          `json:"every"`     // required for 'interval and state '
-	NewMatch *NewMatchConfig `json:"new-match"` // required for 'event'
+	Type  string       `json:"type"`  // required for all
+	At    string       `json:"at"`    // required for 'time and state'
+	Every string       `json:"every"` // required for 'interval and state '
+	Match *MatchConfig `json:"match"` // required for 'event'
 }
 
 // JobInputContext .
@@ -34,8 +34,8 @@ type JobInputContext struct {
 	Action      actiongen.Config       //from the Action field in the job config
 }
 
-//NewMatchConfig .
-type NewMatchConfig struct {
+// MatchConfig .
+type MatchConfig struct {
 	Count int
 
 	GeneratingSystem string   `json:"GeneratingSystem"`
@@ -76,7 +76,7 @@ type NewMatchConfig struct {
 }
 
 //DoesEventMatch .
-func (m *NewMatchConfig) DoesEventMatch(event *events.Event) bool {
+func (m *MatchConfig) DoesEventMatch(event *events.Event) bool {
 	if m.Count == 0 {
 		log.L.Debugf("No runners")
 		return true

@@ -15,6 +15,8 @@ import (
 	"github.com/byuoitav/shipwright/config"
 )
 
+// TODO add a way to kill each job that is currently running
+
 var (
 	// MaxWorkers is the max number of go routines that should be running jobs.
 	MaxWorkers = os.Getenv("MAX_WORKERS")
@@ -97,7 +99,7 @@ func init() {
 
 			// build the regex if it's a match type
 			if strings.EqualFold(runner.Trigger.Type, "new-match") {
-				runner.Trigger.NewMatch = runner.buildNewMatchRegex()
+				runner.Trigger.Match = runner.buildNewMatchRegex()
 			}
 
 			log.L.Infof("Adding runner for job '%v', trigger #%v. Execution type: %v", runner.Config.Name, runner.TriggerIndex, runner.Trigger.Type)
@@ -149,7 +151,7 @@ func StartJobScheduler() {
 			go runner.runDaily()
 		case "interval":
 			go runner.runInterval()
-		case "new-match": // TODO change to just "match"
+		case "match":
 			matchRunners = append(matchRunners, runner)
 		default:
 			log.L.Warnf("unknown trigger type '%v' for job %v|%v", runner.Trigger.Type, runner.Config.Name, runner.TriggerIndex)
@@ -169,7 +171,7 @@ func StartJobScheduler() {
 				case event := <-eventChan:
 					// see if we need to execute any jobs from this event
 					for i := range matchRunners {
-						if matchRunners[i].Trigger.NewMatch.DoesEventMatch(&event) {
+						if matchRunners[i].Trigger.Match.DoesEventMatch(&event) {
 							go matchRunners[i].run(&event, name)
 						}
 					}
