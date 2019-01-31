@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/byuoitav/shipwright/actions/action"
+	"github.com/byuoitav/shipwright/actions/alert"
 	"github.com/byuoitav/shipwright/actions/email"
 	"github.com/byuoitav/shipwright/actions/mom"
 	"github.com/byuoitav/shipwright/actions/slack"
@@ -12,10 +13,15 @@ import (
 const (
 	// Slack ..
 	Slack = "slack"
+
 	// Mom ..
 	Mom = "mom"
+
 	//Email ..
 	Email = "email"
+
+	// Alert .
+	Alert = "alert"
 )
 
 // An Action is a struct that will execute action payloads created by jobs.
@@ -29,4 +35,5 @@ var Actions = map[string]Action{
 	Slack: &slack.Action{ChannelIdentifier: os.Getenv("SLACK_HEARTBEAT_CHANNEL")},
 	Mom:   &mom.Action{},
 	Email: &email.Action{},
+	Alert: &alert.Action{},
 }

@@ -30,7 +30,7 @@ func StartActionManagers() {
 
 	// build each of the individual action managers
 	for name, act := range Actions {
-		ingestionMap[name] = make(chan action.Payload, 2000) // TODO make this size configurable?
+		ingestionMap[name] = make(chan action.Payload, 1000) // TODO make this size configurable?
 
 		wg.Add(1)
 		manager := &actionManager{
