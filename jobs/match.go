@@ -7,6 +7,9 @@ import (
 	"github.com/byuoitav/shipwright/config"
 )
 
+// MatchType .
+const MatchType = "match"
+
 // MatchConfig contains the logic for building/matching regex for events that come in
 
 func (r *runner) buildNewMatchRegex() *config.MatchConfig {

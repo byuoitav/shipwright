@@ -39,10 +39,10 @@ type runner struct {
 func init() {
 	// set defaults for max workers/queue
 	if len(MaxWorkers) == 0 {
-		MaxWorkers = "10"
+		MaxWorkers = "15"
 	}
 	if len(MaxQueue) == 0 {
-		MaxQueue = "1000"
+		MaxQueue = "2000"
 	}
 
 	// validate max workers/queue are valid numbers
@@ -98,7 +98,7 @@ func init() {
 			}
 
 			// build the regex if it's a match type
-			if strings.EqualFold(runner.Trigger.Type, "new-match") {
+			if strings.EqualFold(runner.Trigger.Type, MatchType) {
 				runner.Trigger.Match = runner.buildNewMatchRegex()
 			}
 
@@ -125,7 +125,7 @@ func GetQueueSize() map[string]QueueStatus {
 	return toReturn
 }
 
-// ProcessEvent adds <event> into a queue to be processed
+// ProcessEvent adds the event into a queue to be processed
 func ProcessEvent(event events.Event) {
 	eventChan <- event
 }
@@ -151,7 +151,7 @@ func StartJobScheduler() {
 			go runner.runDaily()
 		case "interval":
 			go runner.runInterval()
-		case "match":
+		case MatchType:
 			matchRunners = append(matchRunners, runner)
 		default:
 			log.L.Warnf("unknown trigger type '%v' for job %v|%v", runner.Trigger.Type, runner.Config.Name, runner.TriggerIndex)
@@ -167,12 +167,11 @@ func StartJobScheduler() {
 			name := strconv.Itoa(workerNum)
 			for {
 				select {
-
 				case event := <-eventChan:
 					// see if we need to execute any jobs from this event
 					for i := range matchRunners {
 						if matchRunners[i].Trigger.Match.DoesEventMatch(&event) {
-							go matchRunners[i].run(&event, name)
+							matchRunners[i].run(&event, name)
 						}
 					}
 				}

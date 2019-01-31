@@ -1,0 +1,182 @@
+{
+  "caches": [
+    {
+      "name": "Default",
+      "storage-type": "elk",
+      "cache-type": "default",
+      "elk-cache": {
+        "device-index": "oit-static-av-devices-v2",
+        "url": "$ELK_DIRECT_ADDR"
+      }
+    },
+    {
+      "name": "Legacy",
+      "storage-type": "elk",
+      "cache-type": "legacy",
+      "elk-cache": {
+        "device-index": "legacy-oit-static-av-devices-v2",
+        "url": "$ELK_DIRECT_ADDR"
+      }
+    }
+  ],
+  "forwarders": [
+    {
+      "name": "ElkDeltaEvents",
+      "type": "elktimseries",
+      "event-type": "delta",
+      "interval": 15,
+      "data-type": "device",
+      "cache-type": "default",
+      "elk": {
+        "url": "$ELK_DIRECT_ADDR",
+        "index-pattern": "av-delta-events",
+        "index-rotation-interval": "monthly"
+      }
+    },
+    {
+      "name": "ElkAllEvents",
+      "type": "elktimseries",
+      "event-type": "all",
+      "interval": 15,
+      "data-type": "device",
+      "cache-type": "default",
+      "elk": {
+        "url": "$ELK_DIRECT_ADDR",
+        "index-pattern": "av-all-events",
+        "index-rotation-interval": "daily"
+      }
+    },
+    {
+      "name": "ElkStaticDevicesHistory",
+      "type": "elkstatic",
+      "event-type": "delta",
+      "interval": 15,
+      "data-type": "device",
+      "cache-type": "default",
+      "elk": {
+        "url": "$ELK_DIRECT_ADDR",
+        "index-pattern": "oit-static-av-devices-history",
+        "index-rotation-interval": "monthly"
+      }
+    },
+    {
+      "name": "CouchStaticDevicesHistory",
+      "type": "couch",
+      "event-type": "delta",
+      "interval": 15,
+      "data-type": "device",
+      "cache-type": "default",
+      "couch": {
+        "url": "$COUCH_ADDR",
+        "database-name": "device-state"
+      }
+    },
+    {
+      "name": "MainStaticDeviceIndex",
+      "type": "elkstatic",
+      "event-type": "all",
+      "interval": 15,
+      "data-type": "device",
+      "cache-type": "default",
+      "elk": {
+        "url": "$ELK_DIRECT_ADDR",
+        "index-pattern": "oit-static-av-devices-v2",
+        "index-rotation-interval": "norotate",
+        "upsert": true
+      }
+    },
+    {
+      "name": "LegacyEventDelta",
+      "type": "elktimeseries",
+      "event-type": "delta",
+      "interval": 15,
+      "data-type": "event",
+      "cache-type": "legacy",
+      "elk": {
+        "url": "$ELK_DIRECT_ADDR",
+        "index-pattern": "legacy-av-delta-events",
+        "index-rotation-interval": "monthly"
+      }
+    },
+    {
+      "name": "LegacyEventAll",
+      "type": "elktimeseries",
+      "event-type": "all",
+      "interval": 15,
+      "data-type": "event",
+      "cache-type": "legacy",
+      "elk": {
+        "url": "$ELK_DIRECT_ADDR",
+        "index-pattern": "legacy-av-all-events",
+        "index-rotation-interval": "daily"
+      }
+    },
+    {
+      "name": "LegacyDeviceHistory",
+      "type": "elkstatic",
+      "event-type": "delta",
+      "interval": 15,
+      "data-type": "device",
+      "cache-type": "legacy",
+      "elk": {
+        "url": "$ELK_DIRECT_ADDR",
+        "index-pattern": "legacy-oit-static-av-devices-history",
+        "index-rotation-interval": "monthly"
+      }
+    },
+    {
+      "name": "LegacyDeviceCouch",
+      "type": "couch",
+      "event-type": "delta",
+      "interval": 15,
+      "data-type": "device",
+      "cache-type": "legacy",
+      "couch": {
+        "url": "$COUCH_ADDR",
+        "database-name": "legacy-device-state"
+      }
+    },
+    {
+      "name": "LegacyDeviceAll",
+      "type": "elkstatic",
+      "event-type": "all",
+      "interval": 15,
+      "data-type": "device",
+      "cache-type": "legacy",
+      "elk": {
+        "url": "$ELK_DIRECT_ADDR",
+        "index-pattern": "legacy-oit-static-av-devices-v2",
+        "index-rotation-interval": "norotate",
+        "upsert": true
+      }
+    }
+  ],
+  "jobs": [
+    {
+      "name": "help-request-email",
+      "triggers": [
+        {
+          "type": "new-match",
+          "new-match": {
+            "Key": "help-request",
+            "EventTags": ["alert"],
+            "Value": "confirm"
+          }
+        }
+      ],
+      "enabled": true,
+      "action": {
+        "action-type": "email",
+        "fields": {
+          "recipients": "joe_blodgett@byu.edu,danny_randall@byu.edu",
+          "sender": "av-alerts@byu.edu",
+          "user": "",
+          "pass": "",
+          "subject": "Help Request",
+          "body": "There was a help request in room {{AffectedRoom.RoomID}} on device {{TargetDevice.DeviceID}}.",
+          "smtp-addr": "gateway.byu.edu:25"
+        }
+      }
+    }
+  ]
+}

@@ -9,7 +9,6 @@ import (
 
 //GenSlackAction .
 func GenSlackAction(config Config, i interface{}, device string) (action.Payload, *nerr.E) {
-
 	toReturn := action.Payload{}
 	context := slack.Attachment{}
 	var er *nerr.E
