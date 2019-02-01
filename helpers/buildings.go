@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/byuoitav/common/db"
 	"github.com/byuoitav/common/nerr"
@@ -56,6 +57,17 @@ func UpdateBuilding(buildingID string, building structs.Building) (DBResponse, *
 func GetBuilding(buildingID string) (structs.Building, *nerr.E) {
 	toReturn, err := db.GetDB().GetBuilding(buildingID)
 	if err != nil {
+		dmpsList, ne := GetDMPSBuildings()
+		if ne != nil {
+			return structs.Building{}, nerr.Translate(err).Addf("failed to get the building %s", buildingID)
+		}
+
+		for _, b := range dmpsList {
+			if b.ID == buildingID {
+				return b, nil
+			}
+		}
+
 		return structs.Building{}, nerr.Translate(err).Addf("failed to get the building %s", buildingID)
 	}
 
@@ -64,7 +76,7 @@ func GetBuilding(buildingID string) (structs.Building, *nerr.E) {
 
 // GetAllBuildings gets all buildings from the database
 func GetAllBuildings() ([]structs.Building, *nerr.E) {
-	toReturn, err := db.GetDB().GetAllBuildings()
+	toReturn, err := compiledBuildings()
 	if err != nil {
 		return nil, nerr.Translate(err).Add("failed to get all buildings")
 	}
@@ -92,4 +104,45 @@ func DeleteBuilding(buildingID string) (DBResponse, *nerr.E) {
 	// return the response
 	response.Success = true
 	return response, nil
+}
+
+func compiledBuildings() ([]structs.Building, *nerr.E) {
+	piBuildings, err := getPICSBuildings()
+	if err != nil {
+		return nil, err
+	}
+
+	dmpsBuildings, err := GetDMPSBuildings()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, dmpsB := range dmpsBuildings {
+		found := false
+		for _, piB := range piBuildings {
+			if dmpsB.ID == piB.ID {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			piBuildings = append(piBuildings, dmpsB)
+		}
+	}
+
+	sort.Slice(piBuildings, func(i, j int) bool {
+		return piBuildings[i].ID < piBuildings[j].ID
+	})
+
+	return piBuildings, nil
+}
+
+func getPICSBuildings() ([]structs.Building, *nerr.E) {
+	toReturn, err := db.GetDB().GetAllBuildings()
+	if err != nil {
+		return nil, nerr.Translate(err).Add("failed to get all buildings")
+	}
+
+	return toReturn, nil
 }

@@ -2,6 +2,8 @@ package helpers
 
 import (
 	"fmt"
+	"sort"
+	"strings"
 
 	"github.com/byuoitav/common/db"
 	"github.com/byuoitav/common/nerr"
@@ -56,7 +58,18 @@ func UpdateRoom(roomID string, room structs.Room) (DBResponse, *nerr.E) {
 func GetRoom(roomID string) (structs.Room, *nerr.E) {
 	room, err := db.GetDB().GetRoom(roomID)
 	if err != nil {
-		return room, nerr.Translate(err).Addf("failed to get the room %s", roomID)
+		dmpsList, ne := GetDMPSRooms()
+		if ne != nil {
+			return structs.Room{}, nerr.Translate(err).Addf("failed to get the room %s", roomID)
+		}
+
+		for _, r := range dmpsList {
+			if r.ID == roomID {
+				return r, nil
+			}
+		}
+
+		return structs.Room{}, nerr.Translate(err).Addf("failed to get the room %s", roomID)
 	}
 
 	return room, nil
@@ -64,7 +77,7 @@ func GetRoom(roomID string) (structs.Room, *nerr.E) {
 
 // GetAllRooms gets a list of all rooms in the database
 func GetAllRooms() ([]structs.Room, *nerr.E) {
-	rooms, err := db.GetDB().GetAllRooms()
+	rooms, err := compiledRooms()
 	if err != nil {
 		return rooms, nerr.Translate(err).Add("failed to get all rooms")
 	}
@@ -74,12 +87,20 @@ func GetAllRooms() ([]structs.Room, *nerr.E) {
 
 // GetRoomsByBuilding gets a list of all rooms in a building
 func GetRoomsByBuilding(buildingID string) ([]structs.Room, *nerr.E) {
-	rooms, err := db.GetDB().GetRoomsByBuilding(buildingID)
+	rooms, err := compiledRooms()
 	if err != nil {
 		return rooms, nerr.Translate(err).Addf("failed to get all rooms in the building %s", buildingID)
 	}
 
-	return rooms, nil
+	var toReturn []structs.Room
+
+	for _, r := range rooms {
+		if strings.Contains(r.ID, buildingID) {
+			toReturn = append(toReturn, r)
+		}
+	}
+
+	return toReturn, nil
 }
 
 // DeleteRoom deletes a room in the database
@@ -122,4 +143,45 @@ func GetRoomDesignations() ([]string, *nerr.E) {
 	}
 
 	return designations, nil
+}
+
+func compiledRooms() ([]structs.Room, *nerr.E) {
+	piRooms, err := getPICSRooms()
+	if err != nil {
+		return nil, err
+	}
+
+	dmpsRooms, err := GetDMPSRooms()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, dmpsR := range dmpsRooms {
+		found := false
+		for _, piR := range piRooms {
+			if dmpsR.ID == piR.ID {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			piRooms = append(piRooms, dmpsR)
+		}
+	}
+
+	sort.Slice(piRooms, func(i, j int) bool {
+		return piRooms[i].ID < piRooms[j].ID
+	})
+
+	return piRooms, nil
+}
+
+func getPICSRooms() ([]structs.Room, *nerr.E) {
+	rooms, err := db.GetDB().GetAllRooms()
+	if err != nil {
+		return rooms, nerr.Translate(err).Add("failed to get all rooms")
+	}
+
+	return rooms, nil
 }
