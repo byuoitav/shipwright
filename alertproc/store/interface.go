@@ -9,7 +9,6 @@ import (
 func AddAlert(a structs.Alert) (string, *nerr.E) {
 
 	return store.putAlert(a)
-
 }
 
 //GetAllAlerts get all alerts currently active in the store
@@ -28,4 +27,12 @@ func GetAlert(AlertID string) (structs.Alert, *nerr.E) {
 func GetAlertBySeverity(Severity structs.AlertSeverity) ([]structs.Alert, *nerr.E) {
 
 	return []structs.Alert{}, nil
+}
+
+func DeactivateAlert(AlertID string) {
+
+}
+
+func ResolveAlert(AlertID string, resInfo ResolutionInfo) {
+
 }
