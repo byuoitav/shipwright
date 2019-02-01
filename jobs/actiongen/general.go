@@ -49,7 +49,6 @@ func GenerateAction(t Config, i interface{}, d string) (action.Payload, *nerr.E)
 
 //ReplaceParameters .
 func ReplaceParameters(s string, baseinter interface{}) (string, *nerr.E) {
-
 	//find if there are any parameters in s
 	matches := paramRe.FindAllString(s, -1)
 	if matches == nil {

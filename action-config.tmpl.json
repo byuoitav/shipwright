@@ -1,0 +1,34 @@
+[
+  {
+    "trigger": "event // or 5s, or disabled",
+    "if": {
+      "event-match": {
+        "key": "secure",
+        "value": "False"
+      }
+    },
+    "then": [
+      {
+        "do": "add-alert",
+        "with": {
+          "alert": "hi",
+          "type": "missing heartbeat",
+          "msg log": ["something went wrong with {{.DeviceID}}"],
+          "severity": "test"
+        }
+      },
+      {
+        "do": "send-email",
+        "with": {
+          "recipients": "matt_blodgett@byu.edu, danny_randall@byu.edu",
+          "sender": "{{.DeviceID}}@byu.edu",
+          "user": "",
+          "pass": "",
+          "subject": "Cabinet Opened in {{.RoomID}} // TODO these fields use go's templating engine",
+          "body": "A cabinet was opened in {{.RoomID}} at {{.Timestamp}}.",
+          "smtp-addr": "gateway.byu.edu:25"
+        }
+      }
+    ]
+  }
+]

@@ -10,9 +10,9 @@ import (
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/v2/events"
-	"github.com/byuoitav/shipwright/actions"
 	"github.com/byuoitav/shipwright/actions/action"
 	"github.com/byuoitav/shipwright/config"
+	actions "github.com/byuoitav/shipwright/oldactions"
 )
 
 // TODO add a way to kill each job that is currently running
