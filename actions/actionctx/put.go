@@ -17,16 +17,16 @@ const (
 )
 
 // PutEvent puts an event into ctx
-func PutEvent(ctx context.Context, v events.Event) {
-	ctx = context.WithValue(ctx, event, v)
+func PutEvent(ctx context.Context, v events.Event) context.Context {
+	return context.WithValue(ctx, event, v)
 }
 
 // PutStaticDevice puts an event into ctx
-func PutStaticDevice(ctx context.Context, v statedefinition.StaticDevice) {
-	ctx = context.WithValue(ctx, staticDevice, v)
+func PutStaticDevice(ctx context.Context, v statedefinition.StaticDevice) context.Context {
+	return context.WithValue(ctx, staticDevice, v)
 }
 
 // PutAlert puts an event into ctx
-func PutAlert(ctx context.Context, v structs.Alert) {
-	ctx = context.WithValue(ctx, alert, v)
+func PutAlert(ctx context.Context, v structs.Alert) context.Context {
+	return context.WithValue(ctx, alert, v)
 }

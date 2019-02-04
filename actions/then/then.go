@@ -31,6 +31,7 @@ func init() {
 	// declare then's here
 	thens.m["add-alert"] = AddAlert
 	thens.m["send-email"] = SendEmail
+	thens.m["send-email"] = SendSlack
 	thens.m["create-servicenow-incident"] = CreateIncident
 	thens.m["modify-servicenow-incident"] = ModifyIncident
 	thens.m["close-servicenow-incident"] = CloseIncident
@@ -64,7 +65,7 @@ func (t *Then) Execute(ctx context.Context) *nerr.E {
 
 	err := f(ctx, t.With)
 	if err != nil {
-		return err.Addf("unable to run then function '%s'", t.Do)
+		return err.Addf("something went wrong running then '%s'", t.Do)
 	}
 
 	return nil

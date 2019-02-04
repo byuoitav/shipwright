@@ -64,8 +64,6 @@ func (m *EventMatch) DoesEventMatch(ctx context.Context) bool {
 	if !ok {
 		return false
 	}
-	log.SetLevel("debug")
-	log.L.Infof("running if check on event: %+v", event)
 
 	if m.Regex.GeneratingSystem != nil {
 		reg := m.Regex.GeneratingSystem.Copy()
@@ -171,6 +169,7 @@ func (m *EventMatch) DoesEventMatch(ctx context.Context) bool {
 		}
 	}
 
+	log.L.Infof("matched event: %+v", event)
 	return true
 }
 
@@ -237,6 +236,4 @@ func (m *EventMatch) buildRegex() {
 		m.Regex.EventTags = append(m.Regex.EventTags, regexp.MustCompile(tag))
 		m.Count++
 	}
-
-	log.L.Infof("Count: %v", m)
 }

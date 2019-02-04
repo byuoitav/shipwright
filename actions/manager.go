@@ -3,6 +3,7 @@ package actions
 import (
 	"context"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/byuoitav/central-event-system/hub/base"
@@ -15,6 +16,7 @@ import (
 // An ActionManager manages executing a set of actions
 type ActionManager struct {
 	Config    *ActionConfig
+	Workers   int
 	Messenger *messenger.Messenger
 
 	matchActions   []*Action
@@ -23,11 +25,14 @@ type ActionManager struct {
 
 // Start starts the action manager
 func (a *ActionManager) Start(ctx context.Context) *nerr.E {
-	log.SetLevel("info")
 	var err *nerr.E
 
 	if a.Config == nil {
 		a.Config = DefaultConfig()
+	}
+
+	if a.Workers <= 0 {
+		a.Workers = 1
 	}
 
 	if a.Messenger == nil {
@@ -38,8 +43,7 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 		}
 
 		log.L.Infof("Action messenger connected.")
-
-		a.Messenger.SubscribeToRooms("*")
+		a.Messenger.SubscribeToRooms("ITB-1010")
 	}
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -60,23 +64,34 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 		}
 	}
 
-	for {
-		select {
-		case <-ctx.Done():
-			return nil
-		default:
-			event := a.Messenger.ReceiveEvent()
-			log.L.Infof("receivied event: %+v", event)
+	wg := &sync.WaitGroup{}
 
-			// a new context for the run of this action
-			actx := context.Background()
-			actionctx.PutEvent(actx, event)
+	for i := 0; i < a.Workers; i++ {
+		wg.Add(1)
 
-			for i := range a.matchActions {
-				a.matchActions[i].Run(actx)
+		go func(index int) {
+			for {
+				select {
+				case <-ctx.Done():
+					wg.Done()
+					return
+				default:
+					event := a.Messenger.ReceiveEvent()
+
+					// a new context for the run of this action
+					actx := actionctx.PutEvent(context.Background(), event)
+
+					for i := range a.matchActions {
+						a.matchActions[i].Run(actx)
+					}
+				}
 			}
-		}
+		}(i)
 	}
+
+	wg.Wait()
+
+	return nil
 }
 
 func (a *ActionManager) runActionOnInterval(ctx context.Context, interval time.Duration) {

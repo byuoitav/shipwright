@@ -8,6 +8,7 @@ import (
 	"net/smtp"
 	"text/template"
 
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/shipwright/actions/actionctx"
 )
@@ -44,21 +45,23 @@ func SendEmail(ctx context.Context, with []byte) *nerr.E {
 	// fill the email template
 	t, gerr := template.New("email").Parse(string(with))
 	if gerr != nil {
-		return nerr.Translate(gerr).Addf("failed to add email")
+		return nerr.Translate(gerr).Addf("failed to send email")
 	}
 
 	buf := &bytes.Buffer{}
 	gerr = t.Execute(buf, data)
 	if gerr != nil {
-		return nerr.Translate(gerr).Addf("failed to add email")
+		return nerr.Translate(gerr).Addf("failed to send email")
 	}
 
 	// unmarshal filled template into email struct
 	email := Email{}
 	gerr = json.Unmarshal(buf.Bytes(), &email)
 	if gerr != nil {
-		return nerr.Translate(gerr).Addf("failed to add email")
+		return nerr.Translate(gerr).Addf("failed to send email")
 	}
+
+	log.L.Infof("")
 
 	// send the email
 	body := []byte(fmt.Sprintf("Subject: %s\r\n", email.Subject))

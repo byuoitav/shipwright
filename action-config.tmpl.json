@@ -11,17 +11,26 @@
       {
         "do": "send-email",
         "with": {
-          "recipients": [
+          "from": "{{.Event.TargetDevice.DeviceID}}@byu.edu",
+          "to": [
             "matt_blodgett@byu.edu",
             "danny_randall@byu.edu",
             "joe_blodgett@byu.edu"
           ],
-          "sender": "{{.Event.DeviceID}}@byu.edu",
+          "subject": "Help request in {{.Event.AffectedRoom.RoomID}}",
+          "body": "This is a message for **matt blodgett** from {{.Event.GeneratingSystem}}",
+          "smtp-addr": "gateway.byu.edu:25",
           "user": "",
-          "pass": "",
-          "subject": "Cabinet Opened in {{.Event.RoomID}} // TODO these fields use go's templating engine",
-          "body": "A cabinet was opened in {{.Event.RoomID}} at {{.Timestamp}}.",
-          "smtp-addr": "gateway.byu.edu:25"
+          "pass": ""
+        }
+      },
+      {
+        "do": "send-slack",
+        "with": {
+          "fields": {
+            "title": "Help Request",
+            "text": "Help request in {{.Event.AffectedRoom.RoomID}} from {{.Event.GeneratingSystem}}"
+          }
         }
       }
     ]
