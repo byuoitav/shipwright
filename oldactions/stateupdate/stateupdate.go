@@ -1,6 +1,6 @@
 package stateupdate
 
-import "github.com/byuoitav/shipwright/actions/action"
+import "github.com/byuoitav/shipwright/oldactions/action"
 
 type Action struct {
 }

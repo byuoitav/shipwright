@@ -3,8 +3,8 @@ package actiongen
 import (
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
-	"github.com/byuoitav/shipwright/actions/action"
-	"github.com/byuoitav/shipwright/actions/slack"
+	"github.com/byuoitav/shipwright/oldactions/action"
+	"github.com/byuoitav/shipwright/oldactions/slack"
 )
 
 //GenSlackAction .

@@ -1,73 +1,77 @@
 package actions
 
 import (
-	"encoding/json"
-	"io/ioutil"
+	"context"
 	"os"
-	"sync"
+	"time"
 
+	"github.com/byuoitav/central-event-system/hub/base"
+	"github.com/byuoitav/central-event-system/messenger"
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
+	"github.com/byuoitav/shipwright/actions/actionctx"
 )
 
-// ActionConfig manages the configuration of actions
-type ActionConfig struct {
-	Path    string
-	Actions []Action
+// An ActionManager manages executing a set of actions
+type ActionManager struct {
+	Config    *ActionConfig
+	Messenger *messenger.Messenger
+
+	matchActions   []*Action
+	intervalAction []*Action
 }
 
-var (
-	defaultConfig *ActionConfig
-	once          *sync.Once
-)
+// Start starts the action manager
+func (a *ActionManager) Start(ctx context.Context) *nerr.E {
+	var err *nerr.E
 
-// DefaultConfig returns the default action configuration
-func DefaultConfig() *ActionConfig {
-	once.Do(func() {
-		// load the default config
-		path := os.Getenv("ACTION_CONFIG_LOCATION")
-		if len(path) < 1 {
-			path = "./action-config.json"
-		}
+	if a.Config == nil {
+		a.Config = DefaultConfig()
+	}
 
-		var err *nerr.E
-		defaultConfig, err = NewActionConfig(path)
+	if a.Messenger == nil {
+		// connect to the hub
+		a.Messenger, err = messenger.BuildMessenger(os.Getenv("HUB_ADDRESS"), base.Messenger, 1000)
 		if err != nil {
-			log.L.Fatalf("unable to load default action configuration: %s", err.Error())
-		}
-	})
-
-	return defaultConfig
-}
-
-// NewActionConfig creates a new action manager and starts it
-func NewActionConfig(path string) (*ActionConfig, *nerr.E) {
-	config := &ActionConfig{
-		Path: path,
-	}
-
-	log.L.Infof("Parsing action configuration from %s", path)
-	b, err := ioutil.ReadFile(path)
-	if err != nil {
-		return nil, nerr.Translate(err).Addf("unable to read action configuration")
-	}
-
-	err = json.Unmarshal(b, &config.Actions)
-	if err != nil {
-		return nil, nerr.Translate(err).Addf("unable to unmarshal action configuration")
-	}
-
-	return config, nil
-}
-
-// GetActionsByTrigger returns all actions with the specified trigger
-func (c *ActionConfig) GetActionsByTrigger(trigger string) []Action {
-	ret := []Action{}
-	for i := range c.Actions {
-		if c.Actions[i].Trigger == trigger {
-			ret = append(ret, c.Actions[i])
+			return err.Addf("failed to start action manager")
 		}
 	}
 
-	return ret
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel() // clean up resources if the action manager ever exits
+
+	for _, action := range a.Config.Actions {
+		switch action.Trigger {
+		case "event":
+			a.matchActions = append(a.matchActions, action)
+		default:
+			// for now, assume that it is some duration
+			interval, gerr := time.ParseDuration(action.Trigger)
+			if gerr != nil {
+				log.L.Warnf("unable to parse trigger '%s' to run action. check the action configurations. error: %s", action.Trigger, gerr)
+			}
+
+			go a.runActionOnInterval(ctx, interval)
+		}
+	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			return nil
+		default:
+			event := a.Messenger.ReceiveEvent()
+
+			// a new context for the run of this action
+			actx := context.Background()
+			actionctx.PutEvent(actx, event)
+
+			for i := range a.matchActions {
+				a.matchActions[i].Run(actx)
+			}
+		}
+	}
+}
+
+func (a *ActionManager) runActionOnInterval(ctx context.Context, interval time.Duration) {
 }

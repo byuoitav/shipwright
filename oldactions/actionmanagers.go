@@ -4,7 +4,7 @@ import (
 	"sync"
 
 	"github.com/byuoitav/common/log"
-	"github.com/byuoitav/shipwright/actions/action"
+	"github.com/byuoitav/shipwright/oldactions/action"
 )
 
 var ingestionMap map[string]chan action.Payload
