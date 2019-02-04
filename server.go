@@ -1,14 +1,13 @@
 package main
 
 import (
+	"context"
 	"net/http"
-	"os"
 
-	"github.com/byuoitav/central-event-system/hub/base"
-	"github.com/byuoitav/central-event-system/messenger"
 	"github.com/byuoitav/common"
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/v2/auth"
+	"github.com/byuoitav/shipwright/actions"
 	"github.com/byuoitav/shipwright/handlers"
 	"github.com/byuoitav/shipwright/socket"
 	figure "github.com/common-nighthawk/go-figure"
@@ -20,14 +19,10 @@ func main() {
 	port := ":9999"
 	router := common.NewRouter()
 
-	messenger, err := messenger.BuildMessenger(os.Getenv("HUB_ADDRESS"), base.Messenger, 1000)
-	if err != nil {
-		log.L.Errorf("unable to build the messenger: %s", err.Error())
-		return
+	actionManager := &actions.ActionManager{
+		Config: actions.DefaultConfig(),
 	}
-
-	messenger.SubscribeToRooms("*")
-	socket.GetManager().SetMessenger(messenger)
+	go actionManager.Start(context.TODO())
 
 	// Logging Endpoints
 	router.PUT("/log-level/:level", log.SetLogLevel)

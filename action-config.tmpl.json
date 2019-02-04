@@ -1,37 +1,28 @@
 [
   {
-    "trigger": "event // or 5s, or disabled",
+    "trigger": "event",
     "if": {
       "event-match": {
-        "key": "secure",
-        "value": "False"
+        "key": "help-request",
+        "value": "confirm"
       }
     },
     "then": [
       {
-        "do": "add-alert",
-        "with": {
-          "alert": "hi",
-          "type": "missing heartbeat",
-          "msg log": ["something went wrong with {{.DeviceID}}"],
-          "severity": "test"
-        }
-      },
-      {
         "do": "send-email",
         "with": {
-          "recipients": "matt_blodgett@byu.edu, danny_randall@byu.edu",
-          "sender": "{{.DeviceID}}@byu.edu",
+          "recipients": [
+            "matt_blodgett@byu.edu",
+            "danny_randall@byu.edu",
+            "joe_blodgett@byu.edu"
+          ],
+          "sender": "{{.Event.DeviceID}}@byu.edu",
           "user": "",
           "pass": "",
-          "subject": "Cabinet Opened in {{.RoomID}} // TODO these fields use go's templating engine",
-          "body": "A cabinet was opened in {{.RoomID}} at {{.Timestamp}}.",
+          "subject": "Cabinet Opened in {{.Event.RoomID}} // TODO these fields use go's templating engine",
+          "body": "A cabinet was opened in {{.Event.RoomID}} at {{.Timestamp}}.",
           "smtp-addr": "gateway.byu.edu:25"
         }
-      },
-      {
-        "do": "create-serivce-now-incident",
-        "with": {}
       }
     ]
   }

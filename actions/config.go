@@ -18,7 +18,7 @@ type ActionConfig struct {
 
 var (
 	defaultConfig *ActionConfig
-	once          *sync.Once
+	once          sync.Once
 )
 
 // DefaultConfig returns the default action configuration
@@ -27,7 +27,8 @@ func DefaultConfig() *ActionConfig {
 		// load the default config
 		path := os.Getenv("ACTION_CONFIG_LOCATION")
 		if len(path) < 1 {
-			path = "./action-config.json"
+			// path = "./action-config.json"
+			path = "./action-config.tmpl.json"
 		}
 
 		var err *nerr.E

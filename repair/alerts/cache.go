@@ -1,10 +1,8 @@
 package alerts
 
 import (
-	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/structs"
 	"github.com/byuoitav/common/v2/events"
-	"github.com/byuoitav/shipwright/helpers"
 )
 
 var (
@@ -16,31 +14,33 @@ func init() {
 }
 
 func HandleAlertEvent(event events.Event) {
-	alert := structs.Alert{
-		BuildingID: event.TargetDevice.BuildingID,
-		RoomID:     event.TargetDevice.RoomID,
-		DeviceID:   event.TargetDevice.DeviceID,
-	}
+	/*
+			alert := structs.Alert{
+				BuildingID: event.TargetDevice.BuildingID,
+				RoomID:     event.TargetDevice.RoomID,
+				DeviceID:   event.TargetDevice.DeviceID,
+			}
 
-	alert.AlertTags = append(alert.AlertTags, event.EventTags...)
+		alert.AlertTags = append(alert.AlertTags, event.EventTags...)
 
-	theRoom, err := helpers.GetRoom(alert.RoomID)
-	if err != nil {
-		log.L.Warnf("the room %s does not exist : %s", alert.RoomID, err.Error())
-	}
+		theRoom, err := helpers.GetRoom(alert.RoomID)
+		if err != nil {
+			log.L.Warnf("the room %s does not exist : %s", alert.RoomID, err.Error())
+		}
 
-	alert.RoomTags = append(alert.RoomTags, theRoom.Tags...)
+		alert.RoomTags = append(alert.RoomTags, theRoom.Tags...)
 
-	theDevice, err := helpers.GetDevice(alert.DeviceID)
-	if err != nil {
-		log.L.Warnf("the device %s does not exist : %s", alert.DeviceID, err.Error())
-	}
+		theDevice, err := helpers.GetDevice(alert.DeviceID)
+		if err != nil {
+			log.L.Warnf("the device %s does not exist : %s", alert.DeviceID, err.Error())
+		}
 
-	alert.DeviceTags = append(alert.DeviceTags, theDevice.Tags...)
+		alert.DeviceTags = append(alert.DeviceTags, theDevice.Tags...)
 
-	roomAlertsCache[theRoom.ID] = append(roomAlertsCache[theRoom.ID], alert)
+		roomAlertsCache[theRoom.ID] = append(roomAlertsCache[theRoom.ID], alert)
 
-	log.L.Info(roomAlertsCache)
+		log.L.Info(roomAlertsCache)
+	*/
 }
 
 /* so it lays out like this:

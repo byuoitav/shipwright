@@ -1,36 +1,6 @@
 package email
 
-import (
-	"fmt"
-	"net/smtp"
-
-	"github.com/byuoitav/common/log"
-	"github.com/byuoitav/common/nerr"
-	"github.com/byuoitav/shipwright/oldactions/action"
-)
-
-//Action ..
-type Action struct {
-}
-
-//Info includes information about who to send the email as, auth stuff, etc. etc.
-type Info struct {
-	Subject string
-	Body    string
-
-	//Attachment stuff (if any)
-	Attachment     []byte
-	AttachmentName string
-
-	Sender    string   //who to send the e-mail as
-	Receivers []string //who to send the e-mail to
-
-	SMTPAddr string
-
-	//Auth stuff for the SMTP server
-	User string
-	Pass string
-}
+/*
 
 //Execute .
 func (a *Action) Execute(in action.Payload) action.Result {
@@ -61,3 +31,4 @@ func (a *Action) Execute(in action.Payload) action.Result {
 
 	return action.Result{}
 }
+*/
