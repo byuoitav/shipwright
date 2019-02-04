@@ -82,8 +82,26 @@ func (a *alertStore) getAlert(id string) (structs.Alert, *nerr.E) {
 	return structs.Alert{}, resp.Error
 }
 
+//NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
 func (a *alertStore) resolveAlert(alertID string, resInfo ResloutionInfo) *nerr.E {
-	//we remove it from the store, and ship it off to the resolution configured
+	//we remove it from the store, and ship it off to the persistance stuff.
+	//we should check to see if it already exists
+	if v, ok := a.store[alert.AlertID]; ok {
+
+		//it's there, lets get it, mark it as resolved.
+		v.Resovled = true
+		v.ResolutionInfo = resInfo
+		v.ID = v.ID + v.AlertStartTime.Format(time.RFC3339) //change the ID so it's unique
+
+		delete(a.store[alert.AlertID])
+
+		//submit for persistance in the resolved alert
+
+		//remove from persistance in the active alerts array
+
+	} else {
+		return nerr.Create("Unkown alert "+alertID, "not-found")
+	}
 
 }
 
