@@ -1,21 +1,14 @@
 package actions
 
-import "github.com/byuoitav/common/events"
+import "github.com/byuoitav/shipwright/actions/then"
 
 // Action represents an action to be executed based on some conditions
 type Action struct {
-	Trigger string `json:"trigger"`
-	If      If     `json:"if"`
-	Then    []Then `json:"then"`
+	Trigger string      `json:"trigger"`
+	If      If          `json:"if"`
+	Then    []then.Then `json:"then"`
 }
 
-// If represents the set of conditions to running an action
-type If struct {
-	EventMatch events.Event `json:"event-match"`
-}
-
-// Then represents something to be done as a result of an action's If's passing
-type Then struct {
-	Do   string `json:"do"`
-	With []byte `json:"with"`
+// IfThen checks the 'ifs' of the action and if they all pass, then it runs the 'thens'
+func (a *Action) IfThen() {
 }
