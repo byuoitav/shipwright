@@ -32,5 +32,5 @@ func GetAlertBySeverity(Severity structs.AlertSeverity) ([]structs.Alert, *nerr.
 func DeactivateAlert(AlertID string) {
 }
 
-func ResolveAlert(AlertID string, resInfo ResolutionInfo) {
+func ResolveAlert(AlertID string, resInfo structs.ResolutionInfo) {
 }
