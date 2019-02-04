@@ -16,8 +16,15 @@ export class RoomListComponent implements OnInit {
   constructor(public text: StringsService, private route: ActivatedRoute, public data: DataService) {
     this.route.params.subscribe(params => {
       this.buildingID = params["buildingID"];
+    });
+
+    if(this.data.finished) {
       this.getRooms();
-    })
+    } else {
+      this.data.loaded.subscribe(() => {
+        this.getRooms();
+      })
+    }
   }
 
   ngOnInit() {
@@ -25,9 +32,5 @@ export class RoomListComponent implements OnInit {
 
   private getRooms() {
     this.roomList = this.data.buildingToRoomsMap.get(this.buildingID);
-    
-    this.data.loaded.subscribe(() => {
-      this.roomList = this.data.buildingToRoomsMap.get(this.buildingID);
-    })
   }
 }

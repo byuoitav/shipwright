@@ -1,3 +1,15 @@
 <p>
-  dashpanel works!
+    dashpanel works!
 </p>
+
+<mat-form-field>
+    <mat-select (selectionChange)="choosePanel($event.value)">
+        <mat-option [value]=null>None</mat-option>
+        <mat-option [value]="'alerts'">All Alerts</mat-option>
+        <mat-option [value]="'battery'">Battery Report</mat-option>
+    </mat-select>
+</mat-form-field>
+
+<div>
+    <ng-template dashDirect></ng-template>
+</div>

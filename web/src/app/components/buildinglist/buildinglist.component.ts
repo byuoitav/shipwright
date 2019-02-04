@@ -8,8 +8,13 @@ import { DataService } from 'src/app/services/data.service';
   styleUrls: ['./buildinglist.component.scss']
 })
 export class BuildingListComponent implements OnInit {
+  finished: boolean = false;
 
-  constructor(public text: StringsService, public data: DataService) { }
+  constructor(public text: StringsService, public data: DataService) {
+    this.data.loaded.subscribe(() => {
+      this.finished = true
+    })
+  }
 
   ngOnInit() {
   }

@@ -1,5 +1,7 @@
-<p>
+<!-- <p>
     buildinglist works!
-</p>
+</p> -->
 
-<building *ngFor="let building of data.buildingList" [building]="building"></building>
+<div *ngIf="data.finished" class="container">
+    <building *ngFor="let building of data.allBuildings" [building]="building"></building>
+</div>

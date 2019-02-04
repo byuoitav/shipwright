@@ -16,7 +16,6 @@ func AddRoom(context echo.Context) error {
 
 	// get information from the context
 	roomID := context.Param("room")
-	username := getUsernameString(context)
 
 	var room structs.Room
 	err := context.Bind(&room)
@@ -33,8 +32,6 @@ func AddRoom(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, result)
 	}
 
-	helpers.CreateAndAddRoomChange(room, helpers.AddAction, username)
-
 	log.L.Debugf("%s The room %s was successfully created!", helpers.RoomsTag, roomID)
 	return context.JSON(http.StatusOK, result)
 }
@@ -44,8 +41,6 @@ func AddMultipleRooms(context echo.Context) error {
 	log.L.Debugf("%s Starting AddMultipleRooms...", helpers.RoomsTag)
 
 	// get information from the context
-	username := getUsernameString(context)
-
 	var rooms []structs.Room
 
 	err := context.Bind(&rooms)
@@ -63,7 +58,6 @@ func AddMultipleRooms(context echo.Context) error {
 			log.L.Errorf("%s %s", helpers.RoomsTag, ne.Error())
 		}
 
-		helpers.CreateAndAddRoomChange(r, helpers.AddAction, username)
 		results = append(results, res)
 	}
 
@@ -128,7 +122,6 @@ func UpdateRoom(context echo.Context) error {
 
 	// get information from the context
 	roomID := context.Param("room")
-	username := getUsernameString(context)
 
 	var room structs.Room
 	err := context.Bind(&room)
@@ -145,8 +138,6 @@ func UpdateRoom(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, result)
 	}
 
-	helpers.CreateAndAddRoomChange(room, helpers.UpdateAction, username)
-
 	log.L.Debugf("%s The room %s was successfully updated!", helpers.RoomsTag, roomID)
 	return context.JSON(http.StatusOK, result)
 }
@@ -156,8 +147,6 @@ func UpdateMultipleRooms(context echo.Context) error {
 	log.L.Debugf("%s Starting UpdateMultipleRooms...", helpers.RoomsTag)
 
 	// get information from the context
-	username := getUsernameString(context)
-
 	var rooms map[string]structs.Room
 
 	err := context.Bind(&rooms)
@@ -175,7 +164,6 @@ func UpdateMultipleRooms(context echo.Context) error {
 			log.L.Errorf("%s %s", helpers.BuildingsTag, ne.Error())
 		}
 
-		helpers.CreateAndAddRoomChange(room, helpers.UpdateAction, username)
 		results = append(results, res)
 	}
 
@@ -189,9 +177,6 @@ func DeleteRoom(context echo.Context) error {
 
 	// get information from the context
 	roomID := context.Param("room")
-	username := getUsernameString(context)
-
-	room := structs.Room{ID: roomID}
 
 	// call helper function
 	result, ne := helpers.DeleteRoom(roomID)
@@ -199,8 +184,6 @@ func DeleteRoom(context echo.Context) error {
 		log.L.Errorf("%s %s", helpers.RoomsTag, ne.Error())
 		return context.JSON(http.StatusInternalServerError, result)
 	}
-
-	helpers.CreateAndAddRoomChange(room, helpers.DeleteAction, username)
 
 	log.L.Debugf("%s The room %s was successfully deleted!", helpers.RoomsTag, roomID)
 	return context.JSON(http.StatusOK, result)

@@ -25,7 +25,8 @@ import {
   NativeDateAdapter,
   MatPaginatorModule,
   MatSortModule,
-  MatButtonToggleModule
+  MatButtonToggleModule,
+  MatSelectModule
 } from "@angular/material";
 
 import { AppRoutingModule } from './app-routing.module';
@@ -59,6 +60,9 @@ import { MonitoringService } from './services/monitoring.service';
 import { ModalService } from './services/modal.service';
 import { StringsService } from './services/strings.service';
 import { OverlayContainer } from '@angular/cdk/overlay';
+import { DashPanelDirective } from './components/dashpanel/dashpanel.directive';
+import { DashPanelComponent } from './components/dashpanel/dashpanel.component';
+import { DashPanelService } from './services/dashpanel.service';
 
 @NgModule({
   declarations: [
@@ -66,6 +70,7 @@ import { OverlayContainer } from '@angular/cdk/overlay';
     DashboardComponent,
     ConfigurationComponent,
     StateComponent,
+    DashPanelComponent,
     AlertTableComponent,
     BatteryReportComponent,
     BuildingListComponent,
@@ -81,7 +86,8 @@ import { OverlayContainer } from '@angular/cdk/overlay';
     RespondModalComponent,
     BuildingModalComponent,
     RoomModalComponent,
-    DeviceModalComponent
+    DeviceModalComponent,
+    DashPanelDirective
   ],
   imports: [
     BrowserModule,
@@ -109,14 +115,17 @@ import { OverlayContainer } from '@angular/cdk/overlay';
     MatNativeDateModule,
     MatPaginatorModule,
     MatSortModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+    MatSelectModule
   ],
   entryComponents: [
     SettingsModalComponent,
     RespondModalComponent,
     BuildingModalComponent,
     RoomModalComponent,
-    DeviceModalComponent
+    DeviceModalComponent,
+    AlertTableComponent,
+    BatteryReportComponent
   ],
   providers: [
     APIService,
@@ -126,6 +135,7 @@ import { OverlayContainer } from '@angular/cdk/overlay';
     MonitoringService,
     ModalService,
     StringsService,
+    DashPanelService,
     {provide: DateAdapter, useClass: NativeDateAdapter}
   ],
   bootstrap: [AppComponent]

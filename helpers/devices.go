@@ -26,10 +26,6 @@ func RecordBulkDeviceChanges(responses []structs.BulkUpdateResponse, username st
 			dbRes.Error = resp.Message
 		}
 
-		fakeDevice := structs.Device{ID: resp.ID}
-
-		Master.AddedDevices = append(Master.AddedDevices, CreateDeviceChange(fakeDevice, AddAction, username))
-
 		results = append(results, dbRes)
 	}
 

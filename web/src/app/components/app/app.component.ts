@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { APIService } from 'src/app/services/api.service';
-import { OverlayContainer } from '@angular/cdk/overlay';
+import { DataService } from 'src/app/services/data.service';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +12,7 @@ export class AppComponent implements OnInit {
   currentUsername: string;
   private urlParams: URLSearchParams;
 
-  constructor(public text: StringsService, public api: APIService) {
+  constructor(public text: StringsService, public api: APIService, public data: DataService) {
     
     this.api.getCurrentUsername().then((resp) => {
       this.currentUsername = resp as string;

@@ -8,6 +8,7 @@ import { ModalService } from 'src/app/services/modal.service';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
+  panelCount = Array(4).fill(1);
 
   constructor(public text: StringsService, public modal: ModalService) { }
 

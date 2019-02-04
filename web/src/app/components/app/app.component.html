@@ -20,25 +20,21 @@
     </mat-toolbar>
     <mat-sidenav-container class="sidenav-container">
         <mat-sidenav #sidenav mode="side" opened class="sidenav" [class.wide]="wideSidenav()">
-            <!-- Dashboard Side Button -->
             <button mat-flat-button color="" routerLink="/dashboard" routerLinkActive="mat-accent" queryParamsHandling="merge">
                 <mat-icon>dashboard</mat-icon>
                 <ng-container *ngIf="wideSidenav()">Dashboard</ng-container>
             </button>
 
-            <!-- Configuration Side Button -->
             <button mat-flat-button color="" routerLink="/configuration" routerLinkActive="mat-accent" queryParamsHandling="merge">
                 <mat-icon>build</mat-icon>
                 <ng-container *ngIf="wideSidenav()">Config</ng-container>
             </button>
 
-            <!-- State Side Button -->
             <button mat-flat-button color="" routerLink="/state" routerLinkActive="mat-accent" queryParamsHandling="merge">
                 <mat-icon>view_list</mat-icon>
                 <ng-container *ngIf="wideSidenav()">State</ng-container>
             </button>
 
-            <!-- at the bottom -->
             <button mat-flat-button color="" class="bottom" (click)="setWideSidenav(!wideSidenav())">
                 <mat-icon *ngIf="wideSidenav()">chevron_left</mat-icon>
                 <mat-icon *ngIf="!wideSidenav()">chevron_right</mat-icon>
