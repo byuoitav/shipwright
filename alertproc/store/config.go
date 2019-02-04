@@ -17,7 +17,7 @@ type PersistConfig struct {
 type PersistType string
 
 type AlertPersistConfig struct {
-	ElkData ElkPersistConfig //only used for PersistType ELK
+	ElkData ELKPersistConfig //only used for PersistType ELK
 }
 
 type ELKPersistConfig struct {
