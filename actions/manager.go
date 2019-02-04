@@ -23,6 +23,7 @@ type ActionManager struct {
 
 // Start starts the action manager
 func (a *ActionManager) Start(ctx context.Context) *nerr.E {
+	log.SetLevel("info")
 	var err *nerr.E
 
 	if a.Config == nil {
@@ -35,6 +36,10 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 		if err != nil {
 			return err.Addf("failed to start action manager")
 		}
+
+		log.L.Infof("Action messenger connected.")
+
+		a.Messenger.SubscribeToRooms("*")
 	}
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -61,6 +66,7 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 			return nil
 		default:
 			event := a.Messenger.ReceiveEvent()
+			log.L.Infof("receivied event: %+v", event)
 
 			// a new context for the run of this action
 			actx := context.Background()

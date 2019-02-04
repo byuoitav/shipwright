@@ -11,17 +11,16 @@ import (
 	"github.com/byuoitav/common/structs"
 	"github.com/byuoitav/common/v2/events"
 	"github.com/byuoitav/shipwright/actions/actionctx"
-	"github.com/byuoitav/shipwright/alertproc/store"
 )
 
-type alertTemplateData struct {
-	events.Event
-	statedefinition.StaticDevice
+type templateData struct {
+	Event        events.Event
+	StaticDevice statedefinition.StaticDevice
 }
 
 // AddAlert .
 func AddAlert(ctx context.Context, with []byte) *nerr.E {
-	data := alertTemplateData{}
+	data := templateData{}
 
 	if event, ok := actionctx.GetEvent(ctx); ok {
 		data.Event = event
@@ -50,10 +49,12 @@ func AddAlert(ctx context.Context, with []byte) *nerr.E {
 		return nerr.Translate(gerr).Addf("failed to add alert")
 	}
 
-	_, err := store.AddAlert(alert)
-	if err != nil {
-		return err.Addf("failed to add alert")
-	}
+	/*
+		_, err := store.AddAlert(alert)
+		if err != nil {
+			return err.Addf("failed to add alert")
+		}
+	*/
 
 	// add alert to context
 

@@ -2,6 +2,7 @@ package then
 
 import (
 	"context"
+	"encoding/json"
 	"sync"
 
 	"github.com/byuoitav/common/nerr"
@@ -9,8 +10,8 @@ import (
 
 // Then represents something to be done as a result of all of an action's If checks passing
 type Then struct {
-	Do   string `json:"do"`
-	With []byte `json:"with"`
+	Do   string          `json:"do"`
+	With json.RawMessage `json:"with"`
 }
 
 // Func .
@@ -29,6 +30,7 @@ func init() {
 
 	// declare then's here
 	thens.m["add-alert"] = AddAlert
+	thens.m["send-email"] = SendEmail
 	thens.m["create-servicenow-incident"] = CreateIncident
 	thens.m["modify-servicenow-incident"] = ModifyIncident
 	thens.m["close-servicenow-incident"] = CloseIncident
