@@ -1,4 +1,4 @@
-package store
+package persistence
 
 type PersistConfig struct {
 	PersistResolvedAlerts AlertPersistConfig `json:"persist-resolved-alerts"`
