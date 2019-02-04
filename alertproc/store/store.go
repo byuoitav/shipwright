@@ -12,8 +12,8 @@ type alertStore struct {
 	InChannel      chan structs.Alert
 	RequestChannel chan alertRequest
 
-	store         map[string]structs.Alert
-	configuration Config
+	store map[string]structs.Alert
+	//	configuration Config
 }
 
 //AlertRequest is submitted to the store to retrieve an alert from it.

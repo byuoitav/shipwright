@@ -15,7 +15,7 @@ type AlertPersistConfig struct {
 	User    string `json:"user"`
 	Pass    string `json:"pass"`
 
-	ElkData ElkPersistConfig //only used for PersistType ELK
+	// 	ElkData ElkPersistConfig //only used for PersistType ELK
 }
 
 type ELKPersistConfig struct {

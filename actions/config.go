@@ -13,7 +13,7 @@ import (
 // ActionConfig manages the configuration of actions
 type ActionConfig struct {
 	Path    string
-	Actions []Action
+	Actions []*Action
 }
 
 var (
@@ -61,8 +61,8 @@ func NewActionConfig(path string) (*ActionConfig, *nerr.E) {
 }
 
 // GetActionsByTrigger returns all actions with the specified trigger
-func (c *ActionConfig) GetActionsByTrigger(trigger string) []Action {
-	ret := []Action{}
+func (c *ActionConfig) GetActionsByTrigger(trigger string) []*Action {
+	ret := []*Action{}
 	for i := range c.Actions {
 		if c.Actions[i].Trigger == trigger {
 			ret = append(ret, c.Actions[i])

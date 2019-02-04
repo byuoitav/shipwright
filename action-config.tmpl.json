@@ -28,6 +28,10 @@
           "body": "A cabinet was opened in {{.RoomID}} at {{.Timestamp}}.",
           "smtp-addr": "gateway.byu.edu:25"
         }
+      },
+      {
+        "do": "create-serivce-now-incident",
+        "with": {}
       }
     ]
   }

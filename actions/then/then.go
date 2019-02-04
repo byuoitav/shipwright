@@ -48,3 +48,19 @@ func Get(name string) Func {
 
 	return thens.m[name]
 }
+
+// Execute executes a then
+func (t *Then) Execute(ctx context.Context) *nerr.E {
+	// get the function from the thens
+	f := Get(t.Do)
+	if f == nil {
+		return nerr.Createf("not-found", "no then function found with the name '%s'. make sure it's been added to the then map", t.Do)
+	}
+
+	err := f(ctx, t.With)
+	if err != nil {
+		return err.Addf("unable to run then function '%s'", t.Do)
+	}
+
+	return nil
+}

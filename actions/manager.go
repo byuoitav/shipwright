@@ -9,6 +9,7 @@ import (
 	"github.com/byuoitav/central-event-system/messenger"
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
+	"github.com/byuoitav/shipwright/actions/actionctx"
 )
 
 // An ActionManager manages executing a set of actions
@@ -42,7 +43,7 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 	for _, action := range a.Config.Actions {
 		switch action.Trigger {
 		case "event":
-			a.matchActions = append(a.matchActions, &action)
+			a.matchActions = append(a.matchActions, action)
 		default:
 			// for now, assume that it is some duration
 			interval, gerr := time.ParseDuration(action.Trigger)
@@ -57,18 +58,19 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 	for {
 		select {
 		case <-ctx.Done():
-			break
+			return nil
 		default:
 			event := a.Messenger.ReceiveEvent()
 
+			// a new context for the run of this action
+			actx := context.Background()
+			actionctx.PutEvent(actx, event)
+
 			for i := range a.matchActions {
-				if a.matchActions[i].If.EventMatch {
-				}
+				a.matchActions[i].Run(actx)
 			}
 		}
 	}
-
-	return nil
 }
 
 func (a *ActionManager) runActionOnInterval(ctx context.Context, interval time.Duration) {
