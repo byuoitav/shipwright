@@ -2,4 +2,6 @@
     roomlist works!
 </p>
 
-<room *ngFor="let room of roomList" [room]="room"></room>
+<div *ngIf="data.finished" class="container">
+    <room *ngFor="let room of roomList" [room]="room"></room>
+</div>

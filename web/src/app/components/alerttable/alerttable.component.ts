@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
-import { IDashPanel } from '../dashpanel/dashpanel.component';
+import { IDashPanel } from '../dashpanel/idashpanel';
 
 @Component({
   selector: 'alert-table',

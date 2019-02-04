@@ -5,7 +5,7 @@
     <mat-tab label="Builder">
         <builder></builder>
     </mat-tab>
-    <mat-tab label="Devices">
+    <mat-tab *ngIf="notADump()" label="Devices">
         <device-list></device-list>
     </mat-tab>
     <mat-tab label="State">

@@ -72,6 +72,7 @@ func GetDMPSRooms() ([]structs.Room, *nerr.E) {
 		if !found {
 			room := structs.Room{
 				ID:          roomID,
+				Name:        roomID,
 				Designation: "production",
 				Configuration: structs.RoomConfiguration{
 					ID: "DMPS",

@@ -2,4 +2,6 @@
     devicelist works!
 </p>
 
-<device *ngFor="let device of data.roomToDevicesMap.get(roomID)" [device]="device"></device>
+<div *ngIf="data.finished" class="container">
+    <device *ngFor="let device of deviceList" [device]="device"></device>
+</div>

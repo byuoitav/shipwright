@@ -16,4 +16,7 @@ export class DeviceComponent implements OnInit {
   ngOnInit() {
   }
 
+  GetDeviceIcon() {
+    return this.text.DefaultIcons[this.device.type.id];
+  }
 }

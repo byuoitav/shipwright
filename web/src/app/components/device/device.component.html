@@ -1,4 +1,18 @@
-<section>
-    {{device.id}}
-    <button (click)="modal.OpenDeviceModal(device)">Open Device Modal</button>
-</section>
+<mat-card>
+    <a>
+        <mat-card-header>
+            <mat-icon mat-card-avatar>{{GetDeviceIcon()}}</mat-icon>
+            <mat-card-title>{{device.name}}</mat-card-title>
+            <mat-card-subtitle>{{device.description}}</mat-card-subtitle>
+        </mat-card-header>
+
+    </a>
+    <mat-card-actions>
+        <mat-action-row>
+            <div class="row buttons">
+                <button mat-icon-button class="edit" (click)="modal.OpenDeviceModal(device)"><mat-icon>more_horiz</mat-icon></button>
+            </div>
+        </mat-action-row>
+    </mat-card-actions>
+
+</mat-card>
