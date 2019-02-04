@@ -29,6 +29,9 @@ func init() {
 
 	// declare then's here
 	thens.m["add-alert"] = AddAlert
+	thens.m["create-servicenow-incident"] = CreateIncident
+	thens.m["modify-servicenow-incident"] = ModifyIncident
+	thens.m["close-servicenow-incident"] = CloseIncident
 
 	thens.Unlock()
 }
