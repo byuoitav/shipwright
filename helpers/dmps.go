@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/byuoitav/common/db"
-	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/structs"
 )
@@ -40,8 +39,6 @@ func GetDMPSBuildings() ([]structs.Building, *nerr.E) {
 			toReturn = append(toReturn, building)
 		}
 	}
-
-	log.L.Info(toReturn)
 
 	return toReturn, nil
 }
@@ -82,8 +79,6 @@ func GetDMPSRooms() ([]structs.Room, *nerr.E) {
 			toReturn = append(toReturn, room)
 		}
 	}
-
-	log.L.Info(toReturn)
 
 	return toReturn, nil
 }

@@ -27,7 +27,8 @@ import {
   MatSortModule,
   MatButtonToggleModule,
   MatSelectModule,
-  MatChipsModule
+  MatChipsModule,
+  MAT_DIALOG_DATA
 } from "@angular/material";
 
 import { AppRoutingModule } from './app-routing.module';
@@ -141,7 +142,8 @@ import { NotifyModalComponent } from './modals/notify/notify.component';
     ModalService,
     StringsService,
     DashPanelService,
-    {provide: DateAdapter, useClass: NativeDateAdapter}
+    {provide: DateAdapter, useClass: NativeDateAdapter},
+    {provide: MAT_DIALOG_DATA, useValue: {}}
   ],
   bootstrap: [AppComponent]
 })

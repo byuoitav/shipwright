@@ -21,9 +21,10 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
 })
 export class AlertTableComponent implements OnInit, IDashPanel {
   @Input() data: any;
+  @Input() singleRoom: boolean = false;
   alertRowColumns = ['icon', 'roomID', 'alertCount', 'incident', 'help-sent', 'help-arrived'];
   alertDetailColumns = ['deviceName', 'severity', 'alertType', 'alert-started', 'responders', 'help-sent-at', 'help-arrived-at'];
-  expandedAlertRow: AlertRow | null;
+  @Input() expandedAlertRow: AlertRow | null;
 
   dataSource: MatTableDataSource<AlertRow>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -43,6 +44,17 @@ export class AlertTableComponent implements OnInit, IDashPanel {
 
   ngOnChanges() {
    
+  }
+
+  ExpandRow(alertRow: AlertRow) {
+    if(!this.singleRoom) {
+      if(this.expandedAlertRow === alertRow) {
+        this.expandedAlertRow = null
+      }
+      else {
+        this.expandedAlertRow = alertRow
+      }
+    }
   }
 
   GetAlertTypes(alertRow: AlertRow) {

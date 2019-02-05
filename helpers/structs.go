@@ -18,6 +18,7 @@ const (
 	OptionsTag   = "[options]"
 	AlertsTag    = "[alerts]"
 	MetricsTag   = "[metrics]"
+	StaticTag    = "[static]"
 )
 
 // DBResponse contains the information to be reported back upon changes being made to the database

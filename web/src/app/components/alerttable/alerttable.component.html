@@ -3,10 +3,10 @@
 </p> -->
 
 <div class="mat-elevation-z3 container">
-    <table mat-table [dataSource]="dataSource" matSort multiTemplateDataRows class="mat-elevation-z1">
+    <table mat-table [dataSource]="dataSource" matSort multiTemplateDataRows class="mat-elevation-z0">
         <ng-container matColumnDef="icon">
             <th mat-header-cell *matHeaderCellDef> System Type </th>
-            <td mat-cell *matCellDef="let alertRow" (click)="expandedAlertRow = expandedAlertRow === alertRow ? null : alertRow">
+            <td mat-cell *matCellDef="let alertRow" (click)="ExpandRow(alertRow)">
                 <mat-icon>{{alertRow.systemTypeIcon}}</mat-icon>
             </td>
         </ng-container>
@@ -18,7 +18,7 @@
 
         <ng-container matColumnDef="alertCount">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> # </th>
-            <td mat-cell *matCellDef="let alertRow" (click)="expandedAlertRow = expandedAlertRow === alertRow ? null : alertRow">{{alertRow.alerts.length}}</td>
+            <td mat-cell *matCellDef="let alertRow" (click)="ExpandRow(alertRow)">{{alertRow.alerts.length}}</td>
         </ng-container>
 
         <ng-container matColumnDef="incident">
@@ -28,7 +28,7 @@
 
         <ng-container matColumnDef="help-sent">
             <th mat-header-cell *matHeaderCellDef class="centered"> Help Sent </th>
-            <td mat-cell *matCellDef="let alertRow" (click)="expandedAlertRow = expandedAlertRow === alertRow ? null : alertRow" class="centered">
+            <td mat-cell *matCellDef="let alertRow" (click)="ExpandRow(alertRow)" class="centered">
                 <mat-icon *ngIf="alertRow.helpSent" class="good-status">check_circle</mat-icon>
                 <mat-icon *ngIf="!alertRow.helpSent" class="bad-status">cancel</mat-icon>
             </td>
@@ -36,7 +36,7 @@
 
         <ng-container matColumnDef="help-arrived">
             <th mat-header-cell *matHeaderCellDef class="centered"> Help Arrived </th>
-            <td mat-cell *matCellDef="let alertRow" (click)="expandedAlertRow = expandedAlertRow === alertRow ? null : alertRow" class="centered">
+            <td mat-cell *matCellDef="let alertRow" (click)="ExpandRow(alertRow)" class="centered">
                 <mat-icon *ngIf="alertRow.helpArrived" class="good-status">check_circle</mat-icon>
                 <mat-icon *ngIf="!alertRow.helpArrived" class="bad-status">cancel</mat-icon>
             </td>
@@ -117,5 +117,6 @@
         <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="alert-detail-row"></tr>
 
     </table>
-    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]">
+    </mat-paginator>
 </div>

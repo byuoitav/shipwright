@@ -12,6 +12,7 @@ export class MonitoringService {
 
   alertMap: Map<string, Alert[]>;
   alertRowList: AlertRow[] = Array<AlertRow>();
+  alertRowMap: Map<string, AlertRow> = new Map();
 
   severityMap = {
     1 : "critical",
@@ -86,6 +87,7 @@ export class MonitoringService {
     row1.incidentID = "INC0430573"
 
     this.alertRowList.push(row1)
+    this.alertRowMap.set(row1.roomID, row1)
 
     let a4 = new Alert();
     a4.alertID = "derek4"
@@ -141,6 +143,7 @@ export class MonitoringService {
     row2.incidentID = "INC0152668"
 
     this.alertRowList.push(row2)
+    this.alertRowMap.set(row2.roomID, row2)
 
     let a7 = new Alert();
     a7.alertID = "derek7"
@@ -166,6 +169,7 @@ export class MonitoringService {
     row3.incidentID = "INC0430573"
 
     this.alertRowList.push(row3)
+    this.alertRowMap.set(row3.roomID, row3)
 
     let a8 = new Alert();
     a8.alertID = "derek8"
@@ -206,12 +210,13 @@ export class MonitoringService {
     row4.incidentID = "INC0430573"
 
     this.alertRowList.push(row4)
+    this.alertRowMap.set(row4.roomID, row4)
 
     let a10 = new Alert();
     a10.alertID = "derek10"
-    a10.buildingID = "EB"
-    a10.roomID = "EB-438"
-    a10.deviceID = "EB-438-CP1"
+    a10.buildingID = "HCEB"
+    a10.roomID = "HCEB-BALLRM"
+    a10.deviceID = "HCEB-BALLRM-CP1"
     a10.type = "system"
     a10.severity = "critical"
     a10.message = "Heartbeat lost"
@@ -224,9 +229,9 @@ export class MonitoringService {
 
     let a11 = new Alert();
     a11.alertID = "derek11"
-    a11.buildingID = "EB"
-    a11.roomID = "EB-438"
-    a11.deviceID = "HCEB-401-D2"
+    a11.buildingID = "HCEB"
+    a11.roomID = "HCEB-BALLRM"
+    a11.deviceID = "HCEB-BALLRM-D2"
     a11.type = "user"
     a11.severity = "critical"
     a11.message = "Gave up and died"
@@ -239,9 +244,9 @@ export class MonitoringService {
 
     let a12 = new Alert();
     a12.alertID = "derek12"
-    a12.buildingID = "EB"
-    a12.roomID = "EB-438"
-    a12.deviceID = "EB-438-MIC1"
+    a12.buildingID = "HCEB"
+    a12.roomID = "HCEB-BALLRM"
+    a12.deviceID = "HCEB-BALLRM-MIC1"
     a12.type = "auto"
     a12.severity = "low"
     a12.message = "Battery low"
@@ -255,8 +260,8 @@ export class MonitoringService {
     let a13 = new Alert();
     a13.alertID = "derek13"
     a13.buildingID = "ITB"
-    a13.roomID = "EB-438"
-    a13.deviceID = "EB-438-CP2"
+    a13.roomID = "HCEB-BALLRM"
+    a13.deviceID = "HCEB-BALLRM-CP2"
     a13.type = "system"
     a13.severity = "critical"
     a13.message = "Heartbeat lost"
@@ -270,8 +275,8 @@ export class MonitoringService {
     let a14 = new Alert();
     a14.alertID = "derek14"
     a14.buildingID = "ITB"
-    a14.roomID = "EB-438"
-    a14.deviceID = "EB-438-D2"
+    a14.roomID = "HCEB-BALLRM"
+    a14.deviceID = "HCEB-BALLRM-D2"
     a14.type = "user"
     a14.severity = "critical"
     a14.message = "Gave up and died"
@@ -282,15 +287,16 @@ export class MonitoringService {
     a14.helpSentAt = new Date(now.toLocaleString());
     a14.helpArrivedAt = new Date(now.toLocaleString());
 
-    this.alertMap.set("EB-438", [a10, a11, a12, a13, a14])
+    this.alertMap.set("HCEB-BALLRM", [a10, a11, a12, a13, a14])
 
     let row5 = new AlertRow();
-    row5.roomID = "EB-438"
+    row5.roomID = "HCEB-BALLRM"
     row5.alerts.push(a10, a11, a12, a13, a14)
     row5.systemTypeIcon = "accessible_forward"
     row5.incidentID = "INC0152668"
 
     this.alertRowList.push(row5)
+    this.alertRowMap.set(row5.roomID, row5)
 
     let a15 = new Alert();
     a15.alertID = "derek15"
@@ -361,6 +367,7 @@ export class MonitoringService {
     row6.incidentID = "INC0152668"
 
     this.alertRowList.push(row6)
+    this.alertRowMap.set(row6.roomID, row6)
   }
 
   GetAlertTypes(alerts: Alert[]): string[] {
