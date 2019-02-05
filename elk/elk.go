@@ -76,6 +76,7 @@ func MakeGenericELKRequest(addr, method string, body interface{}, user, pass str
 			return []byte{}, nerr.Translate(err)
 		}
 	}
+	log.L.Debugf("Body: %s", reqBody)
 
 	// create the request
 	req, err := http.NewRequest(method, addr, bytes.NewReader(reqBody))

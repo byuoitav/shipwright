@@ -1,6 +1,15 @@
 package then
 
 /*
+
+import (
+	"context"
+
+	"github.com/byuoitav/common/log"
+	"github.com/byuoitav/common/nerr"
+	"github.com/byuoitav/common/servicenow"
+)
+
 //would this need to return the incident? or what are we doing with it/where are we
 //storing incident info?
 

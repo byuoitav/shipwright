@@ -1,6 +1,8 @@
 package persist
 
 import (
+	"encoding/json"
+	"fmt"
 	"os"
 	"strings"
 	"sync"
@@ -35,6 +37,32 @@ var per *ElkPersist
 func init() {
 	initOnce = sync.Once{}
 	initMu = sync.Mutex{}
+}
+
+func GetAllActiveAlertsFromPersist() ([]structs.Alert, *nerr.E) {
+	alerts := []structs.Alert{}
+	query := elk.AllQuery{}
+	query.Query.MatchAll = map[string]interface{}{}
+
+	config := GetConfig()
+
+	b, err := elk.MakeGenericELKRequest(fmt.Sprintf("%v/%v/_search", config.Address, config.PersistActiveAlerts.ElkData.IndexPattern), "POST", query, config.User, config.Pass)
+	if err != nil {
+		log.L.Fatalf("Couldn't get active alerts from persistence: %v", err.Error())
+	}
+
+	resp := elk.AlertQueryResponse{}
+
+	er := json.Unmarshal(b, &resp)
+	if er != nil {
+		log.L.Fatalf("Couldn't get active alerts from persistence: %v", err.Error())
+	}
+
+	for _, i := range resp.Hits.Wrappers {
+		alerts = append(alerts, i.Alert)
+	}
+
+	return alerts, nil
 }
 
 func GetElkAlertPersist() *ElkPersist {

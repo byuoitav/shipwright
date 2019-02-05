@@ -1,6 +1,9 @@
 package store
 
-/*
+import (
+	"github.com/byuoitav/common/nerr"
+	"github.com/byuoitav/common/structs"
+)
 
 //AddAlert takes an alert and stores it in the store. It will return the AlertID.
 func AddAlert(a structs.Alert) (string, *nerr.E) {
@@ -22,4 +25,3 @@ func GetAlert(AlertID string) (structs.Alert, *nerr.E) {
 func ResolveAlert(AlertID string, resInfo structs.ResolutionInfo) *nerr.E {
 	return store.resolveAlert(AlertID, resInfo)
 }
-*/

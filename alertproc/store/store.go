@@ -11,6 +11,7 @@ import (
 	"github.com/byuoitav/shipwright/actions"
 	"github.com/byuoitav/shipwright/actions/actionctx"
 	"github.com/byuoitav/shipwright/alertproc/store/persist"
+	"github.com/byuoitav/shipwright/socket"
 )
 
 type alertStore struct {
@@ -47,6 +48,16 @@ func InitializeAlertStore(a *actions.ActionManager) {
 	}
 
 	go store.run()
+
+	alerts, err := persist.GetAllActiveAlertsFromPersist()
+	if err != nil {
+		log.L.Errorf("Couldn't get all active alerts: %v", err.Error())
+	}
+
+	for i := range alerts {
+		store.inChannel <- alerts[i]
+	}
+	log.L.Infof("Alert store initialized with %v alerts", len(alerts))
 }
 
 //PutAlert adds an alert to the store.
@@ -125,8 +136,8 @@ func (a *alertStore) resolveAlert(alertID string, resInfo structs.ResolutionInfo
 
 		//submit for persistence
 		persist.GetElkAlertPersist().StoreAlert(v, true)
-
 		a.runActions(v)
+		socket.GetManager().WriteToSockets(v)
 
 	} else {
 		return nerr.Create("Unkown alert "+alertID, "not-found")
@@ -188,6 +199,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 	persist.GetElkAlertPersist().StoreAlert(alert, false)
 	a.runActions(alert)
+	socket.GetManager().WriteToSockets(alert)
 }
 
 func (a *alertStore) runActions(alert structs.Alert) {
