@@ -107,7 +107,7 @@ func (a *alertStore) resolveAlert(alertID string, resInfo structs.ResolutionInfo
 		go func() {
 			acts := actions.DefaultConfig().GetActionsByTrigger("alert-change")
 			// a new context for the run of this action
-			actx := actionctx.PutAlert(context.Background(), event)
+			actx := actionctx.PutAlert(context.Background(), v)
 			for i := range acts {
 				a.actionManager.RunAction(actx, acts[i])
 			}
@@ -170,12 +170,14 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 	persist.GetElkAlertPersist().StoreAlert(alert, false)
 
 	go func() {
-		acts := actions.DefaultConfig().GetActionsByTrigger("alert-change")
-		// a new context for the run of this action
-		actx := actionctx.PutAlert(context.Background(), event)
-		for i := range acts {
-			a.actionManager.RunAction(actx, acts[i])
-		}
+		/*
+			acts := actions.DefaultConfig().GetActionsByTrigger("alert-change")
+			// a new context for the run of this action
+				actx := actionctx.PutAlert(context.Background(), v)
+				for i := range acts {
+					a.actionManager.RunAction(actx, acts[i])
+				}
+		*/
 	}()
 
 }
