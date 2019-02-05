@@ -1,4 +1,4 @@
-package persistence
+package persist
 
 import (
 	"os"
@@ -30,39 +30,38 @@ type AlertWrapper struct {
 var initOnce sync.Once
 var initMu sync.Mutex
 
-var persist ElkPersist
+var per *ElkPersist
 
 func init() {
 	initOnce = sync.Once{}
 	initMu = sync.Mutex{}
 }
 
-func GetElkAlertPersist(c PersistConfig) ElkPersist {
+func GetElkAlertPersist() *ElkPersist {
 	initOnce.Do(func() {
-		persist = ElkPersist{
+		per = &ElkPersist{
 			InChannel:    make(chan AlertWrapper, 1000),
 			ReloadConfig: make(chan bool, 1),
 
 			resolvedBuffer: []AlertWrapper{},
 			activeBuffer:   map[string]AlertWrapper{},
-
-			config: c,
 		}
 		go func() {
 			for {
 				//go get the config
+				per.config = PersistConfig{}
 
-				persist.start() //we do this so that the persist can reload the config by just returning
+				per.start() //we do this so that the persist can reload the config by just returning
 			}
 		}()
 
 	})
 
-	return persist
+	return per
 }
 
-func (e *ElkPersist) SendAlert(aw AlertWrapper) *nerr.E {
-	e.InChannel <- aw
+func (e *ElkPersist) StoreAlert(a structs.Alert, del bool) *nerr.E {
+	e.InChannel <- AlertWrapper{Alert: a, Delete: del}
 	return nil
 }
 

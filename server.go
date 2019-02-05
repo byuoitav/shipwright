@@ -8,6 +8,7 @@ import (
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/v2/auth"
 	"github.com/byuoitav/shipwright/actions"
+	"github.com/byuoitav/shipwright/alertproc/store"
 	"github.com/byuoitav/shipwright/handlers"
 	"github.com/byuoitav/shipwright/socket"
 	figure "github.com/common-nighthawk/go-figure"
@@ -25,6 +26,8 @@ func main() {
 		Workers: 50,
 	}
 	go actionManager.Start(context.TODO())
+
+	store.InitializeAlertStore(actionManager)
 
 	// Logging Endpoints
 	router.PUT("/log-level/:level", log.SetLogLevel)
