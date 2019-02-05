@@ -36,10 +36,10 @@ type alertResponse struct {
 
 var ZeroTime = time.Time{}
 
-var store alertStore
+var store *alertStore
 
 func InitializeAlertStore(a *actions.ActionManager) {
-	store := alertStore{
+	store = &alertStore{
 		inChannel:      make(chan structs.Alert, 1000),
 		requestChannel: make(chan alertRequest, 1000),
 		store:          map[string]structs.Alert{},
@@ -52,6 +52,7 @@ func InitializeAlertStore(a *actions.ActionManager) {
 //PutAlert adds an alert to the store.
 //Do we want to wait for confirmation?
 func (a *alertStore) putAlert(alert structs.Alert) (string, *nerr.E) {
+	log.L.Infof("%v", a)
 
 	//check to make sure we have a time
 	if alert.AlertStartTime.IsZero() {
@@ -118,7 +119,7 @@ func (a *alertStore) resolveAlert(alertID string, resInfo structs.ResolutionInfo
 		//it's there, lets get it, mark it as resolved.
 		v.Resolved = true
 		v.ResolutionInfo = resInfo
-		v.AlertID = v.AlertID + v.AlertStartTime.Format(time.RFC3339) //change the ID so it's unique
+		v.AlertID = v.AlertID + "^" + v.AlertStartTime.Format(time.RFC3339) //change the ID so it's unique
 
 		delete(a.store, alertID)
 
@@ -137,8 +138,10 @@ func (a *alertStore) run() {
 	log.L.Infof("running alert store")
 
 	for {
+		log.L.Debugf("Waiting for event")
 		select {
 		case al := <-a.inChannel:
+			log.L.Debugf("Storing alert")
 			a.storeAlert(al)
 		case req := <-a.requestChannel:
 			a.handleRequest(req)

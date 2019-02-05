@@ -185,7 +185,8 @@ func BulkForward(caller, url, user, pass string, toSend []ElkBulkUpdateItem) {
 	}
 
 	//once our payload is built
-	log.L.Debugf("%v Payload built, sending...", caller, caller)
+	log.L.Debugf("%v Payload built, sending...", caller)
+	log.L.Debugf("%s", payload)
 
 	url = strings.Trim(url, "/")         //remove any trailing slash so we can append it again
 	addr := fmt.Sprintf("%v/_bulk", url) //make the addr

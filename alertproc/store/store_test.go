@@ -14,9 +14,53 @@ func TestStoreAlert(t *testing.T) {
 
 	InitializeAlertStore(nil)
 
-	time.Sleep(5 * time.Second)
+	room := events.BasicRoomInfo{
+		BuildingID: "ITB",
+		RoomID:     "ITB-1101",
+	}
+
+	dev := events.BasicDeviceInfo{
+		BasicRoomInfo: room,
+		DeviceID:      "ITB-1101-CP1",
+	}
 
 	alert := structs.Alert{
-		events.BasicDeviceInfo: events.BasicDeviceInfo{},
+		BasicDeviceInfo: dev,
+		Type:            structs.Communication,
+		Category:        structs.System,
+		Severity:        structs.Warning,
+
+		Message:             "I like to send messages 2",
+		SystemType:          "pi",
+		AlertStartTime:      time.Now(),
+		AlertLastUpdateTime: time.Now(),
+		Active:              true,
 	}
+
+	id, err := AddAlert(alert)
+	if err != nil {
+		log.L.Errorf("%v", err.Error())
+	}
+
+	log.L.Debugf("Alert saved with ID: %v", id)
+
+	time.Sleep(1 * time.Second)
+	//update the message log
+	alert.Message = "This is a new test"
+	id, err = AddAlert(alert)
+	if err != nil {
+		log.L.Errorf("%v", err.Error())
+	}
+
+	time.Sleep(5 * time.Second)
+	//let's try to resolve it
+	res := structs.ResolutionInfo{
+		Code:       "test-code",
+		Notes:      "Joe likes to test things\nWe should try and see what kind of crazy notes.",
+		ResolvedAt: time.Now(),
+	}
+
+	ResolveAlert(id, res)
+
+	time.Sleep(15 * time.Second)
 }
