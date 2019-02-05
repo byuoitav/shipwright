@@ -13,12 +13,12 @@ import (
 // ActionConfig manages the configuration of actions
 type ActionConfig struct {
 	Path    string
-	Actions []Action
+	Actions []*Action
 }
 
 var (
 	defaultConfig *ActionConfig
-	once          *sync.Once
+	once          sync.Once
 )
 
 // DefaultConfig returns the default action configuration
@@ -27,7 +27,8 @@ func DefaultConfig() *ActionConfig {
 		// load the default config
 		path := os.Getenv("ACTION_CONFIG_LOCATION")
 		if len(path) < 1 {
-			path = "./action-config.json"
+			// path = "./action-config.json"
+			path = "./action-config.tmpl.json"
 		}
 
 		var err *nerr.E
@@ -61,8 +62,8 @@ func NewActionConfig(path string) (*ActionConfig, *nerr.E) {
 }
 
 // GetActionsByTrigger returns all actions with the specified trigger
-func (c *ActionConfig) GetActionsByTrigger(trigger string) []Action {
-	ret := []Action{}
+func (c *ActionConfig) GetActionsByTrigger(trigger string) []*Action {
+	ret := []*Action{}
 	for i := range c.Actions {
 		if c.Actions[i].Trigger == trigger {
 			ret = append(ret, c.Actions[i])

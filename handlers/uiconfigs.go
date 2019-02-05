@@ -16,7 +16,6 @@ func AddUIConfig(context echo.Context) error {
 
 	// get information from the context
 	configID := context.Param("config")
-	username := getUsernameString(context)
 
 	var config structs.UIConfig
 	err := context.Bind(&config)
@@ -33,8 +32,6 @@ func AddUIConfig(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, result)
 	}
 
-	helpers.CreateAndAddUIConfigChange(config, helpers.AddAction, username)
-
 	log.L.Debugf("%s The config %s was successfully created!", helpers.UIConfigsTag, configID)
 	return context.JSON(http.StatusOK, result)
 }
@@ -44,8 +41,6 @@ func AddMultipleUIConfigs(context echo.Context) error {
 	log.L.Debugf("%s Starting AddMultipleUIConfigs...", helpers.UIConfigsTag)
 
 	// get information from the context
-	username := getUsernameString(context)
-
 	var configs []structs.UIConfig
 
 	err := context.Bind(&configs)
@@ -63,7 +58,6 @@ func AddMultipleUIConfigs(context echo.Context) error {
 			log.L.Errorf("%s %s", helpers.UIConfigsTag, ne.Error())
 		}
 
-		helpers.CreateAndAddUIConfigChange(c, helpers.AddAction, username)
 		results = append(results, res)
 	}
 
@@ -109,7 +103,6 @@ func UpdateUIConfig(context echo.Context) error {
 
 	// get information from the context
 	configID := context.Param("config")
-	username := getUsernameString(context)
 
 	var config structs.UIConfig
 	err := context.Bind(&config)
@@ -126,8 +119,6 @@ func UpdateUIConfig(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, result)
 	}
 
-	helpers.CreateAndAddUIConfigChange(config, helpers.UpdateAction, username)
-
 	log.L.Debugf("%s The config %s was successfully updated!", helpers.UIConfigsTag, configID)
 	return context.JSON(http.StatusOK, result)
 }
@@ -137,8 +128,6 @@ func UpdateMultipleUIConfigs(context echo.Context) error {
 	log.L.Debugf("%s Starting UpdateMultipleUIConfigs...", helpers.UIConfigsTag)
 
 	// get information from the context
-	username := getUsernameString(context)
-
 	var configs map[string]structs.UIConfig
 
 	err := context.Bind(&configs)
@@ -156,7 +145,6 @@ func UpdateMultipleUIConfigs(context echo.Context) error {
 			log.L.Errorf("%s %s", helpers.UIConfigsTag, ne.Error())
 		}
 
-		helpers.CreateAndAddUIConfigChange(config, helpers.UpdateAction, username)
 		results = append(results, res)
 	}
 
@@ -170,9 +158,6 @@ func DeleteUIConfig(context echo.Context) error {
 
 	// get information from the context
 	configID := context.Param("config")
-	username := getUsernameString(context)
-
-	config := structs.UIConfig{ID: configID}
 
 	// call helper function
 	result, ne := helpers.DeleteUIConfig(configID)
@@ -180,8 +165,6 @@ func DeleteUIConfig(context echo.Context) error {
 		log.L.Errorf("%s %s", helpers.UIConfigsTag, ne.Error())
 		return context.JSON(http.StatusInternalServerError, result)
 	}
-
-	helpers.CreateAndAddUIConfigChange(config, helpers.DeleteAction, username)
 
 	log.L.Debugf("%s The config %s was successfully deleted!", helpers.UIConfigsTag, configID)
 	return context.JSON(http.StatusOK, result)

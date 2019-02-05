@@ -1,0 +1,10 @@
+
+
+.column{
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+mat-form-field{
+    min-width: 40em;
+}

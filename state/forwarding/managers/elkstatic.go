@@ -6,6 +6,7 @@ import (
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	sd "github.com/byuoitav/common/state/statedefinition"
+	"github.com/byuoitav/shipwright/elk"
 )
 
 //ElkStaticDeviceForwarder is for a device
@@ -13,7 +14,7 @@ type ElkStaticDeviceForwarder struct {
 	ElkStaticForwarder
 	update          bool
 	incomingChannel chan sd.StaticDevice
-	buffer          map[string]ElkBulkUpdateItem
+	buffer          map[string]elk.ElkBulkUpdateItem
 }
 
 //ElkStaticRoomForwarder is for rooms
@@ -21,7 +22,7 @@ type ElkStaticRoomForwarder struct {
 	ElkStaticForwarder
 	update          bool
 	incomingChannel chan sd.StaticRoom
-	buffer          map[string]ElkBulkUpdateItem
+	buffer          map[string]elk.ElkBulkUpdateItem
 }
 
 //ElkStaticForwarder is the common stuff
@@ -41,7 +42,7 @@ func GetDefaultElkStaticDeviceForwarder(URL string, index func() string, interva
 		},
 		update:          update,
 		incomingChannel: make(chan sd.StaticDevice, 10000),
-		buffer:          make(map[string]ElkBulkUpdateItem),
+		buffer:          make(map[string]elk.ElkBulkUpdateItem),
 	}
 
 	go toReturn.start()
@@ -96,7 +97,7 @@ func GetDefaultElkStaticRoomForwarder(URL string, index func() string, interval 
 			index:    index,
 		},
 		incomingChannel: make(chan sd.StaticRoom, 10000),
-		buffer:          make(map[string]ElkBulkUpdateItem),
+		buffer:          make(map[string]elk.ElkBulkUpdateItem),
 		update:          update,
 	}
 
@@ -116,7 +117,7 @@ func (e *ElkStaticDeviceForwarder) start() {
 			log.L.Debugf("Sending bulk ELK update for %v", e.index())
 
 			go prepAndForward(e.index(), e.url, e.buffer)
-			e.buffer = make(map[string]ElkBulkUpdateItem)
+			e.buffer = make(map[string]elk.ElkBulkUpdateItem)
 
 		case event := <-e.incomingChannel:
 			e.bufferevent(event)
@@ -135,7 +136,7 @@ func (e *ElkStaticRoomForwarder) start() {
 			log.L.Debugf("Sending bulk ELK update for %v", e.index())
 
 			go prepAndForward(e.index(), e.url, e.buffer)
-			e.buffer = make(map[string]ElkBulkUpdateItem)
+			e.buffer = make(map[string]elk.ElkBulkUpdateItem)
 
 		case event := <-e.incomingChannel:
 			e.bufferevent(event)
@@ -155,16 +156,16 @@ func (e *ElkStaticDeviceForwarder) bufferevent(event sd.StaticDevice) {
 	//check to see if we already have one for this device
 	v, ok := e.buffer[event.DeviceID]
 	if !ok {
-		Header := HeaderIndex{
+		Header := elk.HeaderIndex{
 			Index: e.index(),
 			Type:  "av-device",
 		}
 		if e.update {
 			Header.ID = event.DeviceID
 		}
-		e.buffer[event.DeviceID] = ElkBulkUpdateItem{
-			Header: ElkUpdateHeader{Index: Header},
-			Doc:    event,
+		e.buffer[event.DeviceID] = elk.ElkBulkUpdateItem{
+			Index: elk.ElkUpdateHeader{Header: Header},
+			Doc:   event,
 		}
 	} else {
 		v.Doc = event
@@ -181,16 +182,16 @@ func (e *ElkStaticRoomForwarder) bufferevent(event sd.StaticRoom) {
 
 	v, ok := e.buffer[event.RoomID]
 	if !ok {
-		Header := HeaderIndex{
+		Header := elk.HeaderIndex{
 			Index: e.index(),
 			Type:  "av-room",
 		}
 		if e.update {
 			Header.ID = event.RoomID
 		}
-		e.buffer[event.RoomID] = ElkBulkUpdateItem{
-			Header: ElkUpdateHeader{Index: Header},
-			Doc:    event,
+		e.buffer[event.RoomID] = elk.ElkBulkUpdateItem{
+			Index: elk.ElkUpdateHeader{Header: Header},
+			Doc:   event,
 		}
 	} else {
 		v.Doc = event
@@ -198,11 +199,11 @@ func (e *ElkStaticRoomForwarder) bufferevent(event sd.StaticRoom) {
 	}
 }
 
-func prepAndForward(caller, url string, vals map[string]ElkBulkUpdateItem) {
-	var toUpdate []ElkBulkUpdateItem
+func prepAndForward(caller, url string, vals map[string]elk.ElkBulkUpdateItem) {
+	var toUpdate []elk.ElkBulkUpdateItem
 	for _, v := range vals {
 		toUpdate = append(toUpdate, v)
 	}
 
-	forward(caller, url, toUpdate)
+	elk.BulkForward(caller, url, "", "", toUpdate)
 }

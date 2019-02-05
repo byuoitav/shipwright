@@ -2,21 +2,10 @@ package then
 
 import (
 	"context"
-	"sync"
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/servicenow"
-)
-
-//this may or may not be right...
-type Func func(ctx context.Context, with []byte) *nerr.E
-
-var (
-	thens struct {
-		sync.RWMutex
-		m map[string]Func
-	}
 )
 
 //would this need to return the incident? or what are we doing with it/where are we

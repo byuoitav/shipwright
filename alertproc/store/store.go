@@ -1,19 +1,24 @@
 package store
 
 import (
+	"context"
 	"fmt"
 	"time"
 
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/structs"
+	"github.com/byuoitav/shipwright/actions"
+	"github.com/byuoitav/shipwright/actions/actionctx"
+	"github.com/byuoitav/shipwright/alertproc/store/persist"
 )
 
 type alertStore struct {
-	InChannel      chan structs.Alert
-	RequestChannel chan alertRequest
+	inChannel      chan structs.Alert
+	requestChannel chan alertRequest
 
 	store         map[string]structs.Alert
-	configuration Config
+	actionManager *actions.ActionManager
 }
 
 //AlertRequest is submitted to the store to retrieve an alert from it.
@@ -29,15 +34,16 @@ type alertResponse struct {
 	Alert []structs.Alert
 }
 
-const ZeroTime = time.Time{}
+var ZeroTime = time.Time{}
 
 var store alertStore
 
-func init() {
-	store := AlertStore{
-		InChannel:      make(chan structs.Alert, 1000),
-		RequestChannel: make(chan alertRequest, 1000),
+func InitializeAlertStore(a *actions.ActionManager) {
+	store := alertStore{
+		inChannel:      make(chan structs.Alert, 1000),
+		requestChannel: make(chan alertRequest, 1000),
 		store:          map[string]structs.Alert{},
+		actionManager:  a,
 	}
 
 	go store.run()
@@ -48,28 +54,29 @@ func init() {
 func (a *alertStore) putAlert(alert structs.Alert) (string, *nerr.E) {
 
 	//check to make sure we have a time
-	if a.StartTime.IsZero() {
-		a.StartTime = time.Now()
+	if alert.AlertStartTime.IsZero() {
+		alert.AlertStartTime = time.Now()
 	}
 
 	//Check to make sure we have an ID
 	if alert.AlertID == "" {
 		//we need to generate
-		a.AlertID = GenerateID(alert)
+		alert.AlertID = GenerateID(alert)
 	}
 
-	a.InChannel <- alert
+	log.L.Infof("Adding alert %v for device %v", alert.AlertID, alert.DeviceID)
 
+	a.inChannel <- alert
 	return alert.AlertID, nil
 }
 
 func (a *alertStore) getAlert(id string) (structs.Alert, *nerr.E) {
+	log.L.Infof("Getting alert %v", id)
 
 	//make our request
 	respChan := make(chan alertResponse, 1)
 
-	a.RequestChannel <- alertRequest{
-		AlertID:      id,
+	a.requestChannel <- alertRequest{
 		ResponseChan: respChan,
 	}
 
@@ -82,18 +89,58 @@ func (a *alertStore) getAlert(id string) (structs.Alert, *nerr.E) {
 	return structs.Alert{}, resp.Error
 }
 
-func (a *alertStore) resolveAlert(alertID string, resInfo ResloutionInfo) *nerr.E {
-	//we remove it from the store, and ship it off to the resolution configured
+func (a *alertStore) getAllAlerts() ([]structs.Alert, *nerr.E) {
+	log.L.Infof("Getting all alerts")
+
+	//make our request
+	respChan := make(chan alertResponse, 1)
+
+	a.requestChannel <- alertRequest{
+		All:          true,
+		ResponseChan: respChan,
+	}
+
+	resp := <-respChan
+
+	return resp.Alert, resp.Error
 
 }
 
+//NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
+func (a *alertStore) resolveAlert(alertID string, resInfo structs.ResolutionInfo) *nerr.E {
+
+	log.L.Infof("Resolving alert %v", alertID)
+
+	//we remove it from the store, and ship it off to the persistance stuff.
+	//we should check to see if it already exists
+	if v, ok := a.store[alertID]; ok {
+
+		//it's there, lets get it, mark it as resolved.
+		v.Resolved = true
+		v.ResolutionInfo = resInfo
+		v.AlertID = v.AlertID + v.AlertStartTime.Format(time.RFC3339) //change the ID so it's unique
+
+		delete(a.store, alertID)
+
+		//submit for persistence
+		persist.GetElkAlertPersist().StoreAlert(v, true)
+		a.runActions(v)
+
+	} else {
+		return nerr.Create("Unkown alert "+alertID, "not-found")
+	}
+
+	return nil
+}
+
 func (a *alertStore) run() {
+	log.L.Infof("running alert store")
 
 	for {
 		select {
-		case a := <-a.InChannel:
-			a.storeAlert(a)
-		case req := <-a.RequestChannel:
+		case al := <-a.inChannel:
+			a.storeAlert(al)
+		case req := <-a.requestChannel:
 			a.handleRequest(req)
 		}
 	}
@@ -101,6 +148,11 @@ func (a *alertStore) run() {
 
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
 func (a *alertStore) storeAlert(alert structs.Alert) {
+	log.L.Infof("Storing alert %v", alert.AlertID)
+	if alert.Resolved {
+		log.L.Errorf("Can't use storeAlert for resolved alerts: use resolveAlert")
+		return
+	}
 
 	//we should check to see if it already exists
 	if v, ok := a.store[alert.AlertID]; ok {
@@ -117,6 +169,8 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 		a.store[v.AlertID] = v //store it back in
 
+		alert = v
+
 	} else {
 
 		//we store it.
@@ -128,13 +182,29 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		a.store[alert.AlertID] = alert
 	}
 
-	//submit to be updated in persistance.
+	persist.GetElkAlertPersist().StoreAlert(alert, false)
+	a.runActions(alert)
 
-	//check rules for actions
+}
+
+func (a *alertStore) runActions(alert structs.Alert) {
+	if a.actionManager != nil {
+		go func() {
+			acts := actions.DefaultConfig().GetActionsByTrigger("alert-change")
+			// a new context for the run of this action
+			actx := actionctx.PutAlert(context.Background(), alert)
+			for i := range acts {
+				a.actionManager.RunAction(actx, acts[i])
+			}
+		}()
+	}
 }
 
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
-func (a *alertStore) hanldeRequest(req alertRequest) {
+func (a *alertStore) handleRequest(req alertRequest) {
+
+	log.L.Infof("Handling request %+v", req)
+
 	toReturn := []structs.Alert{}
 
 	if req.All {
@@ -146,21 +216,21 @@ func (a *alertStore) hanldeRequest(req alertRequest) {
 		if v, ok := a.store[req.AlertID]; ok {
 
 			toReturn = append(toReturn, v)
-			req.ResponseChan <- AlertResponse{
-				Error:  nil,
-				Alerts: toReturn,
+			req.ResponseChan <- alertResponse{
+				Error: nil,
+				Alert: toReturn,
 			}
 		} else {
-			req.ResponseChan <- AlertResponse{
-				Error:  nerr.Create(fmt.Sprintf("No Alert for id %v", req.AlertID), "not-found"),
-				Alerts: toReturn,
+			req.ResponseChan <- alertResponse{
+				Error: nerr.Create(fmt.Sprintf("No Alert for id %v", req.AlertID), "not-found"),
+				Alert: toReturn,
 			}
 		}
 
 	}
 
-	req.ResponseChan <- AlertResponse{
-		Error:  nil,
-		Alerts: toReturn,
+	req.ResponseChan <- alertResponse{
+		Error: nil,
+		Alert: toReturn,
 	}
 }

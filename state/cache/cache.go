@@ -16,8 +16,9 @@ import (
 //Cache is our state cache - it's meant to be a representation of the static indexes
 type Cache interface {
 	CheckAndStoreDevice(device sd.StaticDevice) (bool, sd.StaticDevice, *nerr.E)
-	GetDeviceRecord(deviceID string) (sd.StaticDevice, *nerr.E)
 	CheckAndStoreRoom(room sd.StaticRoom) (bool, sd.StaticRoom, *nerr.E)
+
+	GetDeviceRecord(deviceID string) (sd.StaticDevice, *nerr.E)
 	GetRoomRecord(roomID string) (sd.StaticRoom, *nerr.E)
 	GetAllDeviceRecords() ([]sd.StaticDevice, *nerr.E)
 	GetAllRoomRecords() ([]sd.StaticRoom, *nerr.E)

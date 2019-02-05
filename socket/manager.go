@@ -8,7 +8,6 @@ import (
 	"github.com/byuoitav/central-event-system/messenger"
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/v2/events"
-	"github.com/byuoitav/shipwright/repair/alerts"
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo"
 )
@@ -162,8 +161,6 @@ func (eh *eventHandlerStruct) OnEventReceived(event events.Event, sendToAll chan
 func StartMessenger() {
 	for {
 		event := socketManager.mess.ReceiveEvent()
-
-		alerts.HandleAlertEvent(event)
 		socketManager.WriteToSockets(event)
 	}
 }

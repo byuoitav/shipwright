@@ -16,7 +16,6 @@ func AddBuilding(context echo.Context) error {
 
 	// get information from the context
 	buildingID := context.Param("building")
-	username := getUsernameString(context)
 
 	var building structs.Building
 	err := context.Bind(&building)
@@ -33,8 +32,6 @@ func AddBuilding(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, result)
 	}
 
-	helpers.CreateAndAddBuildingChange(building, helpers.AddAction, username)
-
 	log.L.Debugf("%s The building %s was successfully created!", helpers.BuildingsTag, buildingID)
 	return context.JSON(http.StatusOK, result)
 }
@@ -44,8 +41,6 @@ func AddMultipleBuildings(context echo.Context) error {
 	log.L.Debugf("%s Starting AddMultipleBuildings...", helpers.BuildingsTag)
 
 	// get information from the context
-	username := getUsernameString(context)
-
 	var buildings []structs.Building
 
 	err := context.Bind(&buildings)
@@ -63,7 +58,6 @@ func AddMultipleBuildings(context echo.Context) error {
 			log.L.Errorf("%s %s", helpers.BuildingsTag, ne.Error())
 		}
 
-		helpers.CreateAndAddBuildingChange(b, helpers.AddAction, username)
 		results = append(results, res)
 	}
 
@@ -109,7 +103,6 @@ func UpdateBuilding(context echo.Context) error {
 
 	// get information from the context
 	buildingID := context.Param("building")
-	username := getUsernameString(context)
 
 	var building structs.Building
 	err := context.Bind(&building)
@@ -126,8 +119,6 @@ func UpdateBuilding(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, result)
 	}
 
-	helpers.CreateAndAddBuildingChange(building, helpers.UpdateAction, username)
-
 	log.L.Debugf("%s The building %s was successfully updated!", helpers.BuildingsTag, buildingID)
 	return context.JSON(http.StatusOK, result)
 }
@@ -137,8 +128,6 @@ func UpdateMultipleBuildings(context echo.Context) error {
 	log.L.Debugf("%s Starting UpdateMultipleBuildings...", helpers.BuildingsTag)
 
 	// get information from the context
-	username := getUsernameString(context)
-
 	var buildings map[string]structs.Building
 
 	err := context.Bind(&buildings)
@@ -156,7 +145,6 @@ func UpdateMultipleBuildings(context echo.Context) error {
 			log.L.Errorf("%s %s", helpers.BuildingsTag, ne.Error())
 		}
 
-		helpers.CreateAndAddBuildingChange(building, helpers.UpdateAction, username)
 		results = append(results, res)
 	}
 
@@ -170,9 +158,6 @@ func DeleteBuilding(context echo.Context) error {
 
 	// get information from the context
 	buildingID := context.Param("building")
-	username := getUsernameString(context)
-
-	building := structs.Building{ID: buildingID}
 
 	// call helper function
 	result, ne := helpers.DeleteBuilding(buildingID)
@@ -180,8 +165,6 @@ func DeleteBuilding(context echo.Context) error {
 		log.L.Errorf("%s %s", helpers.BuildingsTag, ne.Error())
 		return context.JSON(http.StatusInternalServerError, result)
 	}
-
-	helpers.CreateAndAddBuildingChange(building, helpers.DeleteAction, username)
 
 	log.L.Debugf("%s The building %s was successfully deleted!", helpers.BuildingsTag, buildingID)
 	return context.JSON(http.StatusOK, result)

@@ -1,32 +1,36 @@
 [
   {
-    "trigger": "event // or 5s, or disabled",
+    "trigger": "event",
     "if": {
       "event-match": {
-        "key": "secure",
-        "value": "False"
+        "key": "help-request",
+        "value": "confirm"
       }
     },
     "then": [
       {
-        "do": "add-alert",
+        "do": "send-email",
         "with": {
-          "alert": "hi",
-          "type": "missing heartbeat",
-          "msg log": ["something went wrong with {{.DeviceID}}"],
-          "severity": "test"
+          "from": "{{.Event.TargetDevice.DeviceID}}@byu.edu",
+          "to": [
+            "matt_blodgett@byu.edu",
+            "danny_randall@byu.edu",
+            "joe_blodgett@byu.edu"
+          ],
+          "subject": "Help request in {{.Event.AffectedRoom.RoomID}}",
+          "body": "This is a message for **matt blodgett** from {{.Event.GeneratingSystem}}",
+          "smtp-addr": "gateway.byu.edu:25",
+          "user": "",
+          "pass": ""
         }
       },
       {
-        "do": "send-email",
+        "do": "send-slack",
         "with": {
-          "recipients": "matt_blodgett@byu.edu, danny_randall@byu.edu",
-          "sender": "{{.DeviceID}}@byu.edu",
-          "user": "",
-          "pass": "",
-          "subject": "Cabinet Opened in {{.RoomID}} // TODO these fields use go's templating engine",
-          "body": "A cabinet was opened in {{.RoomID}} at {{.Timestamp}}.",
-          "smtp-addr": "gateway.byu.edu:25"
+          "fields": {
+            "title": "Help Request",
+            "text": "Help request in {{.Event.AffectedRoom.RoomID}} from {{.Event.GeneratingSystem}}"
+          }
         }
       }
     ]

@@ -1,14 +1,14 @@
 package main
 
 import (
+	"context"
 	"net/http"
-	"os"
 
-	"github.com/byuoitav/central-event-system/hub/base"
-	"github.com/byuoitav/central-event-system/messenger"
 	"github.com/byuoitav/common"
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/v2/auth"
+	"github.com/byuoitav/shipwright/actions"
+	"github.com/byuoitav/shipwright/alertproc/store"
 	"github.com/byuoitav/shipwright/handlers"
 	"github.com/byuoitav/shipwright/socket"
 	figure "github.com/common-nighthawk/go-figure"
@@ -16,18 +16,18 @@ import (
 
 func main() {
 	figure.NewFigure("SMEE", "univers", true).Print()
+	log.SetLevel("info")
 
 	port := ":9999"
 	router := common.NewRouter()
 
-	messenger, err := messenger.BuildMessenger(os.Getenv("HUB_ADDRESS"), base.Messenger, 1000)
-	if err != nil {
-		log.L.Errorf("unable to build the messenger: %s", err.Error())
-		return
+	actionManager := &actions.ActionManager{
+		Config:  actions.DefaultConfig(),
+		Workers: 50,
 	}
+	go actionManager.Start(context.TODO())
 
-	messenger.SubscribeToRooms("*")
-	socket.GetManager().SetMessenger(messenger)
+	store.InitializeAlertStore(actionManager)
 
 	// Logging Endpoints
 	router.PUT("/log-level/:level", log.SetLogLevel)
@@ -84,24 +84,6 @@ func main() {
 	// Options Endpoints
 	read.GET("/options/icons", handlers.GetIcons)
 	read.GET("/options/templates", handlers.GetTemplates)
-
-	// Metrics Endpoints
-	read.GET("/metrics/added/buildings", handlers.GetAddedBuildings)
-	read.GET("/metrics/added/rooms", handlers.GetAddedRooms)
-	read.GET("/metrics/added/devices", handlers.GetAddedDevices)
-	read.GET("/metrics/added/uiconfigs", handlers.GetAddedUIConfigs)
-	read.GET("/metrics/added", handlers.GetAllAdditions)
-	read.GET("/metrics/updated/buildings", handlers.GetUpdatedBuildings)
-	read.GET("/metrics/updated/rooms", handlers.GetUpdatedRooms)
-	read.GET("/metrics/updated/devices", handlers.GetUpdatedDevices)
-	read.GET("/metrics/updated/uiconfigs", handlers.GetUpdatedUIConfigs)
-	read.GET("/metrics/updated", handlers.GetAllUpdates)
-	read.GET("/metrics/deleted/buildings", handlers.GetDeletedBuildings)
-	read.GET("/metrics/deleted/rooms", handlers.GetDeletedRooms)
-	read.GET("/metrics/deleted/devices", handlers.GetDeletedDevices)
-	read.GET("/metrics/deleted/uiconfigs", handlers.GetDeletedUIConfigs)
-	read.GET("/metrics/deleted", handlers.GetAllDeletions)
-	read.GET("/metrics", handlers.GetFullChangesList)
 
 	// Auth Endpoints
 	read.GET("/users/current/username", handlers.GetUsername)

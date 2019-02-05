@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/byuoitav/common/log"
@@ -26,12 +27,39 @@ var (
 	password = os.Getenv("ELK_SA_PASSWORD")
 )
 
+type ElkBulkUpdateItem struct {
+	Index  ElkUpdateHeader
+	Delete ElkDeleteHeader
+	Doc    interface{}
+}
+
+type ElkDeleteHeader struct {
+	Header HeaderIndex `json:"delete"`
+}
+
+type ElkUpdateHeader struct {
+	Header HeaderIndex `json:"index"`
+}
+
+type HeaderIndex struct {
+	Index string `json:"_index"`
+	Type  string `json:"_type"`
+	ID    string `json:"_id,omitempty"`
+}
+
+//there are other types, but we don't worry about them, since we don't really do any smart parsing at this time.
+type BulkUpdateResponse struct {
+	Errors bool `json:"errors"`
+}
+
 //MakeGenericELLKRequest .
-func MakeGenericELKRequest(addr, method string, body interface{}) ([]byte, *nerr.E) {
+func MakeGenericELKRequest(addr, method string, body interface{}, user, pass string) ([]byte, *nerr.E) {
 	log.L.Debugf("Making ELK request against: %s", addr)
 
-	if len(username) == 0 || len(password) == 0 {
-		log.L.Fatalf("ELK_SA_USERNAME, or ELK_SA_PASSWORD is not set.")
+	if len(user) == 0 || len(pass) == 0 {
+		if len(username) == 0 || len(password) == 0 {
+			log.L.Fatalf("ELK_SA_USERNAME, or ELK_SA_PASSWORD is not set.")
+		}
 	}
 
 	var reqBody []byte
@@ -55,8 +83,12 @@ func MakeGenericELKRequest(addr, method string, body interface{}) ([]byte, *nerr
 		return []byte{}, nerr.Translate(err)
 	}
 
-	// add auth
-	req.SetBasicAuth(username, password)
+	if len(user) == 0 || len(pass) == 0 {
+		// add auth
+		req.SetBasicAuth(username, password)
+	} else {
+		req.SetBasicAuth(user, pass)
+	}
 
 	// add headers
 	if method == http.MethodPost || method == http.MethodPut {
@@ -97,5 +129,83 @@ func MakeELKRequest(method, endpoint string, body interface{}) ([]byte, *nerr.E)
 
 	// format whole address
 	addr := fmt.Sprintf("%s%s", APIAddr, endpoint)
-	return MakeGenericELKRequest(addr, method, body)
+	return MakeGenericELKRequest(addr, method, body, "", "")
+}
+
+//BulkForward preps a bulk request and forwards it.
+//Leave user and pass blank to use the env variables defined above.
+func BulkForward(caller, url, user, pass string, toSend []ElkBulkUpdateItem) {
+
+	log.L.Infof("%v Sending bulk upsert for %v items.", caller, len(toSend))
+
+	if len(toSend) == 0 {
+		log.L.Infof("%v No updates to send. returning.", caller)
+		return
+	}
+
+	//DEBUG
+	for i := range toSend {
+		log.L.Debugf("%+v", toSend[i])
+	}
+
+	log.L.Debugf("%v Building payload", caller)
+	//build our payload
+	payload := []byte{}
+	for i := range toSend {
+		var headerbytes []byte
+		var err error
+
+		if len(toSend[i].Delete.Header.Index) > 0 { //it's a delete
+			headerbytes, err = json.Marshal(toSend[i].Delete)
+			if err != nil {
+				log.L.Errorf("%v Couldn't marshal header for elk event bulk update: %v", caller, toSend[i])
+				continue
+			}
+			payload = append(payload, headerbytes...)
+			payload = append(payload, '\n')
+
+		} else { // do our base case
+			headerbytes, err = json.Marshal(toSend[i].Index)
+			if err != nil {
+				log.L.Errorf("%v Couldn't marshal header for elk event bulk update: %v", caller, toSend[i])
+				continue
+			}
+
+			bodybytes, err := json.Marshal(toSend[i].Doc)
+			if err != nil {
+				log.L.Errorf("%v Couldn't marshal header for elk event bulk update: %v", caller, toSend[i])
+				continue
+			}
+			payload = append(payload, headerbytes...)
+			payload = append(payload, '\n')
+			payload = append(payload, bodybytes...)
+			payload = append(payload, '\n')
+
+		}
+	}
+
+	//once our payload is built
+	log.L.Debugf("%v Payload built, sending...", caller, caller)
+
+	url = strings.Trim(url, "/")         //remove any trailing slash so we can append it again
+	addr := fmt.Sprintf("%v/_bulk", url) //make the addr
+
+	resp, er := MakeGenericELKRequest(addr, "POST", payload, user, pass)
+	if er != nil {
+		log.L.Errorf("%v Couldn't send bulk update. error %v", caller, er.Error())
+		return
+	}
+
+	elkresp := BulkUpdateResponse{}
+
+	err := json.Unmarshal(resp, &elkresp)
+	if err != nil {
+		log.L.Errorf("%v Unknown response received from ELK in response to bulk update: %s", caller, resp)
+		return
+	}
+	if elkresp.Errors {
+		log.L.Errorf("%v Errors received from ELK during bulk update %s", caller, resp)
+		return
+	}
+	log.L.Debugf("%v Successfully sent bulk ELK updates", caller)
 }
