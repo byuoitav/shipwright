@@ -38,7 +38,9 @@ func init() {
 }
 
 func GetElkAlertPersist() *ElkPersist {
+	log.L.Debugf("getting the alert persistence manager")
 	initOnce.Do(func() {
+		log.L.Infof("Starting the persistence manager")
 		per = &ElkPersist{
 			InChannel:    make(chan AlertWrapper, 1000),
 			ReloadConfig: make(chan bool, 1),
@@ -50,6 +52,7 @@ func GetElkAlertPersist() *ElkPersist {
 			for {
 				//go get the config
 				per.config = PersistConfig{}
+				log.L.Debugf("Starting persistence manager with config %v", per.config)
 
 				per.start() //we do this so that the persist can reload the config by just returning
 			}
@@ -81,9 +84,11 @@ func (e *ElkPersist) start() {
 		select {
 
 		case <-tick.C:
+			log.L.Debugf("Tick. Sending Alert Persistence batch.")
 			e.sendUpdate()
 
 		case <-e.ReloadConfig:
+			log.L.Infof("Reloading the config")
 			//reload the config by returning
 			return
 

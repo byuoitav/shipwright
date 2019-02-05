@@ -18,10 +18,10 @@ func GetAllAlerts() ([]structs.Alert, *nerr.E) {
 
 //GetAlert Gets a specific alert by AlertID
 func GetAlert(AlertID string) (structs.Alert, *nerr.E) {
-	return store.GetAlert(AlertID)
+	return store.getAlert(AlertID)
 }
 
 //ResolveAlert
 func ResolveAlert(AlertID string, resInfo structs.ResolutionInfo) *nerr.E {
-	return store.ResolveAlert(AlertID, resInfo)
+	return store.resolveAlert(AlertID, resInfo)
 }
