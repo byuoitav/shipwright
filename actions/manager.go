@@ -3,6 +3,7 @@ package actions
 import (
 	"context"
 	"os"
+	"sync"
 
 	"github.com/byuoitav/central-event-system/hub/base"
 	"github.com/byuoitav/central-event-system/messenger"
@@ -49,7 +50,7 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 		}
 
 		log.L.Infof("Action messenger connected.")
-		a.Messenger.SubscribeToRooms("*")
+		a.Messenger.SubscribeToRooms("ITB-1010")
 	}
 
 	a.reqs = make(chan *ActionRequest, 1000)
@@ -76,32 +77,44 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 		}
 	}
 
+	wg := &sync.WaitGroup{}
+
 	for i := 0; i < a.Workers; i++ {
+		wg.Add(1)
+
 		go func(index int) {
 			for {
 				select {
 				case <-ctx.Done():
+					wg.Done()
 					return
 				case req := <-a.reqs:
-					req.Action.Run(ctx)
+					req.Action.Run(req.Context)
 				}
 			}
 		}(i)
 	}
 
+	wg.Add(2)
+	go a.runActionsFromEvents(ctx, wg)
+	go a.runActionsOnInterval(ctx, wg)
+
+	wg.Wait()
 	return nil
 }
 
-func (a *ActionManager) runActionsFromEvents(ctx context.Context) {
+func (a *ActionManager) runActionsFromEvents(ctx context.Context, wg *sync.WaitGroup) {
 	for {
 		select {
 		case <-ctx.Done():
+			wg.Done()
 			return
 		default:
 			event := a.Messenger.ReceiveEvent()
 
 			// a new context for this action
 			actx := actionctx.PutEvent(context.Background(), event)
+
 			for i := range a.matchActions {
 				a.reqs <- &ActionRequest{
 					Context: actx,
@@ -112,8 +125,9 @@ func (a *ActionManager) runActionsFromEvents(ctx context.Context) {
 	}
 }
 
-func (a *ActionManager) runActionsOnInterval(ctx context.Context) {
+func (a *ActionManager) runActionsOnInterval(ctx context.Context, wg *sync.WaitGroup) {
 	// TODO
+	wg.Done()
 }
 
 // RunAction submits an action request to be ran by the action manager

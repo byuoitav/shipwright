@@ -1,15 +1,16 @@
 [
   {
+    "name": "help-requests",
     "trigger": "event",
     "if": {
       "event-match": {
-        "key": "help-request",
-        "value": "confirm"
+        "key": "user-interaction",
+        "value": "open help modal"
       }
     },
     "then": [
       {
-        "do": "send-email",
+        "do": "skip",
         "with": {
           "from": "{{.Event.TargetDevice.DeviceID}}@byu.edu",
           "to": [
@@ -27,10 +28,8 @@
       {
         "do": "send-slack",
         "with": {
-          "fields": {
-            "title": "Help Request",
-            "text": "Help request in {{.Event.AffectedRoom.RoomID}} from {{.Event.GeneratingSystem}}"
-          }
+          "title": "Test",
+          "text": "Test message in {{.Event.AffectedRoom.RoomID}} from {{.Event.GeneratingSystem}}"
         }
       }
     ]
