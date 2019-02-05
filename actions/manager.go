@@ -35,14 +35,19 @@ type ActionRequest struct {
 }
 
 var (
-	defaultAM = &ActionManager{
-		Config:  DefaultConfig(),
-		Workers: 20,
-	}
+	defaultAM   *ActionManager
+	defaultOnce = sync.Once{}
 )
 
 // DefaultActionManager .
 func DefaultActionManager() *ActionManager {
+	defaultOnce.Do(func() {
+		defaultAM = &ActionManager{
+			Config:  DefaultConfig(),
+			Workers: 20,
+		}
+	})
+
 	return defaultAM
 }
 
