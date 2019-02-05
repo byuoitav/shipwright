@@ -21,7 +21,8 @@ func main() {
 	router := common.NewRouter()
 
 	actionManager := &actions.ActionManager{
-		Config: actions.DefaultConfig(),
+		Config:  actions.DefaultConfig(),
+		Workers: 50,
 	}
 	go actionManager.Start(context.TODO())
 
