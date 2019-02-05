@@ -1,5 +1,7 @@
 package then
 
+/*
+
 import (
 	"context"
 
@@ -48,3 +50,4 @@ func CreateIncident(ctx context.Context, with []byte) *nerr.E {
 	}
 	return nil
 }
+*/

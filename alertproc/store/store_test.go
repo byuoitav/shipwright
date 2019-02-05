@@ -54,13 +54,13 @@ func TestStoreAlert(t *testing.T) {
 
 	time.Sleep(5 * time.Second)
 	//let's try to resolve it
-	res := structs.ResolutionInfo{
+	_ = structs.ResolutionInfo{
 		Code:       "test-code",
 		Notes:      "Joe likes to test things\nWe should try and see what kind of crazy notes.",
 		ResolvedAt: time.Now(),
 	}
 
-	ResolveAlert(id, res)
+	//	ResolveAlert(id, res)
 
 	time.Sleep(15 * time.Second)
 }

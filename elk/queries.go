@@ -8,3 +8,8 @@ type IDQuery struct {
 		} `json:"ids"`
 	} `json:"query"`
 }
+type AllQuery struct {
+	Query struct {
+		MatchAll map[string]interface{} `json:"match_all"`
+	} `json:"query"`
+}

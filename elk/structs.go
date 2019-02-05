@@ -1,6 +1,9 @@
 package elk
 
-import "github.com/byuoitav/common/state/statedefinition"
+import (
+	"github.com/byuoitav/common/state/statedefinition"
+	"github.com/byuoitav/common/structs"
+)
 
 type UpdateHeader struct {
 	ID    string `json:"_id,omitempty"`
@@ -39,6 +42,14 @@ type StaticRoomQueryResponse struct {
 		Wrappers []struct {
 			ID   string                     `json:"_id"`
 			Room statedefinition.StaticRoom `json:"_source"`
+		} `json:"hits"`
+	} `json:"hits"`
+}
+type AlertQueryResponse struct {
+	Hits struct {
+		Wrappers []struct {
+			ID    string        `json:"_id"`
+			Alert structs.Alert `json:"_source"`
 		} `json:"hits"`
 	} `json:"hits"`
 }

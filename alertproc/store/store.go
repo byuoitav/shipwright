@@ -47,6 +47,16 @@ func InitializeAlertStore(a *actions.ActionManager) {
 	}
 
 	go store.run()
+
+	alerts, err := persist.GetAllActiveAlertsFromPersist()
+	if err != nil {
+		log.L.Errorf("Couldn't get all active alerts: %v", err.Error())
+	}
+
+	for i := range alerts {
+		store.inChannel <- alerts[i]
+	}
+	log.L.Infof("Alert store initialized with %v alerts", len(alerts))
 }
 
 //PutAlert adds an alert to the store.
