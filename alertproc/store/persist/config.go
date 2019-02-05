@@ -23,7 +23,7 @@ type PersistConfig struct {
 type PersistType string
 
 type AlertPersistConfig struct {
-	ElkData ELKPersistConfig //only used for PersistType ELK
+	ElkData ELKPersistConfig `json:"elk"` //only used for PersistType ELK
 }
 
 type ELKPersistConfig struct {
