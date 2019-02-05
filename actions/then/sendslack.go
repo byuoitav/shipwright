@@ -1,12 +1,20 @@
 package then
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
 	"net/url"
+	"os"
 	"sync"
+	"text/template"
 	"time"
 
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
+	"github.com/byuoitav/shipwright/actions/actionctx"
 )
 
 const (
@@ -38,134 +46,142 @@ type slackAlert struct {
 type slackClient struct {
 	MessageFrequency time.Duration
 	ProxyURL         *url.URL
-	attachmentChan   chan slackAttachment
+
+	AttachmentChan chan slackAttachment
 }
 
 var (
-	once sync.Once
+	once   sync.Once
+	client *slackClient
 )
-
-/*
-func init() {
-	// var err error
-
-	proxyS := os.Getenv("PROXY_ADDR")
-	if len(proxyS) == 0 {
-		return
-	}
-
-	/*
-		proxyURL, err = url.Parse(proxyS)
-		if err != nil {
-			log.L.Fatalf("Failed to parse PROXY_ADDR: %s", err)
-		}
-}
-*/
 
 // SendSlack sends a slack message
 func SendSlack(ctx context.Context, with []byte) *nerr.E {
 	once.Do(func() {
+		// build the slack client
+		proxy := os.Getenv("PROXY_ADDR")
+		if len(proxy) == 0 {
+			log.L.Warnf("no PROXY_ADDR set. Slack messages may be unable to send.")
+		}
+
+		proxyURL, err := url.Parse(proxy)
+		if err != nil {
+			log.L.Errorf("PROXY_ADDR is an invalid url: %s", err)
+		}
+
+		client = &slackClient{
+			MessageFrequency: 5 * time.Second,
+			ProxyURL:         proxyURL,
+			AttachmentChan:   make(chan slackAttachment, 10),
+		}
+
+		// start the slack client
+		go client.Start()
 	})
 
+	// TODO write a function to do this junk
+	data := templateData{}
+
+	if event, ok := actionctx.GetEvent(ctx); ok {
+		data.Event = event
+	}
+
+	if dev, ok := actionctx.GetStaticDevice(ctx); ok {
+		data.StaticDevice = dev
+	}
+
+	// fill the slack template
+	t, gerr := template.New("slack").Parse(string(with))
+	if gerr != nil {
+		return nerr.Translate(gerr).Addf("failed to send slack")
+	}
+
+	buf := &bytes.Buffer{}
+	gerr = t.Execute(buf, data)
+	if gerr != nil {
+		return nerr.Translate(gerr).Addf("failed to send slack")
+	}
+
+	// unmarshal filled template into alert struct
+	attachment := slackAttachment{}
+	gerr = json.Unmarshal(buf.Bytes(), &attachment)
+	if gerr != nil {
+		return nerr.Translate(gerr).Addf("failed to add alert")
+	}
+
+	client.AttachmentChan <- attachment
 	return nil
 }
 
-/*
-type Action struct {
-	ChannelIdentifier string
-}
+func (c *slackClient) Start() {
+	log.L.Infof("Starting slack client. Sending slack messages every %v", c.MessageFrequency)
 
-func (s *Action) Execute(a action.Payload) action.Result {
-	once.Do(func() {
-		startSlackManager(s.ChannelIdentifier)
-	})
-
-	result := action.Result{
-		Payload: a,
+	ticker := time.NewTicker(c.MessageFrequency)
+	attachments := []slackAttachment{}
+	client := &http.Client{
+		Timeout: 20 * time.Second,
 	}
 
-	attachment, ok := a.Content.(Attachment)
-	if !ok {
-		result.Error = nerr.Create("action content was not a slack attachment.", reflect.TypeOf("").String())
+	// set proxy url
+	if c.ProxyURL != nil {
+		client.Transport = &http.Transport{
+			Proxy: http.ProxyURL(c.ProxyURL),
+		}
 	}
 
-	attachmentChan <- attachment
+	for {
+		select {
+		case attachment := <-c.AttachmentChan:
+			attachments = append(attachments, attachment)
+		case <-ticker.C:
+			if attachments == nil || len(attachments) == 0 {
+				continue
+			}
 
-	log.L.Debugf("Successfully queued slack alert for %s.", a.Device)
-	return result
-}
+			log.L.Infof("Sending %v slack alerts", len(attachments))
 
-func startSlackManager(channelIdentifier string) {
-	log.L.Infof("Starting slack action manager. Sending alerts every %v.", messageFrequency)
-	ticker := time.NewTicker(messageFrequency)
-	attachmentChan = make(chan Attachment, 300)
+			msg := slackAlert{
+				Markdown:    false,
+				Attachments: attachments,
+			}
 
-	var attachments []Attachment
+			// clear these attachments
+			attachments = nil
 
-	var client *http.Client
-	if proxyURL != nil {
-		// pretty simple, just a post, the only thing that could be an issue is the proxies
-		client = &http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyURL)}, Timeout: 3 * time.Second}
-	} else {
-		client = &http.Client{Timeout: 3 * time.Second}
-	}
+			body, err := json.Marshal(msg)
+			if err != nil {
+				log.L.Errorf("unable to marshal slack request: %s", err)
+				continue
+			}
 
-	go func() {
-		for {
-			select {
-			case attachment := <-attachmentChan:
-				attachments = append(attachments, attachment)
-			case <-ticker.C:
-				if attachments == nil {
-					log.L.Debugf("No slack alerts to send.")
-					continue
-				}
+			// TODO somehow have a way to send to a different channel
+			req, err := http.NewRequest(http.MethodPost, slackurl, bytes.NewReader(body))
+			if err != nil {
+				log.L.Errorf("unable to build slack request: %s", err)
+				continue
+			}
 
-				log.L.Infof("Sending off %v slack alerts.", len(attachments))
+			req.Header.Add("content-type", "application/json")
 
-				// build the message
-				msg := alert{
-					Markdown:    false,
-					Attachments: attachments,
-				}
+			resp, err := client.Do(req)
+			if err != nil {
+				log.L.Warnf("unable to send slack request: %s", err)
+				continue
+			}
+			defer resp.Body.Close()
 
-				// clear attachments
-				attachments = nil
-
-				reqBody, err := json.Marshal(msg)
-				if err != nil {
-					log.L.Errorf("failed to marshal slack request: %s", err)
-					continue
-				}
-
-				req, err := http.NewRequest(http.MethodPost, slackurl+channelIdentifier, bytes.NewReader(reqBody))
-				if err != nil {
-					log.L.Errorf("failed to build request to send slack alerts: %s", err)
-					continue
-				}
-				req.Header.Add("content-type", "application/json")
-
-				resp, err := client.Do(req)
-				if err != nil {
-					log.L.Warnf("failed to send slack alerts: %s", err)
-					continue
-				}
-				defer resp.Body.Close()
-
+			if resp.StatusCode/100 != 2 {
 				b, err := ioutil.ReadAll(resp.Body)
 				if err != nil {
-					log.L.Warnf("failed to read response body after sending slack alert: %s", err)
+					log.L.Warnf("%v status code & unable to read response body from sending slack alert: %s", resp.StatusCode, err)
 					continue
 				}
 
-				if resp.StatusCode/100 != 2 {
-					log.L.Warnf("bad status code response from slack alert: %v. body: %s", resp.StatusCode, b)
-					continue
-				}
-
-				log.L.Infof("Successfully sent slack alerts.")
+				log.L.Warnf("%v status code response from sending slack alerts. response body: %s", resp.StatusCode, b)
+				continue
 			}
+
+			log.L.Infof("Successfully sent slack alerts")
 		}
-	}()
+	}
 }
-*/
