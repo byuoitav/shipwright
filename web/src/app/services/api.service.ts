@@ -102,7 +102,7 @@ export class APIService {
     try {
       console.log(idToUpdate);
       console.log(toUpdate);
-      const data = await this.http.put("buildings/"+idToUpdate+"/update", toUpdate, {headers: this.headers}).toPromise();
+      const data = await this.http.put("buildings/"+idToUpdate+"/update", this.converter.serialize(toUpdate), {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
 
       return response;

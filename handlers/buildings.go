@@ -111,7 +111,7 @@ func UpdateBuilding(context echo.Context) error {
 		log.L.Errorf("%s %s", helpers.BuildingsTag, msg)
 		return context.JSON(http.StatusBadRequest, err)
 	}
-
+	log.L.Debugf("Building: %+v", building)
 	// call helper function
 	result, ne := helpers.UpdateBuilding(buildingID, building)
 	if ne != nil {
@@ -119,7 +119,6 @@ func UpdateBuilding(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, result)
 	}
 
-	log.L.Debugf("%s The building %s was successfully updated!", helpers.BuildingsTag, buildingID)
 	return context.JSON(http.StatusOK, result)
 }
 

@@ -34,7 +34,7 @@ class DateConverter implements JsonCustomConvert<Date> {
 
 @JsonObject("Building")
 export class Building {
-    @JsonProperty("_id", String)
+    @JsonProperty("_id", String, true)
     id: string = undefined;
 
     @JsonProperty("_rev", String, true)
