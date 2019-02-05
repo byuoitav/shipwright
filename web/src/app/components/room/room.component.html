@@ -1,0 +1,35 @@
+<mat-card>
+    <a routerLink="/configuration/{{room?.id}}/roompage">
+        <mat-card-header>
+            <mat-icon mat-card-avatar>{{GetRoomIcon()}}</mat-icon>
+            <mat-card-title>{{room.id}}</mat-card-title>
+            <mat-card-subtitle>{{room.name}}</mat-card-subtitle>
+        </mat-card-header>
+
+    </a>
+    <mat-card-content>
+        <a class="row" routerLink="/configuration/{{room?.id}}/roompage">
+            <ng-container *ngIf="IsPiSystem()">
+                <ng-container *ngFor="let device of deviceList">
+                    <button mat-icon-button *ngIf="IsADisplay(device)" [ngClass]="DisplayIsOn(device) ? 'display on' : 'display icon'"><mat-icon>{{text.DefaultIcons[device?.type.id]}}</mat-icon></button>
+                    <mat-label class="display" *ngIf="IsADisplay(device)">{{device.name}}</mat-label>
+                </ng-container>
+            </ng-container>
+        </a>
+    </mat-card-content>
+    <mat-card-actions>
+        <mat-action-row>
+            <div class="row buttons">
+                <a *ngIf="IsPiSystem()" routerLink="/configuration/{{room?.id}}/roompage" class="row">
+                    <mat-icon class="good">check_circle</mat-icon>
+                    <span class="count">{{GetGoodDevicesCount()}}</span>
+                    <mat-icon class="bad">cancel</mat-icon>
+                    <span class="count">{{GetBadDevicesCount()}}</span>
+                </a>
+                <span class="fill-remaining-space"></span>
+                <button mat-icon-button class="edit" (click)="modal.OpenRoomModal(room)" *ngIf="NotADump()"><mat-icon>more_horiz</mat-icon></button>
+            </div>
+        </mat-action-row>
+    </mat-card-actions>
+
+</mat-card>

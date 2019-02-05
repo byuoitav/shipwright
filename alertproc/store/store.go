@@ -64,18 +64,19 @@ func (a *alertStore) putAlert(alert structs.Alert) (string, *nerr.E) {
 		alert.AlertID = GenerateID(alert)
 	}
 
-	a.inChannel <- alert
+	log.L.Infof("Adding alert %v for device %v", alert.AlertID, alert.DeviceID)
 
+	a.inChannel <- alert
 	return alert.AlertID, nil
 }
 
 func (a *alertStore) getAlert(id string) (structs.Alert, *nerr.E) {
+	log.L.Infof("Getting alert %v", id)
 
 	//make our request
 	respChan := make(chan alertResponse, 1)
 
 	a.requestChannel <- alertRequest{
-		AlertID:      id,
 		ResponseChan: respChan,
 	}
 
@@ -88,8 +89,28 @@ func (a *alertStore) getAlert(id string) (structs.Alert, *nerr.E) {
 	return structs.Alert{}, resp.Error
 }
 
+func (a *alertStore) getAllAlerts() ([]structs.Alert, *nerr.E) {
+	log.L.Infof("Getting all alerts")
+
+	//make our request
+	respChan := make(chan alertResponse, 1)
+
+	a.requestChannel <- alertRequest{
+		All:          true,
+		ResponseChan: respChan,
+	}
+
+	resp := <-respChan
+
+	return resp.Alert, resp.Error
+
+}
+
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
 func (a *alertStore) resolveAlert(alertID string, resInfo structs.ResolutionInfo) *nerr.E {
+
+	log.L.Infof("Resolving alert %v", alertID)
+
 	//we remove it from the store, and ship it off to the persistance stuff.
 	//we should check to see if it already exists
 	if v, ok := a.store[alertID]; ok {
@@ -104,14 +125,7 @@ func (a *alertStore) resolveAlert(alertID string, resInfo structs.ResolutionInfo
 		//submit for persistence
 		persist.GetElkAlertPersist().StoreAlert(v, true)
 
-		go func() {
-			acts := actions.DefaultConfig().GetActionsByTrigger("alert-change")
-			// a new context for the run of this action
-			actx := actionctx.PutAlert(context.Background(), v)
-			for i := range acts {
-				a.actionManager.RunAction(actx, acts[i])
-			}
-		}()
+		a.runActions(v)
 
 	} else {
 		return nerr.Create("Unkown alert "+alertID, "not-found")
@@ -121,6 +135,7 @@ func (a *alertStore) resolveAlert(alertID string, resInfo structs.ResolutionInfo
 }
 
 func (a *alertStore) run() {
+	log.L.Infof("running alert store")
 
 	for {
 		select {
@@ -134,6 +149,7 @@ func (a *alertStore) run() {
 
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
 func (a *alertStore) storeAlert(alert structs.Alert) {
+	log.L.Infof("Storing alert %v", alert.AlertID)
 	if alert.Resolved {
 		log.L.Errorf("Can't use storeAlert for resolved alerts: use resolveAlert")
 		return
@@ -168,22 +184,27 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 	}
 
 	persist.GetElkAlertPersist().StoreAlert(alert, false)
+	a.runActions(alert)
+}
 
-	go func() {
-		/*
+func (a *alertStore) runActions(alert structs.Alert) {
+	if a.actionManager != nil {
+		go func() {
 			acts := actions.DefaultConfig().GetActionsByTrigger("alert-change")
 			// a new context for the run of this action
-				actx := actionctx.PutAlert(context.Background(), v)
-				for i := range acts {
-					a.actionManager.RunAction(actx, acts[i])
-				}
-		*/
-	}()
-
+			actx := actionctx.PutAlert(context.Background(), alert)
+			for i := range acts {
+				a.actionManager.RunAction(actx, acts[i])
+			}
+		}()
+	}
 }
 
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
 func (a *alertStore) handleRequest(req alertRequest) {
+
+	log.L.Infof("Handling request %+v", req)
+
 	toReturn := []structs.Alert{}
 
 	if req.All {
