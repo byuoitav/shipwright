@@ -1,0 +1,32 @@
+@import "../../themes.scss";
+.base {
+    max-height: 800px;
+    max-width: 800px;
+    overflow: auto;
+}
+
+.row {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    &.actions {
+        justify-content: space-evenly;
+    }
+}
+
+.timefield {
+    margin-left: 20px;
+    margin-right: 10px;
+    width: 95px;
+}
+
+.button {
+    &.save {
+        color: #43a047;
+    }
+    &.cancel {
+        color: #d50000;
+    }
+}

@@ -161,7 +161,6 @@ func (eh *eventHandlerStruct) OnEventReceived(event events.Event, sendToAll chan
 func StartMessenger() {
 	for {
 		event := socketManager.mess.ReceiveEvent()
-
 		socketManager.WriteToSockets(event)
 	}
 }
