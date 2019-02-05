@@ -17,10 +17,16 @@ type Action struct {
 	Then    []then.Then `json:"then"`
 
 	Log *zap.SugaredLogger
+
+	prune bool
 }
 
 // Run checks the 'ifs' of the action and if they all pass, then it runs the 'thens'
 func (a *Action) Run(ctx context.Context) {
+	if a.prune {
+		return
+	}
+
 	if a.Log == nil {
 		a.Log = log.L.Named(a.Name)
 	}
@@ -35,4 +41,20 @@ func (a *Action) Run(ctx context.Context) {
 			}
 		}
 	}
+}
+
+// Kill stops the action from ever being ran again.
+func (a *Action) Kill() {
+	if a.Log != nil {
+		a.Log.Debugf("Marking action '%s' for deletion", a.Name)
+	} else {
+		log.L.Debugf("Marking action '%s' for deletion", a.Name)
+	}
+
+	a.prune = true
+}
+
+// Killed returns wheter or not the action has been killed
+func (a *Action) Killed() bool {
+	return a.prune
 }

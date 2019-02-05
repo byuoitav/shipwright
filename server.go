@@ -8,7 +8,6 @@ import (
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/v2/auth"
 	"github.com/byuoitav/shipwright/actions"
-	"github.com/byuoitav/shipwright/alertproc/store"
 	"github.com/byuoitav/shipwright/handlers"
 	"github.com/byuoitav/shipwright/socket"
 	figure "github.com/common-nighthawk/go-figure"
@@ -16,18 +15,12 @@ import (
 
 func main() {
 	figure.NewFigure("SMEE", "univers", true).Print()
-	log.SetLevel("info")
+	log.SetLevel("debug")
 
 	port := ":9999"
 	router := common.NewRouter()
 
-	actionManager := &actions.ActionManager{
-		Config:  actions.DefaultConfig(),
-		Workers: 50,
-	}
-	go actionManager.Start(context.TODO())
-
-	store.InitializeAlertStore(actionManager)
+	go actions.DefaultActionManager().Start(context.TODO())
 
 	// Logging Endpoints
 	router.PUT("/log-level/:level", log.SetLogLevel)
