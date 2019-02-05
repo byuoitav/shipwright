@@ -21,6 +21,14 @@ type ActionManager struct {
 
 	matchActions   []*Action
 	intervalAction []*Action
+
+	reqs chan *ActionRequest
+}
+
+// ActionRequest is submitted to the action manager to run an action on one of it's worker threads
+type ActionRequest struct {
+	Action  *Action
+	Context context.Context
 }
 
 // Start starts the action manager
@@ -75,6 +83,8 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 				case <-ctx.Done():
 					wg.Done()
 					return
+				case req := <-a.reqs:
+					req.Action.Run(ctx)
 				default:
 					event := a.Messenger.ReceiveEvent()
 
@@ -95,4 +105,12 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 }
 
 func (a *ActionManager) runActionOnInterval(ctx context.Context, interval time.Duration) {
+}
+
+// RunAction .
+func (a *ActionManager) RunAction(ctx context.Context, action *Action) {
+	a.reqs <- &ActionRequest{
+		Context: ctx,
+		Action:  action,
+	}
 }
