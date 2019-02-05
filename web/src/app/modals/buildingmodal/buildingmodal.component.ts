@@ -17,6 +17,12 @@ export class BuildingModalComponent implements OnInit {
   }
 
   UpdateBuilding() {
-    this.api.UpdateBuilding(this.data.id, this.data);
+    this.api.UpdateBuilding(this.data.id, this.data).then((resp) => {
+      this.dialogRef.close(resp)
+    }
+    )
+  }
+  CloseModal() {
+    this.dialogRef.close()
   }
 }

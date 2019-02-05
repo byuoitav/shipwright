@@ -7,6 +7,7 @@ import (
 	"github.com/byuoitav/common/db"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/structs"
+	"github.com/byuoitav/common/log"
 )
 
 // AddBuilding adds a building to the database
@@ -39,7 +40,6 @@ func UpdateBuilding(buildingID string, building structs.Building) (DBResponse, *
 		Action:   UpdateAction,
 		Success:  false,
 	}
-
 	_, err := db.GetDB().UpdateBuilding(buildingID, building)
 	if err != nil {
 		response.Error = fmt.Sprintf("failed to update the building %s in the database", buildingID)
