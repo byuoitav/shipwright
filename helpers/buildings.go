@@ -7,7 +7,6 @@ import (
 	"github.com/byuoitav/common/db"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/structs"
-	"github.com/byuoitav/common/log"
 )
 
 // AddBuilding adds a building to the database

@@ -1,7 +1,7 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { JsonConvert, Any } from 'json2typescript';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Building, DBResponse, Room, RoomConfiguration, Device, DeviceType, Role, UIConfig, BuildingStatus, RoomStatus, Template, MetricsResponse } from '../objects';
+import { Building, DBResponse, Room, RoomConfiguration, Device, DeviceType, Role, UIConfig, BuildingStatus, RoomStatus, Template, MetricsResponse, StaticDevice } from '../objects';
 
 @Injectable({
   providedIn: 'root'
@@ -495,6 +495,25 @@ export class APIService {
       return permissions;
     } catch (e) {
       throw new Error("error getting the current user's permissions: " + e);
+    }
+  }
+
+  // Static Record Functions
+  public async GetAllStaticDeviceRecords() {
+    try {
+      const data: any = await this.http.get("static/devices", {headers: this.headers}).toPromise();
+      let records: StaticDevice[] = [];
+      for(let sd of data) {
+        let rec = this.converter.deserialize(sd, StaticDevice)
+
+        rec.updateTimes = sd["field-state-received"]
+
+        records.push(rec)
+      }
+
+      return records;
+    } catch (e) {
+      throw new Error("error getting the static device records: " + e);
     }
   }
 }

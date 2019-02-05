@@ -1,4 +1,4 @@
-import { JsonObject, JsonProperty, JsonConverter, JsonCustomConvert, Any } from "json2typescript";
+import { JsonObject, JsonProperty, JsonConverter, JsonCustomConvert, Any, JsonConvert } from "json2typescript";
 
 @JsonConverter
 class DateConverter implements JsonCustomConvert<Date> {
@@ -517,7 +517,7 @@ export class StaticDevice {
     @JsonProperty("transmit-rf-power", String, true)
     transmitRFPower: string = undefined;
 
-    @JsonProperty("field-state-received", [String, DateConverter], true)
+    // @JsonProperty("field-state-received", [String, DateConverter], true)
     updateTimes: Map<string, Date> = new Map();
 }
 

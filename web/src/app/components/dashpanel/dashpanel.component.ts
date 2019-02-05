@@ -55,5 +55,6 @@ export class DashPanelComponent implements OnInit {
     if(panelType === this.LowAlerts) {
       return this.monitor.GetLowAlerts();
     }
+    // TODO get data for battery report
   }
 }
