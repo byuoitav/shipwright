@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { Alert, AlertRow } from '../objects';
 import { StringsService } from './strings.service';
 
@@ -19,10 +19,12 @@ export class MonitoringService {
     3 : "low"
   }
 
-  panelCount = 4;
+  settingsChanged: EventEmitter<any>;
+  panelCount = 1;
 
   constructor(private text: StringsService) {
     this.FillFakeModel();
+    this.settingsChanged = new EventEmitter<any>();
   }
 
   FillFakeModel() {
@@ -374,7 +376,6 @@ export class MonitoringService {
   }
 
   GetAllAlerts(): AlertRow[] {
-    console.log(this.alertRowList);
     return this.alertRowList;
   }
 

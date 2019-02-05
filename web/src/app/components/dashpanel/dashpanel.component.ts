@@ -14,9 +14,13 @@ import { MonitoringService } from 'src/app/services/monitoring.service';
 export class DashPanelComponent implements OnInit {
   @ViewChild(forwardRef(()=>DashPanelDirective)) direct: DashPanelDirective;
 
-  constructor(private resolver: ComponentFactoryResolver, private dashServe: DashPanelService, private monitor: MonitoringService) {}
+  constructor(private resolver: ComponentFactoryResolver, private dashServe: DashPanelService, private monitor: MonitoringService) {
+    
+  }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.choosePanel(this.AllAlerts);
+  }
 
   AllAlerts = "all-alerts";
   CritAlerts = "critical-alerts"
@@ -35,7 +39,6 @@ export class DashPanelComponent implements OnInit {
     viewContainerRef.clear();
 
     let componentRef = viewContainerRef.createComponent(componentFactory);
-    console.log(data);
     (<IDashPanel>componentRef.instance).data = data;
   }
 

@@ -35,7 +35,7 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   }
 
   ngOnInit() {
-    console.log(this.data);
+    // console.log(this.data);
     this.dataSource = new MatTableDataSource(this.data);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -54,12 +54,12 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   }
 
   GetDeviceName(deviceID: string): string {
-    console.log(new Date().toLocaleString())
+    // console.log(new Date().toLocaleString())
     return deviceID.split("-")[2];
   }
 
   GetReadableTimestamp(timestamp: string): string {
-    console.log(timestamp);
+    // console.log(timestamp);
 
     let dateString = timestamp.split(",")[0]
     let timeString = timestamp.split(",")[1]

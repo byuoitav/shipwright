@@ -1,12 +1,10 @@
-<!-- <p>
-    settings works!
-</p> -->
+<section>
+    <h2 class="mat-h1 title">Settings</h2>
+</section>
 
 <mat-form-field>
-    <mat-select (selectionChange)="SetPanelCount($event.value)" color="accent">
-        <mat-option [value]=1>1</mat-option>
-        <mat-option [value]=2>2</mat-option>
-        <mat-option [value]=3>3</mat-option>
-        <mat-option [value]=4>4</mat-option>
+    <mat-label># of Dashboard Panels</mat-label>
+    <mat-select matInput (selectionChange)="SetPanelCount($event.value)" color="accent" [(ngModel)]="monitor.panelCount">
+        <mat-option *ngFor="let num of panelMax" [value]="num">{{num}}</mat-option>
     </mat-select>
 </mat-form-field>
