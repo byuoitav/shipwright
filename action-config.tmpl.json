@@ -1,7 +1,7 @@
 [
   {
     "name": "help-requests",
-    "trigger": "skip",
+    "trigger": "event",
     "if": {
       "event-match": {
         "key": "user-interaction",
@@ -35,19 +35,15 @@
     ]
   },
   {
-    "name": "help-requests",
+    "name": "help-requests-timer",
     "trigger": "interval: 5s",
     "if": {},
     "then": [
       {
-        "do": "skip",
+        "do": "send-email",
         "with": {
-          "from": "{{.Event.TargetDevice.DeviceID}}@byu.edu",
-          "to": [
-            "matt_blodgett@byu.edu",
-            "danny_randall@byu.edu",
-            "joe_blodgett@byu.edu"
-          ],
+          "from": "mitchell_anderson@byu.edu",
+          "to": ["danny_randall@byu.edu"],
           "subject": "Help request in {{.Event.AffectedRoom.RoomID}}",
           "body": "This is a message for **matt blodgett** from {{.Event.GeneratingSystem}}",
           "smtp-addr": "gateway.byu.edu:25",

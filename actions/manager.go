@@ -110,7 +110,7 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 func (a *ActionManager) runActionsFromEvents(ctx context.Context) {
 	a.wg.Add(1)
 	defer a.wg.Done()
-	defer log.L.Infof("finished run actions from events")
+	defer log.L.Infof("Finished running actions from events")
 
 	pruneTick := time.NewTicker(20 * time.Second)
 
@@ -126,7 +126,7 @@ func (a *ActionManager) runActionsFromEvents(ctx context.Context) {
 				if !a.matchActions[i].Killed() {
 					keep = append(keep, a.matchActions[i])
 				} else {
-					a.matchActions[i].Log.Infof("Deleting myself from action manager")
+					log.L.Infof("Removing action %s from action manager", a.matchActions[i].Name)
 				}
 			}
 
@@ -154,7 +154,7 @@ func (a *ActionManager) runActionsFromEvents(ctx context.Context) {
 func (a *ActionManager) runActionOnInterval(action *Action) {
 	a.wg.Add(1)
 	defer a.wg.Done()
-	defer log.L.Infof("Finished managing action %s.", action.Name)
+	defer log.L.Infof("Removing action %s from action manager", action.Name)
 
 	duration := strings.TrimPrefix(action.Trigger, "interval:")
 	duration = strings.TrimSpace(duration)
@@ -174,7 +174,6 @@ func (a *ActionManager) runActionOnInterval(action *Action) {
 			return
 		case <-ticker.C:
 			if action.Killed() {
-				action.Log.Infof("Deleting myself from action manager")
 				return
 			}
 
@@ -204,7 +203,7 @@ func (a *ActionManager) ManageAction(action *Action) {
 		a.matchActions = append(a.matchActions, action)
 		a.matchActionsMu.Unlock()
 
-		log.L.Infof("Added '%s' action to action manager with trigger '%s'", action.Trigger)
+		log.L.Infof("Added '%s' action to action manager with trigger '%s'", action.Name, action.Trigger)
 	default:
 		if strings.HasPrefix(action.Trigger, "interval:") {
 			go a.runActionOnInterval(action)

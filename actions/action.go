@@ -45,6 +45,12 @@ func (a *Action) Run(ctx context.Context) {
 
 // Kill stops the action from ever being ran again.
 func (a *Action) Kill() {
+	if a.Log != nil {
+		a.Log.Debugf("Marking action '%s' for deletion", a.Name)
+	} else {
+		log.L.Debugf("Marking action '%s' for deletion", a.Name)
+	}
+
 	a.prune = true
 }
 
