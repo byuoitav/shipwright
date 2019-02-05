@@ -64,6 +64,7 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 import { DashPanelDirective } from './components/dashpanel/dashpanel.directive';
 import { DashPanelComponent } from './components/dashpanel/dashpanel.component';
 import { DashPanelService } from './services/dashpanel.service';
+import { NotifyModalComponent } from './modals/notify/notify.component';
 
 @NgModule({
   declarations: [
@@ -88,7 +89,8 @@ import { DashPanelService } from './services/dashpanel.service';
     BuildingModalComponent,
     RoomModalComponent,
     DeviceModalComponent,
-    DashPanelDirective
+    DashPanelDirective,
+    NotifyModalComponent
   ],
   imports: [
     BrowserModule,
@@ -127,7 +129,8 @@ import { DashPanelService } from './services/dashpanel.service';
     RoomModalComponent,
     DeviceModalComponent,
     AlertTableComponent,
-    BatteryReportComponent
+    BatteryReportComponent,
+    NotifyModalComponent
   ],
   providers: [
     APIService,
