@@ -1,0 +1,87 @@
+$matToolbarHeight: 64px;
+$wideSideNavWidth: 15em;
+$thinSideNavWidth: 4.2em;
+$buttonHeight: 9vh;
+.base {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.fill-remaining-space {
+    flex: 1 1 auto;
+}
+
+$sidenavHeight: calc(100% - #{$matToolbarHeight});
+.sidenav-container {
+    height: $sidenavHeight;
+}
+
+.sidenav {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: start;
+    width: $thinSideNavWidth;
+    overflow: hidden;
+    overflow-x: hidden;
+    transition: width 0.3s;
+    &.wide {
+        width: $wideSideNavWidth;
+    }
+    button,
+    a {
+        width: 100%;
+        text-align: left;
+        height: $buttonHeight;
+        border-radius: 0px;
+        .material-icons {
+            margin-right: 0.35em;
+            padding-left: 0.15em;
+        }
+    }
+    .bottom {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+    }
+}
+
+.content-container {
+    width: calc(100% - #{$thinSideNavWidth});
+    margin-left: $thinSideNavWidth !important;
+    transition: margin-left 0.3s;
+    &.wide-nav {
+        width: calc(100% - #{$wideSideNavWidth});
+        margin-left: $wideSideNavWidth !important;
+    }
+    &::-webkit-scrollbar {
+        width: 0.4em;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: #666;
+        border-radius: 3em;
+    }
+    &::-webkit-scrollbar-track {
+        background: #ddd;
+        border-radius: 3em;
+    }
+}
+
+.website-title {
+    font-style: 550 24px/36px Roboto, 'Helvetica Neue', sans-serif;
+}
+
+.menu {
+    &.title {
+        font-style: 500 22px/34px Roboto, 'Helvetica Neue', sans-serif;
+    }
+    &.item {
+        font-style: 450 16px/18px Roboto, 'Helvetica Neue', sans-serif;
+    }
+}

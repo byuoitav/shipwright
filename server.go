@@ -22,7 +22,8 @@ func main() {
 	router := common.NewRouter()
 
 	actionManager := &actions.ActionManager{
-		Config: actions.DefaultConfig(),
+		Config:  actions.DefaultConfig(),
+		Workers: 50,
 	}
 	go actionManager.Start(context.TODO())
 
@@ -83,24 +84,6 @@ func main() {
 	// Options Endpoints
 	read.GET("/options/icons", handlers.GetIcons)
 	read.GET("/options/templates", handlers.GetTemplates)
-
-	// Metrics Endpoints
-	read.GET("/metrics/added/buildings", handlers.GetAddedBuildings)
-	read.GET("/metrics/added/rooms", handlers.GetAddedRooms)
-	read.GET("/metrics/added/devices", handlers.GetAddedDevices)
-	read.GET("/metrics/added/uiconfigs", handlers.GetAddedUIConfigs)
-	read.GET("/metrics/added", handlers.GetAllAdditions)
-	read.GET("/metrics/updated/buildings", handlers.GetUpdatedBuildings)
-	read.GET("/metrics/updated/rooms", handlers.GetUpdatedRooms)
-	read.GET("/metrics/updated/devices", handlers.GetUpdatedDevices)
-	read.GET("/metrics/updated/uiconfigs", handlers.GetUpdatedUIConfigs)
-	read.GET("/metrics/updated", handlers.GetAllUpdates)
-	read.GET("/metrics/deleted/buildings", handlers.GetDeletedBuildings)
-	read.GET("/metrics/deleted/rooms", handlers.GetDeletedRooms)
-	read.GET("/metrics/deleted/devices", handlers.GetDeletedDevices)
-	read.GET("/metrics/deleted/uiconfigs", handlers.GetDeletedUIConfigs)
-	read.GET("/metrics/deleted", handlers.GetAllDeletions)
-	read.GET("/metrics", handlers.GetFullChangesList)
 
 	// Auth Endpoints
 	read.GET("/users/current/username", handlers.GetUsername)
