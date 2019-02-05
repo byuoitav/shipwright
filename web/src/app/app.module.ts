@@ -26,7 +26,8 @@ import {
   MatPaginatorModule,
   MatSortModule,
   MatButtonToggleModule,
-  MatSelectModule
+  MatSelectModule,
+  MatChipsModule
 } from "@angular/material";
 
 import { AppRoutingModule } from './app-routing.module';
@@ -116,7 +117,8 @@ import { DashPanelService } from './services/dashpanel.service';
     MatPaginatorModule,
     MatSortModule,
     MatButtonToggleModule,
-    MatSelectModule
+    MatSelectModule,
+    MatChipsModule
   ],
   entryComponents: [
     SettingsModalComponent,

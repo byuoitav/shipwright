@@ -27,56 +27,56 @@ export class DataService {
 
   constructor(public api: APIService) {
     this.loaded = new EventEmitter<boolean>();
-    this.loadData();
+    this.LoadData();
   }
 
-  private async loadData() {
-    await this.getAllBuildings();
-    await this.getAllRooms();
-    await this.getAllDevices();
-    await this.getAllUIConfigs();
-    await this.getAllDeviceTypes();
-    await this.getAllDeviceRoles();
-    await this.getAllTemplates();
-    await this.getAllRoomConfigurations();
-    await this.getAllRoomDesignations();
-    await this.setBuildingToRoomsMap();
-    await this.setRoomToDevicesMap();
+  private async LoadData() {
+    await this.GetAllBuildings();
+    await this.GetAllRooms();
+    await this.GetAllDevices();
+    await this.GetAllUIConfigs();
+    await this.GetAllDeviceTypes();
+    await this.GetAllDeviceRoles();
+    await this.GetAllTemplates();
+    await this.GetAllRoomConfigurations();
+    await this.GetAllRoomDesignations();
+    await this.SetBuildingToRoomsMap();
+    await this.SetRoomToDevicesMap();
     this.finished = true;
     this.loaded.emit(true);
   }
 
-  private async getAllBuildings() {
+  private async GetAllBuildings() {
     this.allBuildings = [];
 
-    await this.api.getAllBuildings().then((buildings) => {
+    await this.api.GetAllBuildings().then((buildings) => {
       this.allBuildings = buildings;
     })
   }
 
-  private async getAllRooms() {
+  private async GetAllRooms() {
     this.allRooms = [];
     this.buildingToRoomsMap.clear();
 
-    await this.api.getAllRooms().then((rooms) => {
+    await this.api.GetAllRooms().then((rooms) => {
       this.allRooms = rooms;
     });
   }
 
-  private async getAllDevices() {
+  private async GetAllDevices() {
     this.allDevices = [];
     this.roomToDevicesMap.clear();
 
-    await this.api.getAllDevices().then((devices) => {
+    await this.api.GetAllDevices().then((devices) => {
       this.allDevices = devices;
     });
   }
 
-  private async getAllDeviceTypes() {
+  private async GetAllDeviceTypes() {
     this.deviceTypeList = [];
     this.deviceTypeMap.clear();
 
-    await this.api.getDeviceTypes().then((types) => {
+    await this.api.GetDeviceTypes().then((types) => {
       this.deviceTypeList = types;
 
       for(let type of this.deviceTypeList) {
@@ -85,27 +85,27 @@ export class DataService {
     });
   }
 
-  private async getAllRoomConfigurations() {
+  private async GetAllRoomConfigurations() {
     this.roomConfigurations = [];
 
-    await this.api.getRoomConfigurations().then((configurations) => {
+    await this.api.GetRoomConfigurations().then((configurations) => {
       this.roomConfigurations = configurations;
     });
   }
 
-  private async getAllRoomDesignations() {
+  private async GetAllRoomDesignations() {
     this.roomDesignations = [];
 
-    this.api.getRoomDesignations().then((designations) => {
+    this.api.GetRoomDesignations().then((designations) => {
       this.roomDesignations = designations as string[];
     });
   }
 
-  private async getAllUIConfigs() {
+  private async GetAllUIConfigs() {
     this.allUIConfigs = [];
     this.roomToUIConfigMap.clear();
 
-    await this.api.getAllUIConfigs().then((configs) => {
+    await this.api.GetAllUIConfigs().then((configs) => {
       this.allUIConfigs = configs;
 
       for(let config of this.allUIConfigs) {
@@ -114,23 +114,23 @@ export class DataService {
     });
   }
 
-  private async getAllDeviceRoles() {
+  private async GetAllDeviceRoles() {
     this.deviceRoles = [];
 
-    this.api.getDeviceRoles().then((roles) => {
+    this.api.GetDeviceRoles().then((roles) => {
       this.deviceRoles = roles;
     });
   }
 
-  private async getAllTemplates() {
+  private async GetAllTemplates() {
     this.templateList = [];
 
-    this.api.getTemplates().then((list) => {
+    this.api.GetTemplates().then((list) => {
       this.templateList = list;
     });
   }
 
-  private async setBuildingToRoomsMap() {
+  private async SetBuildingToRoomsMap() {
     for(let room of this.allRooms) {
       for(let building of this.allBuildings) {
         if(room.id.includes(building.id)) {
@@ -145,7 +145,7 @@ export class DataService {
     }
   }
 
-  private async setRoomToDevicesMap() {
+  private async SetRoomToDevicesMap() {
     for(let device of this.allDevices) {
       for(let room of this.allRooms) {
         if(device.id.includes(room.id)) {
@@ -160,7 +160,7 @@ export class DataService {
     }
   }
 
-  getBuilding(buildingID: string): Building {
+  GetBuilding(buildingID: string): Building {
     for(let building of this.allBuildings) {
       if(buildingID == building.id) {
         return building;
@@ -168,7 +168,7 @@ export class DataService {
     }
   }
 
-  getRoom(roomID: string): Room {
+  GetRoom(roomID: string): Room {
     let buildingID = roomID.split("-")[0]
 
     if(this.buildingToRoomsMap.get(buildingID) != null) {
@@ -180,7 +180,7 @@ export class DataService {
     }
   }
 
-  getDevice(deviceID: string): Device {
+  GetDevice(deviceID: string): Device {
     let deviceSplit = deviceID.split("-")
     let roomID = deviceSplit[0] + "-" + deviceSplit[1]
 
@@ -193,7 +193,7 @@ export class DataService {
     }
   }
 
-  deviceHasRole(device: Device, role: string): boolean {
+  DeviceHasRole(device: Device, role: string): boolean {
     for(let r of device.roles) {
       if(r.id === role) {
         return true;

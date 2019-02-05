@@ -46,7 +46,7 @@ export class RoomComponent implements OnInit {
 
   IsADisplay(device: Device): boolean {
     if(device != null && device.type != null) {
-      return this.data.deviceHasRole(device, "VideoOut");
+      return this.data.DeviceHasRole(device, "VideoOut");
     }
 
     return false;
@@ -61,7 +61,7 @@ export class RoomComponent implements OnInit {
     if(this.room.configuration.id == "DMPS") {
       return "accessible_forward"
     } else if(this.deviceList.length == 1) {
-      return "calendar_today"
+      return "today"
     } else {
       return "video_label"
     }
@@ -89,5 +89,9 @@ export class RoomComponent implements OnInit {
   GetBadDevicesCount(): number {
     // TODO return the actual number of bad devices
     return 0;
+  }
+
+  NotADump() {
+    return !(this.room.configuration.id == "DMPS")
   }
 }

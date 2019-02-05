@@ -46,7 +46,7 @@ a {
 .row {
     position: relative;
     display: flex;
-    flex-flow: row nowrap;
+    flex-flow: row wrap;
     justify-content: flex-start;
     align-content: space-between;
     align-items: center;
@@ -54,6 +54,7 @@ a {
     padding-left: 5px;
     padding-right: 5px;
     &.buttons {
+        flex-flow: row nowrap;
         justify-content: flex-end;
     }
 }

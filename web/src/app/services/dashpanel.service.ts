@@ -9,7 +9,10 @@ import { DashPanel } from '../components/dashpanel/idashpanel';
 })
 export class DashPanelService {
   private PanelMap = {
-    "alerts": AlertTableComponent,
+    "all-alerts": AlertTableComponent,
+    "critical-alerts": AlertTableComponent,
+    "warning-alerts" : AlertTableComponent,
+    "low-alerts" : AlertTableComponent,
     "battery": BatteryReportComponent 
   }
 

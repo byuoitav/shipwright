@@ -5,7 +5,7 @@ import { RespondModalComponent } from '../modals/respond/respond.component';
 import { BuildingModalComponent } from '../modals/buildingmodal/buildingmodal.component';
 import { RoomModalComponent } from '../modals/roommodal/roommodal.component';
 import { DeviceModalComponent } from '../modals/devicemodal/devicemodal.component';
-import { Building, Room, Device } from '../objects';
+import { Building, Room, Device, AlertRow } from '../objects';
 
 @Injectable({
   providedIn: 'root'
@@ -15,11 +15,13 @@ export class ModalService {
   constructor(private dialog: MatDialog) { }
 
   OpenSettingsModal() {
-    this.dialog.open(SettingsModalComponent);
+    this.dialog.open(SettingsModalComponent).afterClosed().subscribe(() => {
+      // window.location.reload();
+    })
   }
 
-  OpenRespondModal() {
-    this.dialog.open(RespondModalComponent);
+  OpenRespondModal(alertRow: AlertRow) {
+    this.dialog.open(RespondModalComponent, {data: alertRow});
   }
 
   OpenBuildingModal(building: Building) {

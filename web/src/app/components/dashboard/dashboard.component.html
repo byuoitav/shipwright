@@ -1,9 +1,11 @@
-<p>
+<!-- <p>
     dashboard works!
-</p>
+</p> -->
 
-<section>
-    <button (click)="modal.OpenSettingsModal()">Settings</button>
-</section>
+<!-- <section class="row">
+    <button mat-icon-button class="settings" (click)="modal.OpenSettingsModal()"><mat-icon>settings</mat-icon></button>
+</section> -->
 
-<dashpanel *ngFor="let i of panelCount"></dashpanel>
+<div class="container">
+    <dashpanel class="panel" *ngFor="let i of panelCount"></dashpanel>
+</div>

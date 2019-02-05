@@ -37,4 +37,8 @@ export class BuildingComponent implements OnInit {
 
     return 0
   }
+
+  NotADump(): boolean {
+    return !this.building.tags.includes("dmps")
+  }
 }

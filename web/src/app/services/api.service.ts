@@ -54,7 +54,7 @@ export class APIService {
   }
 
   // Building Functions
-  public async addBuilding(toAdd: Building) {
+  public async AddBuilding(toAdd: Building) {
     try {
       const data = await this.http.post("buildings/"+toAdd.id, toAdd, {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
@@ -65,7 +65,7 @@ export class APIService {
     }
   }
 
-  public async addBuildings(toAdd: Building[]) {
+  public async AddBuildings(toAdd: Building[]) {
     try {
       const data = await this.http.post("buildings", toAdd, {headers: this.headers})
       const response = this.converter.deserialize(data, DBResponse);
@@ -76,7 +76,7 @@ export class APIService {
     }
   }
 
-  public async getBuilding(buildingID: string) {
+  public async GetBuilding(buildingID: string) {
     try {
       const data = await this.http.get("buildings/"+buildingID, {headers: this.headers}).toPromise();
       const building = this.converter.deserialize(data, Building);
@@ -87,7 +87,7 @@ export class APIService {
     }
   }
 
-  public async getAllBuildings() {
+  public async GetAllBuildings() {
     try {
       const data = await this.http.get("buildings", {headers: this.headers}).toPromise();
       const buildings = this.converter.deserialize(data, Building);
@@ -98,8 +98,10 @@ export class APIService {
     }
   }
 
-  public async updateBuilding(idToUpdate: string, toUpdate: Building) {
+  public async UpdateBuilding(idToUpdate: string, toUpdate: Building) {
     try {
+      console.log(idToUpdate);
+      console.log(toUpdate);
       const data = await this.http.put("buildings/"+idToUpdate+"/update", toUpdate, {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
 
@@ -109,7 +111,7 @@ export class APIService {
     }
   }
 
-  public async updateBuildings(toUpdate: Building[]) {
+  public async UpdateBuildings(toUpdate: Building[]) {
     try {
       const data = await this.http.put("buildings/update", toUpdate, {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
@@ -120,7 +122,7 @@ export class APIService {
     }
   }
 
-  public async deleteBuilding(buildingID: string) {
+  public async DeleteBuilding(buildingID: string) {
     try {
       const data = await this.http.get("buildings/"+buildingID+"/delete", {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
@@ -132,7 +134,7 @@ export class APIService {
   }
 
   // Room Functions
-  public async addRoom(toAdd: Room) {
+  public async AddRoom(toAdd: Room) {
     try {
       const data = await this.http.post("rooms/"+toAdd.id, toAdd, {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
@@ -143,7 +145,7 @@ export class APIService {
     }
   }
 
-  public async addRooms(toAdd: Room[]) {
+  public async AddRooms(toAdd: Room[]) {
     try {
       const data = await this.http.post("rooms", toAdd, {headers: this.headers})
       const response = this.converter.deserialize(data, DBResponse);
@@ -154,7 +156,7 @@ export class APIService {
     }
   }
 
-  public async getRoom(roomID: string) {
+  public async GetRoom(roomID: string) {
     try {
       const data = await this.http.get("rooms/"+roomID, {headers: this.headers}).toPromise();
       const room = this.converter.deserialize(data, Room);
@@ -165,7 +167,7 @@ export class APIService {
     }
   }
 
-  public async getAllRooms() {
+  public async GetAllRooms() {
     try {
       const data = await this.http.get("rooms", {headers: this.headers}).toPromise();
       const rooms = this.converter.deserialize(data, Room);
@@ -176,7 +178,7 @@ export class APIService {
     }
   }
 
-  public async getRoomsByBuilding(buildingID: string) {
+  public async GetRoomsByBuilding(buildingID: string) {
     try {
       const data = await this.http.get("buildings/"+buildingID+"/rooms", {headers: this.headers}).toPromise();
       const rooms = this.converter.deserialize(data, Room);
@@ -187,7 +189,7 @@ export class APIService {
     }
   }
 
-  public async updateRoom(idToUpdate: string, toUpdate: Room) {
+  public async UpdateRoom(idToUpdate: string, toUpdate: Room) {
     try {
       const data = await this.http.put("rooms/"+idToUpdate+"/update", toUpdate, {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
@@ -198,7 +200,7 @@ export class APIService {
     }
   }
 
-  public async updateRooms(toUpdate: Room[]) {
+  public async UpdateRooms(toUpdate: Room[]) {
     try {
       const data = await this.http.put("rooms/update", toUpdate, {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
@@ -209,7 +211,7 @@ export class APIService {
     }
   }
 
-  public async deleteRoom(roomID: string) {
+  public async DeleteRoom(roomID: string) {
     try {
       const data = await this.http.get("rooms/"+roomID+"/delete", {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
@@ -220,7 +222,7 @@ export class APIService {
     }
   }
 
-  public async getRoomConfigurations() {
+  public async GetRoomConfigurations() {
     try {
       const data = await this.http.get("rooms/configurations", {headers: this.headers}).toPromise();
       const roomConfigs = this.converter.deserialize(data, RoomConfiguration);
@@ -231,7 +233,7 @@ export class APIService {
     }
   }
 
-  public async getRoomDesignations() {
+  public async GetRoomDesignations() {
     try {
       const data = await this.http.get("rooms/designations", {headers: this.headers}).toPromise();
 
@@ -242,7 +244,7 @@ export class APIService {
   }
 
   // Device Functions
-  public async addDevice(toAdd: Device) {
+  public async AddDevice(toAdd: Device) {
     try {
       const data = await this.http.post("devices/"+toAdd.id, toAdd, {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
@@ -253,7 +255,7 @@ export class APIService {
     }
   }
 
-  public async addDevices(toAdd: Device[]) {
+  public async AddDevices(toAdd: Device[]) {
     try {
       const data = await this.http.post("devices", toAdd, {headers: this.headers})
       const response = this.converter.deserialize(data, DBResponse);
@@ -264,7 +266,7 @@ export class APIService {
     }
   }
 
-  public async getDevice(deviceID: string) {
+  public async GetDevice(deviceID: string) {
     try {
       const data = await this.http.get("devices/"+deviceID, {headers: this.headers}).toPromise();
       const device = this.converter.deserialize(data, Device);
@@ -275,7 +277,7 @@ export class APIService {
     }
   }
 
-  public async getAllDevices() {
+  public async GetAllDevices() {
     try {
       const data = await this.http.get("devices", {headers: this.headers}).toPromise();
       const devices = this.converter.deserialize(data, Device);
@@ -286,7 +288,7 @@ export class APIService {
     }
   }
 
-  public async getDevicesByRoom(roomID: string) {
+  public async GetDevicesByRoom(roomID: string) {
     try {
       const data = await this.http.get("rooms/"+roomID+"/devices", {headers: this.headers}).toPromise();
       const devices = this.converter.deserialize(data, Device);
@@ -297,7 +299,7 @@ export class APIService {
     }
   }
 
-  public async getDevicesByRoomAndRole(roomID: string, roleID: string) {
+  public async GetDevicesByRoomAndRole(roomID: string, roleID: string) {
     try {
       const data = await this.http.get("rooms/"+roomID+"/devices/roles/"+roleID, {headers: this.headers}).toPromise();
       const devices = this.converter.deserialize(data, Device);
@@ -308,7 +310,7 @@ export class APIService {
     }
   }
 
-  public async getDevicesByTypeAndRole(typeID: string, roleID: string) {
+  public async GetDevicesByTypeAndRole(typeID: string, roleID: string) {
     try {
       const data = await this.http.get("devices/types/"+typeID+"/roles/"+roleID, {headers: this.headers}).toPromise();
       const devices = this.converter.deserialize(data, Device);
@@ -319,7 +321,7 @@ export class APIService {
     }
   }
 
-  public async updateDevice(idToUpdate: string, toUpdate: Device) {
+  public async UpdateDevice(idToUpdate: string, toUpdate: Device) {
     try {
       const data = await this.http.put("devices/"+idToUpdate+"/update", toUpdate, {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
@@ -330,7 +332,7 @@ export class APIService {
     }
   }
 
-  public async updateDevices(toUpdate: Device[]) {
+  public async UpdateDevices(toUpdate: Device[]) {
     try {
       const data = await this.http.put("devices/update", toUpdate, {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
@@ -341,7 +343,7 @@ export class APIService {
     }
   }
 
-  public async deleteDevice(deviceID: string) {
+  public async DeleteDevice(deviceID: string) {
     try {
       const data = await this.http.get("devices/"+deviceID+"/delete", {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
@@ -352,7 +354,7 @@ export class APIService {
     }
   }
 
-  public async getDeviceTypes() {
+  public async GetDeviceTypes() {
     try {
       const data = await this.http.get("devices/types", {headers: this.headers}).toPromise();
       const deviceTypes = this.converter.deserialize(data, DeviceType);
@@ -363,7 +365,7 @@ export class APIService {
     }
   }
 
-  public async getDeviceRoles() {
+  public async GetDeviceRoles() {
     try {
       const data = await this.http.get("devices/roles", {headers: this.headers}).toPromise();
       const deviceRoles = this.converter.deserialize(data, Role);
@@ -375,7 +377,7 @@ export class APIService {
   }
 
   // UIConfig Functions
-  public async addUIConfig(toAdd: UIConfig) {
+  public async AddUIConfig(toAdd: UIConfig) {
     try {
       const data = await this.http.post("uiconfigs/"+toAdd.id, toAdd, {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
@@ -386,7 +388,7 @@ export class APIService {
     }
   }
 
-  public async addUIConfigs(toAdd: UIConfig[]) {
+  public async AddUIConfigs(toAdd: UIConfig[]) {
     try {
       const data = await this.http.post("uiconfigs", toAdd, {headers: this.headers})
       const response = this.converter.deserialize(data, DBResponse);
@@ -397,7 +399,7 @@ export class APIService {
     }
   }
 
-  public async getUIConfig(configID: string) {
+  public async GetUIConfig(configID: string) {
     try {
       const data = await this.http.get("uiconfigs/"+configID, {headers: this.headers}).toPromise();
       const uiconfig = this.converter.deserialize(data, UIConfig);
@@ -408,7 +410,7 @@ export class APIService {
     }
   }
 
-  public async getAllUIConfigs() {
+  public async GetAllUIConfigs() {
     try {
       const data = await this.http.get("uiconfigs", {headers: this.headers}).toPromise();
       const uiconfigs = this.converter.deserialize(data, UIConfig);
@@ -419,7 +421,7 @@ export class APIService {
     }
   }
 
-  public async updateUIConfig(idToUpdate: string, toUpdate: UIConfig) {
+  public async UpdateUIConfig(idToUpdate: string, toUpdate: UIConfig) {
     try {
       const data = await this.http.put("uiconfigs/"+idToUpdate+"/update", toUpdate, {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
@@ -430,7 +432,7 @@ export class APIService {
     }
   }
 
-  public async updateUIConfigs(toUpdate: UIConfig[]) {
+  public async UpdateUIConfigs(toUpdate: UIConfig[]) {
     try {
       const data = await this.http.put("uiconfigs/update", toUpdate, {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
@@ -441,7 +443,7 @@ export class APIService {
     }
   }
 
-  public async deleteUIConfig(configID: string) {
+  public async DeleteUIConfig(configID: string) {
     try {
       const data = await this.http.get("uiconfigs/"+configID+"/delete", {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
@@ -453,7 +455,7 @@ export class APIService {
   }
 
   // Options Functions
-  public async getIcons() {
+  public async GetIcons() {
     try {
       const data = await this.http.get("options/icons", {headers: this.headers}).toPromise();
 
@@ -463,7 +465,7 @@ export class APIService {
     }
   }
 
-  public async getTemplates() {
+  public async GetTemplates() {
     try {
       const data = await this.http.get("options/templates", {headers: this.headers}).toPromise();
       const templates = this.converter.deserialize(data, Template);
@@ -475,7 +477,7 @@ export class APIService {
   }
 
   // Authentication Functions
-  public async getCurrentUsername() {
+  public async GetCurrentUsername() {
     try {
       const data = await this.http.get("users/current/username", {headers: this.headers}).toPromise();
 
@@ -485,7 +487,7 @@ export class APIService {
     }
   }
 
-  public async getUserPermissions() {
+  public async GetUserPermissions() {
     try {
       const data = await this.http.get("users/current/permissions", {headers: this.headers}).toPromise();
       const permissions = this.converter.deserialize(data, Any);

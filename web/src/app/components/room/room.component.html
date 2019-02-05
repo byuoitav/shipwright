@@ -26,8 +26,8 @@
                     <mat-icon class="bad">cancel</mat-icon>
                     <span class="count">{{GetBadDevicesCount()}}</span>
                 </a>
-                <!-- <span class="fill-remaining-space"></span> -->
-                <button mat-icon-button class="edit" (click)="modal.OpenRoomModal(room)"><mat-icon>more_horiz</mat-icon></button>
+                <span class="fill-remaining-space"></span>
+                <button mat-icon-button class="edit" (click)="modal.OpenRoomModal(room)" *ngIf="NotADump()"><mat-icon>more_horiz</mat-icon></button>
             </div>
         </mat-action-row>
     </mat-card-actions>

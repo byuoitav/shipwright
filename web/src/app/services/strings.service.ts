@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { MatChipInputEvent } from '@angular/material';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 
 @Injectable({
   providedIn: 'root'
@@ -41,5 +43,33 @@ export class StringsService {
     "VideoCard": "add_to_queue",
     "non-controllable": "settings_input_hdmi",
     "via-connect-pro": "setings_input_antenna",
+  }
+
+  public readonly separatorKeyCodes: number[] = [ENTER, COMMA];
+
+  public AddTag(event: MatChipInputEvent, data: any): void {
+    if(data.tags == null || data.tags.length == 0) {
+      data.tags = [];
+    }
+
+    const input = event.input;
+    const value = event.value;
+
+    // Add our tag
+    if ((value || '').trim()) {
+      data.tags.push(value.trim());
+    }
+
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+  }
+
+  public RemoveTag(tag: string, data: any): void {
+    let index = data.tags.indexOf(tag);
+    if (index >= 0) {
+      data.tags.splice(index, 1);
+    }
   }
 }

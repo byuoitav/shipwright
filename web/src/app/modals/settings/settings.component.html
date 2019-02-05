@@ -1,3 +1,12 @@
-<p>
+<!-- <p>
     settings works!
-</p>
+</p> -->
+
+<mat-form-field>
+    <mat-select (selectionChange)="SetPanelCount($event.value)" color="accent">
+        <mat-option [value]=1>1</mat-option>
+        <mat-option [value]=2>2</mat-option>
+        <mat-option [value]=3>3</mat-option>
+        <mat-option [value]=4>4</mat-option>
+    </mat-select>
+</mat-form-field>

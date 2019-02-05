@@ -17,4 +17,5 @@
             <input matInput type="text" [matChipInputFor]="bldgTags" [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="text.AddTag($event, data)">
         </mat-chip-list>
     </mat-form-field>
+    <button mat-button (click)="UpdateBuilding()">Update</button>
 </div>

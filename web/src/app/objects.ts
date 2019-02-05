@@ -586,20 +586,38 @@ export class Alert {
     @JsonProperty("type", String, true)
     type: string = undefined;
 
+    @JsonProperty("category", String, true)
+    category: string = undefined;
+
     @JsonProperty("incident-id", String)
     incidentID: string = undefined;
 
-    @JsonProperty("severity", Number, true)
-    severity: number = undefined;
+    @JsonProperty("severity", String, true)
+    severity: string = undefined;
 
     @JsonProperty("message", String)
     message: string = undefined;
 
+    @JsonProperty("message-log", [String])
+    messageLog: string[] = Array<string>();
+
     @JsonProperty("data", Any)
     data: any = undefined;
 
-    @JsonProperty("count-before-resolution", Number)
-    countBeforeResolution: number = undefined;
+    @JsonProperty("start-time", Date)
+    startTime: Date = undefined;
+
+    @JsonProperty("end-time", Date)
+    endTime: Date = undefined;
+
+    @JsonProperty("update-time", Date)
+    updateTime: Date = undefined;
+
+    @JsonProperty("active", Boolean)
+    active: boolean = true
+
+    @JsonProperty("resolved", Boolean)
+    resolved: boolean = true
 
     @JsonProperty("responders", [String])
     responders: string[] = Array<string>();
@@ -621,8 +639,6 @@ export class Alert {
 
     @JsonProperty("device-tags", [String], true)
     deviceTags: string[] = Array<string>();
-
-    hide: boolean = false;
 }
 
 export class AlertRow{
@@ -633,5 +649,4 @@ export class AlertRow{
     expanded: boolean = false;
     helpSent: boolean = false;
     helpArrived: boolean = false;
-    hide: boolean = false;
 }

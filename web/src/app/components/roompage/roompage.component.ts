@@ -19,14 +19,14 @@ export class RoomPageComponent implements OnInit {
       this.roomID = params["roomID"];
       
       if(this.data.finished) {
-        this.room = this.data.getRoom(this.roomID);
-        if(this.notADump()) {
+        this.room = this.data.GetRoom(this.roomID);
+        if(this.NotADump()) {
           this.devices = this.data.roomToDevicesMap.get(this.roomID);
         }
       } else {
         this.data.loaded.subscribe(() => {
-          this.room = this.data.getRoom(this.roomID);
-          if(this.notADump()) {
+          this.room = this.data.GetRoom(this.roomID);
+          if(this.NotADump()) {
             this.devices = this.data.roomToDevicesMap.get(this.roomID);
           }
         })
@@ -38,7 +38,7 @@ export class RoomPageComponent implements OnInit {
   ngOnInit() {
   }
 
-  notADump(): boolean {
+  NotADump(): boolean {
     if(this.room == null) {
       return false
     }

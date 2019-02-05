@@ -1,14 +1,20 @@
-<p>
+<!-- <p>
     dashpanel works!
-</p>
+</p> -->
 
-<mat-form-field>
-    <mat-select (selectionChange)="choosePanel($event.value)">
-        <mat-option [value]=null>None</mat-option>
-        <mat-option [value]="'alerts'">All Alerts</mat-option>
-        <mat-option [value]="'battery'">Battery Report</mat-option>
-    </mat-select>
-</mat-form-field>
+<div class="row">
+    <mat-form-field>
+        <mat-select (selectionChange)="choosePanel($event.value)" color="accent">
+            <mat-option [value]=null>None</mat-option>
+            <mat-option [value]="AllAlerts">All Alerts</mat-option>
+            <mat-option [value]="CritAlerts">Critical Alerts</mat-option>
+            <mat-option [value]="WarnAlerts">Warning Alerts</mat-option>
+            <mat-option [value]="LowAlerts">Low Alerts</mat-option>
+            <mat-option [value]="'battery'">Battery Report</mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+
 
 <div>
     <ng-template dashDirect></ng-template>
