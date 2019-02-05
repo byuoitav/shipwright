@@ -124,6 +124,7 @@ func (a *alertStore) resolveAlert(alertID string, resInfo structs.ResolutionInfo
 
 		//submit for persistence
 		persist.GetElkAlertPersist().StoreAlert(v, true)
+
 		a.runActions(v)
 
 	} else {
@@ -184,7 +185,6 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 	persist.GetElkAlertPersist().StoreAlert(alert, false)
 	a.runActions(alert)
-
 }
 
 func (a *alertStore) runActions(alert structs.Alert) {

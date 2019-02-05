@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"sync"
 
-	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/shipwright/actions/actionctx"
 )
 
@@ -101,7 +100,6 @@ func (m *EventMatch) DoesEventMatch(ctx context.Context) bool {
 	if m.Regex.Key != nil {
 		reg := m.Regex.Key.Copy()
 		if !reg.MatchString(event.Key) {
-			log.L.Debugf("returrning false.")
 			return false
 		}
 	}
@@ -169,7 +167,6 @@ func (m *EventMatch) DoesEventMatch(ctx context.Context) bool {
 		}
 	}
 
-	log.L.Infof("matched event: %+v", event)
 	return true
 }
 
