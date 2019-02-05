@@ -1,19 +1,24 @@
 package store
 
 import (
+	"context"
 	"fmt"
 	"time"
 
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/structs"
+	"github.com/byuoitav/shipwright/actions"
+	"github.com/byuoitav/shipwright/actions/actionctx"
+	"github.com/byuoitav/shipwright/alertproc/store/persist"
 )
 
 type alertStore struct {
 	inChannel      chan structs.Alert
 	requestChannel chan alertRequest
 
-	store map[string]structs.Alert
-	//	configuration Config
+	store         map[string]structs.Alert
+	actionManager *actions.ActionManager
 }
 
 //AlertRequest is submitted to the store to retrieve an alert from it.
@@ -33,11 +38,12 @@ var ZeroTime = time.Time{}
 
 var store alertStore
 
-func init() {
+func InitializeAlertStore(a *actions.ActionManager) {
 	store := alertStore{
 		inChannel:      make(chan structs.Alert, 1000),
 		requestChannel: make(chan alertRequest, 1000),
 		store:          map[string]structs.Alert{},
+		actionManager:  a,
 	}
 
 	go store.run()
@@ -95,9 +101,17 @@ func (a *alertStore) resolveAlert(alertID string, resInfo structs.ResolutionInfo
 
 		delete(a.store, alertID)
 
-		//submit for persistance in the resolved alert
+		//submit for persistence
+		persist.GetElkAlertPersist().StoreAlert(v, true)
 
-		//remove from persistance in the active alerts array
+		go func() {
+			acts := actions.DefaultConfig().GetActionsByTrigger("alert-change")
+			// a new context for the run of this action
+			actx := actionctx.PutAlert(context.Background(), event)
+			for i := range acts {
+				a.actionManager.RunAction(actx, acts[i])
+			}
+		}()
 
 	} else {
 		return nerr.Create("Unkown alert "+alertID, "not-found")
@@ -120,6 +134,10 @@ func (a *alertStore) run() {
 
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
 func (a *alertStore) storeAlert(alert structs.Alert) {
+	if alert.Resolved {
+		log.L.Errorf("Can't use storeAlert for resolved alerts: use resolveAlert")
+		return
+	}
 
 	//we should check to see if it already exists
 	if v, ok := a.store[alert.AlertID]; ok {
@@ -136,6 +154,8 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 		a.store[v.AlertID] = v //store it back in
 
+		alert = v
+
 	} else {
 
 		//we store it.
@@ -147,9 +167,17 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		a.store[alert.AlertID] = alert
 	}
 
-	//submit to be updated in persistance.
+	persist.GetElkAlertPersist().StoreAlert(alert, false)
 
-	//check rules for actions
+	go func() {
+		acts := actions.DefaultConfig().GetActionsByTrigger("alert-change")
+		// a new context for the run of this action
+		actx := actionctx.PutAlert(context.Background(), event)
+		for i := range acts {
+			a.actionManager.RunAction(actx, acts[i])
+		}
+	}()
+
 }
 
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
