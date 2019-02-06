@@ -1,16 +1,15 @@
-package actions
+package iff
 
 import (
 	"context"
 
-	"github.com/byuoitav/shipwright/actions/iff"
 	"go.uber.org/zap"
 )
 
 // If represents the set of conditions to running an action
 type If struct {
-	EventMatch *iff.EventMatch `json:"event-match"`
-	AlertMatch *iff.AlertMatch `json:"alert-match"`
+	EventMatch *EventMatch `json:"event-match"`
+	AlertMatch *AlertMatch `json:"alert-match"`
 	//	StateQuery *StateQuery `json:"state-query"`
 }
 
@@ -18,12 +17,12 @@ type If struct {
 func (i *If) Check(ctx context.Context, log *zap.SugaredLogger) (context.Context, bool) {
 	if i.EventMatch != nil && !i.EventMatch.DoesEventMatch(ctx) {
 		log.Debugf("Failed if check at event match")
-		return false
+		// return false
 	}
 
 	if i.AlertMatch != nil && !i.AlertMatch.DoesAlertMatch(ctx) {
 		log.Debugf("Failed if check at alert match")
-		return false
+		// return false
 	}
 	/*
 		if i.StateQuery != nil && !i.StateQuery.Check(ctx) {
@@ -32,5 +31,5 @@ func (i *If) Check(ctx context.Context, log *zap.SugaredLogger) (context.Context
 		}
 	*/
 
-	return true
+	return context.TODO(), true
 }

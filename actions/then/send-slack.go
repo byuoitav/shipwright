@@ -81,7 +81,7 @@ func SendSlack(ctx context.Context, with []byte, log *zap.SugaredLogger) *nerr.E
 	})
 
 	attachment := slackAttachment{}
-	err := fillStructFromTemplate(ctx, string(with), &attachment)
+	err := FillStructFromTemplate(ctx, string(with), &attachment)
 	if err != nil {
 		return err.Addf("failed to send slack")
 	}

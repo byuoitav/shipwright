@@ -29,7 +29,7 @@ type Email struct {
 // SendEmail sends an email
 func SendEmail(ctx context.Context, with []byte, log *zap.SugaredLogger) *nerr.E {
 	email := Email{}
-	err := fillStructFromTemplate(ctx, string(with), &email)
+	err := FillStructFromTemplate(ctx, string(with), &email)
 	if err != nil {
 		return err.Addf("failed to send email")
 	}

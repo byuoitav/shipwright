@@ -1,4 +1,4 @@
-package actions
+package then
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	"github.com/byuoitav/common/nerr"
-	"github.com/byuoitav/shipwright/actions/then"
 	"go.uber.org/zap"
 )
 
@@ -35,9 +34,8 @@ func init() {
 	}
 
 	// declare then's here
-	thens.m["add-alert"] = then.AddAlert
-	thens.m["send-email"] = then.SendEmail
-	thens.m["send-slack"] = then.SendSlack
+	thens.m["send-email"] = SendEmail
+	thens.m["send-slack"] = SendSlack
 
 	thens.Unlock()
 }
