@@ -23,7 +23,7 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   @Input() data: any;
   @Input() singleRoom: boolean = false;
   alertRowColumns = ['icon', 'roomID', 'alertCount', 'incident', 'help-sent', 'help-arrived'];
-  alertDetailColumns = ['deviceName', 'severity', 'alertType', 'alert-started', 'responders', 'help-sent-at', 'help-arrived-at'];
+  alertDetailColumns = ['deviceName', 'severity', 'alertType', 'responders', 'message'];
   @Input() expandedAlertRow: AlertRow | null;
 
   dataSource: MatTableDataSource<AlertRow>;
