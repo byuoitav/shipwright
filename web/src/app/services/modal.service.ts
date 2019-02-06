@@ -27,12 +27,18 @@ export class ModalService {
 
   OpenBuildingModal(building: Building) {
     this.dialog.open(BuildingModalComponent, {data: building}).afterClosed().subscribe((resp) => {
-      this.OpenNotifyModal(resp)
+      if (resp != null){
+        this.OpenNotifyModal(resp)
+      }
     })
   }
 
   OpenRoomModal(room: Room) {
-    this.dialog.open(RoomModalComponent, {data: room});
+    this.dialog.open(RoomModalComponent, {data: room}).afterClosed().subscribe((resp) => {
+      if (resp != null){
+        this.OpenNotifyModal(resp)
+      }
+    })
   }
 
   OpenDeviceModal(device: Device) {

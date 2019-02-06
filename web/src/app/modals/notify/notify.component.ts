@@ -13,5 +13,4 @@ export class NotifyModalComponent implements OnInit {
 
   ngOnInit() {
   }
-
 }
