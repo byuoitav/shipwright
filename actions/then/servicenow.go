@@ -7,12 +7,12 @@ import (
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/servicenow"
 	"github.com/byuoitav/shipwright/actions/actionctx"
-	"github.com/byuoitav/shipwright/alertstore"
 )
 
 //would this need to return the incident? or what are we doing with it/where are we
 //storing incident info?
 
+// CreateIncident .
 //TODO: create only one then statement (if there is no incident number Then create incident)
 //If there is an incident number and it is not resolved yet, then modify incident
 //if there is an incident number AND it is resolved, then close the incident.
@@ -41,8 +41,9 @@ func CreateIncident(ctx context.Context, with []byte) *nerr.E {
 			alert.IncidentID = repair.Number
 		}
 
-		alertstore.AddAlert(alert)
+		// alertstore.AddAlert(alert)
 	}
+
 	if len(alert.IncidentID) != 0 && alert.Resolved == false {
 		if alert.Severity == "critical" {
 			incident, err := servicenow.ModifyIncident(alert)
@@ -50,14 +51,16 @@ func CreateIncident(ctx context.Context, with []byte) *nerr.E {
 				log.L.Errorf("Failed to Modify incident")
 				return nerr.Translate(err).Add("Incident was not modified in servicenow")
 			}
+
+			log.L.Infof("%+v", incident)
 		} else {
 			repair, err := servicenow.ModifyRepair(alert)
 			if err != nil {
 				log.L.Errorf("Failed to Modify repair")
 				return nerr.Translate(err).Add("repair was not modified in servicenow")
 			}
+			log.L.Infof("%+v", repair)
 		}
-
 	}
 
 	if len(alert.IncidentID) != 0 && alert.Resolved == true {
@@ -67,14 +70,15 @@ func CreateIncident(ctx context.Context, with []byte) *nerr.E {
 				log.L.Errorf("Failed to close incident")
 				return nerr.Translate(err).Add("Incident was not closed in servicenow")
 			}
+			log.L.Infof("%+v", incident)
 		} else {
 			repair, err := servicenow.CloseRepair(alert)
 			if err != nil {
 				log.L.Errorf("Failed to close repair")
 				return nerr.Translate(err).Add("Repair was not closed in servicenow")
 			}
+			log.L.Infof("%+v", repair)
 		}
-
 	}
 	return nil
 }

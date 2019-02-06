@@ -4,17 +4,15 @@ import (
 	"context"
 
 	"github.com/byuoitav/common/log"
-	"github.com/byuoitav/shipwright/actions/iff"
-	"github.com/byuoitav/shipwright/actions/then"
 	"go.uber.org/zap"
 )
 
 // Action represents an action to be executed based on some conditions
 type Action struct {
-	Name    string      `json:"name"`
-	Trigger string      `json:"trigger"`
-	If      iff.If      `json:"if"`
-	Then    []then.Then `json:"then"`
+	Name    string `json:"name"`
+	Trigger string `json:"trigger"`
+	If      If     `json:"if"`
+	Then    []Then `json:"then"`
 
 	Log *zap.SugaredLogger
 
@@ -31,7 +29,7 @@ func (a *Action) Run(ctx context.Context) {
 		a.Log = log.L.Named(a.Name)
 	}
 
-	if a.If.Check(ctx, a.Log) {
+	if ctx, passed := a.If.Check(ctx, a.Log); passed {
 		a.Log.Debugf("Passed if checks, running then's")
 
 		for i := range a.Then {

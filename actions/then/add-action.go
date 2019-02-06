@@ -9,6 +9,7 @@ import (
 
 // AddAction .
 func AddAction(ctx context.Context, with []byte, log *zap.SugaredLogger) *nerr.E {
+	// action := actions.Action{}
 	/*
 		alert := structs.Alert{}
 		err := fillStructFromTemplate(ctx, string(with), &alert)

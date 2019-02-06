@@ -1,20 +1,21 @@
-package iff
+package actions
 
 import (
 	"context"
 
+	"github.com/byuoitav/shipwright/actions/iff"
 	"go.uber.org/zap"
 )
 
 // If represents the set of conditions to running an action
 type If struct {
-	EventMatch *EventMatch `json:"event-match"`
-	AlertMatch *AlertMatch `json:"alert-match"`
+	EventMatch *iff.EventMatch `json:"event-match"`
+	AlertMatch *iff.AlertMatch `json:"alert-match"`
 	//	StateQuery *StateQuery `json:"state-query"`
 }
 
 // Check returns whether or not the if check passes
-func (i *If) Check(ctx context.Context, log *zap.SugaredLogger) bool {
+func (i *If) Check(ctx context.Context, log *zap.SugaredLogger) (context.Context, bool) {
 	if i.EventMatch != nil && !i.EventMatch.DoesEventMatch(ctx) {
 		log.Debugf("Failed if check at event match")
 		return false
