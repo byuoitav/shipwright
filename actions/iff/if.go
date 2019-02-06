@@ -10,6 +10,7 @@ import (
 type If struct {
 	EventMatch *EventMatch `json:"event-match"`
 	AlertMatch *AlertMatch `json:"alert-match"`
+	//	StateQuery *StateQuery `json:"state-query"`
 }
 
 // Check returns whether or not the if check passes
@@ -23,6 +24,12 @@ func (i *If) Check(ctx context.Context, log *zap.SugaredLogger) bool {
 		log.Debugf("Failed if check at alert match")
 		return false
 	}
+	/*
+		if i.StateQuery != nil && !i.StateQuery.Check(ctx) {
+			log.Debugf("Failed if check at alert match")
+			return false
+		}
+	*/
 
 	return true
 }

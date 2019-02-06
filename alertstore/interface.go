@@ -1,4 +1,4 @@
-package store
+package alertstore
 
 import (
 	"github.com/byuoitav/common/nerr"
