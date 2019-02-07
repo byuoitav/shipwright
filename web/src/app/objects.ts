@@ -32,6 +32,93 @@ class DateConverter implements JsonCustomConvert<Date> {
   }
 }
 
+@JsonObject("ResolutionInfo")
+export class ResolutionInfo {
+    @JsonProperty("resolution-code", String)
+    code: string = undefined;
+
+    @JsonProperty("notes", String)
+    notes: string = undefined;
+
+    @JsonProperty("resolved-at", DateConverter)
+    resolvedAt: Date = undefined;
+}
+
+@JsonObject("Alert")
+export class Alert {
+    @JsonProperty("alertID", String, true)
+    alertID: string = undefined;
+
+    @JsonProperty("buildingID", String, true)
+    buildingID: string = undefined;
+
+    @JsonProperty("roomID", String, true)
+    roomID: string = undefined;
+
+    @JsonProperty("deviceID", String, true)
+    deviceID: string = undefined;
+
+    @JsonProperty("type", String, true)
+    type: string = undefined;
+
+    @JsonProperty("category", String, true)
+    category: string = undefined;
+
+    @JsonProperty("incident-id", String)
+    incidentID: string = undefined;
+
+    @JsonProperty("system-type", String)
+    systemType: string = undefined;
+
+    @JsonProperty("severity", String, true)
+    severity: string = undefined;
+
+    @JsonProperty("message", String)
+    message: string = undefined;
+
+    @JsonProperty("message-log", [String])
+    messageLog: string[] = Array<string>();
+
+    @JsonProperty("data", Any, true)
+    data: any = undefined;
+
+    @JsonProperty("start-time", DateConverter)
+    startTime: Date = undefined;
+
+    @JsonProperty("end-time", DateConverter)
+    endTime: Date = undefined;
+
+    @JsonProperty("update-time", DateConverter)
+    updateTime: Date = undefined;
+
+    @JsonProperty("active", Boolean)
+    active: boolean = true
+
+    @JsonProperty("resolved", Boolean)
+    resolved: boolean = true
+
+    @JsonProperty("responders", [String])
+    responders: string[] = Array<string>();
+
+    @JsonProperty("help-sent-at", DateConverter)
+    helpSentAt: Date = undefined;
+
+    @JsonProperty("help-arrived-at", DateConverter)
+    helpArrivedAt: Date = undefined;
+
+    @JsonProperty("resolution-info", ResolutionInfo)
+    resolutionInfo: ResolutionInfo = undefined;
+
+    @JsonProperty("alert-tags", [String], true)
+    alertTags: string[] = Array<string>();
+
+    @JsonProperty("room-tags", [String], true)
+    roomTags: string[] = Array<string>();
+
+    @JsonProperty("device-tags", [String], true)
+    deviceTags: string[] = Array<string>();
+}
+
 @JsonObject("Building")
 export class Building {
     @JsonProperty("_id", String, true)
@@ -189,9 +276,9 @@ export class Room {
     devices: Device[] = Array<Device>();
 
     @JsonProperty("tags", [String], true)
-  tags: string[] = Array<string>();
+    tags: string[] = Array<string>();
 
-  isNew: boolean = false;
+    isNew: boolean = false;
 }
 
 @JsonObject("IOConfiguration")
@@ -563,96 +650,44 @@ export class BuildingStatus {
     roomStates: Map<string, RoomStatus> = new Map();
 }
 
-@JsonObject("ResolutionInfo")
-export class ResolutionInfo {
-    @JsonProperty("resolution-code", String)
-    code: string = undefined;
+export const PI_ICON = "video_label"
+export const DMPS_ICON = "accessible_forward"
 
-    @JsonProperty("notes", [String])
-    notes: string[] = Array<string>();
-
-    @JsonProperty("resolved-at", Date)
-    resolvedAt: Date = undefined;
-}
-
-@JsonObject("Alert")
-export class Alert {
-    @JsonProperty("alertID", String, true)
-    alertID: string = undefined;
-
-    @JsonProperty("buildingID", String, true)
-    buildingID: string = undefined;
-
-    @JsonProperty("roomID", String, true)
-    roomID: string = undefined;
-
-    @JsonProperty("deviceID", String, true)
-    deviceID: string = undefined;
-
-    @JsonProperty("type", String, true)
-    type: string = undefined;
-
-    @JsonProperty("category", String, true)
-    category: string = undefined;
-
-    @JsonProperty("incident-id", String)
-    incidentID: string = undefined;
-
-    @JsonProperty("severity", String, true)
-    severity: string = undefined;
-
-    @JsonProperty("message", String)
-    message: string = undefined;
-
-    @JsonProperty("message-log", [String])
-    messageLog: string[] = Array<string>();
-
-    @JsonProperty("data", Any)
-    data: any = undefined;
-
-    @JsonProperty("start-time", Date)
-    startTime: Date = undefined;
-
-    @JsonProperty("end-time", Date)
-    endTime: Date = undefined;
-
-    @JsonProperty("update-time", Date)
-    updateTime: Date = undefined;
-
-    @JsonProperty("active", Boolean)
-    active: boolean = true
-
-    @JsonProperty("resolved", Boolean)
-    resolved: boolean = true
-
-    @JsonProperty("responders", [String])
-    responders: string[] = Array<string>();
-
-    @JsonProperty("help-sent-at", Date)
-    helpSentAt: Date = undefined;
-
-    @JsonProperty("help-arrived-at", Date)
-    helpArrivedAt: Date = undefined;
-
-    @JsonProperty("resolution-info", ResolutionInfo)
-    resolutionInfo: ResolutionInfo = undefined;
-
-    @JsonProperty("alert-tags", [String], true)
-    alertTags: string[] = Array<string>();
-
-    @JsonProperty("room-tags", [String], true)
-    roomTags: string[] = Array<string>();
-
-    @JsonProperty("device-tags", [String], true)
-    deviceTags: string[] = Array<string>();
-}
-
-export class AlertRow{
+export class RoomAlerts{
     roomID: string = undefined;
     systemTypeIcon: string = undefined;
     alerts: Alert[] = Array<Alert>();
     incidentID: string;
+    maintenanceMode: boolean = false;
     expanded: boolean = false;
     helpSent: boolean = false;
     helpArrived: boolean = false;
+
+    constructor(roomID?: string, alertList?: Alert[]) {
+        if(roomID != null && roomID.length > 0) {
+            this.roomID = roomID;
+        }
+
+        if(alertList != null) {
+            this.alerts = alertList;
+
+            for(let a of this.alerts) {
+                if(a.helpSentAt != null) {
+                    // this.helpSent = true
+                }
+                if(a.helpArrivedAt != null) {
+                    // this.helpArrived = true
+                }
+                if(a.incidentID != null) {
+                    this.incidentID = a.incidentID
+                }
+                if(a.systemType == "DMPS") {
+                    this.systemTypeIcon = DMPS_ICON
+                }
+                else {
+                    this.systemTypeIcon = PI_ICON
+                }
+            }
+        }
+    }
 }

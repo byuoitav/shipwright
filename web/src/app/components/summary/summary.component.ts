@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
-import { Alert, AlertRow, Device } from 'src/app/objects';
+import { Alert, Device, RoomAlerts } from 'src/app/objects';
 import { ActivatedRoute } from '@angular/router';
 import { MonitoringService } from 'src/app/services/monitoring.service';
 import { MatTableDataSource } from '@angular/material';
@@ -13,21 +13,21 @@ import { ModalService } from 'src/app/services/modal.service';
   styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent implements OnInit {
-  roomAlertRow: AlertRow[];
+  roomAlerts: RoomAlerts[];
   deviceList: Device[] = [];
   filteredDevices: Device[] = [];
   deviceSearch: string;
 
   constructor(public text: StringsService, private route: ActivatedRoute, public monitor: MonitoringService, public data: DataService, public modal: ModalService) {
     this.route.params.subscribe(params => {
-      this.roomAlertRow = [this.monitor.alertRowMap.get(params["roomID"])]
+      this.roomAlerts = [this.monitor.roomAlertsMap.get(params["roomID"])]
 
       if(this.data.finished) {
-        this.deviceList = this.data.roomToDevicesMap.get(this.roomAlertRow[0].roomID)
+        this.deviceList = this.data.roomToDevicesMap.get(this.roomAlerts[0].roomID)
         this.filteredDevices = this.deviceList;
       } else {
         this.data.loaded.subscribe(() => {
-          this.deviceList = this.data.roomToDevicesMap.get(this.roomAlertRow[0].roomID)
+          this.deviceList = this.data.roomToDevicesMap.get(this.roomAlerts[0].roomID)
           this.filteredDevices = this.deviceList;
         })
       }

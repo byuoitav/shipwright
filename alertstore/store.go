@@ -1,4 +1,4 @@
-package store
+package alertstore
 
 import (
 	"context"
@@ -10,7 +10,8 @@ import (
 	"github.com/byuoitav/common/structs"
 	"github.com/byuoitav/shipwright/actions"
 	"github.com/byuoitav/shipwright/actions/actionctx"
-	"github.com/byuoitav/shipwright/alertproc/store/persist"
+	"github.com/byuoitav/shipwright/alertstore/persist"
+	"github.com/byuoitav/shipwright/socket"
 )
 
 type alertStore struct {
@@ -36,10 +37,10 @@ type alertResponse struct {
 
 var ZeroTime = time.Time{}
 
-var store alertStore
+var store *alertStore
 
 func InitializeAlertStore(a *actions.ActionManager) {
-	store := alertStore{
+	store = &alertStore{
 		inChannel:      make(chan structs.Alert, 1000),
 		requestChannel: make(chan alertRequest, 1000),
 		store:          map[string]structs.Alert{},
@@ -47,12 +48,21 @@ func InitializeAlertStore(a *actions.ActionManager) {
 	}
 
 	go store.run()
+
+	alerts, err := persist.GetAllActiveAlertsFromPersist()
+	if err != nil {
+		log.L.Errorf("Couldn't get all active alerts: %v", err.Error())
+	}
+
+	for i := range alerts {
+		store.inChannel <- alerts[i]
+	}
+	log.L.Infof("Alert store initialized with %v alerts", len(alerts))
 }
 
 //PutAlert adds an alert to the store.
 //Do we want to wait for confirmation?
 func (a *alertStore) putAlert(alert structs.Alert) (string, *nerr.E) {
-
 	//check to make sure we have a time
 	if alert.AlertStartTime.IsZero() {
 		alert.AlertStartTime = time.Now()
@@ -118,13 +128,14 @@ func (a *alertStore) resolveAlert(alertID string, resInfo structs.ResolutionInfo
 		//it's there, lets get it, mark it as resolved.
 		v.Resolved = true
 		v.ResolutionInfo = resInfo
-		v.AlertID = v.AlertID + v.AlertStartTime.Format(time.RFC3339) //change the ID so it's unique
+		v.AlertID = v.AlertID + "^" + v.AlertStartTime.Format(time.RFC3339) //change the ID so it's unique
 
 		delete(a.store, alertID)
 
 		//submit for persistence
 		persist.GetElkAlertPersist().StoreAlert(v, true)
 		a.runActions(v)
+		socket.GetManager().WriteToSockets(v)
 
 	} else {
 		return nerr.Create("Unkown alert "+alertID, "not-found")
@@ -137,8 +148,10 @@ func (a *alertStore) run() {
 	log.L.Infof("running alert store")
 
 	for {
+		log.L.Debugf("Waiting for event")
 		select {
 		case al := <-a.inChannel:
+			log.L.Debugf("Storing alert")
 			a.storeAlert(al)
 		case req := <-a.requestChannel:
 			a.handleRequest(req)
@@ -184,7 +197,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 	persist.GetElkAlertPersist().StoreAlert(alert, false)
 	a.runActions(alert)
-
+	socket.GetManager().WriteToSockets(alert)
 }
 
 func (a *alertStore) runActions(alert structs.Alert) {

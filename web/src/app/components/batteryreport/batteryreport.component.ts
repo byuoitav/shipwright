@@ -9,6 +9,7 @@ import { IDashPanel } from '../dashpanel/idashpanel';
 })
 export class BatteryReportComponent implements OnInit, IDashPanel {
   @Input() data: any;
+  @Input() chosenSeverity: string;
   
   constructor(public text: StringsService) { }
 

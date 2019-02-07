@@ -1,7 +1,7 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { JsonConvert, Any } from 'json2typescript';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Building, DBResponse, Room, RoomConfiguration, Device, DeviceType, Role, UIConfig, BuildingStatus, RoomStatus, Template, MetricsResponse, StaticDevice } from '../objects';
+import { Building, DBResponse, Room, RoomConfiguration, Device, DeviceType, Role, UIConfig, BuildingStatus, RoomStatus, Template, MetricsResponse, StaticDevice, Alert } from '../objects';
 
 @Injectable({
   providedIn: 'root'
@@ -514,6 +514,18 @@ export class APIService {
       return records;
     } catch (e) {
       throw new Error("error getting the static device records: " + e);
+    }
+  }
+
+  // Alert Functions
+  public async GetAllAlerts() {
+    try {
+      const data = await this.http.get("alerts/", {headers: this.headers}).toPromise();
+      const alerts = this.converter.deserialize(data, Alert);
+
+      return alerts
+    } catch (e) {
+      throw new Error("error getting the current user's permissions: " + e);
     }
   }
 }

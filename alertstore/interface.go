@@ -1,4 +1,4 @@
-package store
+package alertstore
 
 import (
 	"github.com/byuoitav/common/nerr"
@@ -21,7 +21,7 @@ func GetAlert(AlertID string) (structs.Alert, *nerr.E) {
 	return store.getAlert(AlertID)
 }
 
-//ResolveAlert
+// ResolveAlert .
 func ResolveAlert(AlertID string, resInfo structs.ResolutionInfo) *nerr.E {
 	return store.resolveAlert(AlertID, resInfo)
 }

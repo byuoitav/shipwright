@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { IDashPanel } from '../dashpanel/idashpanel';
-import { AlertRow } from 'src/app/objects';
+import { RoomAlerts, Room } from 'src/app/objects';
 import { MonitoringService } from 'src/app/services/monitoring.service';
 import { MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
 import { ModalService } from 'src/app/services/modal.service';
@@ -24,9 +24,10 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   @Input() singleRoom: boolean = false;
   alertRowColumns = ['icon', 'roomID', 'alertCount', 'incident', 'help-sent', 'help-arrived'];
   alertDetailColumns = ['deviceName', 'severity', 'alertType', 'responders', 'message'];
-  @Input() expandedAlertRow: AlertRow | null;
+  @Input() expRoomAlerts: RoomAlerts | null;
+  @Input() chosenSeverity: string;
 
-  dataSource: MatTableDataSource<AlertRow>;
+  dataSource: MatTableDataSource<RoomAlerts>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -46,21 +47,40 @@ export class AlertTableComponent implements OnInit, IDashPanel {
    
   }
 
-  ExpandRow(alertRow: AlertRow) {
+  ExpandRow(row: RoomAlerts) {
     if(!this.singleRoom) {
-      if(this.expandedAlertRow === alertRow) {
-        this.expandedAlertRow = null
+      if(this.expRoomAlerts === row) {
+        this.expRoomAlerts = null
       }
       else {
-        this.expandedAlertRow = alertRow
+        this.expRoomAlerts = row
       }
     }
   }
 
-  GetAlertTypes(alertRow: AlertRow) {
+  GetAlertTypes(alertRow: Room) {
 
   }
 
+  GetAlertCount(ra: RoomAlerts) {
+    let count = 0;
+
+    for(let alert of ra.alerts) {
+      if(alert.severity === this.chosenSeverity) {
+        count++;
+      }
+    }
+
+    return count
+  }
+
+  SeverityMatch(sev: string): boolean {
+    if(this.chosenSeverity == null || this.chosenSeverity.length == 0) {
+      return true
+    }
+    
+    return (sev === this.chosenSeverity);
+  }
   ServiceNowRedirect(incidentID: string) {
     window.open(this.serviceNowURL+incidentID, "_blank");
   }

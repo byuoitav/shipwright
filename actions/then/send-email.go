@@ -1,16 +1,12 @@
 package then
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/smtp"
-	"text/template"
 
-	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
-	"github.com/byuoitav/shipwright/actions/actionctx"
+	"go.uber.org/zap"
 )
 
 // Email includes information about who to send the email as, auth stuff, etc. etc.
@@ -31,39 +27,15 @@ type Email struct {
 }
 
 // SendEmail sends an email
-func SendEmail(ctx context.Context, with []byte) *nerr.E {
-	data := templateData{}
-
-	if event, ok := actionctx.GetEvent(ctx); ok {
-		data.Event = event
-	}
-
-	if dev, ok := actionctx.GetStaticDevice(ctx); ok {
-		data.StaticDevice = dev
-	}
-
-	// fill the email template
-	t, gerr := template.New("email").Parse(string(with))
-	if gerr != nil {
-		return nerr.Translate(gerr).Addf("failed to send email")
-	}
-
-	buf := &bytes.Buffer{}
-	gerr = t.Execute(buf, data)
-	if gerr != nil {
-		return nerr.Translate(gerr).Addf("failed to send email")
-	}
-
-	// unmarshal filled template into email struct
+func SendEmail(ctx context.Context, with []byte, log *zap.SugaredLogger) *nerr.E {
 	email := Email{}
-	gerr = json.Unmarshal(buf.Bytes(), &email)
-	if gerr != nil {
-		return nerr.Translate(gerr).Addf("failed to send email")
+	err := FillStructFromTemplate(ctx, string(with), &email)
+	if err != nil {
+		return err.Addf("failed to send email")
 	}
-
-	log.L.Infof("")
 
 	// send the email
+	var gerr error
 	body := []byte(fmt.Sprintf("Subject: %s\r\n", email.Subject))
 	body = append(body, email.Body...)
 

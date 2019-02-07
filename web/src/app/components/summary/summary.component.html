@@ -6,9 +6,9 @@
 
     <div class="container">
         <section class="row">
-            <button mat-raised-button [disabled]="roomAlertRow[0].helpSent" color="warn" (click)="modal.OpenRespondModal(roomAlertRow[0])">Dispatch Help</button>
+            <button mat-raised-button [disabled]="roomAlerts[0].helpSent" color="warn" (click)="modal.OpenRespondModal(roomAlerts[0])">Dispatch Help</button>
         </section>
-        <alert-table [data]="roomAlertRow" [singleRoom]="true" [expandedAlertRow]="roomAlertRow[0]"></alert-table>
+        <alert-table [data]="roomAlerts" [singleRoom]="true" [expRoomAlerts]="roomAlerts[0]"></alert-table>
     </div>
 
     <div class="column mat-elevation-z3">

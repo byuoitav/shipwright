@@ -16,10 +16,11 @@ import (
 type templateData struct {
 	Event        events.Event
 	StaticDevice statedefinition.StaticDevice
+	Alert        structs.Alert
 }
 
-// AddAlert .
-func AddAlert(ctx context.Context, with []byte) *nerr.E {
+// FillStructFromTemplate .
+func FillStructFromTemplate(ctx context.Context, tmpl string, fill interface{}) *nerr.E {
 	data := templateData{}
 
 	if event, ok := actionctx.GetEvent(ctx); ok {
@@ -30,33 +31,25 @@ func AddAlert(ctx context.Context, with []byte) *nerr.E {
 		data.StaticDevice = dev
 	}
 
-	// fill the alert template
-	t, gerr := template.New("alert").Parse(string(with))
+	if alert, ok := actionctx.GetAlert(ctx); ok {
+		data.Alert = alert
+	}
+
+	t, gerr := template.New("then-template").Parse(tmpl)
 	if gerr != nil {
-		return nerr.Translate(gerr).Addf("failed to add alert")
+		return nerr.Translate(gerr).Addf("failed to fill template")
 	}
 
 	buf := &bytes.Buffer{}
 	gerr = t.Execute(buf, data)
 	if gerr != nil {
-		return nerr.Translate(gerr).Addf("failed to add alert")
+		return nerr.Translate(gerr).Addf("failed to fill template")
 	}
 
-	// unmarshal filled template into alert struct
-	alert := structs.Alert{}
-	gerr = json.Unmarshal(buf.Bytes(), &alert)
+	gerr = json.Unmarshal(buf.Bytes(), fill)
 	if gerr != nil {
-		return nerr.Translate(gerr).Addf("failed to add alert")
+		return nerr.Translate(gerr).Addf("failed to add template")
 	}
-
-	/*
-		_, err := store.AddAlert(alert)
-		if err != nil {
-			return err.Addf("failed to add alert")
-		}
-	*/
-
-	// add alert to context
 
 	return nil
 }

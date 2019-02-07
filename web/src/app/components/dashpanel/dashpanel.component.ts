@@ -4,6 +4,7 @@ import { DashPanelDirective } from './dashpanel.directive';
 import { DashPanelService } from 'src/app/services/dashpanel.service';
 import { IDashPanel } from './idashpanel';
 import { MonitoringService } from 'src/app/services/monitoring.service';
+import { DataService } from 'src/app/services/data.service';
 
 @Component({
   selector: 'dashpanel',
@@ -14,18 +15,24 @@ import { MonitoringService } from 'src/app/services/monitoring.service';
 export class DashPanelComponent implements OnInit {
   @ViewChild(forwardRef(()=>DashPanelDirective)) direct: DashPanelDirective;
 
-  constructor(private resolver: ComponentFactoryResolver, private dashServe: DashPanelService, private monitor: MonitoringService) {
+  constructor(private resolver: ComponentFactoryResolver, private dashServe: DashPanelService, private monitor: MonitoringService, private data: DataService) {
     
   }
 
   ngOnInit() {
-    this.choosePanel(this.AllAlerts);
+    if(this.data.finished) {
+      this.choosePanel(this.AllAlerts);
+    }
+    else {
+      this.data.loaded.subscribe(() => {
+        this.choosePanel(this.AllAlerts);
+      })
+    }
   }
 
   AllAlerts = "all-alerts";
-  CritAlerts = "critical-alerts"
-  WarnAlerts = "warning-alerts"
-  LowAlerts = "low-alerts"
+  CritAlerts = "critical"
+  WarnAlerts = "warning"
 
   choosePanel(panelType: string) {
     if(panelType == null) {
@@ -40,6 +47,7 @@ export class DashPanelComponent implements OnInit {
 
     let componentRef = viewContainerRef.createComponent(componentFactory);
     (<IDashPanel>componentRef.instance).data = data;
+    (<IDashPanel>componentRef.instance).chosenSeverity = panelType;
   }
 
   determineData(panelType: string): any {
@@ -47,13 +55,10 @@ export class DashPanelComponent implements OnInit {
       return this.monitor.GetAllAlerts();
     }
     if(panelType === this.CritAlerts) {
-      return this.monitor.GetCriticalAlerts();
+      return this.monitor.GetAllAlerts(this.CritAlerts);
     }
     if(panelType === this.WarnAlerts) {
-      return this.monitor.GetWarningAlerts();
-    }
-    if(panelType === this.LowAlerts) {
-      return this.monitor.GetLowAlerts();
+      return this.monitor.GetAllAlerts(this.WarnAlerts);
     }
     // TODO get data for battery report
   }

@@ -1,4 +1,4 @@
-package store
+package alertstore
 
 import (
 	"fmt"
@@ -8,5 +8,5 @@ import (
 
 //GenerateID will give you the generated id back
 func GenerateID(a structs.Alert) string {
-	return fmt.Sprintf("%v_%v_%v", a.DeviceID, a.Type, a.Category)
+	return fmt.Sprintf("%v^%v^%v", a.DeviceID, a.Type, a.Category)
 }
