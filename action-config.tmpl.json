@@ -13,11 +13,7 @@
         "do": "send-email",
         "with": {
           "from": "{{.Event.TargetDevice.DeviceID}}@byu.edu",
-          "to": [
-            "matt_blodgett@byu.edu",
-            "danny_randall@byu.edu",
-            "joe_blodgett@byu.edu"
-          ],
+          "to": ["danny_randall@byu.edu"],
           "subject": "Help request in {{.Event.AffectedRoom.RoomID}}",
           "body": "This is a message for **matt blodgett** from {{.Event.GeneratingSystem}}",
           "smtp-addr": "gateway.byu.edu:25",
@@ -26,7 +22,7 @@
         }
       },
       {
-        "do": "send-slack",
+        "do": "skip",
         "with": {
           "title": "Test",
           "text": "Test message in {{.Event.AffectedRoom.RoomID}} from {{.Event.GeneratingSystem}}"
@@ -36,7 +32,7 @@
   },
   {
     "name": "help-requests-timer",
-    "trigger": "interval: 5s",
+    "trigger": "skip",
     "if": {},
     "then": [
       {

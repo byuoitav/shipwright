@@ -2,6 +2,7 @@ package actions
 
 import (
 	"context"
+	"sync/atomic"
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/shipwright/actions/iff"
@@ -18,12 +19,14 @@ type Action struct {
 
 	Log *zap.SugaredLogger
 
-	prune bool
+	prune      uint32
+	runCount   uint64 // number of successful runs
+	pruneCount uint64 // prune after this number of runs
 }
 
 // Run checks the 'ifs' of the action and if they all pass, then it runs the 'thens'
 func (a *Action) Run(ctx context.Context) {
-	if a.prune {
+	if a.Killed() {
 		return
 	}
 
@@ -33,6 +36,16 @@ func (a *Action) Run(ctx context.Context) {
 
 	if ctx, passed := a.If.Check(ctx, a.Log); passed {
 		a.Log.Debugf("Passed if checks, running then's")
+
+		count := atomic.AddUint64(&a.runCount, 1)
+		pruneCount := atomic.LoadUint64(&a.pruneCount)
+		if pruneCount != 0 && count >= pruneCount {
+			if count > pruneCount {
+				return // in case two threads ran at the same time
+			}
+
+			a.Kill()
+		}
 
 		for i := range a.Then {
 			err := a.Then[i].Execute(ctx, a.Log)
@@ -45,16 +58,24 @@ func (a *Action) Run(ctx context.Context) {
 
 // Kill stops the action from ever being ran again.
 func (a *Action) Kill() {
-	if a.Log != nil {
-		a.Log.Debugf("Marking action '%s' for deletion", a.Name)
-	} else {
-		log.L.Debugf("Marking action '%s' for deletion", a.Name)
+	if a.Killed() {
+		return
 	}
+	atomic.StoreUint32(&a.prune, 1)
 
-	a.prune = true
+	if a.Log != nil {
+		a.Log.Debugf("Marking action '%s' for deletion (ran %v times)", a.Name, atomic.LoadUint64(&a.runCount))
+	} else {
+		log.L.Debugf("Marking action '%s' for deletion (ran %v times)", a.Name, atomic.LoadUint64(&a.runCount))
+	}
 }
 
-// Killed returns wheter or not the action has been killed
+// Killed returns whether or not the action has been killed
 func (a *Action) Killed() bool {
-	return a.prune
+	return atomic.LoadUint32(&a.prune) == 1
+}
+
+// KillAfter kills the action after running n times
+func (a *Action) KillAfter(n int) {
+	atomic.StoreUint64(&a.pruneCount, uint64(n))
 }
