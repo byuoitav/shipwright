@@ -60,20 +60,21 @@ func SendSlack(ctx context.Context, with []byte, log *zap.SugaredLogger) *nerr.E
 
 	once.Do(func() {
 		// build the slack client
-		proxy := os.Getenv("PROXY_ADDR")
-		if len(proxy) == 0 {
-			logger.L.Warnf("no PROXY_ADDR set. Slack messages may be unable to send.")
-		}
-
-		proxyURL, gerr := url.Parse(proxy)
-		if gerr != nil {
-			logger.L.Errorf("PROXY_ADDR is an invalid url: %s", gerr)
-		}
-
 		client = &slackClient{
 			MessageFrequency: 5 * time.Second,
-			ProxyURL:         proxyURL,
 			AttachmentChan:   make(chan slackAttachment, 15),
+		}
+
+		proxy := os.Getenv("PROXY_ADDR")
+		if len(proxy) > 0 {
+			proxyURL, gerr := url.Parse(proxy)
+			if gerr != nil {
+				logger.L.Errorf("PROXY_ADDR is an invalid url: %s", gerr)
+			}
+
+			client.ProxyURL = proxyURL
+		} else {
+			logger.L.Warnf("no PROXY_ADDR set. Slack messages may be unable to send.")
 		}
 
 		// start the slack client
@@ -147,7 +148,7 @@ func (c *slackClient) Start() *nerr.E {
 			}
 
 			// TODO somehow have a way to send to a different channel
-			req, err := http.NewRequest(http.MethodPost, slackurl, bytes.NewReader(body))
+			req, err := http.NewRequest(http.MethodPost, slackurl+channel, bytes.NewReader(body))
 			if err != nil {
 				log.Errorf("unable to build slack request: %s", err)
 				continue

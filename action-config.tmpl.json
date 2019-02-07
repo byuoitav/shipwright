@@ -15,7 +15,7 @@
         "do": "send-slack",
         "with": {
           "title": "Test",
-          "text": "Test message in {{.Event.AffectedRoom.RoomID}} from {{.Event.GeneratingSystem}}"
+          "text": "hi from danny"
         }
       }
     ]
