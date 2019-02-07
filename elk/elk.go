@@ -136,11 +136,9 @@ func MakeELKRequest(method, endpoint string, body interface{}) ([]byte, *nerr.E)
 //BulkForward preps a bulk request and forwards it.
 //Leave user and pass blank to use the env variables defined above.
 func BulkForward(caller, url, user, pass string, toSend []ElkBulkUpdateItem) {
-
 	log.L.Infof("%v Sending bulk upsert for %v items.", caller, len(toSend))
 
 	if len(toSend) == 0 {
-		log.L.Infof("%v No updates to send. returning.", caller)
 		return
 	}
 

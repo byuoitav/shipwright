@@ -2,11 +2,17 @@ package config
 
 //Cache .
 type Cache struct {
-	Name        string     `json:"name"`
-	StorageType string     `json:"storage-type"`
-	CacheType   string     `json:"cache-type"`
-	CouchInfo   CouchCache `json:"couch-cache"`
-	ELKinfo     ElkCache   `json:"elk-cache"`
+	Name string `json:"name"`
+
+	//Persistence type
+	StorageType string `json:"storage-type"`
+
+	//Legacy or Defautl
+	CacheType string `json:"cache-type"`
+
+	CouchInfo CouchCache `json:"couch-cache"`
+	ELKinfo   ElkCache   `json:"elk-cache"`
+	RedisInfo RedisCache `json:"redis-cache"`
 }
 
 //CouchCache .
@@ -19,4 +25,10 @@ type CouchCache struct {
 type ElkCache struct {
 	DeviceIndex string `json:"device-index"`
 	URL         string `json:"url"`
+}
+
+//RedisCache .
+type RedisCache struct {
+	Databsae int    `json:"database"`
+	URL      string `json:"url"`
 }

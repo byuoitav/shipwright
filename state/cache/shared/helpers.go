@@ -1,4 +1,4 @@
-package cache
+package shared
 
 import (
 	"encoding/json"
@@ -12,6 +12,9 @@ import (
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	sd "github.com/byuoitav/common/state/statedefinition"
+	"github.com/byuoitav/common/v2/events"
+	"github.com/byuoitav/shipwright/config"
+	"github.com/byuoitav/shipwright/state/forwarding"
 )
 
 var alertRegex *regexp.Regexp
@@ -25,8 +28,91 @@ func init() {
 	alertRegex = regexp.MustCompile(`alerts\..+`)
 }
 
-func CheckCacheForEvent() {
+func PushAllDevices(c Cache) {
+	//get all the records
+	log.L.Infof("Pushing updates for all devices to DELTA and ALL indexes")
 
+	devs, err := c.GetAllDeviceRecords()
+	if err != nil {
+		log.L.Errorf(err.Addf("Couldn't push all devices").Error())
+		return
+	}
+	list := forwarding.GetManagersForType(c.GetCacheName(), config.DEVICE, config.DELTA)
+	for i := range list {
+		for j := range devs {
+			er := list[i].Send(devs[j])
+			if er != nil {
+				log.L.Warnf("Problem sending all update for devices %v. %v", devs[j].DeviceID, er.Error())
+			}
+		}
+	}
+
+	list = forwarding.GetManagersForType(c.GetCacheName(), config.DEVICE, config.ALL)
+	for i := range list {
+		for j := range devs {
+			er := list[i].Send(devs[j])
+			if er != nil {
+				log.L.Warnf("Problem sending all update for devices %v. %v", devs[j].DeviceID, er.Error())
+			}
+		}
+	}
+
+	log.L.Infof("Done sending update for all devices")
+
+}
+
+func ForwardAndStoreEvent(v events.Event, c Cache) (bool, *nerr.E) {
+
+	log.L.Debugf("Event: %+v", v)
+
+	//Forward All
+	list := forwarding.GetManagersForType(c.GetCacheName(), config.EVENT, config.ALL)
+	for i := range list {
+		//log.L.Debugf("Going to event forwarder: %v", list[i])
+		list[i].Send(v)
+	}
+
+	//if it's an doesn't correspond to core or detail state we don't want to store it.
+	if !events.ContainsAnyTags(v, events.CoreState, events.DetailState, events.Heartbeat) {
+		return false, nil
+	}
+
+	//Cache
+	changes, newDev, err := c.StoreDeviceEvent(sd.State{
+		ID:    v.TargetDevice.DeviceID,
+		Key:   v.Key,
+		Time:  v.Timestamp,
+		Value: v.Value,
+		Tags:  v.EventTags,
+	})
+
+	if err != nil {
+		return false, err.Addf("Couldn't store and forward device event")
+	}
+
+	list = forwarding.GetManagersForType(c.GetCacheName(), config.DEVICE, config.ALL)
+	for i := range list {
+		list[i].Send(newDev)
+	}
+
+	//if there are changes and it's not a heartbeat/hardware event
+	if changes && !events.ContainsAnyTags(v, events.Heartbeat, events.HardwareInfo) {
+
+		log.L.Debugf("Event resulted in changes")
+
+		//get the event stuff to forward
+		list = forwarding.GetManagersForType(c.GetCacheName(), config.EVENT, config.DELTA)
+		for i := range list {
+			list[i].Send(v)
+		}
+
+		list = forwarding.GetManagersForType(c.GetCacheName(), config.DEVICE, config.DELTA)
+		for i := range list {
+			list[i].Send(newDev)
+		}
+	}
+
+	return changes, nil
 }
 
 /*

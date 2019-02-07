@@ -30,7 +30,6 @@ const (
 
 //Config .
 type Config struct {
-	Jobs       []JobConfig `json:"jobs"`
 	Forwarders []Forwarder `json:"forwarders"`
 	Caches     []Cache     `json:"caches"`
 }

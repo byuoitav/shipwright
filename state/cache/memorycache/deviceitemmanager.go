@@ -1,14 +1,12 @@
-package cache
+package memorycache
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
-	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	sd "github.com/byuoitav/common/state/statedefinition"
-	"github.com/byuoitav/common/v2/events"
+	"github.com/byuoitav/shipwright/state/cache/shared"
 )
 
 /*
@@ -47,27 +45,11 @@ func GetNewDeviceManager(id string) (DeviceItemManager, *nerr.E) {
 		ReadRequests:  make(chan chan sd.StaticDevice, 100),
 	}
 
-	rm := strings.Split(id, "-")
-	if len(rm) != 3 {
-		log.L.Errorf("Invalid Device %v", id)
-		return DeviceItemManager{}, nerr.Create(fmt.Sprintf("Can't build device manager: invalid ID %v", id), "invalid-id")
+	dev, err := shared.GetNewDevice(id)
+	if err != nil {
+		return a, err.Addf("Couldn't build device manager")
 	}
-
-	F := false //build a standard device
-	device := sd.StaticDevice{
-		DeviceID:              id,
-		Room:                  rm[0] + "-" + rm[1],
-		Building:              rm[0],
-		UpdateTimes:           make(map[string]time.Time),
-		Control:               id,
-		EnableNotifications:   id,
-		SuppressNotifications: id,
-		ViewDashboard:         id,
-		Alerting:              &F,
-		DeviceType:            GetDeviceTypeByID(id),
-	}
-
-	go StartDeviceManager(a, device)
+	go StartDeviceManager(a, dev)
 	return a, nil
 }
 
@@ -115,47 +97,7 @@ func StartDeviceManager(m DeviceItemManager, device sd.StaticDevice) {
 			}
 
 			if write.EventEdit {
-				if HasTag(events.CoreState, write.Event.Tags) {
-					if s, ok := write.Event.Value.(string); ok {
-						if len(s) < 1 {
-							//we don't do anything with this
-							write.ResponseChan <- DeviceTransactionResponse{Error: nil, Changes: false}
-							continue
-						}
-					}
-				}
-
-				if HasTag(events.Heartbeat, write.Event.Tags) {
-					changes, merged, err = SetDeviceField(
-						"last-heartbeat",
-						write.Event.Time,
-						write.Event.Time,
-						device,
-					)
-				} else {
-					changes, merged, err = SetDeviceField(
-						write.Event.Key,
-						write.Event.Value,
-						write.Event.Time,
-						device,
-					)
-				}
-				if err != nil {
-					write.ResponseChan <- DeviceTransactionResponse{Error: err, Changes: false}
-					continue
-				}
-
-				// if it has a user-generated tag
-				if HasTag(events.UserGenerated, write.Event.Tags) {
-					merged.LastUserInput = write.Event.Time
-					device = merged
-				}
-
-				// i'm just going to assume yeah, ask joe later
-				if HasTag(events.CoreState, write.Event.Tags) || HasTag(events.DetailState, write.Event.Tags) {
-					merged.LastStateReceived = write.Event.Time
-					device = merged
-				}
+				merged, changes, err = shared.EditDeviceFromEvent(write.Event, device)
 			}
 
 			if changes {

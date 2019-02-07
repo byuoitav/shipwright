@@ -27,8 +27,7 @@ func DefaultConfig() *ActionConfig {
 		// load the default config
 		path := os.Getenv("ACTION_CONFIG_LOCATION")
 		if len(path) < 1 {
-			// path = "./action-config.json"
-			path = "./action-config.tmpl.json"
+			path = "./action-config.json"
 		}
 
 		var err *nerr.E

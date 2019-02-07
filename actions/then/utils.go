@@ -14,9 +14,9 @@ import (
 )
 
 type templateData struct {
-	Event        events.Event
-	StaticDevice statedefinition.StaticDevice
-	Alert        structs.Alert
+	Event         events.Event
+	StaticDevices []statedefinition.StaticDevice
+	Alert         structs.Alert
 }
 
 // FillStructFromTemplate .
@@ -27,8 +27,8 @@ func FillStructFromTemplate(ctx context.Context, tmpl string, fill interface{}) 
 		data.Event = event
 	}
 
-	if dev, ok := actionctx.GetStaticDevice(ctx); ok {
-		data.StaticDevice = dev
+	if dev, ok := actionctx.GetStaticDevices(ctx); ok {
+		data.StaticDevices = dev
 	}
 
 	if alert, ok := actionctx.GetAlert(ctx); ok {

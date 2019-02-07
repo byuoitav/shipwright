@@ -8,9 +8,11 @@ import (
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/state/statedefinition"
-	"github.com/byuoitav/state-parser/config"
-	"github.com/byuoitav/state-parser/elk"
-	"github.com/robfig/cron"
+	"github.com/byuoitav/shipwright/config"
+	"github.com/byuoitav/shipwright/elk"
+	"github.com/byuoitav/shipwright/state/cache/memorycache"
+	"github.com/byuoitav/shipwright/state/cache/rediscache"
+	"github.com/byuoitav/shipwright/state/cache/shared"
 )
 
 const maxSize = 10000
@@ -19,7 +21,7 @@ const pushCron = "0 0 0 * * *"
 
 //InitializeCaches initializes the caches with data from ELK
 func InitializeCaches() {
-	Caches = make(map[string]Cache)
+	Caches = make(map[string]shared.Cache)
 
 	c := config.GetConfig()
 
@@ -38,8 +40,12 @@ func InitializeCaches() {
 			}
 		default:
 		}
-		cache := makeCache(devs, rooms, i.CacheType)
-		Caches[i.CacheType] = cache
+		cache, err := makeCache(devs, rooms, i.CacheType, i.Name)
+		if err != nil {
+			log.L.Fatalf("Couldn't make cache: %v", err.Error())
+		}
+
+		Caches[i.Name] = cache
 		log.L.Infof("Cache %v initialized with type %v. %v devices and %v rooms", i.Name, i.CacheType, len(devs), len(rooms))
 	}
 }
@@ -56,7 +62,7 @@ func GetElkStaticDevices(index, url string) ([]statedefinition.StaticDevice, *ne
 		return []statedefinition.StaticDevice{}, nerr.Translate(er).Addf("Couldn't marshal generic query %v", query)
 	}
 
-	resp, err := elk.MakeGenericELKRequest(fmt.Sprintf("%v/%v/_search", url, index), "GET", b)
+	resp, err := elk.MakeGenericELKRequest(fmt.Sprintf("%v/%v/_search", url, index), "GET", b, "", "")
 	if err != nil {
 		return []statedefinition.StaticDevice{}, err.Addf("Couldn't retrieve static index %v for cache", index)
 	}
@@ -110,80 +116,14 @@ func GetElkStaticRooms(index string) ([]statedefinition.StaticRoom, *nerr.E) {
 
 }
 
-func makeCache(devices []statedefinition.StaticDevice, rooms []statedefinition.StaticRoom, cacheType string) Cache {
-
-	toReturn := memorycache{
-		cacheType: cacheType,
-		pushCron:  cron.New(),
+func makeCache(devices []statedefinition.StaticDevice, rooms []statedefinition.StaticRoom, cacheType, name string) (shared.Cache, *nerr.E) {
+	switch cacheType {
+	case "memory":
+		return memorycache.MakeMemoryCache(devices, rooms, pushCron, name)
+	case "redis":
+		return rediscache.MakeRedisCache(devices, rooms, pushCron, name)
 	}
 
-	log.L.Infof("adding the cron push")
-	//build our push cron
-	er := toReturn.pushCron.AddFunc(pushCron, toReturn.PushAllDevices)
-	if er != nil {
-		log.L.Errorf("Couldn't add the push all devices cron job to the cache")
+	return nil, nerr.Create("Unkown cache type %v", cacheType)
 
-	}
-
-	//starting the cron job
-	toReturn.pushCron.Start()
-
-	//go through and create our maps
-	toReturn.deviceCache = make(map[string]DeviceItemManager)
-
-	for i := range devices {
-		//check for duplicate
-		v, ok := toReturn.deviceCache[devices[i].DeviceID]
-		if ok {
-			continue
-		}
-
-		if len(devices[i].DeviceID) < 1 {
-			log.L.Errorf("DeviceID cannot be blank. Device: %+v", devices[i])
-			continue
-		}
-
-		v, err := GetNewDeviceManagerWithDevice(devices[i])
-		if err != nil {
-			log.L.Errorf("Cannot create device manager for %v: %v", devices[i].DeviceID, err.Error())
-			continue
-		}
-
-		respChan := make(chan DeviceTransactionResponse, 1)
-		v.WriteRequests <- DeviceTransactionRequest{
-			MergeDeviceEdit: true,
-			MergeDevice:     devices[i],
-			ResponseChan:    respChan,
-		}
-		val := <-respChan
-
-		if val.Error != nil {
-			log.L.Errorf("Error initializing cache for %v: %v.", devices[i].DeviceID, val.Error.Error())
-		}
-		toReturn.deviceCache[devices[i].DeviceID] = v
-	}
-
-	toReturn.roomCache = make(map[string]RoomItemManager)
-	for i := range rooms {
-		//check for duplicate
-		v, ok := toReturn.roomCache[devices[i].DeviceID]
-		if ok {
-			continue
-		}
-		v = GetNewRoomManager(rooms[i].RoomID)
-
-		respChan := make(chan RoomTransactionResponse, 1)
-		v.WriteRequests <- RoomTransactionRequest{
-			MergeRoom:    rooms[i],
-			ResponseChan: respChan,
-		}
-		val := <-respChan
-
-		if val.Error != nil {
-			log.L.Errorf("Error initializing cache for %v: %v.", rooms[i].RoomID, val.Error.Error())
-		}
-		toReturn.roomCache[rooms[i].RoomID] = v
-	}
-
-	return &toReturn
 }
