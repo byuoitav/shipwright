@@ -1,4 +1,4 @@
-import { JsonObject, JsonProperty, JsonConverter, JsonCustomConvert, Any } from "json2typescript";
+import { JsonObject, JsonProperty, JsonConverter, JsonCustomConvert, Any, JsonConvert } from "json2typescript";
 
 @JsonConverter
 class DateConverter implements JsonCustomConvert<Date> {
@@ -32,9 +32,93 @@ class DateConverter implements JsonCustomConvert<Date> {
   }
 }
 
+@JsonObject("ResolutionInfo")
+export class ResolutionInfo {
+    @JsonProperty("resolution-code", String)
+    code: string = undefined;
+
+    @JsonProperty("notes", [String])
+    notes: string[] = Array<string>();
+
+    @JsonProperty("resolved-at", Date)
+    resolvedAt: Date = undefined;
+}
+
+@JsonObject("Alert")
+export class Alert {
+    @JsonProperty("alertID", String, true)
+    alertID: string = undefined;
+
+    @JsonProperty("buildingID", String, true)
+    buildingID: string = undefined;
+
+    @JsonProperty("roomID", String, true)
+    roomID: string = undefined;
+
+    @JsonProperty("deviceID", String, true)
+    deviceID: string = undefined;
+
+    @JsonProperty("type", String, true)
+    type: string = undefined;
+
+    @JsonProperty("category", String, true)
+    category: string = undefined;
+
+    @JsonProperty("incident-id", String)
+    incidentID: string = undefined;
+
+    @JsonProperty("severity", String, true)
+    severity: string = undefined;
+
+    @JsonProperty("message", String)
+    message: string = undefined;
+
+    @JsonProperty("message-log", [String])
+    messageLog: string[] = Array<string>();
+
+    @JsonProperty("data", Any)
+    data: any = undefined;
+
+    @JsonProperty("start-time", Date)
+    startTime: Date = undefined;
+
+    @JsonProperty("end-time", Date)
+    endTime: Date = undefined;
+
+    @JsonProperty("update-time", Date)
+    updateTime: Date = undefined;
+
+    @JsonProperty("active", Boolean)
+    active: boolean = true
+
+    @JsonProperty("resolved", Boolean)
+    resolved: boolean = true
+
+    @JsonProperty("responders", [String])
+    responders: string[] = Array<string>();
+
+    @JsonProperty("help-sent-at", Date)
+    helpSentAt: Date = undefined;
+
+    @JsonProperty("help-arrived-at", Date)
+    helpArrivedAt: Date = undefined;
+
+    @JsonProperty("resolution-info", ResolutionInfo)
+    resolutionInfo: ResolutionInfo = undefined;
+
+    @JsonProperty("alert-tags", [String], true)
+    alertTags: string[] = Array<string>();
+
+    @JsonProperty("room-tags", [String], true)
+    roomTags: string[] = Array<string>();
+
+    @JsonProperty("device-tags", [String], true)
+    deviceTags: string[] = Array<string>();
+}
+
 @JsonObject("Building")
 export class Building {
-    @JsonProperty("_id", String)
+    @JsonProperty("_id", String, true)
     id: string = undefined;
 
     @JsonProperty("_rev", String, true)
@@ -47,7 +131,9 @@ export class Building {
     description: string = undefined;
 
     @JsonProperty("tags", [String], true)
-    tags: string[] = Array<string>();
+  tags: string[] = Array<string>();
+
+  isNew: boolean = false;
 }
 
 @JsonObject("RoomConfiguration")
@@ -158,7 +244,9 @@ export class Device {
     ports: Port[] = Array<Port>();
 
     @JsonProperty("tags", [String], true)
-    tags: string[] = Array<string>();
+  tags: string[] = Array<string>();
+
+  isNew: boolean = false;
 }
 
 @JsonObject("Room")
@@ -186,6 +274,8 @@ export class Room {
 
     @JsonProperty("tags", [String], true)
     tags: string[] = Array<string>();
+
+    isNew: boolean = false;
 }
 
 @JsonObject("IOConfiguration")
@@ -517,7 +607,7 @@ export class StaticDevice {
     @JsonProperty("transmit-rf-power", String, true)
     transmitRFPower: string = undefined;
 
-    @JsonProperty("field-state-received", [String, DateConverter], true)
+    // @JsonProperty("field-state-received", [String, DateConverter], true)
     updateTimes: Map<string, Date> = new Map();
 }
 
@@ -557,96 +647,20 @@ export class BuildingStatus {
     roomStates: Map<string, RoomStatus> = new Map();
 }
 
-@JsonObject("ResolutionInfo")
-export class ResolutionInfo {
-    @JsonProperty("resolution-code", String)
-    code: string = undefined;
+export const PI_ICON = "video_label"
+export const DMPS_ICON = "accessible_forward"
 
-    @JsonProperty("notes", [String])
-    notes: string[] = Array<string>();
-
-    @JsonProperty("resolved-at", Date)
-    resolvedAt: Date = undefined;
-}
-
-@JsonObject("Alert")
-export class Alert {
-    @JsonProperty("alertID", String, true)
-    alertID: string = undefined;
-
-    @JsonProperty("buildingID", String, true)
-    buildingID: string = undefined;
-
-    @JsonProperty("roomID", String, true)
-    roomID: string = undefined;
-
-    @JsonProperty("deviceID", String, true)
-    deviceID: string = undefined;
-
-    @JsonProperty("type", String, true)
-    type: string = undefined;
-
-    @JsonProperty("category", String, true)
-    category: string = undefined;
-
-    @JsonProperty("incident-id", String)
-    incidentID: string = undefined;
-
-    @JsonProperty("severity", String, true)
-    severity: string = undefined;
-
-    @JsonProperty("message", String)
-    message: string = undefined;
-
-    @JsonProperty("message-log", [String])
-    messageLog: string[] = Array<string>();
-
-    @JsonProperty("data", Any)
-    data: any = undefined;
-
-    @JsonProperty("start-time", Date)
-    startTime: Date = undefined;
-
-    @JsonProperty("end-time", Date)
-    endTime: Date = undefined;
-
-    @JsonProperty("update-time", Date)
-    updateTime: Date = undefined;
-
-    @JsonProperty("active", Boolean)
-    active: boolean = true
-
-    @JsonProperty("resolved", Boolean)
-    resolved: boolean = true
-
-    @JsonProperty("responders", [String])
-    responders: string[] = Array<string>();
-
-    @JsonProperty("help-sent-at", Date)
-    helpSentAt: Date = undefined;
-
-    @JsonProperty("help-arrived-at", Date)
-    helpArrivedAt: Date = undefined;
-
-    @JsonProperty("resolution-info", ResolutionInfo)
-    resolutionInfo: ResolutionInfo = undefined;
-
-    @JsonProperty("alert-tags", [String], true)
-    alertTags: string[] = Array<string>();
-
-    @JsonProperty("room-tags", [String], true)
-    roomTags: string[] = Array<string>();
-
-    @JsonProperty("device-tags", [String], true)
-    deviceTags: string[] = Array<string>();
-}
-
-export class AlertRow{
+export class RoomAlerts{
     roomID: string = undefined;
     systemTypeIcon: string = undefined;
     alerts: Alert[] = Array<Alert>();
     incidentID: string;
+    maintenanceMode: boolean = false;
     expanded: boolean = false;
     helpSent: boolean = false;
     helpArrived: boolean = false;
+
+    constructor(roomID?: string, alertList?: Alert[], isADump?: boolean) {
+        
+    }
 }

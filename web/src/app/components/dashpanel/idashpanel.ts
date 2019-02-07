@@ -6,4 +6,5 @@ export class DashPanel {
   
   export interface IDashPanel {
     data: any;
+    chosenSeverity: string;
   }

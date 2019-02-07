@@ -1,7 +1,7 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { JsonConvert, Any } from 'json2typescript';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Building, DBResponse, Room, RoomConfiguration, Device, DeviceType, Role, UIConfig, BuildingStatus, RoomStatus, Template, MetricsResponse } from '../objects';
+import { Building, DBResponse, Room, RoomConfiguration, Device, DeviceType, Role, UIConfig, BuildingStatus, RoomStatus, Template, MetricsResponse, StaticDevice, Alert } from '../objects';
 
 @Injectable({
   providedIn: 'root'
@@ -56,7 +56,7 @@ export class APIService {
   // Building Functions
   public async AddBuilding(toAdd: Building) {
     try {
-      const data = await this.http.post("buildings/"+toAdd.id, toAdd, {headers: this.headers}).toPromise();
+      const data = await this.http.post("buildings/"+toAdd.id, this.converter.serialize(toAdd), {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
 
       return response;
@@ -67,7 +67,7 @@ export class APIService {
 
   public async AddBuildings(toAdd: Building[]) {
     try {
-      const data = await this.http.post("buildings", toAdd, {headers: this.headers})
+      const data = await this.http.post("buildings", this.converter.serialize(toAdd), {headers: this.headers})
       const response = this.converter.deserialize(data, DBResponse);
 
       return response;
@@ -102,7 +102,7 @@ export class APIService {
     try {
       console.log(idToUpdate);
       console.log(toUpdate);
-      const data = await this.http.put("buildings/"+idToUpdate+"/update", toUpdate, {headers: this.headers}).toPromise();
+      const data = await this.http.put("buildings/"+idToUpdate+"/update", this.converter.serialize(toUpdate), {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
 
       return response;
@@ -113,7 +113,7 @@ export class APIService {
 
   public async UpdateBuildings(toUpdate: Building[]) {
     try {
-      const data = await this.http.put("buildings/update", toUpdate, {headers: this.headers}).toPromise();
+      const data = await this.http.put("buildings/update", this.converter.serialize(toUpdate), {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
 
       return response;
@@ -136,7 +136,7 @@ export class APIService {
   // Room Functions
   public async AddRoom(toAdd: Room) {
     try {
-      const data = await this.http.post("rooms/"+toAdd.id, toAdd, {headers: this.headers}).toPromise();
+      const data = await this.http.post("rooms/"+toAdd.id, this.converter.serialize(toAdd), {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
 
       return response;
@@ -147,7 +147,7 @@ export class APIService {
 
   public async AddRooms(toAdd: Room[]) {
     try {
-      const data = await this.http.post("rooms", toAdd, {headers: this.headers})
+      const data = await this.http.post("rooms", this.converter.serialize(toAdd), {headers: this.headers})
       const response = this.converter.deserialize(data, DBResponse);
 
       return response;
@@ -191,7 +191,7 @@ export class APIService {
 
   public async UpdateRoom(idToUpdate: string, toUpdate: Room) {
     try {
-      const data = await this.http.put("rooms/"+idToUpdate+"/update", toUpdate, {headers: this.headers}).toPromise();
+      const data = await this.http.put("rooms/"+idToUpdate+"/update", this.converter.serialize(toUpdate), {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
 
       return response;
@@ -202,7 +202,7 @@ export class APIService {
 
   public async UpdateRooms(toUpdate: Room[]) {
     try {
-      const data = await this.http.put("rooms/update", toUpdate, {headers: this.headers}).toPromise();
+      const data = await this.http.put("rooms/update", this.converter.serialize(toUpdate), {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
 
       return response;
@@ -246,7 +246,7 @@ export class APIService {
   // Device Functions
   public async AddDevice(toAdd: Device) {
     try {
-      const data = await this.http.post("devices/"+toAdd.id, toAdd, {headers: this.headers}).toPromise();
+      const data = await this.http.post("devices/"+toAdd.id, this.converter.serialize(toAdd), {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
 
       return response;
@@ -257,7 +257,7 @@ export class APIService {
 
   public async AddDevices(toAdd: Device[]) {
     try {
-      const data = await this.http.post("devices", toAdd, {headers: this.headers})
+      const data = await this.http.post("devices", this.converter.serialize(toAdd), {headers: this.headers})
       const response = this.converter.deserialize(data, DBResponse);
 
       return response;
@@ -323,7 +323,7 @@ export class APIService {
 
   public async UpdateDevice(idToUpdate: string, toUpdate: Device) {
     try {
-      const data = await this.http.put("devices/"+idToUpdate+"/update", toUpdate, {headers: this.headers}).toPromise();
+      const data = await this.http.put("devices/"+idToUpdate+"/update", this.converter.serialize(toUpdate), {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
 
       return response;
@@ -334,7 +334,7 @@ export class APIService {
 
   public async UpdateDevices(toUpdate: Device[]) {
     try {
-      const data = await this.http.put("devices/update", toUpdate, {headers: this.headers}).toPromise();
+      const data = await this.http.put("devices/update", this.converter.serialize(toUpdate), {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
 
       return response;
@@ -379,7 +379,7 @@ export class APIService {
   // UIConfig Functions
   public async AddUIConfig(toAdd: UIConfig) {
     try {
-      const data = await this.http.post("uiconfigs/"+toAdd.id, toAdd, {headers: this.headers}).toPromise();
+      const data = await this.http.post("uiconfigs/"+toAdd.id, this.converter.serialize(toAdd), {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
 
       return response;
@@ -390,7 +390,7 @@ export class APIService {
 
   public async AddUIConfigs(toAdd: UIConfig[]) {
     try {
-      const data = await this.http.post("uiconfigs", toAdd, {headers: this.headers})
+      const data = await this.http.post("uiconfigs", this.converter.serialize(toAdd), {headers: this.headers})
       const response = this.converter.deserialize(data, DBResponse);
 
       return response;
@@ -423,7 +423,7 @@ export class APIService {
 
   public async UpdateUIConfig(idToUpdate: string, toUpdate: UIConfig) {
     try {
-      const data = await this.http.put("uiconfigs/"+idToUpdate+"/update", toUpdate, {headers: this.headers}).toPromise();
+      const data = await this.http.put("uiconfigs/"+idToUpdate+"/update", this.converter.serialize(toUpdate), {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
 
       return response;
@@ -434,7 +434,7 @@ export class APIService {
 
   public async UpdateUIConfigs(toUpdate: UIConfig[]) {
     try {
-      const data = await this.http.put("uiconfigs/update", toUpdate, {headers: this.headers}).toPromise();
+      const data = await this.http.put("uiconfigs/update", this.converter.serialize(toUpdate), {headers: this.headers}).toPromise();
       const response = this.converter.deserialize(data, DBResponse);
 
       return response;
@@ -493,6 +493,37 @@ export class APIService {
       const permissions = this.converter.deserialize(data, Any);
 
       return permissions;
+    } catch (e) {
+      throw new Error("error getting the current user's permissions: " + e);
+    }
+  }
+
+  // Static Record Functions
+  public async GetAllStaticDeviceRecords() {
+    try {
+      const data: any = await this.http.get("static/devices", {headers: this.headers}).toPromise();
+      let records: StaticDevice[] = [];
+      for(let sd of data) {
+        let rec = this.converter.deserialize(sd, StaticDevice)
+
+        rec.updateTimes = sd["field-state-received"]
+
+        records.push(rec)
+      }
+
+      return records;
+    } catch (e) {
+      throw new Error("error getting the static device records: " + e);
+    }
+  }
+
+  // Alert Functions
+  public async GetAllAlerts() {
+    try {
+      const data = await this.http.get("alerts/", {headers: this.headers}).toPromise();
+      const alerts = this.converter.deserialize(data, Alert);
+
+      return alerts
     } catch (e) {
       throw new Error("error getting the current user's permissions: " + e);
     }

@@ -85,7 +85,13 @@ func main() {
 	read.GET("/users/current/username", handlers.GetUsername)
 	read.GET("/users/current/permissions", handlers.GetUserPermissions)
 
-	// TODO: add alert endpoints...when I know what they are haha
+	// Static Record Endpoints
+	read.GET("/static/devices", handlers.GetAllStaticDeviceRecords)
+	read.GET("/static/rooms", handlers.GetAllStaticRoomRecords)
+
+	// Alert Endpoints
+	read.GET("/alerts", handlers.GetAllAlerts)
+	read.PUT("/alerts/:alertID/resolve", handlers.ResolveAlert)
 
 	// Websocket Endpoints
 	router.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))

@@ -133,7 +133,8 @@ export class DataService {
   private async SetBuildingToRoomsMap() {
     for(let room of this.allRooms) {
       for(let building of this.allBuildings) {
-        if(room.id.includes(building.id)) {
+        let buildingPart = room.id.split("-")[0]
+        if(buildingPart === building.id) {
           if(this.buildingToRoomsMap.get(building.id) == null) {
             this.buildingToRoomsMap.set(building.id, [room]);
           } else {
@@ -148,7 +149,8 @@ export class DataService {
   private async SetRoomToDevicesMap() {
     for(let device of this.allDevices) {
       for(let room of this.allRooms) {
-        if(device.id.includes(room.id)) {
+        let roomPart = device.id.substring(0, device.id.lastIndexOf("-"))
+        if(roomPart === room.id) {
           if(this.roomToDevicesMap.get(room.id) == null) {
             this.roomToDevicesMap.set(room.id, [device]);
           } else {

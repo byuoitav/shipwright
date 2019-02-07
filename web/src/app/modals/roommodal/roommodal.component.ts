@@ -2,6 +2,8 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Room } from 'src/app/objects';
+import { APIService} from 'src/app/services/api.service';
+import { DataService} from 'src/app/services/data.service';
 
 @Component({
   selector: 'room-modal',
@@ -10,9 +12,17 @@ import { Room } from 'src/app/objects';
 })
 export class RoomModalComponent implements OnInit {
 
-  constructor(public text: StringsService, public dialogRef: MatDialogRef<RoomModalComponent>, @Inject(MAT_DIALOG_DATA) public data: Room) { }
+  constructor(public text: StringsService, public dialogRef: MatDialogRef<RoomModalComponent>, @Inject(MAT_DIALOG_DATA) public data: Room, private api: APIService, public dataService: DataService) { }
 
   ngOnInit() {
   }
-
+  UpdateRoom() {
+    this.api.UpdateRoom(this.data.id, this.data).then((resp) => {
+      this.dialogRef.close(resp)
+    }
+    )
+  }
+  CloseModal() {
+    this.dialogRef.close()
+  }
 }

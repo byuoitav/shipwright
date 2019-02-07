@@ -42,7 +42,7 @@ export class StringsService {
     "SonyXBR" : "tv",
     "VideoCard": "add_to_queue",
     "non-controllable": "settings_input_hdmi",
-    "via-connect-pro": "setings_input_antenna",
+    "via-connect-pro": "settings_input_antenna",
   }
 
   public readonly separatorKeyCodes: number[] = [ENTER, COMMA];
