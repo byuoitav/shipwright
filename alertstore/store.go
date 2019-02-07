@@ -63,8 +63,6 @@ func InitializeAlertStore(a *actions.ActionManager) {
 //PutAlert adds an alert to the store.
 //Do we want to wait for confirmation?
 func (a *alertStore) putAlert(alert structs.Alert) (string, *nerr.E) {
-	log.L.Infof("%v", a)
-
 	//check to make sure we have a time
 	if alert.AlertStartTime.IsZero() {
 		alert.AlertStartTime = time.Now()

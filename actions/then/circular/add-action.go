@@ -11,13 +11,13 @@ import (
 
 // AddAction .
 func AddAction(ctx context.Context, with []byte, log *zap.SugaredLogger) *nerr.E {
-	action := actions.Action{}
-	err := then.FillStructFromTemplate(ctx, string(with), &action)
+	action := &actions.Action{}
+	err := then.FillStructFromTemplate(ctx, string(with), action)
 	if err != nil {
 		return err.Addf("failed to add action")
 	}
 
-	err = actions.DefaulActionManager().ManageAction(action)
+	err = actions.DefaultActionManager().ManageAction(action)
 	if err != nil {
 		return err.Addf("failed to add action")
 	}

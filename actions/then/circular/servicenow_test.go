@@ -1,6 +1,7 @@
 package circular
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -12,10 +13,10 @@ func TestServiceNow(t *testing.T) {
 	log.SetLevel("debug")
 
 	alert := structs.Alert{
-		BasicDeviceInfo: dev,
-		Type:            structs.Communication,
-		Category:        structs.System,
-		Severity:        structs.Critical,
+		//		BasicDeviceInfo: dev,
+		Type:     structs.Communication,
+		Category: structs.System,
+		Severity: structs.Critical,
 
 		Message:             "I like to send messages 2",
 		SystemType:          "pi",
@@ -24,7 +25,7 @@ func TestServiceNow(t *testing.T) {
 		Active:              true,
 	}
 
-	id, err := CreateIncidentRepair(alert)
+	id, err := CreateIncidentRepair(context.TODO(), nil)
 	if err != nil {
 		log.L.Errorf("%v", err.Error())
 	} else {
@@ -35,7 +36,7 @@ func TestServiceNow(t *testing.T) {
 	//update the message log
 	alert.Message = "This is a new test"
 	alert.IncidentID = id
-	id, err = CreateIncidentRepair(alert)
+	id, err = CreateIncidentRepair(context.TODO(), nil)
 	if err != nil {
 		log.L.Errorf("%v", err.Error())
 	}
@@ -49,7 +50,7 @@ func TestServiceNow(t *testing.T) {
 		ResolvedAt: time.Now(),
 	}
 	alert.ResolutionInfo = resolved
-	id, err = CreateIncidentRepair(alert)
+	id, err = CreateIncidentRepair(context.TODO(), nil)
 	if err != nil {
 		log.L.Errorf("%v", err.Error())
 	}
