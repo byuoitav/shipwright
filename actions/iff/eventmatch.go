@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"sync"
 
-	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/shipwright/actions/actionctx"
 )
 
@@ -15,22 +14,22 @@ type EventMatch struct {
 	Count int
 	init  sync.Once
 
-	GeneratingSystem string   `json:"GeneratingSystem"`
-	Timestamp        string   `json:"Timestamp"`
-	EventTags        []string `json:"EventTags"`
-	Key              string   `json:"Key"`
-	Value            string   `json:"Value"`
-	User             string   `json:"User"`
-	Data             string   `json:"Data,omitempty"`
+	GeneratingSystem string   `json:"generating-system"`
+	Timestamp        string   `json:"timestamp"`
+	EventTags        []string `json:"event-tags"`
+	Key              string   `json:"key"`
+	Value            string   `json:"value"`
+	User             string   `json:"user"`
+	Data             string   `json:"data,omitempty"`
 	AffectedRoom     struct {
-		BuildingID string `json:"BuildingID,omitempty"`
-		RoomID     string `json:"RoomID,omitempty"`
-	} `json:"AffectedRoom"`
+		BuildingID string `json:"buildingID,omitempty"`
+		RoomID     string `json:"roomID,omitempty"`
+	} `json:"target-device"`
 	TargetDevice struct {
-		BuildingID string `json:"BuildingID,omitempty"`
-		RoomID     string `json:"RoomID,omitempty"`
-		DeviceID   string `json:"DeviceID,omitempty"`
-	} `json:"TargetDevice"`
+		BuildingID string `json:"buildingID,omitempty"`
+		RoomID     string `json:"roomID,omitempty"`
+		DeviceID   string `json:"deviceID,omitempty"`
+	} `json:"affected-room"`
 
 	Regex struct {
 		GeneratingSystem *regexp.Regexp
@@ -101,7 +100,6 @@ func (m *EventMatch) DoesEventMatch(ctx context.Context) bool {
 	if m.Regex.Key != nil {
 		reg := m.Regex.Key.Copy()
 		if !reg.MatchString(event.Key) {
-			log.L.Debugf("returrning false.")
 			return false
 		}
 	}
@@ -169,7 +167,6 @@ func (m *EventMatch) DoesEventMatch(ctx context.Context) bool {
 		}
 	}
 
-	log.L.Infof("matched event: %+v", event)
 	return true
 }
 

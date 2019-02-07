@@ -1,6 +1,8 @@
 package persist
 
 import (
+	"encoding/json"
+	"fmt"
 	"os"
 	"strings"
 	"sync"
@@ -37,6 +39,32 @@ func init() {
 	initMu = sync.Mutex{}
 }
 
+func GetAllActiveAlertsFromPersist() ([]structs.Alert, *nerr.E) {
+	alerts := []structs.Alert{}
+	query := elk.AllQuery{}
+	query.Query.MatchAll = map[string]interface{}{}
+
+	config := GetConfig()
+
+	b, err := elk.MakeGenericELKRequest(fmt.Sprintf("%v/%v/_search", config.Address, config.PersistActiveAlerts.ElkData.IndexPattern), "POST", query, config.User, config.Pass)
+	if err != nil {
+		log.L.Fatalf("Couldn't get active alerts from persistence: %v", err.Error())
+	}
+
+	resp := elk.AlertQueryResponse{}
+
+	er := json.Unmarshal(b, &resp)
+	if er != nil {
+		log.L.Fatalf("Couldn't get active alerts from persistence: %v", err.Error())
+	}
+
+	for _, i := range resp.Hits.Wrappers {
+		alerts = append(alerts, i.Alert)
+	}
+
+	return alerts, nil
+}
+
 func GetElkAlertPersist() *ElkPersist {
 	log.L.Debugf("getting the alert persistence manager")
 	initOnce.Do(func() {
@@ -51,7 +79,7 @@ func GetElkAlertPersist() *ElkPersist {
 		go func() {
 			for {
 				//go get the config
-				per.config = PersistConfig{}
+				per.config = GetConfig()
 				log.L.Debugf("Starting persistence manager with config %v", per.config)
 
 				per.start() //we do this so that the persist can reload the config by just returning
@@ -117,12 +145,21 @@ func (e *ElkPersist) sendUpdate() *nerr.E {
 	//do our active alert stuff
 	for _, v := range e.activeBuffer {
 		if v.Delete {
+			var oldID string
+			//we need to parse out the ID to remove the last bit, if it's there.
+			if strings.Count(v.Alert.AlertID, "^") > 2 {
+				//remove the last bit
+				oldID = v.Alert.AlertID[:strings.LastIndex(v.Alert.AlertID, "^")]
+			} else {
+				oldID = v.Alert.AlertID
+			}
+
 			buf = append(buf, elk.ElkBulkUpdateItem{
 				Delete: elk.ElkDeleteHeader{
 					Header: elk.HeaderIndex{
 						Index: e.config.PersistActiveAlerts.ElkData.IndexPattern,
 						Type:  "alert",
-						ID:    v.Alert.AlertID,
+						ID:    oldID,
 					}},
 			})
 		} else {
@@ -150,10 +187,18 @@ func (e *ElkPersist) sendUpdate() *nerr.E {
 		})
 	}
 
-	//we forward
-	go elk.BulkForward("alert-persistence", e.config.Address, e.config.User, e.config.Pass, buf)
+	if len(buf) > 0 {
+		//we forward
+		go elk.BulkForward("alert-persistence", e.config.Address, e.config.User, e.config.Pass, buf)
+	}
+	e.resetBuffers()
 
 	return nil
+}
+
+func (e *ElkPersist) resetBuffers() {
+	e.resolvedBuffer = []AlertWrapper{}
+	e.activeBuffer = map[string]AlertWrapper{}
 }
 
 func (e *ElkPersist) parseConfig() *nerr.E {

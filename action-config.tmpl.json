@@ -1,36 +1,21 @@
 [
+  {},
   {
+    "name": "help-requests",
     "trigger": "event",
+    "kill-after": 2,
     "if": {
       "event-match": {
-        "key": "help-request",
-        "value": "confirm"
+        "key": "user-interaction",
+        "value": "open help modal"
       }
     },
     "then": [
       {
-        "do": "send-email",
-        "with": {
-          "from": "{{.Event.TargetDevice.DeviceID}}@byu.edu",
-          "to": [
-            "matt_blodgett@byu.edu",
-            "danny_randall@byu.edu",
-            "joe_blodgett@byu.edu"
-          ],
-          "subject": "Help request in {{.Event.AffectedRoom.RoomID}}",
-          "body": "This is a message for **matt blodgett** from {{.Event.GeneratingSystem}}",
-          "smtp-addr": "gateway.byu.edu:25",
-          "user": "",
-          "pass": ""
-        }
-      },
-      {
         "do": "send-slack",
         "with": {
-          "fields": {
-            "title": "Help Request",
-            "text": "Help request in {{.Event.AffectedRoom.RoomID}} from {{.Event.GeneratingSystem}}"
-          }
+          "title": "Test",
+          "text": "hi from danny"
         }
       }
     ]

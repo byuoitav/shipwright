@@ -25,7 +25,7 @@ var (
 type Client struct {
 	manager  *Manager
 	conn     *websocket.Conn
-	sendChan chan events.Event
+	sendChan chan interface{}
 }
 
 func (c *Client) readPump() {
