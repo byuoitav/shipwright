@@ -81,13 +81,14 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 		}
 
 		a.Messenger.SubscribeToRooms("ITB-1010")
-
-		go func() {
-			for {
-				event := a.Messenger.ReceiveEvent()
-				a.EventStream <- event
-			}
-		}()
+		/*
+			go func() {
+				for {
+								event := a.Messenger.ReceiveEvent()
+							a.EventStream <- event
+				}
+			}()
+		*/
 	}
 
 	a.reqs = make(chan *ActionRequest, 1000)

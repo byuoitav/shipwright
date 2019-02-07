@@ -19,7 +19,7 @@ import (
 
 func main() {
 	figure.NewFigure("SMEE", "univers", true).Print()
-	log.SetLevel("info")
+	log.SetLevel("debug")
 
 	port := ":9999"
 	router := common.NewRouter()

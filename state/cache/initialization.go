@@ -45,7 +45,7 @@ func InitializeCaches() {
 			log.L.Fatalf("Couldn't make cache: %v", err.Error())
 		}
 
-		Caches[i.CacheType] = cache
+		Caches[i.Name] = cache
 		log.L.Infof("Cache %v initialized with type %v. %v devices and %v rooms", i.Name, i.CacheType, len(devs), len(rooms))
 	}
 }

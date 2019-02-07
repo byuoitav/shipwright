@@ -19,6 +19,7 @@ type BufferManager interface {
 var managerMap map[string][]BufferManager
 
 func init() {
+	log.SetLevel("info")
 	log.L.Infof("Initializing buffer managers")
 	c := config.GetConfig()
 	managerMap = make(map[string][]BufferManager)

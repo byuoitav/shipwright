@@ -20,7 +20,7 @@ func init() {
 
 //GetCache .
 func GetCache(cacheType string) shared.Cache {
-	log.L.Debugf("Getting cache %v", cacheType)
-	log.L.Debugf("%v", Caches)
+	log.L.Infof("Getting cache %v", cacheType)
+	log.L.Infof("%v", Caches)
 	return Caches[cacheType]
 }
