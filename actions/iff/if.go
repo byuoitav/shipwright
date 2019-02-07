@@ -24,6 +24,7 @@ func (i *If) Check(ctx context.Context, log *zap.SugaredLogger) (context.Context
 		log.Debugf("Failed if check at alert match")
 		return ctx, false
 	}
+
 	/*
 		if i.StateQuery != nil && !i.StateQuery.Check(ctx) {
 			log.Debugf("Failed if check at alert match")

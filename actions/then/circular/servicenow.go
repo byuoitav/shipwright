@@ -1,4 +1,4 @@
-package then
+package circular
 
 import (
 	"context"

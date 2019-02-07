@@ -23,7 +23,7 @@ func AddAlert(ctx context.Context, with []byte, log *zap.SugaredLogger) *nerr.E 
 		return err.Addf("failed to add alert")
 	}
 
-	// add alert to context
+	// TODO add alert to context
 
 	return nil
 }
