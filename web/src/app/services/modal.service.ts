@@ -5,7 +5,7 @@ import { RespondModalComponent } from '../modals/respond/respond.component';
 import { BuildingModalComponent } from '../modals/buildingmodal/buildingmodal.component';
 import { RoomModalComponent } from '../modals/roommodal/roommodal.component';
 import { DeviceModalComponent } from '../modals/devicemodal/devicemodal.component';
-import { Building, Room, Device, AlertRow, DBResponse } from '../objects';
+import { Building, Room, Device, DBResponse, RoomAlerts } from '../objects';
 import { NotifyModalComponent } from '../modals/notify/notify.component';
 
 @Injectable({
@@ -21,8 +21,8 @@ export class ModalService {
     })
   }
 
-  OpenRespondModal(alertRow: AlertRow) {
-    this.dialog.open(RespondModalComponent, {data: alertRow});
+  OpenRespondModal(ra: RoomAlerts) {
+    this.dialog.open(RespondModalComponent, {data: ra});
   }
 
   OpenBuildingModal(building: Building) {

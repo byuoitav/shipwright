@@ -6,54 +6,57 @@
     <table mat-table [dataSource]="dataSource" matSort multiTemplateDataRows class="mat-elevation-z0">
         <ng-container matColumnDef="icon">
             <th mat-header-cell *matHeaderCellDef> System Type </th>
-            <td mat-cell *matCellDef="let alertRow" (click)="ExpandRow(alertRow)">
-                <mat-icon>{{alertRow.systemTypeIcon}}</mat-icon>
+            <td mat-cell *matCellDef="let ra" (click)="ExpandRow(ra)">
+                <mat-icon>{{ra.systemTypeIcon}}</mat-icon>
             </td>
         </ng-container>
 
         <ng-container matColumnDef="roomID">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Room ID </th>
-            <td mat-cell *matCellDef="let alertRow">{{alertRow.roomID}}</td>
+            <td mat-cell *matCellDef="let ra">{{ra.roomID}}</td>
         </ng-container>
 
         <ng-container matColumnDef="alertCount">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> # </th>
-            <td mat-cell *matCellDef="let alertRow" (click)="ExpandRow(alertRow)">{{alertRow.alerts.length}}</td>
+            <td mat-cell *matCellDef="let ra" (click)="ExpandRow(ra)">{{ra.alerts.length}}</td>
         </ng-container>
 
         <ng-container matColumnDef="incident">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> INC </th>
-            <td mat-cell *matCellDef="let alertRow" (click)="ServiceNowRedirect(alertRow.incidentID)">{{alertRow.incidentID}}</td>
+            <td mat-cell *matCellDef="let ra" (click)="ServiceNowRedirect(ra.incidentID)">{{ra.incidentID}}</td>
         </ng-container>
 
         <ng-container matColumnDef="help-sent">
             <th mat-header-cell *matHeaderCellDef class="centered"> Help Sent </th>
-            <td mat-cell *matCellDef="let alertRow" (click)="ExpandRow(alertRow)" class="centered">
-                <mat-icon *ngIf="alertRow.helpSent" class="good-status">check_circle</mat-icon>
-                <mat-icon *ngIf="!alertRow.helpSent" class="bad-status">cancel</mat-icon>
+            <td mat-cell *matCellDef="let ra" (click)="ExpandRow(ra)" class="centered">
+                <mat-icon *ngIf="ra.helpSent" class="good-status">check_circle</mat-icon>
+                <mat-icon *ngIf="!ra.helpSent" class="bad-status">cancel</mat-icon>
             </td>
         </ng-container>
 
         <ng-container matColumnDef="help-arrived">
             <th mat-header-cell *matHeaderCellDef class="centered"> Help Arrived </th>
-            <td mat-cell *matCellDef="let alertRow" (click)="ExpandRow(alertRow)" class="centered">
-                <mat-icon *ngIf="alertRow.helpArrived" class="good-status">check_circle</mat-icon>
-                <mat-icon *ngIf="!alertRow.helpArrived" class="bad-status">cancel</mat-icon>
+            <td mat-cell *matCellDef="let ra" (click)="ExpandRow(ra)" class="centered">
+                <mat-icon *ngIf="ra.helpArrived" class="good-status">check_circle</mat-icon>
+                <mat-icon *ngIf="!ra.helpArrived" class="bad-status">cancel</mat-icon>
             </td>
         </ng-container>
 
         <!-- <ng-container matColumnDef="respond" [stickyEnd]=true>
             <th mat-header-cell *matHeaderCellDef> Respond </th>
-            <td mat-cell *matCellDef="let alertRow"><button mat-raised-button color='accent' (click)="modal.OpenRespondModal(alertRow)">Respond</button></td>
+            <td mat-cell *matCellDef="let ra"><button mat-raised-button color='accent' (click)="modal.OpenRespondModal(ra)">Respond</button></td>
         </ng-container> -->
 
         <ng-container matColumnDef="expandedDetail">
-            <td mat-cell *matCellDef="let alertRow" [attr.colspan]="alertRowColumns.length">
-                <div class="alert-detail" [@detailExpand]="expandedAlertRow === alertRow ? 'expanded' : 'collapsed'">
-                    <table mat-table [dataSource]="alertRow.alerts" multiTemplateDataRows>
+            <td mat-cell *matCellDef="let ra" [attr.colspan]="alertRowColumns.length">
+                <div class="alert-detail" [@detailExpand]="expRoomAlerts === ra ? 'expanded' : 'collapsed'">
+                    <table mat-table [dataSource]="ra.alerts" multiTemplateDataRows>
                         <ng-container matColumnDef="deviceName">
                             <th mat-header-cell *matHeaderCellDef> Device Name </th>
-                            <td mat-cell *matCellDef="let alert">{{GetDeviceName(alert.deviceID)}}</td>
+                            <ng-container *matCellDef="let alert">
+                                <td mat-cell *ngIf="alert.severity == chosenSeverity">{{GetDeviceName(alert.deviceID)}}</td>
+                            </ng-container>
+
                         </ng-container>
 
                         <ng-container matColumnDef="alertType">
@@ -63,9 +66,11 @@
 
                         <ng-container matColumnDef="severity">
                             <th mat-header-cell *matHeaderCellDef> Severity </th>
-                            <td mat-cell *matCellDef="let alert">
-                                <span [ngClass]="alert.severity + '-severity'">{{text.Title(alert.severity)}}</span>
-                            </td>
+                            <ng-container *matCellDef="let alert">
+                                <td mat-cell *ngIf="alert.severity == chosenSeverity">
+                                    <span [ngClass]="alert.severity + '-severity'">{{text.Title(alert.severity)}}</span>
+                                </td>
+                            </ng-container>
                         </ng-container>
 
                         <!-- <ng-container matColumnDef="message">
@@ -85,14 +90,17 @@
 
                         <ng-container matColumnDef="responders">
                             <th mat-header-cell *matHeaderCellDef> Responders </th>
-                            <td mat-cell *matCellDef="let alert">
-                                <ng-container *ngIf="alert.responders.length == 0">
-                                    --
-                                </ng-container>
-                                <ng-container *ngIf="alert.responders.length > 0">
-                                    {{alert.responders}}
-                                </ng-container>
-                            </td>
+                            <ng-container *matCellDef="let alert">
+                                <td mat-cell *ngIf="alert.severity == chosenSeverity">
+                                    <ng-container *ngIf="alert.responders.length == 0">
+                                        --
+                                    </ng-container>
+                                    <ng-container *ngIf="alert.responders.length > 0">
+                                        {{alert.responders}}
+                                    </ng-container>
+                                </td>
+                            </ng-container>
+
                         </ng-container>
 
                         <!-- <ng-container matColumnDef="help-sent-at">
@@ -107,7 +115,9 @@
 
                         <ng-container matColumnDef="message">
                             <th mat-header-cell *matHeaderCellDef> Message </th>
-                            <td mat-cell *matCellDef="let alert">{{alert.message}}</td>
+                            <ng-container *matCellDef="let alert">
+                                <td mat-cell *ngIf="alert.severity == chosenSeverity">{{alert.message}}</td>
+                            </ng-container>
                         </ng-container>
 
                         <tr mat-header-row *matHeaderRowDef="alertDetailColumns"></tr>
@@ -118,7 +128,7 @@
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="alertRowColumns; sticky: true"></tr>
-        <tr mat-row *matRowDef="let alertRow; columns: alertRowColumns;" [class.example-expanded-row]="expandedAlertRow === alertRow"></tr>
+        <tr mat-row *matRowDef="let ra; columns: alertRowColumns;" [class.example-expanded-row]="expRoomAlerts === ra"></tr>
         <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="alert-detail-row"></tr>
 
     </table>

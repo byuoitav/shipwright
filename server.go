@@ -93,6 +93,10 @@ func main() {
 	read.GET("/static/devices", handlers.GetAllStaticDeviceRecords)
 	read.GET("/static/rooms", handlers.GetAllStaticRoomRecords)
 
+	// Alert Endpoints
+	read.GET("/alerts", handlers.GetAllAlerts)
+	read.PUT("/alerts/:alertID/resolve", handlers.ResolveAlert)
+
 	// Websocket Endpoints
 	router.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))
 

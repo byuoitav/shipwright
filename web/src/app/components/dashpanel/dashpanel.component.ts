@@ -23,9 +23,8 @@ export class DashPanelComponent implements OnInit {
   }
 
   AllAlerts = "all-alerts";
-  CritAlerts = "critical-alerts"
-  WarnAlerts = "warning-alerts"
-  LowAlerts = "low-alerts"
+  CritAlerts = "critical"
+  WarnAlerts = "warning"
 
   choosePanel(panelType: string) {
     if(panelType == null) {
@@ -40,6 +39,7 @@ export class DashPanelComponent implements OnInit {
 
     let componentRef = viewContainerRef.createComponent(componentFactory);
     (<IDashPanel>componentRef.instance).data = data;
+    (<IDashPanel>componentRef.instance).chosenSeverity = panelType;
   }
 
   determineData(panelType: string): any {
@@ -47,13 +47,10 @@ export class DashPanelComponent implements OnInit {
       return this.monitor.GetAllAlerts();
     }
     if(panelType === this.CritAlerts) {
-      return this.monitor.GetCriticalAlerts();
+      return this.monitor.GetAllAlerts(this.CritAlerts);
     }
     if(panelType === this.WarnAlerts) {
-      return this.monitor.GetWarningAlerts();
-    }
-    if(panelType === this.LowAlerts) {
-      return this.monitor.GetLowAlerts();
+      return this.monitor.GetAllAlerts(this.WarnAlerts);
     }
     // TODO get data for battery report
   }
