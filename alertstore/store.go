@@ -10,7 +10,7 @@ import (
 	"github.com/byuoitav/common/structs"
 	"github.com/byuoitav/shipwright/actions"
 	"github.com/byuoitav/shipwright/actions/actionctx"
-	"github.com/byuoitav/shipwright/alertproc/store/persist"
+	"github.com/byuoitav/shipwright/alertstore/persist"
 	"github.com/byuoitav/shipwright/socket"
 )
 
@@ -63,8 +63,6 @@ func InitializeAlertStore(a *actions.ActionManager) {
 //PutAlert adds an alert to the store.
 //Do we want to wait for confirmation?
 func (a *alertStore) putAlert(alert structs.Alert) (string, *nerr.E) {
-	log.L.Infof("%v", a)
-
 	//check to make sure we have a time
 	if alert.AlertStartTime.IsZero() {
 		alert.AlertStartTime = time.Now()

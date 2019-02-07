@@ -11,15 +11,17 @@ import (
 	"github.com/byuoitav/central-event-system/messenger"
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
+	"github.com/byuoitav/common/v2/events"
 	"github.com/byuoitav/shipwright/actions/actionctx"
 	"github.com/byuoitav/shipwright/state/cache"
 )
 
 // An ActionManager manages executing a set of actions
 type ActionManager struct {
-	Config    *ActionConfig
-	Workers   int
-	Messenger *messenger.Messenger
+	Config      *ActionConfig
+	Workers     int
+	Messenger   *messenger.Messenger
+	EventStream chan events.Event
 
 	matchActionsMu sync.RWMutex
 	matchActions   []*Action
@@ -54,7 +56,7 @@ func DefaultActionManager() *ActionManager {
 
 // Start starts the action manager
 func (a *ActionManager) Start(ctx context.Context) *nerr.E {
-	var err *nerr.E
+	// var err *nerr.E
 	a.ctx = ctx
 
 	if a.Config == nil {
@@ -65,9 +67,13 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 		a.Workers = 1
 	}
 
+	a.EventStream = make(chan events.Event, 1000)
+
 	log.L.Infof("Starting action manager with %d workers", a.Workers)
 
 	if a.Messenger == nil {
+		err := &nerr.E{}
+
 		// connect to the hub
 		a.Messenger, err = messenger.BuildMessenger(os.Getenv("HUB_ADDRESS"), base.Messenger, 1000)
 		if err != nil {
@@ -75,6 +81,13 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 		}
 
 		a.Messenger.SubscribeToRooms("ITB-1010")
+
+		go func() {
+			for {
+				event := a.Messenger.ReceiveEvent()
+				a.EventStream <- event
+			}
+		}()
 	}
 
 	a.reqs = make(chan *ActionRequest, 1000)
@@ -138,8 +151,11 @@ func (a *ActionManager) runActionsFromEvents(ctx context.Context) {
 
 			a.matchActions = keep
 			a.matchActionsMu.Unlock()
-		default:
-			event := a.Messenger.ReceiveEvent()
+		case event, ok := <-a.EventStream:
+			if !ok {
+				log.L.Warnf("action manager event stream closed")
+				return
+			}
 
 			//get the cache and submit for persistence
 			cache.GetCache("default").StoreAndForwardEvent(event)
@@ -156,6 +172,23 @@ func (a *ActionManager) runActionsFromEvents(ctx context.Context) {
 			}
 
 			a.matchActionsMu.RUnlock()
+		default:
+			/*
+				event := a.Messenger.ReceiveEvent()
+
+				// a new context for this action
+				actx := actionctx.PutEvent(ctx, event)
+
+				a.matchActionsMu.RLock()
+				for i := range a.matchActions {
+					a.reqs <- &ActionRequest{
+						Context: actx,
+						Action:  a.matchActions[i],
+					}
+				}
+
+				a.matchActionsMu.RUnlock()
+			*/
 		}
 	}
 }
@@ -204,19 +237,19 @@ func (a *ActionManager) RunAction(ctx context.Context, action *Action) {
 
 // ManageAction adds an action to be managed by the action manager
 // currently, an action manager only manages interval and event trigger actions
-func (a *ActionManager) ManageAction(action *Action) {
-	switch action.Trigger {
-	case "skip":
-	case "event":
+func (a *ActionManager) ManageAction(action *Action) *nerr.E {
+	switch {
+	case action.Trigger == "skip":
+	case action.Trigger == "event":
 		a.matchActionsMu.Lock()
 		a.matchActions = append(a.matchActions, action)
 		a.matchActionsMu.Unlock()
-
-		log.L.Infof("Added '%s' action to action manager with trigger '%s'", action.Name, action.Trigger)
+	case strings.HasPrefix(action.Trigger, "interval:"):
+		go a.runActionOnInterval(action)
 	default:
-		if strings.HasPrefix(action.Trigger, "interval:") {
-			go a.runActionOnInterval(action)
-			log.L.Infof("Added '%s' action to action manager with trigger '%s'", action.Name, action.Trigger)
-		}
+		return nerr.Createf("invalid-trigger", "action manager is unable to manage action with trigger '%s'", action.Trigger)
 	}
+
+	log.L.Infof("Added '%s' action to action manager with trigger '%s'", action.Name, action.Trigger)
+	return nil
 }

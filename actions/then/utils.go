@@ -19,7 +19,8 @@ type templateData struct {
 	Alert         structs.Alert
 }
 
-func fillStructFromTemplate(ctx context.Context, tmpl string, fill interface{}) *nerr.E {
+// FillStructFromTemplate .
+func FillStructFromTemplate(ctx context.Context, tmpl string, fill interface{}) *nerr.E {
 	data := templateData{}
 
 	if event, ok := actionctx.GetEvent(ctx); ok {

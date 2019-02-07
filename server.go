@@ -8,6 +8,10 @@ import (
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/v2/auth"
 	"github.com/byuoitav/shipwright/actions"
+
+	// imported to initialize the list of then's
+	_ "github.com/byuoitav/shipwright/actions/then/circular"
+	"github.com/byuoitav/shipwright/alertstore"
 	"github.com/byuoitav/shipwright/handlers"
 	"github.com/byuoitav/shipwright/socket"
 	figure "github.com/common-nighthawk/go-figure"
@@ -15,16 +19,15 @@ import (
 
 func main() {
 	figure.NewFigure("SMEE", "univers", true).Print()
-	log.SetLevel("debug")
+	log.SetLevel("info")
 
 	port := ":9999"
 	router := common.NewRouter()
 
 	go actions.DefaultActionManager().Start(context.TODO())
+	alertstore.InitializeAlertStore(actions.DefaultActionManager())
 
-	// Logging Endpoints
-	router.PUT("/log-level/:level", log.SetLogLevel)
-	router.GET("/log-level", log.GetLogLevel)
+	router.POST("/event", actions.DefaultActionManager().InjectEvent)
 
 	write := router.Group("", auth.AuthorizeRequest("write-state", "room", auth.LookupResourceFromAddress))
 	read := router.Group("", auth.AuthorizeRequest("read-state", "room", auth.LookupResourceFromAddress))
@@ -82,7 +85,13 @@ func main() {
 	read.GET("/users/current/username", handlers.GetUsername)
 	read.GET("/users/current/permissions", handlers.GetUserPermissions)
 
-	// TODO: add alert endpoints...when I know what they are haha
+	// Static Record Endpoints
+	read.GET("/static/devices", handlers.GetAllStaticDeviceRecords)
+	read.GET("/static/rooms", handlers.GetAllStaticRoomRecords)
+
+	// Alert Endpoints
+	read.GET("/alerts", handlers.GetAllAlerts)
+	read.PUT("/alerts/:alertID/resolve", handlers.ResolveAlert)
 
 	// Websocket Endpoints
 	router.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))

@@ -3,6 +3,7 @@ import { StringsService } from 'src/app/services/strings.service';
 import { Room, Device } from 'src/app/objects';
 import { ModalService } from 'src/app/services/modal.service';
 import { DataService } from 'src/app/services/data.service';
+import { StaticService } from 'src/app/services/static.service';
 
 @Component({
   selector: 'room',
@@ -13,7 +14,7 @@ export class RoomComponent implements OnInit {
   @Input() room: Room;
   deviceList: Device[] = [];
 
-  constructor(public text: StringsService, public modal: ModalService, private data: DataService) {
+  constructor(public text: StringsService, public modal: ModalService, private data: DataService, private state: StaticService) {
     if(this.data.finished) {
       this.getDeviceList();
     } else {
@@ -54,13 +55,29 @@ export class RoomComponent implements OnInit {
 
   DisplayIsOn(device: Device): boolean {
     // TODO make this return the power state of the display
+    let deviceRecords = this.state.roomToDeviceRecords.get(this.room.id)
+
+    if(deviceRecords == null || deviceRecords.length == 0) {
+      return false
+    }
+    
+    for(let record of deviceRecords) {
+      if(record.deviceID === device.id) {
+        if(record.power === "on") {
+          return true
+        } else {
+          return false
+        }
+      }
+    }
+    
     return false
   }
 
   GetRoomIcon(): string {
     if(this.room.configuration.id == "DMPS") {
       return "accessible_forward"
-    } else if(this.deviceList.length == 1) {
+    } else if(this.deviceList != null && this.deviceList.length == 1) {
       return "today"
     } else {
       return "video_label"
@@ -70,7 +87,7 @@ export class RoomComponent implements OnInit {
   IsPiSystem() {
     if(this.room.configuration.id == "DMPS") {
       return false
-    } else if(this.deviceList.length == 1) {
+    } else if(this.deviceList != null && this.deviceList.length == 1) {
       return false
     } else {
       return true

@@ -1,3 +1,21 @@
-<p>
+<!-- <p>
   builder works!
-</p>
+</p> -->
+
+<div class="row">
+    <ng-container *ngFor="let preset of config?.presets">
+        <mat-card *ngIf="preset != null" class="uiconfig">
+            <mat-card-header>
+                <div mat-card-avatar [ngClass]="{'uipath-blueberry': GetPresetUIPath(preset.name) === '/blueberry', 'uipath-cherry': GetPresetUIPath(preset.name) === '/cherry'}"></div>
+                <mat-card-title>{{preset.name}}</mat-card-title>
+                <mat-card-subtitle>
+                    <ng-container *ngFor="let panel of config?.panels">
+                        <ng-container *ngIf="panel?.preset == preset?.name">
+                            {{panel.hostname.split("-")[2]}}
+                        </ng-container>
+                    </ng-container>
+                </mat-card-subtitle>
+            </mat-card-header>
+        </mat-card>
+    </ng-container>
+</div>

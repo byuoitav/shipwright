@@ -34,7 +34,6 @@ func init() {
 	}
 
 	// declare then's here
-	thens.m["add-alert"] = AddAlert
 	thens.m["send-email"] = SendEmail
 	thens.m["send-slack"] = SendSlack
 
@@ -43,6 +42,12 @@ func init() {
 
 // Add .
 func Add(name string, f Func) {
+	/*
+		if thens.m == nil {
+			time.Sleep(1 * time.Second)
+		}
+	*/
+
 	// TODO check if the function already exists
 	thens.Lock()
 	thens.m[name] = f
