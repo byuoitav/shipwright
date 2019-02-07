@@ -10,42 +10,51 @@ import { DataService } from './data.service';
 })
 export class MonitoringService {
   roomAlertsMap: Map<string, RoomAlerts> = new Map();
-  roomAlertsList: RoomAlerts[] = [];
   settingsChanged: EventEmitter<any>;
   panelCount: number = 1;
 
   CRITICAL = "critical"
   WARNING = "warning"
 
-  constructor(private text: StringsService, private socket: SocketService, private api: APIService, private data: DataService) {
+  constructor(private text: StringsService, private socket: SocketService, private data: DataService) {
     this.settingsChanged = new EventEmitter();
-    this.RefreshAlerts();
+    if(this.data.finished) {
+      console.log("doing 1")
+      this.RefreshAlerts();
+    } else {
+      this.data.loaded.subscribe(event => {
+        if(event == true) {
+          console.log("doing 2")
+
+          this.RefreshAlerts();
+        }
+        
+      })
+    }
+    
     this.ListenForAlerts();
   }
 
   async RefreshAlerts() {
-    await this.api.GetAllAlerts().then((alerts) => {
-      for(let a of alerts) {
+    console.log(this.data.storedAlertList)
+      for(let a of this.data.storedAlertList) {
         if(this.roomAlertsMap.get(a.roomID) == null) {
-          let room = this.data.GetRoom(a.roomID);
-          let ra = new RoomAlerts(a.roomID, [a], (room.configuration.id === "DMPS"))
+          let ra = new RoomAlerts(a.roomID, [a])
           this.roomAlertsMap.set(a.roomID, ra);
-          this.roomAlertsList.push(ra);
         } else {
           this.roomAlertsMap.get(a.roomID).alerts.push(a);
         }
       }
-    });
   }
+
+  
 
   private ListenForAlerts() {
     this.socket.listener.subscribe(alert => {
       if(alert != null) {
         if(this.roomAlertsMap.get(alert.roomID) == null) {
-          let room = this.data.GetRoom(alert.roomID);
-          let ra = new RoomAlerts(alert.roomID, [alert], (room.configuration.id === "DMPS"))
+          let ra = new RoomAlerts(alert.roomID, [alert])
           this.roomAlertsMap.set(alert.roomID, ra);
-          this.roomAlertsList.push(ra);
         } else {
           this.roomAlertsMap.get(alert.roomID).alerts.push(alert);
         }
@@ -54,16 +63,21 @@ export class MonitoringService {
   }
 
   GetAllAlerts(severity?: string) {
-    if(severity == null || severity.length == 0) {
-      return this.roomAlertsList;
-    }
-    
     let toReturn: RoomAlerts[] = [];
 
-    for(let ra of this.roomAlertsList) {
+    if(severity == null || severity.length == 0) {
+      this.roomAlertsMap.forEach((value, key) => {
+        toReturn.push(value)    
+      })
+      return toReturn.sort((a, b):number => {
+        return a.roomID.localeCompare(b.roomID);
+      });
+    }
+    
+    this.roomAlertsMap.forEach((value, key) => {
       let matches = false
       
-      for(let alert of ra.alerts) {
+      for(let alert of value.alerts) {
         if(alert.severity === severity) {
           matches = true
           break
@@ -71,10 +85,12 @@ export class MonitoringService {
       }
 
       if(matches) {
-        toReturn.push(ra);
+        toReturn.push(value);
       }
-    }
+    });
 
-    return toReturn;
+    return toReturn.sort((a, b):number => {
+      return a.roomID.localeCompare(b.roomID);
+    });
   }
 }

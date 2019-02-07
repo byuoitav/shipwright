@@ -4,6 +4,7 @@ import { DashPanelDirective } from './dashpanel.directive';
 import { DashPanelService } from 'src/app/services/dashpanel.service';
 import { IDashPanel } from './idashpanel';
 import { MonitoringService } from 'src/app/services/monitoring.service';
+import { DataService } from 'src/app/services/data.service';
 
 @Component({
   selector: 'dashpanel',
@@ -14,12 +15,19 @@ import { MonitoringService } from 'src/app/services/monitoring.service';
 export class DashPanelComponent implements OnInit {
   @ViewChild(forwardRef(()=>DashPanelDirective)) direct: DashPanelDirective;
 
-  constructor(private resolver: ComponentFactoryResolver, private dashServe: DashPanelService, private monitor: MonitoringService) {
+  constructor(private resolver: ComponentFactoryResolver, private dashServe: DashPanelService, private monitor: MonitoringService, private data: DataService) {
     
   }
 
   ngOnInit() {
-    this.choosePanel(this.AllAlerts);
+    if(this.data.finished) {
+      this.choosePanel(this.AllAlerts);
+    }
+    else {
+      this.data.loaded.subscribe(() => {
+        this.choosePanel(this.AllAlerts);
+      })
+    }
   }
 
   AllAlerts = "all-alerts";

@@ -1,6 +1,6 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { APIService } from './api.service';
-import { Building, Room, Device, DeviceType, Role, RoomConfiguration, UIConfig, Template } from '../objects';
+import { Building, Room, Device, DeviceType, Role, RoomConfiguration, UIConfig, Template, Alert } from '../objects';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +22,8 @@ export class DataService {
   roomToDevicesMap: Map<string, Device[]> = new Map();
   roomToUIConfigMap: Map<string, UIConfig> = new Map();
 
+  storedAlertList: Alert[];
+
   loaded: EventEmitter<boolean>;
   finished: boolean = false;
 
@@ -42,8 +44,10 @@ export class DataService {
     await this.GetAllRoomDesignations();
     await this.SetBuildingToRoomsMap();
     await this.SetRoomToDevicesMap();
+    await this.GetStoredAlerts();
     this.finished = true;
     this.loaded.emit(true);
+    console.log("done");
   }
 
   private async GetAllBuildings() {
@@ -160,6 +164,15 @@ export class DataService {
         }
       }
     }
+  }
+
+  async GetStoredAlerts() {
+    this.storedAlertList = [];
+
+    await this.api.GetAllAlerts().then((alerts) => {
+      this.storedAlertList = alerts;
+      console.log("the alerts are gotten");
+    });
   }
 
   GetBuilding(buildingID: string): Building {
