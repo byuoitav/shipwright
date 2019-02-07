@@ -132,10 +132,8 @@ func (c *slackClient) Start() {
 				continue
 			}
 
-			endpoint := "T0311JJTE/B6Y0R5GDN/mvsN2fYUsfFQw6UfPStJo4wZ"
-
 			// TODO somehow have a way to send to a different channel
-			req, err := http.NewRequest(http.MethodPost, slackurl+endpoint, bytes.NewReader(body))
+			req, err := http.NewRequest(http.MethodPost, slackurl, bytes.NewReader(body))
 			if err != nil {
 				log.Errorf("unable to build slack request: %s", err)
 				continue

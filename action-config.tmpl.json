@@ -2,6 +2,7 @@
   {
     "name": "help-requests",
     "trigger": "event",
+    "kill-after": 2,
     "if": {
       "event-match": {
         "key": "user-interaction",

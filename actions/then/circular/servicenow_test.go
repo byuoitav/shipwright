@@ -1,4 +1,4 @@
-package then
+package circular
 
 import (
 	"testing"
@@ -24,19 +24,18 @@ func TestServiceNow(t *testing.T) {
 		Active:              true,
 	}
 
-	id, err =: CreateIncidentRepair(alert)
+	id, err := CreateIncidentRepair(alert)
 	if err != nil {
 		log.L.Errorf("%v", err.Error())
-	} else{
+	} else {
 		log.L.Debugf("Incident/Repair saved with ID: %v", id)
 	}
-	
 
 	time.Sleep(1 * time.Second)
 	//update the message log
 	alert.Message = "This is a new test"
 	alert.IncidentID = id
-	id, err = CreateIncidentRepair(alert)	
+	id, err = CreateIncidentRepair(alert)
 	if err != nil {
 		log.L.Errorf("%v", err.Error())
 	}
@@ -50,7 +49,7 @@ func TestServiceNow(t *testing.T) {
 		ResolvedAt: time.Now(),
 	}
 	alert.ResolutionInfo = resolved
-	id, err = CreateIncidentRepair(alert)	
+	id, err = CreateIncidentRepair(alert)
 	if err != nil {
 		log.L.Errorf("%v", err.Error())
 	}

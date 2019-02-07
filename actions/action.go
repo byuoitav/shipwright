@@ -18,10 +18,14 @@ type Action struct {
 	Then    []then.Then `json:"then"`
 
 	Log *zap.SugaredLogger
+	atomicFields
+}
 
-	prune      uint32
-	runCount   uint64 // number of successful runs
-	pruneCount uint64 // prune after this number of runs
+type atomicFields struct {
+	PruneCount uint64 `json:"kill-after"` // prune after this number of runs
+
+	prune    uint32
+	runCount uint64 // number of successful runs
 }
 
 // Run checks the 'ifs' of the action and if they all pass, then it runs the 'thens'
@@ -35,16 +39,19 @@ func (a *Action) Run(ctx context.Context) {
 	}
 
 	if ctx, passed := a.If.Check(ctx, a.Log); passed {
-		a.Log.Debugf("Passed if checks, running then's")
 
 		count := atomic.AddUint64(&a.runCount, 1)
-		pruneCount := atomic.LoadUint64(&a.pruneCount)
+		pruneCount := atomic.LoadUint64(&a.PruneCount)
 		if pruneCount != 0 && count >= pruneCount {
 			if count > pruneCount {
 				return // in case two threads ran at the same time
 			}
 
 			a.Kill()
+		} else if pruneCount != 0 && count < pruneCount {
+			a.Log.Debugf("Passed if checks, running then's (run #%v/%v)", count, pruneCount)
+		} else {
+			a.Log.Debugf("Passed if checks, running then's")
 		}
 
 		for i := range a.Then {
@@ -77,5 +84,5 @@ func (a *Action) Killed() bool {
 
 // KillAfter kills the action after running n times
 func (a *Action) KillAfter(n int) {
-	atomic.StoreUint64(&a.pruneCount, uint64(n))
+	atomic.StoreUint64(&a.PruneCount, uint64(n))
 }
