@@ -1,14 +1,6 @@
 package config
 
-import (
-	"encoding/json"
-	"regexp"
-
-	"github.com/byuoitav/common/log"
-	"github.com/byuoitav/common/v2/events"
-	"github.com/byuoitav/shipwright/jobs/actiongen"
-)
-
+/*
 // JobConfig .
 type JobConfig struct {
 	Name           string                 `json:"name"`
@@ -188,3 +180,4 @@ func (m *MatchConfig) DoesEventMatch(event *events.Event) bool {
 
 	return true
 }
+*/

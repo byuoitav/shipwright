@@ -9,8 +9,8 @@ import (
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
-	"github.com/byuoitav/state-parser/couch"
 	sd "github.com/byuoitav/common/state/statedefinition"
+	"github.com/byuoitav/shipwright/couch"
 )
 
 //CouchStaticDevice is just an sd StaticDevice with an _id and a _rev

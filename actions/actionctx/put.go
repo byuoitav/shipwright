@@ -21,9 +21,13 @@ func PutEvent(ctx context.Context, v events.Event) context.Context {
 	return context.WithValue(ctx, event, v)
 }
 
-// PutStaticDevice puts an event into ctx
-func PutStaticDevice(ctx context.Context, v statedefinition.StaticDevice) context.Context {
-	return context.WithValue(ctx, staticDevice, v)
+// PutStaticDevices puts an event into ctx
+func PutStaticDevices(ctx context.Context, v ...statedefinition.StaticDevice) context.Context {
+	toAdd := []statedefinition.StaticDevice{}
+	for _, j := range v {
+		toAdd = append(toAdd, j)
+	}
+	return context.WithValue(ctx, staticDevice, toAdd)
 }
 
 // PutAlert puts an event into ctx

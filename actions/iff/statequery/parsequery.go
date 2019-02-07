@@ -2,6 +2,7 @@ package statequery
 
 import (
 	"fmt"
+	"sync"
 	"unicode"
 
 	"github.com/byuoitav/common/log"
@@ -25,6 +26,11 @@ const (
 //QueryRunner .
 type QueryRunner struct {
 	rootNode *QueryNode
+	initOnce sync.Once
+
+	query     string
+	cacheType string
+	dataType  string
 }
 
 //QueryNode .

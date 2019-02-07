@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/byuoitav/common/log"
-	"github.com/byuoitav/state-parser/config"
-	"github.com/byuoitav/state-parser/state/forwarding/managers"
+	"github.com/byuoitav/shipwright/config"
+	"github.com/byuoitav/shipwright/state/forwarding/managers"
 )
 
 //BufferManager is meant to handle buffering events/updates to the eventual forever home of the information
@@ -14,7 +14,7 @@ type BufferManager interface {
 	Send(toSend interface{}) error
 }
 
-//Key is made up of the CacheType-DataType-EventType
+//Key is made up of the CacheName-DataType-EventType
 //e.g. default-device-all or legacy-event-all
 var managerMap map[string][]BufferManager
 
@@ -23,7 +23,7 @@ func init() {
 	c := config.GetConfig()
 	managerMap = make(map[string][]BufferManager)
 	for _, i := range c.Forwarders {
-		curName := fmt.Sprintf(fmt.Sprintf("%v-%v-%v", i.CacheType, i.DataType, i.EventType))
+		curName := fmt.Sprintf(fmt.Sprintf("%v-%v-%v", i.CacheName, i.DataType, i.EventType))
 		switch i.Type {
 		case config.ELKSTATIC:
 			switch i.DataType {
@@ -66,11 +66,11 @@ func init() {
 }
 
 //GetManagersForType a
-func GetManagersForType(cacheType, dataType, eventType string) []BufferManager {
-	log.L.Debugf("Getting %s managers for %v-%v", cacheType, dataType, eventType)
-	v, ok := managerMap[fmt.Sprintf("%s-%s-%s", cacheType, dataType, eventType)]
+func GetManagersForType(cacheName, dataType, eventType string) []BufferManager {
+	log.L.Debugf("Getting %s managers for %v-%v", cacheName, dataType, eventType)
+	v, ok := managerMap[fmt.Sprintf("%s-%s-%s", cacheName, dataType, eventType)]
 	if !ok {
-		log.L.Errorf("Unknown manager type: %v", fmt.Sprintf("%s-%s-%s", cacheType, dataType, eventType))
+		log.L.Errorf("Unknown manager type: %v", fmt.Sprintf("%s-%s-%s", cacheName, dataType, eventType))
 		return []BufferManager{}
 	}
 	return v

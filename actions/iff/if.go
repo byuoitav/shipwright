@@ -10,7 +10,7 @@ import (
 type If struct {
 	EventMatch *EventMatch `json:"event-match"`
 	AlertMatch *AlertMatch `json:"alert-match"`
-	//	StateQuery *StateQuery `json:"state-query"`
+	//StateQuery *StateQuery `json:"state-query"`
 }
 
 // Check returns whether or not the if check passes

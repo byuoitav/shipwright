@@ -1,4 +1,4 @@
-package cache
+package memorycache
 
 import (
 	"time"

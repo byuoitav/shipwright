@@ -53,7 +53,7 @@ type Forwarder struct {
 
 	//Supported Values;
 	//legacy, default
-	CacheType string `json:"cache-type"`
+	CacheName string `json:"cache-name"`
 
 	Couch CouchForwader `json:"couch"`
 	Elk   ElkForwarder  `json:"elk"`

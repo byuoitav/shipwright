@@ -12,6 +12,7 @@ import (
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/shipwright/actions/actionctx"
+	"github.com/byuoitav/shipwright/state/cache"
 )
 
 // An ActionManager manages executing a set of actions
@@ -139,6 +140,9 @@ func (a *ActionManager) runActionsFromEvents(ctx context.Context) {
 			a.matchActionsMu.Unlock()
 		default:
 			event := a.Messenger.ReceiveEvent()
+
+			//get the cache and submit for persistence
+			cache.GetCache("default").StoreAndForwardEvent(event)
 
 			// a new context for this action
 			actx := actionctx.PutEvent(ctx, event)
