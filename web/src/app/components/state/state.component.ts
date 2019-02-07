@@ -1,9 +1,11 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import { StaticService } from 'src/app/services/static.service';
+import { StaticDevice } from 'src/app/objects';
+import { DataService } from 'src/app/services/data.service';
 
 export interface UserData {
-  id: string;
+  buildingID: string;
   device: string;
   progress: string;
   color: string;
@@ -25,44 +27,44 @@ const NAMES: string[] = ['Maia', 'Asher', 'Olivia', 'Atticus', 'Amelia', 'Jack',
   templateUrl: 'state.component.html',
 })
 export class StateComponent implements OnInit {
-  displayedColumns: string[] = ['id', 'device', 'progress', 'color'];
-  dataSource: MatTableDataSource<UserData>;
+  displayedColumns: string[] = ['buildingID', 'device', 'progress', 'color'];
+  dataSource: MatTableDataSource<StaticDevice>;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(ss: StaticService) {
-    // Create 100 users
-    const users = Array.from({length: 100}, (_, k) => createNewUser(k + 1));
+  constructor(private ss: StaticService, private data: DataService) {
 
-    // Assign the data to the data source for the table to render
-    this.dataSource = new MatTableDataSource(users);
+    if(this.data.finished) {
+      this.dataSource = new MatTableDataSource(this.ss.allStaticDevices)
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      console.log(this.ss.allStaticDevices);
+    } else {
+      this.data.loaded.subscribe(() => {
+        this.dataSource = new MatTableDataSource(this.ss.allStaticDevices)
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        console.log(this.ss.allStaticDevices);
+      })
+    }
+
   }
 
   ngOnInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+
   }
 
   applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (this.dataSource == null) {
+      return
+    }
+    else {
+      this.dataSource.filter = filterValue.trim().toLowerCase();
 
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
     }
   }
-}
-
-/** Builds and returns a new User. */
-function createNewUser(id: number): UserData {
-  const device =
-      NAMES[Math.round(Math.random() * (NAMES.length - 1))] + ' ' +
-      NAMES[Math.round(Math.random() * (NAMES.length - 1))].charAt(0) + '.';
-
-  return {
-    id: id.toString(),
-    device: device,
-    progress: Math.round(Math.random() * 100).toString(),
-    color: COLORS[Math.round(Math.random() * (COLORS.length - 1))]
-  };
 }
