@@ -47,7 +47,9 @@ export class Building {
     description: string = undefined;
 
     @JsonProperty("tags", [String], true)
-    tags: string[] = Array<string>();
+  tags: string[] = Array<string>();
+
+  isNew: boolean = false;
 }
 
 @JsonObject("RoomConfiguration")
@@ -158,7 +160,9 @@ export class Device {
     ports: Port[] = Array<Port>();
 
     @JsonProperty("tags", [String], true)
-    tags: string[] = Array<string>();
+  tags: string[] = Array<string>();
+
+  isNew: boolean = false;
 }
 
 @JsonObject("Room")
@@ -185,7 +189,9 @@ export class Room {
     devices: Device[] = Array<Device>();
 
     @JsonProperty("tags", [String], true)
-    tags: string[] = Array<string>();
+  tags: string[] = Array<string>();
+
+  isNew: boolean = false;
 }
 
 @JsonObject("IOConfiguration")

@@ -27,3 +27,7 @@ $bad: #e53935;
     justify-content: flex-start;
     align-content: center;
 }
+
+.fill-remaining-space {
+    flex: 1 1 auto;
+}
