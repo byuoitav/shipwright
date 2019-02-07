@@ -25,7 +25,7 @@ import (
 
 func main() {
 	figure.NewFigure("SMEE", "univers", true).Print()
-	log.SetLevel("debug")
+	log.SetLevel("info")
 
 	port := ":9999"
 	router := common.NewRouter()
@@ -41,7 +41,7 @@ func main() {
 
 	// get events from the hub
 	go func() {
-		messenger.SubscribeToRooms("ITB-1010")
+		messenger.SubscribeToRooms("*")
 
 		for {
 			processEvent(messenger.ReceiveEvent())
