@@ -5,14 +5,14 @@ import (
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/structs"
+	"github.com/byuoitav/shipwright/alertstore"
 
-	"github.com/byuoitav/shipwright/alertproc/store"
 	"github.com/labstack/echo"
 )
 
 // GetAllAlerts returns all alerts from the alert store
 func GetAllAlerts(context echo.Context) error {
-	alerts, err := store.GetAllAlerts()
+	alerts, err := alertstore.GetAllAlerts()
 	if err != nil {
 		return context.JSON(http.StatusInternalServerError, err)
 	}
@@ -32,7 +32,7 @@ func ResolveAlert(context echo.Context) error {
 		return context.JSON(http.StatusBadRequest, err)
 	}
 
-	ne := store.ResolveAlert(alertID, resolution)
+	ne := alertstore.ResolveAlert(alertID, resolution)
 	if ne != nil {
 		log.L.Errorf("failed to resolve alert: %s", ne.Error())
 		return context.JSON(http.StatusBadRequest, err)
