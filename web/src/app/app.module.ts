@@ -27,7 +27,8 @@ import {
   MatSortModule,
   MatButtonToggleModule,
   MatSelectModule,
-  MatChipsModule
+  MatChipsModule,
+  MAT_DIALOG_DATA
 } from "@angular/material";
 
 import { AppRoutingModule } from './app-routing.module';
@@ -65,6 +66,7 @@ import { DashPanelDirective } from './components/dashpanel/dashpanel.directive';
 import { DashPanelComponent } from './components/dashpanel/dashpanel.component';
 import { DashPanelService } from './services/dashpanel.service';
 import { NotifyModalComponent } from './modals/notify/notify.component';
+import { DndModule } from 'ng2-dnd';
 
 @NgModule({
   declarations: [
@@ -120,7 +122,8 @@ import { NotifyModalComponent } from './modals/notify/notify.component';
     MatSortModule,
     MatButtonToggleModule,
     MatSelectModule,
-    MatChipsModule
+    MatChipsModule,
+    DndModule.forRoot(),
   ],
   entryComponents: [
     SettingsModalComponent,
@@ -141,7 +144,8 @@ import { NotifyModalComponent } from './modals/notify/notify.component';
     ModalService,
     StringsService,
     DashPanelService,
-    {provide: DateAdapter, useClass: NativeDateAdapter}
+    {provide: DateAdapter, useClass: NativeDateAdapter},
+    {provide: MAT_DIALOG_DATA, useValue: {}}
   ],
   bootstrap: [AppComponent]
 })

@@ -39,7 +39,6 @@ func UpdateBuilding(buildingID string, building structs.Building) (DBResponse, *
 		Action:   UpdateAction,
 		Success:  false,
 	}
-
 	_, err := db.GetDB().UpdateBuilding(buildingID, building)
 	if err != nil {
 		response.Error = fmt.Sprintf("failed to update the building %s in the database", buildingID)

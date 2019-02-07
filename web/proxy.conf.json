@@ -35,7 +35,7 @@
         "logLevel": "debug",
         "changeOrigin": true
     },
-    "/metrics": {
+    "/static": {
         "target": "http://localhost:9999",
         "secure": false,
         "logLevel": "debug",
