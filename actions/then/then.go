@@ -34,7 +34,6 @@ func init() {
 	}
 
 	// declare then's here
-	thens.m["add-alert"] = AddAlert
 	thens.m["send-email"] = SendEmail
 	thens.m["send-slack"] = SendSlack
 

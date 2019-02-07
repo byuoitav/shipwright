@@ -14,15 +14,15 @@ type If struct {
 }
 
 // Check returns whether or not the if check passes
-func (i *If) Check(ctx context.Context, log *zap.SugaredLogger) bool {
+func (i *If) Check(ctx context.Context, log *zap.SugaredLogger) (context.Context, bool) {
 	if i.EventMatch != nil && !i.EventMatch.DoesEventMatch(ctx) {
 		log.Debugf("Failed if check at event match")
-		return false
+		// return false
 	}
 
 	if i.AlertMatch != nil && !i.AlertMatch.DoesAlertMatch(ctx) {
 		log.Debugf("Failed if check at alert match")
-		return false
+		// return false
 	}
 	/*
 		if i.StateQuery != nil && !i.StateQuery.Check(ctx) {
@@ -31,5 +31,5 @@ func (i *If) Check(ctx context.Context, log *zap.SugaredLogger) bool {
 		}
 	*/
 
-	return true
+	return context.TODO(), true
 }

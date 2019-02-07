@@ -10,7 +10,7 @@ import (
 	"github.com/byuoitav/common/structs"
 	"github.com/byuoitav/shipwright/actions"
 	"github.com/byuoitav/shipwright/actions/actionctx"
-	"github.com/byuoitav/shipwright/alertproc/store/persist"
+	"github.com/byuoitav/shipwright/alertstore/persist"
 	"github.com/byuoitav/shipwright/socket"
 )
 

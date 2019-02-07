@@ -31,7 +31,7 @@ func (a *Action) Run(ctx context.Context) {
 		a.Log = log.L.Named(a.Name)
 	}
 
-	if a.If.Check(ctx, a.Log) {
+	if ctx, passed := a.If.Check(ctx, a.Log); passed {
 		a.Log.Debugf("Passed if checks, running then's")
 
 		for i := range a.Then {
