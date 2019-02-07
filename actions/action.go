@@ -22,10 +22,14 @@ type Action struct {
 }
 
 type atomicFields struct {
-	PruneCount uint64 `json:"kill-after"` // prune after this number of runs
+	// kill this action when runCount hits this number
+	PruneCount uint64 `json:"kill-after"`
 
-	prune    uint32
-	runCount uint64 // number of successful runs
+	// whether or not this action has been killed (will always be either 1 or 0)
+	prune uint32
+
+	// the total number of successful runs (successful means that the if checks passed)
+	runCount uint64
 }
 
 // Run checks the 'ifs' of the action and if they all pass, then it runs the 'thens'
@@ -49,9 +53,9 @@ func (a *Action) Run(ctx context.Context) {
 
 			a.Kill()
 		} else if pruneCount != 0 && count < pruneCount {
-			a.Log.Debugf("Passed if checks, running then's (run #%v/%v)", count, pruneCount)
+			a.Log.Debugf("Passed if checks, running thens (run #%v/%v)", count, pruneCount)
 		} else {
-			a.Log.Debugf("Passed if checks, running then's")
+			a.Log.Debugf("Passed if checks, running thens")
 		}
 
 		for i := range a.Then {

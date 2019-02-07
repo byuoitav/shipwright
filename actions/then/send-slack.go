@@ -65,19 +65,25 @@ func SendSlack(ctx context.Context, with []byte, log *zap.SugaredLogger) *nerr.E
 			logger.L.Warnf("no PROXY_ADDR set. Slack messages may be unable to send.")
 		}
 
-		proxyURL, err := url.Parse(proxy)
-		if err != nil {
-			logger.L.Errorf("PROXY_ADDR is an invalid url: %s", err)
+		proxyURL, gerr := url.Parse(proxy)
+		if gerr != nil {
+			logger.L.Errorf("PROXY_ADDR is an invalid url: %s", gerr)
 		}
 
 		client = &slackClient{
 			MessageFrequency: 5 * time.Second,
 			ProxyURL:         proxyURL,
-			AttachmentChan:   make(chan slackAttachment, 10),
+			AttachmentChan:   make(chan slackAttachment, 15),
 		}
 
 		// start the slack client
-		go client.Start()
+		go func() {
+			err := client.Start()
+			if err != nil {
+				client = nil
+				logger.L.Errorf("unable to start slack client: %s", err.Error())
+			}
+		}()
 	})
 
 	attachment := slackAttachment{}
@@ -86,13 +92,21 @@ func SendSlack(ctx context.Context, with []byte, log *zap.SugaredLogger) *nerr.E
 		return err.Addf("failed to send slack")
 	}
 
-	client.AttachmentChan <- attachment
+	if client != nil {
+		client.AttachmentChan <- attachment
+	}
+
 	return nil
 }
 
-func (c *slackClient) Start() {
+func (c *slackClient) Start() *nerr.E {
 	log := logger.L.Named("slack-client")
 	log.Infof("Starting slack client. Sending slack messages every %v", c.MessageFrequency)
+
+	channel := os.Getenv("SLACK_CHANNEL")
+	if len(channel) == 0 {
+		return nerr.Createf("missing-channel", "SLACK_CHANNEL not set. i will never send a slack message")
+	}
 
 	ticker := time.NewTicker(c.MessageFrequency)
 	attachments := []slackAttachment{}

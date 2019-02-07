@@ -1,4 +1,5 @@
 [
+  {},
   {
     "name": "help-requests",
     "trigger": "event",
@@ -11,41 +12,10 @@
     },
     "then": [
       {
-        "do": "send-email",
-        "with": {
-          "from": "{{.Event.TargetDevice.DeviceID}}@byu.edu",
-          "to": ["danny_randall@byu.edu"],
-          "subject": "Help request in {{.Event.AffectedRoom.RoomID}}",
-          "body": "This is a message for **matt blodgett** from {{.Event.GeneratingSystem}}",
-          "smtp-addr": "gateway.byu.edu:25",
-          "user": "",
-          "pass": ""
-        }
-      },
-      {
-        "do": "skip",
+        "do": "send-slack",
         "with": {
           "title": "Test",
           "text": "Test message in {{.Event.AffectedRoom.RoomID}} from {{.Event.GeneratingSystem}}"
-        }
-      }
-    ]
-  },
-  {
-    "name": "help-requests-timer",
-    "trigger": "skip",
-    "if": {},
-    "then": [
-      {
-        "do": "send-email",
-        "with": {
-          "from": "mitchell_anderson@byu.edu",
-          "to": ["danny_randall@byu.edu"],
-          "subject": "Help request in {{.Event.AffectedRoom.RoomID}}",
-          "body": "This is a message for **matt blodgett** from {{.Event.GeneratingSystem}}",
-          "smtp-addr": "gateway.byu.edu:25",
-          "user": "",
-          "pass": ""
         }
       }
     ]

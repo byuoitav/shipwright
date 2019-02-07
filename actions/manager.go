@@ -200,19 +200,21 @@ func (a *ActionManager) RunAction(ctx context.Context, action *Action) {
 
 // ManageAction adds an action to be managed by the action manager
 // currently, an action manager only manages interval and event trigger actions
-func (a *ActionManager) ManageAction(action *Action) {
+func (a *ActionManager) ManageAction(action *Action) *nerr.E {
 	switch action.Trigger {
 	case "skip":
 	case "event":
 		a.matchActionsMu.Lock()
 		a.matchActions = append(a.matchActions, action)
 		a.matchActionsMu.Unlock()
-
-		log.L.Infof("Added '%s' action to action manager with trigger '%s'", action.Name, action.Trigger)
 	default:
 		if strings.HasPrefix(action.Trigger, "interval:") {
 			go a.runActionOnInterval(action)
-			log.L.Infof("Added '%s' action to action manager with trigger '%s'", action.Name, action.Trigger)
+		} else {
+			return nerr.Createf("invalid-trigger", "action manager is unable to manage action with trigger '%s'", action.Trigger)
 		}
 	}
+
+	log.L.Infof("Added '%s' action to action manager with trigger '%s'", action.Name, action.Trigger)
+	return nil
 }
