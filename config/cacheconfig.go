@@ -29,6 +29,8 @@ type ElkCache struct {
 
 //RedisCache .
 type RedisCache struct {
-	Databsae int    `json:"database"`
-	URL      string `json:"url"`
+	DevDatabsae  int    `json:"device-database"`
+	RoomDatabsae int    `json:"room-database"`
+	Password     string `json:"password"`
+	URL          string `json:"url"`
 }
