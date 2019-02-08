@@ -76,7 +76,7 @@ func MakeGenericELKRequest(addr, method string, body interface{}, user, pass str
 			return []byte{}, nerr.Translate(err)
 		}
 	}
-	log.L.Debugf("Body: %s", reqBody)
+	//	log.L.Debugf("Body: %s", reqBody)
 
 	// create the request
 	req, err := http.NewRequest(method, addr, bytes.NewReader(reqBody))
@@ -145,9 +145,11 @@ func BulkForward(caller, url, user, pass string, toSend []ElkBulkUpdateItem) {
 	}
 
 	//DEBUG
-	for i := range toSend {
-		log.L.Debugf("%+v", toSend[i])
-	}
+	/*
+		for i := range toSend {
+			log.L.Debugf("%+v", toSend[i])
+		}
+	*/
 
 	log.L.Debugf("%v Building payload", caller)
 	//build our payload
@@ -187,7 +189,7 @@ func BulkForward(caller, url, user, pass string, toSend []ElkBulkUpdateItem) {
 
 	//once our payload is built
 	log.L.Debugf("%v Payload built, sending...", caller)
-	log.L.Debugf("%s", payload)
+	//log.L.Debugf("%s", payload)
 
 	url = strings.Trim(url, "/")         //remove any trailing slash so we can append it again
 	addr := fmt.Sprintf("%v/_bulk", url) //make the addr

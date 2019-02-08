@@ -2,7 +2,6 @@ package alertstore
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/byuoitav/common/log"
@@ -10,6 +9,7 @@ import (
 	"github.com/byuoitav/common/structs"
 	"github.com/byuoitav/shipwright/actions"
 	"github.com/byuoitav/shipwright/actions/actionctx"
+	"github.com/byuoitav/shipwright/alertstore/alertcache"
 	"github.com/byuoitav/shipwright/alertstore/persist"
 	"github.com/byuoitav/shipwright/socket"
 )
@@ -116,34 +116,6 @@ func (a *alertStore) getAllAlerts() ([]structs.Alert, *nerr.E) {
 
 }
 
-//NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
-func (a *alertStore) resolveAlert(alertID string, resInfo structs.ResolutionInfo) *nerr.E {
-
-	log.L.Infof("Resolving alert %v", alertID)
-
-	//we remove it from the store, and ship it off to the persistance stuff.
-	//we should check to see if it already exists
-	if v, ok := a.store[alertID]; ok {
-
-		//it's there, lets get it, mark it as resolved.
-		v.Resolved = true
-		v.ResolutionInfo = resInfo
-		v.AlertID = v.AlertID + "^" + v.AlertStartTime.Format(time.RFC3339) //change the ID so it's unique
-
-		delete(a.store, alertID)
-
-		//submit for persistence
-		persist.GetElkAlertPersist().StoreAlert(v, true)
-		a.runActions(v)
-		socket.GetManager().WriteToSockets(v)
-
-	} else {
-		return nerr.Create("Unkown alert "+alertID, "not-found")
-	}
-
-	return nil
-}
-
 func (a *alertStore) run() {
 	log.L.Infof("running alert store")
 
@@ -160,6 +132,41 @@ func (a *alertStore) run() {
 }
 
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
+func (a *alertStore) resolveAlert(alertID string, resInfo structs.ResolutionInfo) *nerr.E {
+
+	log.L.Infof("Resolving alert %v", alertID)
+
+	//we remove it from the store, and ship it off to the persistance stuff.
+	//we should check to see if it already exists
+
+	v, err := alertcache.GetAlertCache("default").GetAlert(alertID)
+	if err != nil {
+
+		//it's there, lets get it, mark it as resolved.
+		v.Resolved = true
+		v.ResolutionInfo = resInfo
+		v.AlertID = v.AlertID + "^" + v.AlertStartTime.Format(time.RFC3339) //change the ID so it's unique
+
+		err := alertcache.GetAlertCache("default").DeleteAlert(alertID)
+		if err != nil {
+			return err.Addf("couldn't resolve alert: %v")
+		}
+
+		//submit for persistence
+		persist.GetElkAlertPersist().StoreAlert(v, true)
+		a.runActions(v)
+		socket.GetManager().WriteToSockets(v)
+
+	} else if err.Type == alertcache.NotFound {
+		return nerr.Create("Unkown alert "+alertID, "not-found")
+	} else {
+		return err.Addf("couldn't resolve alert")
+	}
+
+	return nil
+}
+
+//NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
 func (a *alertStore) storeAlert(alert structs.Alert) {
 	log.L.Infof("Storing alert %v", alert.AlertID)
 	if alert.Resolved {
@@ -167,8 +174,10 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		return
 	}
 
+	v, err := alertcache.GetAlertCache("default").GetAlert(alert.AlertID)
+	log.L.Infof("%v", err)
 	//we should check to see if it already exists
-	if v, ok := a.store[alert.AlertID]; ok {
+	if err == nil {
 
 		if len(alert.Message) > 0 &&
 			(len(v.MessageLog) == 0 || v.MessageLog[len(v.MessageLog)-1] != alert.Message) {
@@ -180,11 +189,15 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		v.Active = alert.Active
 		v.AlertLastUpdateTime = time.Now()
 
-		a.store[v.AlertID] = v //store it back in
+		err := alertcache.GetAlertCache("default").PutAlert(v)
+		if err != nil {
+			log.L.Errorf("Couldn't save alert %v: %v", alert.AlertID, err.Error())
+			return
+		}
 
 		alert = v
 
-	} else {
+	} else if err.Type == alertcache.NotFound {
 
 		//we store it.
 		alert.AlertLastUpdateTime = time.Now()
@@ -192,7 +205,14 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 			alert.MessageLog = append(v.MessageLog, alert.Message)
 		}
 
-		a.store[alert.AlertID] = alert
+		err := alertcache.GetAlertCache("default").PutAlert(alert)
+		if err != nil {
+			log.L.Errorf("Couldn't save alert %v: %v", alert.AlertID, err.Error())
+			return
+		}
+	} else {
+		log.L.Errorf("Error: %v", err.Error())
+		return
 	}
 
 	persist.GetElkAlertPersist().StoreAlert(alert, false)
@@ -218,32 +238,17 @@ func (a *alertStore) handleRequest(req alertRequest) {
 
 	log.L.Infof("Handling request %+v", req)
 
-	toReturn := []structs.Alert{}
-
 	if req.All {
-		for _, v := range a.store {
-			toReturn = append(toReturn, v)
+		toReturn, err := alertcache.GetAlertCache("default").GetAllAlerts()
+		req.ResponseChan <- alertResponse{
+			Error: err,
+			Alert: toReturn,
 		}
-
 	} else {
-		if v, ok := a.store[req.AlertID]; ok {
-
-			toReturn = append(toReturn, v)
-			req.ResponseChan <- alertResponse{
-				Error: nil,
-				Alert: toReturn,
-			}
-		} else {
-			req.ResponseChan <- alertResponse{
-				Error: nerr.Create(fmt.Sprintf("No Alert for id %v", req.AlertID), "not-found"),
-				Alert: toReturn,
-			}
+		v, err := alertcache.GetAlertCache("default").GetAlert(req.AlertID)
+		req.ResponseChan <- alertResponse{
+			Error: err,
+			Alert: []structs.Alert{v},
 		}
-
-	}
-
-	req.ResponseChan <- alertResponse{
-		Error: nil,
-		Alert: toReturn,
 	}
 }

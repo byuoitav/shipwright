@@ -6,7 +6,7 @@
       "redis": {
         "url": "",
         "pass": "",
-        "databse": 3
+        "database": 3
       }
     }
   ],

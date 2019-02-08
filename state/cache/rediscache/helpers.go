@@ -13,13 +13,13 @@ import (
 )
 
 func (rc *RedisCache) getAllDeviceKeys() ([]string, *nerr.E) {
-	return getAllKeys(rc.devclient)
+	return GetAllKeys(rc.devclient)
 }
 func (rc *RedisCache) getAllRoomKeys() ([]string, *nerr.E) {
-	return getAllKeys(rc.roomclient)
+	return GetAllKeys(rc.roomclient)
 }
 
-func getAllKeys(client *redis.Client) ([]string, *nerr.E) {
+func GetAllKeys(client *redis.Client) ([]string, *nerr.E) {
 
 	var newkeys []string
 	var keys []string
@@ -96,11 +96,12 @@ func (rc *RedisCache) getDevice(id string) (sd.StaticDevice, *nerr.E) {
 	var curDevice sd.StaticDevice
 	by, err := rc.devclient.Get(id).Bytes()
 	if err == redis.Nil {
-		//device doesn't exist - we can create a new one
-		curDevice, err = shared.GetNewDevice(id)
-		if err != nil {
-			log.L.Errorf("Error accessing redis cache: %v", err.Error())
-			return sd.StaticDevice{}, nerr.Translate(err).Addf("Couldn't access redis cache")
+		//device doesn't exist - we can create a new oneA
+		var er *nerr.E
+		curDevice, er = shared.GetNewDevice(id)
+		if er != nil {
+			log.L.Errorf("Error accessing redis cache: %v", er.Error())
+			return sd.StaticDevice{}, er.Addf("Couldn't access redis cache")
 		}
 	} else if err != nil {
 		log.L.Errorf("Error accessing redis cache: %v", err.Error())
@@ -123,10 +124,14 @@ func (rc *RedisCache) getDevice(id string) (sd.StaticDevice, *nerr.E) {
 func (rc *RedisCache) getRoom(id string) (sd.StaticRoom, *nerr.E) {
 
 	var curRoom sd.StaticRoom
-	by, err := roomclient.Get(id).Bytes()
+	by, err := rc.roomclient.Get(id).Bytes()
 	if err == redis.Nil {
 		//device doesn't exist - we can create a new one
-		curRoom = shared.GetNewRoom()
+		curRoom, er := shared.GetNewRoom(id)
+		if er != nil {
+			log.L.Errorf("Couldn't generate new room from ID: %v", id)
+			return curRoom, er.Addf("Couldn't get room %v", id)
+		}
 	} else if err != nil {
 		log.L.Errorf("Error accessing redis cache: %v", err.Error())
 		return sd.StaticRoom{}, nerr.Translate(err).Addf("Couldn't access redis cache")
@@ -146,6 +151,7 @@ func (rc *RedisCache) getRoom(id string) (sd.StaticRoom, *nerr.E) {
 
 //assumes that we've already locked the device
 func (rc *RedisCache) putDevice(dev sd.StaticDevice) *nerr.E {
+	log.L.Debugf("Putting device %v to redis cache", dev.DeviceID)
 
 	var device bytes.Buffer
 	enc := gob.NewEncoder(&device)
@@ -155,10 +161,12 @@ func (rc *RedisCache) putDevice(dev sd.StaticDevice) *nerr.E {
 		return nerr.Translate(err).Addf("Couldn't encode device: %v", err.Error())
 	}
 
-	err = devclient.Put(id, device.Bytes(), 0).Err()
+	err = rc.devclient.Set(dev.DeviceID, device.Bytes(), 0).Err()
 	if err != nil {
 		return nerr.Translate(err).Addf("Couldn't access redis cache")
 	}
+
+	return nil
 }
 
 //assumes that we've already locked the room
@@ -172,8 +180,9 @@ func (rc *RedisCache) putRoom(rm sd.StaticRoom) *nerr.E {
 		return nerr.Translate(err).Addf("Couldn't encode room: %v", err.Error())
 	}
 
-	err = rmclient.Put(id, rm.Bytes(), 0).Err()
+	err = rc.roomclient.Set(rm.RoomID, room.Bytes(), 0).Err()
 	if err != nil {
 		return nerr.Translate(err).Addf("Couldn't access redis cache")
 	}
+	return nil
 }

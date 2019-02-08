@@ -11,11 +11,12 @@ import (
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/structs"
+	"github.com/byuoitav/shipwright/alertstore/config"
 	"github.com/byuoitav/shipwright/elk"
 )
 
 type ElkPersist struct {
-	config PersistConfig
+	config config.PersistConfig
 
 	resolvedBuffer []AlertWrapper
 	activeBuffer   map[string]AlertWrapper
@@ -44,7 +45,7 @@ func GetAllActiveAlertsFromPersist() ([]structs.Alert, *nerr.E) {
 	query := elk.AllQuery{}
 	query.Query.MatchAll = map[string]interface{}{}
 
-	config := GetConfig()
+	config := config.GetConfig().Persist
 
 	b, err := elk.MakeGenericELKRequest(fmt.Sprintf("%v/%v/_search", config.Address, config.PersistActiveAlerts.ElkData.IndexPattern), "POST", query, config.User, config.Pass)
 	if err != nil {
@@ -79,7 +80,7 @@ func GetElkAlertPersist() *ElkPersist {
 		go func() {
 			for {
 				//go get the config
-				per.config = GetConfig()
+				per.config = config.GetConfig().Persist
 				log.L.Debugf("Starting persistence manager with config %v", per.config)
 
 				per.start() //we do this so that the persist can reload the config by just returning

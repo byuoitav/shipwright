@@ -40,7 +40,7 @@ func InitializeCaches() {
 			}
 		default:
 		}
-		cache, err := makeCache(devs, rooms, i.CacheType, i.Name)
+		cache, err := makeCache(devs, rooms, i)
 		if err != nil {
 			log.L.Fatalf("Couldn't make cache: %v", err.Error())
 		}
@@ -116,14 +116,14 @@ func GetElkStaticRooms(index string) ([]statedefinition.StaticRoom, *nerr.E) {
 
 }
 
-func makeCache(devices []statedefinition.StaticDevice, rooms []statedefinition.StaticRoom, cacheType, name string) (shared.Cache, *nerr.E) {
-	switch cacheType {
+func makeCache(devices []statedefinition.StaticDevice, rooms []statedefinition.StaticRoom, config config.Cache) (shared.Cache, *nerr.E) {
+	switch config.CacheType {
 	case "memory":
-		return memorycache.MakeMemoryCache(devices, rooms, pushCron, name)
+		return memorycache.MakeMemoryCache(devices, rooms, pushCron, config)
 	case "redis":
-		return rediscache.MakeRedisCache(devices, rooms, pushCron, name)
+		return rediscache.MakeRedisCache(devices, rooms, pushCron, config)
 	}
 
-	return nil, nerr.Create("Unkown cache type %v", cacheType)
+	return nil, nerr.Create("Unkown cache type %v", config.CacheType)
 
 }

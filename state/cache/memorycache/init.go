@@ -4,14 +4,15 @@ import (
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/state/statedefinition"
+	"github.com/byuoitav/shipwright/config"
 	"github.com/robfig/cron"
 )
 
-func MakeMemoryCache(devices []statedefinition.StaticDevice, rooms []statedefinition.StaticRoom, pushCron, name string) (*Memorycache, *nerr.E) {
+func MakeMemoryCache(devices []statedefinition.StaticDevice, rooms []statedefinition.StaticRoom, pushCron string, c config.Cache) (*Memorycache, *nerr.E) {
 	toReturn := Memorycache{
 		cacheType: "memory",
 		pushCron:  cron.New(),
-		name:      name,
+		name:      c.Name,
 	}
 
 	log.L.Infof("adding the cron push")
