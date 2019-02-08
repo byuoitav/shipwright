@@ -3,11 +3,17 @@ package main
 import (
 	"context"
 	"net/http"
+	"os"
 
+	"github.com/byuoitav/central-event-system/hub/base"
+	"github.com/byuoitav/central-event-system/messenger"
 	"github.com/byuoitav/common"
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/v2/auth"
+	"github.com/byuoitav/common/v2/events"
 	"github.com/byuoitav/shipwright/actions"
+	"github.com/byuoitav/shipwright/state/cache"
+	"github.com/labstack/echo"
 
 	// imported to initialize the list of then's
 	_ "github.com/byuoitav/shipwright/actions/then/circular"
@@ -19,7 +25,7 @@ import (
 
 func main() {
 	figure.NewFigure("SMEE", "univers", true).Print()
-	log.SetLevel("debug")
+	log.SetLevel("info")
 
 	port := ":9999"
 	router := common.NewRouter()
@@ -27,7 +33,32 @@ func main() {
 	go actions.DefaultActionManager().Start(context.TODO())
 	alertstore.InitializeAlertStore(actions.DefaultActionManager())
 
-	router.POST("/event", actions.DefaultActionManager().InjectEvent)
+	// connect to the hub
+	messenger, err := messenger.BuildMessenger(os.Getenv("HUB_ADDRESS"), base.Messenger, 1000)
+	if err != nil {
+		log.L.Fatalf("failed to build messenger: %s", err)
+	}
+
+	// get events from the hub
+	go func() {
+		messenger.SubscribeToRooms("*")
+
+		for {
+			processEvent(messenger.ReceiveEvent())
+		}
+	}()
+
+	// get events from external sources
+	router.POST("/event", func(ctx echo.Context) error {
+		e := events.Event{}
+		err := ctx.Bind(&e)
+		if err != nil {
+			return ctx.String(http.StatusBadRequest, err.Error())
+		}
+
+		processEvent(e)
+		return ctx.String(http.StatusOK, "processing event")
+	})
 
 	write := router.Group("", auth.AuthorizeRequest("write-state", "room", auth.LookupResourceFromAddress))
 	read := router.Group("", auth.AuthorizeRequest("read-state", "room", auth.LookupResourceFromAddress))
@@ -102,4 +133,11 @@ func main() {
 	}
 
 	router.StartServer(&server)
+}
+
+func processEvent(event events.Event) {
+	log.L.Debugf("Got event: %+v", event)
+
+	cache.GetCache("default").StoreAndForwardEvent(event)
+	actions.DefaultActionManager().EventStream <- event
 }

@@ -74,6 +74,13 @@ export class AlertTableComponent implements OnInit, IDashPanel {
     return count
   }
 
+  SeverityMatch(sev: string): boolean {
+    if(this.chosenSeverity == null || this.chosenSeverity.length == 0) {
+      return true
+    }
+    
+    return (sev === this.chosenSeverity);
+  }
   ServiceNowRedirect(incidentID: string) {
     window.open(this.serviceNowURL+incidentID, "_blank");
   }

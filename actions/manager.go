@@ -2,13 +2,10 @@ package actions
 
 import (
 	"context"
-	"os"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/byuoitav/central-event-system/hub/base"
-	"github.com/byuoitav/central-event-system/messenger"
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/v2/events"
@@ -20,7 +17,6 @@ import (
 type ActionManager struct {
 	Config      *ActionConfig
 	Workers     int
-	Messenger   *messenger.Messenger
 	EventStream chan events.Event
 
 	matchActionsMu sync.RWMutex
@@ -46,8 +42,9 @@ var (
 func DefaultActionManager() *ActionManager {
 	defaultOnce.Do(func() {
 		defaultAM = &ActionManager{
-			Config:  DefaultConfig(),
-			Workers: 20,
+			Config:      DefaultConfig(),
+			Workers:     20,
+			EventStream: make(chan events.Event, 1000),
 		}
 	})
 
@@ -67,29 +64,27 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 		a.Workers = 1
 	}
 
-	a.EventStream = make(chan events.Event, 1000)
-
 	log.L.Infof("Starting action manager with %d workers", a.Workers)
 
-	if a.Messenger == nil {
-		err := &nerr.E{}
+	/*
+		if a.Messenger == nil {
+			err := &nerr.E{}
 
-		// connect to the hub
-		a.Messenger, err = messenger.BuildMessenger(os.Getenv("HUB_ADDRESS"), base.Messenger, 1000)
-		if err != nil {
-			return err.Addf("failed to start action manager")
+			// connect to the hub
+			a.Messenger, err = messenger.BuildMessenger(os.Getenv("HUB_ADDRESS"), base.Messenger, 1000)
+			if err != nil {
+				return err.Addf("failed to start action manager")
+			}
+
+			a.Messenger.SubscribeToRooms("ITB-1010")
+				go func() {
+					for {
+									event := a.Messenger.ReceiveEvent()
+								a.EventStream <- event
+					}
+				}()
 		}
-
-		a.Messenger.SubscribeToRooms("ITB-1010")
-		/*
-			go func() {
-				for {
-								event := a.Messenger.ReceiveEvent()
-							a.EventStream <- event
-				}
-			}()
-		*/
-	}
+	*/
 
 	a.reqs = make(chan *ActionRequest, 1000)
 
@@ -173,23 +168,6 @@ func (a *ActionManager) runActionsFromEvents(ctx context.Context) {
 			}
 
 			a.matchActionsMu.RUnlock()
-		default:
-			/*
-				event := a.Messenger.ReceiveEvent()
-
-				// a new context for this action
-				actx := actionctx.PutEvent(ctx, event)
-
-				a.matchActionsMu.RLock()
-				for i := range a.matchActions {
-					a.reqs <- &ActionRequest{
-						Context: actx,
-						Action:  a.matchActions[i],
-					}
-				}
-
-				a.matchActionsMu.RUnlock()
-			*/
 		}
 	}
 }

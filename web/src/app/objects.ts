@@ -37,10 +37,10 @@ export class ResolutionInfo {
     @JsonProperty("resolution-code", String)
     code: string = undefined;
 
-    @JsonProperty("notes", [String])
-    notes: string[] = Array<string>();
+    @JsonProperty("notes", String)
+    notes: string = undefined;
 
-    @JsonProperty("resolved-at", Date)
+    @JsonProperty("resolved-at", DateConverter)
     resolvedAt: Date = undefined;
 }
 
@@ -67,6 +67,9 @@ export class Alert {
     @JsonProperty("incident-id", String)
     incidentID: string = undefined;
 
+    @JsonProperty("system-type", String)
+    systemType: string = undefined;
+
     @JsonProperty("severity", String, true)
     severity: string = undefined;
 
@@ -76,16 +79,16 @@ export class Alert {
     @JsonProperty("message-log", [String])
     messageLog: string[] = Array<string>();
 
-    @JsonProperty("data", Any)
+    @JsonProperty("data", Any, true)
     data: any = undefined;
 
-    @JsonProperty("start-time", Date)
+    @JsonProperty("start-time", DateConverter)
     startTime: Date = undefined;
 
-    @JsonProperty("end-time", Date)
+    @JsonProperty("end-time", DateConverter)
     endTime: Date = undefined;
 
-    @JsonProperty("update-time", Date)
+    @JsonProperty("update-time", DateConverter)
     updateTime: Date = undefined;
 
     @JsonProperty("active", Boolean)
@@ -97,10 +100,10 @@ export class Alert {
     @JsonProperty("responders", [String])
     responders: string[] = Array<string>();
 
-    @JsonProperty("help-sent-at", Date)
+    @JsonProperty("help-sent-at", DateConverter)
     helpSentAt: Date = undefined;
 
-    @JsonProperty("help-arrived-at", Date)
+    @JsonProperty("help-arrived-at", DateConverter)
     helpArrivedAt: Date = undefined;
 
     @JsonProperty("resolution-info", ResolutionInfo)
@@ -660,7 +663,31 @@ export class RoomAlerts{
     helpSent: boolean = false;
     helpArrived: boolean = false;
 
-    constructor(roomID?: string, alertList?: Alert[], isADump?: boolean) {
-        
+    constructor(roomID?: string, alertList?: Alert[]) {
+        if(roomID != null && roomID.length > 0) {
+            this.roomID = roomID;
+        }
+
+        if(alertList != null) {
+            this.alerts = alertList;
+
+            for(let a of this.alerts) {
+                if(a.helpSentAt != null) {
+                    // this.helpSent = true
+                }
+                if(a.helpArrivedAt != null) {
+                    // this.helpArrived = true
+                }
+                if(a.incidentID != null) {
+                    this.incidentID = a.incidentID
+                }
+                if(a.systemType == "DMPS") {
+                    this.systemTypeIcon = DMPS_ICON
+                }
+                else {
+                    this.systemTypeIcon = PI_ICON
+                }
+            }
+        }
     }
 }

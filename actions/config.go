@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/byuoitav/common/log"
@@ -12,7 +14,7 @@ import (
 
 // ActionConfig manages the configuration of actions
 type ActionConfig struct {
-	Path    string
+	Dir     string
 	Actions []*Action
 }
 
@@ -25,14 +27,13 @@ var (
 func DefaultConfig() *ActionConfig {
 	once.Do(func() {
 		// load the default config
-		path := os.Getenv("ACTION_CONFIG_LOCATION")
-		if len(path) < 1 {
-			// path = "./action-config.json"
-			path = "./action-config.tmpl.json"
+		dir := os.Getenv("ACTION_CONFIG_DIR")
+		if len(dir) < 1 {
+			dir = "./actions/config"
 		}
 
 		var err *nerr.E
-		defaultConfig, err = NewActionConfig(path)
+		defaultConfig, err = NewActionConfig(dir)
 		if err != nil {
 			log.L.Fatalf("unable to load default action configuration: %s", err.Error())
 		}
@@ -42,22 +43,64 @@ func DefaultConfig() *ActionConfig {
 }
 
 // NewActionConfig creates a new action manager and starts it
-func NewActionConfig(path string) (*ActionConfig, *nerr.E) {
+func NewActionConfig(dir string) (*ActionConfig, *nerr.E) {
 	config := &ActionConfig{
-		Path: path,
+		Dir: dir,
 	}
 
-	log.L.Infof("Parsing action configuration from %s", path)
-	b, err := ioutil.ReadFile(path)
+	log.L.Infof("Parsing action configurations from %s", config.Dir)
+
+	err := filepath.Walk(config.Dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		// skip dirs
+		if info.IsDir() {
+			return nil
+		}
+
+		if strings.Contains(path, "ignore") {
+			log.L.Infof("Ignoring actions in file %s", path)
+		}
+
+		// attempt to parse every file
+		log.L.Debugf("parsing action config file: %s", path)
+		b, err := ioutil.ReadFile(path)
+		if err != nil {
+			return err
+		}
+
+		if len(b) == 0 {
+			log.L.Infof("Skipping empty action config file %s", path)
+			return nil
+		}
+
+		var actions []*Action
+		err = json.Unmarshal(b, &actions)
+		if err != nil {
+			return err
+		}
+
+		if len(actions) == 0 {
+			log.L.Infof("Skipping empty action config file %s", path)
+			return nil
+		}
+
+		// print out their names
+		for i := range actions {
+			log.L.Debugf("Added action '%s' from %s", actions[i].Name, path)
+		}
+
+		// add those actions to the main list
+		config.Actions = append(config.Actions, actions...)
+		return nil
+	})
 	if err != nil {
-		return nil, nerr.Translate(err).Addf("unable to read action configuration")
+		return nil, nerr.Translate(err).Addf("unable to read action configs")
 	}
 
-	err = json.Unmarshal(b, &config.Actions)
-	if err != nil {
-		return nil, nerr.Translate(err).Addf("unable to unmarshal action configuration")
-	}
-
+	log.L.Infof("Loaded %v actions from %s", len(config.Actions), config.Dir)
 	return config, nil
 }
 
