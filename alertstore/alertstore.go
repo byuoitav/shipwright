@@ -179,6 +179,12 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 	//we should check to see if it already exists
 	if err == nil {
 
+		//check to see if our last update time is non-blank and before the one already in the cache, if so we don't do anything
+		if !alert.AlertLastUpdateTime.IsZero() && alert.AlertLastUpdateTime.Before(v.AlertLastUpdateTime) {
+			log.L.Infof("Alert: %v is out of date from cache.", alert.AlertID)
+			return
+		}
+
 		if len(alert.Message) > 0 &&
 			(len(v.MessageLog) == 0 || v.MessageLog[len(v.MessageLog)-1] != alert.Message) {
 

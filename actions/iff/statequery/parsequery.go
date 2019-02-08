@@ -28,9 +28,9 @@ type QueryRunner struct {
 	rootNode *QueryNode
 	initOnce sync.Once
 
-	query     string
-	cacheType string
-	dataType  string
+	Query     string
+	CacheName string
+	DataType  string
 }
 
 //QueryNode .
@@ -55,18 +55,17 @@ type parenStoreItem struct {
 }
 
 //ParseQuery .
-func ParseQuery(q string) (QueryRunner, *nerr.E) {
-	toReturn := QueryRunner{}
+func ParseQuery(q string) (*QueryNode, *nerr.E) {
+	var currentNode *QueryNode
+	var curRoot *QueryNode
+
 	tokens, err := getTokens(q)
 	if err != nil {
-		return toReturn, err.Addf("Couldn't parse query")
+		return curRoot, err.Addf("Couldn't parse query")
 	}
 
 	literalStore := []token{}
 	ParenStore := []parenStoreItem{}
-
-	var currentNode *QueryNode
-	var curRoot *QueryNode
 
 	//Debug
 	nodeCount := 0
@@ -109,7 +108,7 @@ func ParseQuery(q string) (QueryRunner, *nerr.E) {
 		case OPERATOR:
 			if len(literalStore) == 0 {
 				//it's a problem
-				return toReturn, nerr.Create(fmt.Sprintf("Invalid query at token %v.", i), "invalid")
+				return curRoot, nerr.Create(fmt.Sprintf("Invalid query at token %v.", i), "invalid")
 			}
 
 			//otherwise we create a node
@@ -180,11 +179,10 @@ func ParseQuery(q string) (QueryRunner, *nerr.E) {
 	}
 
 	if curRoot != nil {
-		toReturn.rootNode = curRoot
-	} else {
-		toReturn.rootNode = currentNode
+		return curRoot, nil
 	}
-	return toReturn, nil
+
+	return currentNode, nil
 }
 
 type token struct {
