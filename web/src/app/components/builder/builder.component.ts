@@ -3,6 +3,7 @@ import { StringsService } from 'src/app/services/strings.service';
 import { DataService } from 'src/app/services/data.service';
 import { ActivatedRoute } from '@angular/router';
 import { Device, UIConfig, Room } from 'src/app/objects';
+import { ModalService } from 'src/app/services/modal.service';
 
 @Component({
   selector: 'builder',
@@ -17,7 +18,7 @@ export class BuilderComponent implements OnInit {
 
   config: UIConfig
 
-  constructor(public text: StringsService, public data: DataService, private route: ActivatedRoute) {
+  constructor(public text: StringsService, public data: DataService, private route: ActivatedRoute, public modal: ModalService) {
     this.route.params.subscribe(params => {
       this.roomID = params["roomID"];
 
@@ -45,6 +46,22 @@ export class BuilderComponent implements OnInit {
   }
 
   GetPresetUIPath(presetName: string) {
-    
+    for(let i = 0; i < this.config.panels.length; i++) {
+      if(this.config.panels[i].preset === presetName) {
+        return this.config.panels[i].uiPath;
+      }
+    }
+  }
+
+  ChangeIcon(thing: any) {
+
+  }
+
+  GetDeviceByName(name: string): Device {
+    for(let i = 0; i < this.devicesInRoom.length; i++) {
+      if(this.devicesInRoom[i].name === name) {
+        return this.devicesInRoom[i];
+      }
+    }
   }
 }

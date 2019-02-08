@@ -5,8 +5,9 @@ import { RespondModalComponent } from '../modals/respond/respond.component';
 import { BuildingModalComponent } from '../modals/buildingmodal/buildingmodal.component';
 import { RoomModalComponent } from '../modals/roommodal/roommodal.component';
 import { DeviceModalComponent } from '../modals/devicemodal/devicemodal.component';
-import { Building, Room, Device, DBResponse, RoomAlerts } from '../objects';
+import { Building, Room, Device, DBResponse, RoomAlerts, UIConfig } from '../objects';
 import { NotifyModalComponent } from '../modals/notify/notify.component';
+import { PresetModalComponent } from '../modals/presetmodal/presetmodal.component';
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +17,7 @@ export class ModalService {
   constructor(private dialog: MatDialog) { }
 
   OpenSettingsModal() {
-    this.dialog.open(SettingsModalComponent).afterClosed().subscribe(() => {
-      // window.location.reload();
-    })
+    this.dialog.open(SettingsModalComponent);
   }
 
   OpenRespondModal(ra: RoomAlerts) {
@@ -47,5 +46,9 @@ export class ModalService {
 
   OpenNotifyModal(resp: DBResponse) {
     this.dialog.open(NotifyModalComponent, {data: resp});
+  }
+
+  OpenPresetModal(presetName: string, config: UIConfig) {
+    this.dialog.open(PresetModalComponent, {data: {presetName: presetName, uiConfig: config}})
   }
 }

@@ -67,6 +67,7 @@ import { DashPanelComponent } from './components/dashpanel/dashpanel.component';
 import { DashPanelService } from './services/dashpanel.service';
 import { NotifyModalComponent } from './modals/notify/notify.component';
 import { DndModule } from 'ng2-dnd';
+import { PresetModalComponent } from './modals/presetmodal/presetmodal.component';
 
 @NgModule({
   declarations: [
@@ -92,7 +93,8 @@ import { DndModule } from 'ng2-dnd';
     RoomModalComponent,
     DeviceModalComponent,
     DashPanelDirective,
-    NotifyModalComponent
+    NotifyModalComponent,
+    PresetModalComponent
   ],
   imports: [
     BrowserModule,
@@ -133,7 +135,8 @@ import { DndModule } from 'ng2-dnd';
     DeviceModalComponent,
     AlertTableComponent,
     BatteryReportComponent,
-    NotifyModalComponent
+    NotifyModalComponent,
+    PresetModalComponent
   ],
   providers: [
     APIService,

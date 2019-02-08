@@ -23,4 +23,7 @@ export class DeviceListComponent implements OnInit {
   ngOnInit() {
   }
 
+  GoBack() {
+    window.history.back();
+  }
 }
