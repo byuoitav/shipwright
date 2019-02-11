@@ -175,7 +175,6 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 	}
 
 	v, err := alertcache.GetAlertCache("default").GetAlert(alert.AlertID)
-	log.L.Infof("%v", err)
 	//we should check to see if it already exists
 	if err == nil {
 

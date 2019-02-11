@@ -56,8 +56,6 @@ type parenStoreItem struct {
 
 //ParseQuery .
 func ParseQuery(q string) (*QueryNode, *nerr.E) {
-	log.SetLevel("debug")
-	defer log.SetLevel("info")
 	var currentNode *QueryNode
 	var curRoot *QueryNode
 
