@@ -21,18 +21,15 @@
 <section>
     <mat-form-field>
         <mat-label>Device Type</mat-label>
-        <mat-select [(ngModel)]="data.type.id">
+        <mat-select [(ngModel)]="data.type.id" (selectionChange)="UpdateDeviceType()">
             <mat-option *ngFor="let type of dataService.deviceTypeList" [value]="type.id">{{type.id}}</mat-option>
         </mat-select>
     </mat-form-field>
     <mat-form-field>
         <mat-label>Roles</mat-label>
-        <mat-select multiple [(ngModel)]="data.roles">
-            <ng-container *ngFor="let r of dataService.deviceRoles">
-                <mat-option [value]="r">
-                    {{r.id}}
-                </mat-option>
-            </ng-container>
+        <mat-select multiple [(ngModel)]="data.roles" (selectionChange)="UpdateRoleLists()" (valueChange)="UpdateRoleLists()">
+            <mat-option *ngFor="let r of data.roles" [value]="r">{{r.id}}</mat-option>  
+            <mat-option *ngFor="let r of UnappliedRoles" [value]="r">{{r.id}}</mat-option>
         </mat-select>
     </mat-form-field>
 </section>
