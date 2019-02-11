@@ -4,6 +4,7 @@ import { Room, Device } from 'src/app/objects';
 import { ModalService } from 'src/app/services/modal.service';
 import { DataService } from 'src/app/services/data.service';
 import { StaticService } from 'src/app/services/static.service';
+import { MonitoringService } from 'src/app/services/monitoring.service';
 
 @Component({
   selector: 'room',
@@ -14,9 +15,13 @@ export class RoomComponent implements OnInit {
   @Input() room: Room;
   deviceList: Device[] = [];
 
-  constructor(public text: StringsService, public modal: ModalService, private data: DataService, private state: StaticService) {
+  goodDeviceCount: number
+  badDeviceCount: number
+
+  constructor(public text: StringsService, public modal: ModalService, private data: DataService, private state: StaticService, private monitor: MonitoringService) {
     if(this.data.finished) {
       this.getDeviceList();
+      
     } else {
       this.data.loaded.subscribe(() => {
         this.getDeviceList();
@@ -25,6 +30,7 @@ export class RoomComponent implements OnInit {
   }
 
   ngOnInit() {
+    
   }
 
   ngOnChanges() {
@@ -42,6 +48,7 @@ export class RoomComponent implements OnInit {
       // console.log(this.data.roomToDevicesMap);
       this.deviceList = this.data.roomToDevicesMap.get(this.room.id);
       // console.log(this.deviceList);
+      this.GetDeviceCounts()
     }
   }
 
@@ -94,18 +101,33 @@ export class RoomComponent implements OnInit {
     }
   }
 
-  GetGoodDevicesCount(): number {
-    //TODO return the actual number of good devices
+  GetDeviceCounts() {
+    this.goodDeviceCount = 0;
+    this.badDeviceCount = 0;
+
     if(this.deviceList == null) {
-      return 0;
+      return
     }
+    
+    this.goodDeviceCount = this.deviceList.length
+    let ra = this.monitor.roomAlertsMap.get(this.room.id)
 
-    return this.deviceList.length;
-  }
-
-  GetBadDevicesCount(): number {
-    // TODO return the actual number of bad devices
-    return 0;
+    let alerts
+    if(ra != null) {
+      alerts = ra.alerts
+    }
+    
+    if(alerts != null && alerts.length > 0) {
+      for(let device of this.deviceList) {
+        for(let alert of alerts) {
+          if(alert.deviceID == device.id) {
+            this.goodDeviceCount--;
+            this.badDeviceCount++;
+            break
+          }
+        } 
+      }
+    }
   }
 
   NotADump() {

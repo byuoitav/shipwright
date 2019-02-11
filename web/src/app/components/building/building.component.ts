@@ -3,6 +3,7 @@ import { StringsService } from 'src/app/services/strings.service';
 import { Building } from 'src/app/objects';
 import { ModalService } from 'src/app/services/modal.service';
 import { DataService } from 'src/app/services/data.service';
+import { MonitoringService } from 'src/app/services/monitoring.service';
 
 @Component({
   selector: 'building',
@@ -11,31 +12,39 @@ import { DataService } from 'src/app/services/data.service';
 })
 export class BuildingComponent implements OnInit {
   @Input() building: Building;
+  goodRoomCount: number;
+  badRoomCount: number;
 
-  constructor(public text: StringsService, public modal: ModalService, private data: DataService) { }
+  constructor(public text: StringsService, public modal: ModalService, private data: DataService, private monitor: MonitoringService) { }
 
   ngOnInit() {
+    this.GetRoomCounts()
   }
 
   GetImage(): string {
     return "../../assets/images/" + this.building.id + ".jpg"
   }
 
-  GetGoodRoomsCount(): number {
+  GetRoomCounts() {
     // TODO: get the number of rooms without alerts.
-    let list = this.data.buildingToRoomsMap.get(this.building.id);
+    this.goodRoomCount = 0;
+    this.badRoomCount = 0;
 
+    let list = this.data.buildingToRoomsMap.get(this.building.id);
     if(list == null) {
       return 0
     }
 
-    return list.length;    
-  }
+    this.goodRoomCount = list.length
+    
+    for(let room of list) {
+      let a = this.monitor.roomAlertsMap.get(room.id)
 
-  GetBadRoomsCount(): number {
-    // TODO: get the number of rooms with alerts.
-
-    return 0
+      if(a != null && a.alerts.length > 0) {
+        this.goodRoomCount--;
+        this.badRoomCount++;
+      }
+    }
   }
 
   NotADump(): boolean {

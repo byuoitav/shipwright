@@ -3,5 +3,10 @@
 </p> -->
 
 <div *ngIf="data.finished" class="container">
-    <room *ngFor="let room of roomList" [room]="room"></room>
+    <section class="row">
+        <button mat-stroked-button (click)="GoBack()" color="primary"><mat-icon>arrow_back</mat-icon>Back</button>
+    </section>
+    <section class="container">
+        <room *ngFor="let room of roomList" [room]="room"></room>
+    </section>
 </div>

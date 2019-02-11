@@ -17,17 +17,21 @@ export class SummaryComponent implements OnInit {
   deviceList: Device[] = [];
   filteredDevices: Device[] = [];
   deviceSearch: string;
+  roomID: string;
 
   constructor(public text: StringsService, private route: ActivatedRoute, public monitor: MonitoringService, public data: DataService, public modal: ModalService) {
     this.route.params.subscribe(params => {
-      this.roomAlerts = [this.monitor.roomAlertsMap.get(params["roomID"])]
+      this.roomID = params["roomID"]
+      
 
       if(this.data.finished) {
-        this.deviceList = this.data.roomToDevicesMap.get(this.roomAlerts[0].roomID)
+        this.roomAlerts = [this.monitor.roomAlertsMap.get(this.roomID)]
+        this.deviceList = this.data.roomToDevicesMap.get(this.roomID)
         this.filteredDevices = this.deviceList;
       } else {
         this.data.loaded.subscribe(() => {
-          this.deviceList = this.data.roomToDevicesMap.get(this.roomAlerts[0].roomID)
+          this.roomAlerts = [this.monitor.roomAlertsMap.get(this.roomID)]
+          this.deviceList = this.data.roomToDevicesMap.get(this.roomID)
           this.filteredDevices = this.deviceList;
         })
       }
@@ -73,5 +77,9 @@ export class SummaryComponent implements OnInit {
         });
       }
     });
+  }
+
+  GoBack() {
+    window.history.back();
   }
 }

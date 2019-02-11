@@ -72,4 +72,9 @@ export class StringsService {
       data.tags.splice(index, 1);
     }
   }
+
+  public Sharing = {
+    true: "Sharing enabled",
+    false: "Sharing disabled"
+  }
 }

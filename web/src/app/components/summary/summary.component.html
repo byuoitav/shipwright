@@ -1,17 +1,19 @@
 <!-- <p>
     summary works!
 </p> -->
+<!-- <div class="container-full"> -->
 
 <div class="base">
 
     <div class="container">
         <section class="row">
-            <button mat-raised-button [disabled]="roomAlerts[0].helpSent" color="warn" (click)="modal.OpenRespondModal(roomAlerts[0])">Dispatch Help</button>
+            <button mat-raised-button *ngIf="roomAlerts[0] != null" [disabled]="roomAlerts[0]?.helpSent" color="warn" (click)="modal.OpenRespondModal(roomAlerts[0])">Dispatch Help</button>
+            <button mat-stroked-button *ngIf="roomAlerts[0] == null" [disabled]="true">No alerts!</button>
         </section>
-        <alert-table [data]="roomAlerts" [singleRoom]="true" [expRoomAlerts]="roomAlerts[0]"></alert-table>
+        <alert-table *ngIf="roomAlerts[0] != null" [data]="roomAlerts" [singleRoom]="true" [expRoomAlerts]="roomAlerts[0]"></alert-table>
     </div>
 
-    <div class="column mat-elevation-z3">
+    <div class="column mat-elevation-z3" *ngIf="filteredDevices != null">
         <div class="searchbar devices">
             <mat-icon class="searchbar icon">search</mat-icon>
             <mat-form-field class="short">
@@ -30,3 +32,4 @@
         </mat-list>
     </div>
 </div>
+<!-- </div> -->

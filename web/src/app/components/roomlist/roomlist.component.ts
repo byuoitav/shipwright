@@ -19,10 +19,10 @@ export class RoomListComponent implements OnInit {
     });
 
     if(this.data.finished) {
-      this.getRooms();
+      this.GetRooms();
     } else {
       this.data.loaded.subscribe(() => {
-        this.getRooms();
+        this.GetRooms();
       })
     }
   }
@@ -30,7 +30,11 @@ export class RoomListComponent implements OnInit {
   ngOnInit() {
   }
 
-  private getRooms() {
+  private GetRooms() {
     this.roomList = this.data.buildingToRoomsMap.get(this.buildingID);
+  }
+
+  GoBack() {
+    window.history.back();
   }
 }
