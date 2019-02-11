@@ -1,7 +1,7 @@
 [
   {
     "name": "Joe-Test",
-    "trigger": "interval:5s",
+    "trigger": "skip",
     "if": {
       "state-query": {
         "query": "'DeviceID' == 'ITB-1101-CP1'",
