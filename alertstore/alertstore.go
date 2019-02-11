@@ -220,6 +220,22 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		return
 	}
 
+	//auto-resolution rule
+	if !alert.Active && alert.HelpSentAt.IsZero() {
+		resInfo := structs.ResolutionInfo{
+			Code:       "Auto Resolved",
+			Notes:      "Alert was auto resolved.",
+			ResolvedAt: time.Now(),
+		}
+
+		err := a.resolveAlert(alert.AlertID, resInfo)
+		if err != nil {
+			log.L.Errorf("Problem autoresolving alert %v: %v", alert.AlertID, err.Error())
+		}
+
+		return
+	}
+
 	persist.GetElkAlertPersist().StoreAlert(alert, false)
 	a.runActions(alert)
 	socket.GetManager().WriteToSockets(alert)
