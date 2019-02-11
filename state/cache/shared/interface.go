@@ -19,7 +19,6 @@ type Cache interface {
 	StoreDeviceEvent(toSave sd.State) (bool, sd.StaticDevice, *nerr.E)
 	StoreAndForwardEvent(event events.Event) (bool, *nerr.E)
 
-	//GetDeviceManagerList() (int, []string, *nerr.E)
 	GetCacheType() string
 	GetCacheName() string
 }

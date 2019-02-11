@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/byuoitav/common/log"
@@ -76,4 +77,12 @@ func Contains(a []string, b string) bool {
 	}
 
 	return false
+}
+
+func ReplaceEnv(s string) string {
+
+	if strings.HasPrefix(s, "ENV") {
+		return os.Getenv(strings.TrimSpace(strings.TrimPrefix(s, "ENV")))
+	}
+	return s
 }

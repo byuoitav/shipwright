@@ -13,6 +13,7 @@ type key uint8
 const (
 	event key = iota
 	staticDevice
+	staticDevices
 	alert
 )
 
@@ -22,12 +23,13 @@ func PutEvent(ctx context.Context, v events.Event) context.Context {
 }
 
 // PutStaticDevices puts an event into ctx
-func PutStaticDevices(ctx context.Context, v ...statedefinition.StaticDevice) context.Context {
-	toAdd := []statedefinition.StaticDevice{}
-	for _, j := range v {
-		toAdd = append(toAdd, j)
-	}
-	return context.WithValue(ctx, staticDevice, toAdd)
+func PutStaticDevices(ctx context.Context, v []statedefinition.StaticDevice) context.Context {
+	return context.WithValue(ctx, staticDevices, v)
+}
+
+// PutStaticDevice puts an event into ctx
+func PutStaticDevice(ctx context.Context, v statedefinition.StaticDevice) context.Context {
+	return context.WithValue(ctx, staticDevice, v)
 }
 
 // PutAlert puts an event into ctx

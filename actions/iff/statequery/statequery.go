@@ -4,7 +4,7 @@ import (
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	sd "github.com/byuoitav/common/state/statedefinition"
-	"github.com/byuoitav/state-parser/state/cache"
+	"github.com/byuoitav/shipwright/state/cache"
 )
 
 /*
@@ -41,39 +41,42 @@ data-type:
 The type of record within the cache to query. See the cache config for acceptable values.
 
 */
-func (j *QueryRunner) Run() []sd.StaticDevice {
+func (j *QueryRunner) Run() ([]sd.StaticDevice, *nerr.E) {
 
-	ok := true
 	var d []sd.StaticDevice
 	var er *nerr.E
 	//we're gonna get all the records from the cache
-	c := cache.GetCache(Cache)
+	d, er = cache.GetCache(j.CacheName).GetAllDeviceRecords()
 	if er != nil {
 		log.L.Errorf("Problem getting all devices from the cache: %v", er.Error())
 		return d, er
 	}
 
-	initOnce.Do(func() {
+	j.initOnce.Do(func() {
 		//build our query
-		j.query, er = ParseQuery(j.query)
+		j.rootNode, er = ParseQuery(j.Query)
 		if er != nil {
-			log.L.Errorf("There was a problem generating the query %v: %v", Query, er.Error())
-			return d, er
+			log.L.Fatalf("There was a building running the query %v: %v", j.Query, er.Error())
 		}
 	})
 
+	var toReturn []sd.StaticDevice
+
 	//now we take our matching rooms and matching devices and pass them to the action generation function
 	for _, i := range d {
-		t, er := j.query.rootNode.Evaluate(i)
+		t, er := j.rootNode.Evaluate(i)
 		if er != nil {
-			log.L.Errorf("Couldn't evaluate device %v with query %v. Problem: %v", i.DeviceID, Query, er.Error())
-			return d, sd
+			log.L.Errorf("Couldn't evaluate device %v with query %v. Problem: %v", i.DeviceID, j.Query, er.Error())
+			return d, er.Addf("Couldn't evaluate device %v with query %v. Problem: %v", i.DeviceID, j.Query, er.Error())
+		}
+		if t {
+			toReturn = append(toReturn, i)
 		}
 	}
-
+	return toReturn, nil
 }
 
-//GetName .
-func (j *QueryJob) GetName() string {
-	return StateQuery
+//GetQuery .
+func (j *QueryRunner) GetQuery() string {
+	return j.Query
 }

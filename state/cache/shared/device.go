@@ -12,7 +12,6 @@ import (
 )
 
 func EditDeviceFromEvent(e sd.State, device sd.StaticDevice) (sd.StaticDevice, bool, *nerr.E) {
-	var merged sd.StaticDevice
 	var changes bool
 	var err *nerr.E
 
@@ -46,12 +45,12 @@ func EditDeviceFromEvent(e sd.State, device sd.StaticDevice) (sd.StaticDevice, b
 
 	// if it has a user-generated tag
 	if HasTag(events.UserGenerated, e.Tags) {
-		merged.LastUserInput = e.Time
+		device.LastUserInput = e.Time
 	}
 
 	// i'm just going to assume yeah, ask joe later
 	if HasTag(events.CoreState, e.Tags) || HasTag(events.DetailState, e.Tags) {
-		merged.LastStateReceived = e.Time
+		device.LastStateReceived = e.Time
 	}
 
 	return device, changes, nil
