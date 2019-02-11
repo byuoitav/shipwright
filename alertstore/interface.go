@@ -7,6 +7,7 @@ import (
 
 //AddAlert takes an alert and stores it in the store. It will return the AlertID.
 func AddAlert(a structs.Alert) (string, *nerr.E) {
+	a.Source = Interface
 	return store.putAlert(a)
 }
 

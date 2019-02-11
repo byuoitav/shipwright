@@ -55,6 +55,7 @@ func InitializeAlertStore(a *actions.ActionManager) {
 	}
 
 	for i := range alerts {
+		alerts[i].Source = Init
 		store.inChannel <- alerts[i]
 	}
 	log.L.Infof("Alert store initialized with %v alerts", len(alerts))
@@ -181,6 +182,11 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		//check to see if our last update time is non-blank and before the one already in the cache, if so we don't do anything
 		if !alert.AlertLastUpdateTime.IsZero() && alert.AlertLastUpdateTime.Before(v.AlertLastUpdateTime) {
 			log.L.Infof("Alert: %v is out of date from cache.", alert.AlertID)
+			//check if it's an init
+			if alert.Source == Init {
+				//create run the actions based on the alert in storage - since that's more up to date
+				a.runInitActions(v)
+			}
 			return
 		}
 
@@ -202,6 +208,10 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 		alert = v
 
+		if alert.Source == Init {
+			//create run the actions based on the alert in storage - since that's more up to date
+			a.runInitActions(alert)
+		}
 	} else if err.Type == alertcache.NotFound {
 
 		//we store it.
@@ -215,6 +225,12 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 			log.L.Errorf("Couldn't save alert %v: %v", alert.AlertID, err.Error())
 			return
 		}
+
+		if alert.Source != Init {
+			//run the iniitialization actions thing
+			a.runInitActions(alert)
+		}
+
 	} else {
 		log.L.Errorf("Error: %v", err.Error())
 		return
@@ -254,6 +270,20 @@ func (a *alertStore) runActions(alert structs.Alert) {
 	}
 }
 
+func (a *alertStore) runInitActions(alert structs.Alert) {
+	if a.actionManager != nil {
+		go func() {
+			acts := actions.DefaultConfig().GetActionsByTrigger("alert-init")
+
+			// a new context for the run of this action
+			actx := actionctx.PutAlert(context.Background(), alert)
+			for i := range acts {
+				a.actionManager.RunAction(actx, acts[i])
+			}
+		}()
+	}
+}
+
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
 func (a *alertStore) handleRequest(req alertRequest) {
 
@@ -261,12 +291,19 @@ func (a *alertStore) handleRequest(req alertRequest) {
 
 	if req.All {
 		toReturn, err := alertcache.GetAlertCache("default").GetAllAlerts()
+
+		for i := range toReturn {
+			toReturn[i].Source = Cache
+		}
+
 		req.ResponseChan <- alertResponse{
 			Error: err,
 			Alert: toReturn,
 		}
 	} else {
 		v, err := alertcache.GetAlertCache("default").GetAlert(req.AlertID)
+		v.Source = Cache
+
 		req.ResponseChan <- alertResponse{
 			Error: err,
 			Alert: []structs.Alert{v},
