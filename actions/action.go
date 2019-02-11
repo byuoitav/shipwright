@@ -67,9 +67,11 @@ func (a *Action) Run(ctx context.Context) {
 			}
 		}
 
+		log.SetLevel("debug")
 		// pull out static devices, if there are any
 		devices, ok := actionctx.GetStaticDevices(ctx)
-		if !ok || len(devices) == 1 {
+		log.L.Debugf("Devices: %v", devices)
+		if !ok {
 			// just execute like normal
 			exec(ctx)
 		} else {

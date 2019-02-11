@@ -50,7 +50,7 @@ func NewActionConfig(db string) (*ActionConfig, *nerr.E) {
 
 	log.L.Infof("Getting action configuration from couch database %s", config.DB)
 
-	err := filepath.Walk(config.Dir, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(config.DB, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -100,7 +100,7 @@ func NewActionConfig(db string) (*ActionConfig, *nerr.E) {
 		return nil, nerr.Translate(err).Addf("unable to read action configs")
 	}
 
-	log.L.Infof("Loaded %v actions from %s", len(config.Actions), config.Dir)
+	log.L.Infof("Loaded %v actions from %s", len(config.Actions), config.DB)
 	return config, nil
 }
 

@@ -34,7 +34,7 @@ func (s *StateQuery) CheckStore(ctx context.Context) (bool, context.Context) {
 	}
 
 	if len(devs) > 0 {
-		ctx = actionctx.PutStaticDevices(ctx, devs...)
+		ctx = actionctx.PutStaticDevices(ctx, devs)
 
 		return true, ctx
 	}

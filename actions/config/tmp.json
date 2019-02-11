@@ -1,7 +1,7 @@
 [
   {
     "name": "Joe-Test",
-    "trigger": "interval:15s",
+    "trigger": "interval:5s",
     "if": {
       "state-query": {
         "query": "'DeviceID' == 'ITB-1101-CP1'",
@@ -21,12 +21,17 @@
       {
         "do": "send-email",
         "with": {
-          "recipients": "matt_blodgett@byu.edu, danny_randall@byu.edu",
+          "to": [
+            "matt_blodgett@byu.edu",
+            "danny_randall@byu.edu",
+            "joe_blodgett@byu.edu"
+          ],
+          "from": "scott_hunt@byu.edu",
           "sender": "{{.StaticDevice.DeviceID}}@byu.edu",
           "user": "",
           "pass": "",
-          "subject": "Cabinet Opened in {{.StaticDevice.RoomID}} // TODO these fields use go's templating engine",
-          "body": "A cabinet was opened in {{.StaticDevice.RoomID}} at {{.StaticDevice.Timestamp}}.",
+          "subject": "You got a query that matched room {{.StaticDevice.Room}}",
+          "body": "Hey guys, the query works. Here's the device: {{.StaticDevice}}",
           "smtp-addr": "gateway.byu.edu:25"
         }
       }
