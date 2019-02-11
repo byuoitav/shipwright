@@ -10,15 +10,15 @@ import (
 
 type StateQuery struct {
 	Query     string `json:"query"`
-	CacheName string `json:"cache-name"` //one of the caches available from GetCache.
-	DataType  string `json:"data-type"`  //one of the caches available from GetCache.
+	CacheName string `json:"cache-name"` //cache-name
+	DataType  string `json:"data-type"`  //reserved for future use
 
 	initOnce sync.Once
 	runner   statequery.QueryRunner
 }
 
-//StoreMatches doesn't expect anything in the context, but it will place the
-func (s *StateQuery) StoreMatches(ctx context.Context) (bool, context.Context) {
+//CheckStore doesn't expect anything in the context, but it will place the
+func (s *StateQuery) CheckStore(ctx context.Context) (bool, context.Context) {
 
 	s.initOnce.Do(func() {
 		s.runner = statequery.QueryRunner{
@@ -33,7 +33,11 @@ func (s *StateQuery) StoreMatches(ctx context.Context) (bool, context.Context) {
 		return false, ctx
 	}
 
-	ctx = actionctx.PutStaticDevices(ctx, devs...)
+	if len(devs) > 0 {
+		ctx = actionctx.PutStaticDevices(ctx, devs...)
 
-	return true, ctx
+		return true, ctx
+	}
+
+	return false, ctx
 }

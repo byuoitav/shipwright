@@ -16,7 +16,7 @@ const (
 	CLOSEPAREN = "CLOSEPAREN" //)
 	NOT        = "NOT"        //!
 	OPERATOR   = "OPERATOR"   // > = < !=
-	QUOTE      = "QUOTE"      //"
+	QUOTE      = "QUOTE"      //" or '
 	KEY        = "KEY"        //Key
 	VALUE      = "VALUE"      //Value
 	LIT        = "LITERAL"    //Any key or value
@@ -56,6 +56,8 @@ type parenStoreItem struct {
 
 //ParseQuery .
 func ParseQuery(q string) (*QueryNode, *nerr.E) {
+	log.SetLevel("debug")
+	defer log.SetLevel("info")
 	var currentNode *QueryNode
 	var curRoot *QueryNode
 
