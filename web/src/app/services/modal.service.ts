@@ -8,6 +8,7 @@ import { DeviceModalComponent } from '../modals/devicemodal/devicemodal.componen
 import { Building, Room, Device, DBResponse, RoomAlerts, UIConfig } from '../objects';
 import { NotifyModalComponent } from '../modals/notify/notify.component';
 import { PresetModalComponent } from '../modals/presetmodal/presetmodal.component';
+import { IconModalComponent } from '../modals/iconmodal/iconmodal.component';
 
 @Injectable({
   providedIn: 'root'
@@ -50,5 +51,13 @@ export class ModalService {
 
   OpenPresetModal(presetName: string, config: UIConfig) {
     this.dialog.open(PresetModalComponent, {data: {presetName: presetName, uiConfig: config}})
+  }
+
+  OpenIconModal(caller: any) {
+    this.dialog.open(IconModalComponent).afterClosed().subscribe(result => {
+      if(result != null) {
+        caller.icon = result;
+      }
+    });
   }
 }
