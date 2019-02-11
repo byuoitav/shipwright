@@ -1,4 +1,4 @@
-package persist
+package config
 
 import (
 	"encoding/json"
@@ -7,6 +7,30 @@ import (
 
 	"github.com/byuoitav/common/log"
 )
+
+const (
+	Memory = "memory"
+	Redis  = "redis"
+)
+
+type PersistType string
+
+type AlertStoreConfig struct {
+	Persist PersistConfig `json:"persist"`
+	Caches  []CacheConfig `json:"caches"`
+}
+
+type CacheConfig struct {
+	Name  string    `json:"name"`
+	Type  string    `json:"type"`
+	Redis RedisInfo `json:"redis"`
+}
+
+type RedisInfo struct {
+	URL      string `json:"url"`
+	Database int    `json:"database"`
+	Password string `json:"pass"`
+}
 
 type PersistConfig struct {
 	PersistResolvedAlerts AlertPersistConfig `json:"persist-resolved-alerts"`
@@ -20,8 +44,6 @@ type PersistConfig struct {
 	UpdateInterval string `json:"update-interval"` //expected in the golang duration format
 }
 
-type PersistType string
-
 type AlertPersistConfig struct {
 	ElkData ELKPersistConfig `json:"elk"` //only used for PersistType ELK
 }
@@ -30,14 +52,14 @@ type ELKPersistConfig struct {
 	IndexPattern string `json:"index"`
 }
 
-func GetConfig() PersistConfig {
+func GetConfig() AlertStoreConfig {
 	//check for the PERSIST_CONFIG env variable, if blank check for the persist-config.json file
-	fileLocation := os.Getenv("PERSIST_CONFIG")
+	fileLocation := os.Getenv("ALERT_STORE_CONFIG")
 	if len(fileLocation) < 1 {
-		fileLocation = "./persist-config.json"
+		fileLocation = "./alert-store-config.json"
 	}
 
-	toReturn := PersistConfig{}
+	toReturn := AlertStoreConfig{}
 	b, err := ioutil.ReadFile(fileLocation)
 	if err != nil {
 		log.L.Fatalf("Coudln't read config file %v", fileLocation)

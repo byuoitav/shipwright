@@ -1,0 +1,40 @@
+[
+  {
+    "name": "Joe-Test",
+    "trigger": "interval:5s",
+    "if": {
+      "state-query": {
+        "query": "'DeviceID' == 'ITB-1101-CP1'",
+        "cache-name": "default"
+      }
+    },
+    "then": [
+      {
+        "do": "add-alert",
+        "with": {
+          "alert": "hi",
+          "type": "missing heartbeat",
+          "msg log": ["something went wrong with {{.StaticDevice.DeviceID}}"],
+          "severity": "test"
+        }
+      },
+      {
+        "do": "send-email",
+        "with": {
+          "to": [
+            "matt_blodgett@byu.edu",
+            "danny_randall@byu.edu",
+            "joe_blodgett@byu.edu"
+          ],
+          "from": "scott_hunt@byu.edu",
+          "sender": "{{.StaticDevice.DeviceID}}@byu.edu",
+          "user": "",
+          "pass": "",
+          "subject": "You got a query that matched room {{.StaticDevice.Room}}",
+          "body": "Hey guys, the query works. Here's the device: {{.StaticDevice}}",
+          "smtp-addr": "gateway.byu.edu:25"
+        }
+      }
+    ]
+  }
+]

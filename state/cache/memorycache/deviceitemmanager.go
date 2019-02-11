@@ -94,14 +94,14 @@ func StartDeviceManager(m DeviceItemManager, device sd.StaticDevice) {
 					write.ResponseChan <- DeviceTransactionResponse{Error: err, Changes: false}
 					continue
 				}
+				if changes {
+					//only reassign if we have to
+					device = merged
+				}
 			}
 
 			if write.EventEdit {
 				merged, changes, err = shared.EditDeviceFromEvent(write.Event, device)
-			}
-
-			if changes {
-				//only reassign if we have to
 				device = merged
 			}
 

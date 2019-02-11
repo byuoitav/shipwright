@@ -16,7 +16,13 @@ func GetEvent(ctx context.Context) (events.Event, bool) {
 
 // GetStaticDevices returns a static device/true from ctx if there is one, and false if there isn't.
 func GetStaticDevices(ctx context.Context) ([]statedefinition.StaticDevice, bool) {
-	v, ok := ctx.Value(staticDevice).([]statedefinition.StaticDevice)
+	v, ok := ctx.Value(staticDevices).([]statedefinition.StaticDevice)
+	return v, ok
+}
+
+// GetStaticDevice returns a static device/true from ctx if there is one, and false if there isn't.
+func GetStaticDevice(ctx context.Context) (statedefinition.StaticDevice, bool) {
+	v, ok := ctx.Value(staticDevice).(statedefinition.StaticDevice)
 	return v, ok
 }
 

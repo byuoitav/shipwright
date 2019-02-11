@@ -5,6 +5,7 @@ import (
 	"sync/atomic"
 
 	"github.com/byuoitav/common/log"
+	"github.com/byuoitav/shipwright/actions/actionctx"
 	"github.com/byuoitav/shipwright/actions/iff"
 	"github.com/byuoitav/shipwright/actions/then"
 	"go.uber.org/zap"
@@ -43,7 +44,6 @@ func (a *Action) Run(ctx context.Context) {
 	}
 
 	if ctx, passed := a.If.Check(ctx, a.Log); passed {
-
 		count := atomic.AddUint64(&a.runCount, 1)
 		pruneCount := atomic.LoadUint64(&a.PruneCount)
 		if pruneCount != 0 && count >= pruneCount {
@@ -58,10 +58,27 @@ func (a *Action) Run(ctx context.Context) {
 			a.Log.Debugf("Passed if checks, running thens")
 		}
 
-		for i := range a.Then {
-			err := a.Then[i].Execute(ctx, a.Log)
-			if err != nil {
-				a.Log.Warnf("failed to execute then: %s", err.Error())
+		exec := func(c context.Context) {
+			for i := range a.Then {
+				err := a.Then[i].Execute(c, a.Log)
+				if err != nil {
+					a.Log.Warnf("failed to execute then: %s", err.Error())
+				}
+			}
+		}
+
+		log.SetLevel("debug")
+		// pull out static devices, if there are any
+		devices, ok := actionctx.GetStaticDevices(ctx)
+		log.L.Debugf("Devices: %v", devices)
+		if !ok {
+			// just execute like normal
+			exec(ctx)
+		} else {
+			for i := range devices {
+				// overwrite ctx so it only has one devices
+				c := actionctx.PutStaticDevice(ctx, devices[i])
+				exec(c)
 			}
 		}
 	}

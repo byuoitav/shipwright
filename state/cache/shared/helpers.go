@@ -359,6 +359,9 @@ var translationMap = map[string]string{
 	"TX":    "transmitter",
 	"RCV":   "microphone-reciever",
 	"EN":    "encoder",
+	"LIN":   "line-in",
+	"OF":    "overflow",
+	"MEDIA": "media",
 }
 
 func GetDeviceTypeByID(id string) string {
