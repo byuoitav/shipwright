@@ -140,7 +140,7 @@ func (a *alertStore) resolveAlert(alertID string, resInfo structs.ResolutionInfo
 	//we should check to see if it already exists
 
 	v, err := alertcache.GetAlertCache("default").GetAlert(alertID)
-	if err != nil {
+	if err == nil {
 
 		//it's there, lets get it, mark it as resolved.
 		v.Resolved = true
