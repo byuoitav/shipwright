@@ -28,7 +28,8 @@ import {
   MatButtonToggleModule,
   MatSelectModule,
   MatChipsModule,
-  MAT_DIALOG_DATA
+  MAT_DIALOG_DATA,
+  MatSlideToggleModule
 } from "@angular/material";
 
 import { AppRoutingModule } from './app-routing.module';
@@ -67,6 +68,8 @@ import { DashPanelComponent } from './components/dashpanel/dashpanel.component';
 import { DashPanelService } from './services/dashpanel.service';
 import { NotifyModalComponent } from './modals/notify/notify.component';
 import { DndModule } from 'ng2-dnd';
+import { PresetModalComponent } from './modals/presetmodal/presetmodal.component';
+import { IconModalComponent } from './modals/iconmodal/iconmodal.component';
 
 @NgModule({
   declarations: [
@@ -92,7 +95,9 @@ import { DndModule } from 'ng2-dnd';
     RoomModalComponent,
     DeviceModalComponent,
     DashPanelDirective,
-    NotifyModalComponent
+    NotifyModalComponent,
+    PresetModalComponent,
+    IconModalComponent
   ],
   imports: [
     BrowserModule,
@@ -123,6 +128,7 @@ import { DndModule } from 'ng2-dnd';
     MatButtonToggleModule,
     MatSelectModule,
     MatChipsModule,
+    MatSlideToggleModule,
     DndModule.forRoot(),
   ],
   entryComponents: [
@@ -133,7 +139,9 @@ import { DndModule } from 'ng2-dnd';
     DeviceModalComponent,
     AlertTableComponent,
     BatteryReportComponent,
-    NotifyModalComponent
+    NotifyModalComponent,
+    PresetModalComponent,
+    IconModalComponent
   ],
   providers: [
     APIService,

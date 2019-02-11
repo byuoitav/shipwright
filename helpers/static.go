@@ -13,29 +13,29 @@ func GetAllStaticDeviceRecords() ([]sd.StaticDevice, *nerr.E) {
 		return []sd.StaticDevice{}, err
 	}
 
-	legacyDevices, err := cache.GetCache("legacy").GetAllDeviceRecords()
-	if err != nil {
-		return []sd.StaticDevice{}, err
-	}
+	// legacyDevices, err := cache.GetCache("legacy").GetAllDeviceRecords()
+	// if err != nil {
+	// 	return []sd.StaticDevice{}, err
+	// }
 
-	defaultDevices = append(defaultDevices, legacyDevices...)
+	// defaultDevices = append(defaultDevices, legacyDevices...)
 
 	return defaultDevices, nil
 }
 
 // GetAllStaticRoomRecords returns a list of all the static room records
 func GetAllStaticRoomRecords() ([]sd.StaticRoom, *nerr.E) {
-	defaultRooms, err := cache.GetCache("Default").GetAllRoomRecords()
+	defaultRooms, err := cache.GetCache("default").GetAllRoomRecords()
 	if err != nil {
 		return []sd.StaticRoom{}, err
 	}
 
-	legacyRooms, err := cache.GetCache("Legacy").GetAllRoomRecords()
-	if err != nil {
-		return []sd.StaticRoom{}, err
-	}
+	// legacyRooms, err := cache.GetCache("Legacy").GetAllRoomRecords()
+	// if err != nil {
+	// 	return []sd.StaticRoom{}, err
+	// }
 
-	defaultRooms = append(defaultRooms, legacyRooms...)
+	// defaultRooms = append(defaultRooms, legacyRooms...)
 
 	return defaultRooms, nil
 }
