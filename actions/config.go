@@ -14,7 +14,7 @@ import (
 
 // ActionConfig manages the configuration of actions
 type ActionConfig struct {
-	Dir     string
+	DB      string
 	Actions []*Action
 }
 
@@ -43,12 +43,12 @@ func DefaultConfig() *ActionConfig {
 }
 
 // NewActionConfig creates a new action manager and starts it
-func NewActionConfig(dir string) (*ActionConfig, *nerr.E) {
+func NewActionConfig(db string) (*ActionConfig, *nerr.E) {
 	config := &ActionConfig{
-		Dir: dir,
+		DB: db,
 	}
 
-	log.L.Infof("Parsing action configurations from %s", config.Dir)
+	log.L.Infof("Getting action configuration from couch database %s", config.DB)
 
 	err := filepath.Walk(config.Dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
