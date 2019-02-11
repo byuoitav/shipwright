@@ -71,7 +71,7 @@ func GetManagersForType(cacheName, dataType, eventType string) []BufferManager {
 	log.L.Debugf("Getting %s managers for %v-%v", cacheName, dataType, eventType)
 	v, ok := managerMap[fmt.Sprintf("%s-%s-%s", cacheName, dataType, eventType)]
 	if !ok {
-		log.L.Errorf("Unknown manager type: %v", fmt.Sprintf("%s-%s-%s", cacheName, dataType, eventType))
+		log.L.Debugf("Unknown manager type: %v", fmt.Sprintf("%s-%s-%s", cacheName, dataType, eventType))
 		return []BufferManager{}
 	}
 	return v

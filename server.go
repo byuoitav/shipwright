@@ -136,6 +136,7 @@ func main() {
 }
 
 func processEvent(event events.Event) {
+	log.SetLevel("debug")
 	log.L.Debugf("Got event: %+v", event)
 
 	cache.GetCache("default").StoreAndForwardEvent(event)

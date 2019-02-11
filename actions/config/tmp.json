@@ -1,7 +1,7 @@
 [
   {
     "name": "Joe-Test",
-    "trigger": "interval:5s",
+    "trigger": "interval:1h",
     "if": {
       "state-query": {
         "query": "'DeviceID' == 'ITB-1101-CP1'",
@@ -17,22 +17,26 @@
           "msg log": ["something went wrong with {{.StaticDevice.DeviceID}}"],
           "severity": "test"
         }
-      },
+      }
+    ]
+  },
+  {
+    "name": "Joe-Test",
+    "trigger": "event",
+    "if": {
+      "event-match": {
+        "key": "secure",
+        "value": "False"
+      }
+    },
+    "then": [
       {
-        "do": "send-email",
+        "do": "add-alert",
         "with": {
-          "to": [
-            "matt_blodgett@byu.edu",
-            "danny_randall@byu.edu",
-            "joe_blodgett@byu.edu"
-          ],
-          "from": "scott_hunt@byu.edu",
-          "sender": "{{.StaticDevice.DeviceID}}@byu.edu",
-          "user": "",
-          "pass": "",
-          "subject": "You got a query that matched room {{.StaticDevice.Room}}",
-          "body": "Hey guys, the query works. Here's the device: {{.StaticDevice}}",
-          "smtp-addr": "gateway.byu.edu:25"
+          "alert": "system",
+          "type": "open-cabinet",
+          "msg log": ["something went wrong with {{.StaticDevice.DeviceID}}"],
+          "severity": "critical"
         }
       }
     ]
