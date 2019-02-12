@@ -15,8 +15,9 @@ import (
 )
 
 type alertStore struct {
-	inChannel      chan structs.Alert
-	requestChannel chan alertRequest
+	inChannel         chan structs.Alert
+	requestChannel    chan alertRequest
+	resolutionChannel chan alertRequest
 
 	store         map[string]structs.Alert
 	actionManager *actions.ActionManager
@@ -27,6 +28,11 @@ type alertRequest struct {
 	AlertID      string
 	ResponseChan chan alertResponse
 	All          bool
+}
+
+type resolutionRequest struct {
+	Alerts         []string
+	ResolutionInfo structs.ResolutionInfo
 }
 
 //AlertRepsonse should always have the error checked before retrieving the alert
@@ -41,10 +47,11 @@ var store *alertStore
 
 func InitializeAlertStore(a *actions.ActionManager) {
 	store = &alertStore{
-		inChannel:      make(chan structs.Alert, 1000),
-		requestChannel: make(chan alertRequest, 1000),
-		store:          map[string]structs.Alert{},
-		actionManager:  a,
+		inChannel:         make(chan structs.Alert, 1000),
+		requestChannel:    make(chan alertRequest, 1000),
+		resolutionChannel: make(chan alertRequest, 1000),
+		store:             map[string]structs.Alert{},
+		actionManager:     a,
 	}
 
 	go store.run()
@@ -79,6 +86,16 @@ func (a *alertStore) putAlert(alert structs.Alert) (string, *nerr.E) {
 
 	a.inChannel <- alert
 	return alert.AlertID, nil
+}
+
+func (a *alertStore) resolveAlertSet(resolutionInfo string, alertIDs ...string) *nerr.E {
+
+	a.ResolutionChannel <- resolutionRequest{
+		Alerts:         alertIDs,
+		ResolutionInfo: resolutionInfo,
+	}
+
+	return nil
 }
 
 func (a *alertStore) getAlert(id string) (structs.Alert, *nerr.E) {
@@ -128,42 +145,49 @@ func (a *alertStore) run() {
 			a.storeAlert(al)
 		case req := <-a.requestChannel:
 			a.handleRequest(req)
+		case req := <-a.resolutionChannel:
+			a.handleRequest(req)
 		}
 	}
 }
 
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
-func (a *alertStore) resolveAlert(alertID string, resInfo structs.ResolutionInfo) *nerr.E {
+func (a *alertStore) resolveAlertSet(alerts ...string, resInfo structs.ResolutionInfo) *nerr.E {
 
-	log.L.Infof("Resolving alert %v", alertID)
+	log.L.Infof("Resolving alerts %v", alertID)
 
 	//we remove it from the store, and ship it off to the persistance stuff.
 	//we should check to see if it already exists
 
-	v, err := alertcache.GetAlertCache("default").GetAlert(alertID)
-	if err == nil {
+	alertsToProcess := []structs.Alert{}
 
-		//it's there, lets get it, mark it as resolved.
-		v.Resolved = true
-		v.ResolutionInfo = resInfo
-		v.AlertID = v.AlertID + "^" + v.AlertStartTime.Format(time.RFC3339) //change the ID so it's unique
+	for _, v := range alerts {
 
-		err := alertcache.GetAlertCache("default").DeleteAlert(alertID)
-		if err != nil {
-			return err.Addf("couldn't resolve alert: %v")
+		v, err := alertcache.GetAlertCache("default").GetAlert(alerts[i])
+		if err == nil {
+
+			//it's there, lets get it, mark it as resolved.
+			v.Resolved = true
+			v.ResolutionInfo = resInfo
+			v.AlertID = v.AlertID + "^" + v.AlertStartTime.Format(time.RFC3339) //change the ID so it's unique
+
+			err := alertcache.GetAlertCache("default").DeleteAlert(alertID)
+			if err != nil {
+				return err.Addf("couldn't resolve alert: %v")
+			}
+
+			//submit for persistence
+			persist.GetElkAlertPersist().StoreAlert(v, true)
+			socket.GetManager().WriteToSockets(v)
+
+		} else if err.Type == alertcache.NotFound {
+			return nerr.Create("Unkown alert "+alertID, "not-found")
+		} else {
+			return err.Addf("couldn't resolve alert")
 		}
-
-		//submit for persistence
-		persist.GetElkAlertPersist().StoreAlert(v, true)
-		a.runActions(v)
-		socket.GetManager().WriteToSockets(v)
-
-	} else if err.Type == alertcache.NotFound {
-		return nerr.Create("Unkown alert "+alertID, "not-found")
-	} else {
-		return err.Addf("couldn't resolve alert")
 	}
 
+	a.runAlertSetActions(v)
 	return nil
 }
 
