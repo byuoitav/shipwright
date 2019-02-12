@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { DataService } from 'src/app/services/data.service';
 import { ActivatedRoute } from '@angular/router';
-import { Device, UIConfig, Room } from 'src/app/objects';
+import { Device, UIConfig, Room, Preset, Panel } from 'src/app/objects';
 import { ModalService } from 'src/app/services/modal.service';
 
 @Component({
@@ -63,5 +63,17 @@ export class BuilderComponent implements OnInit {
         return this.devicesInRoom[i];
       }
     }
+  }
+
+  PrepPresetModal(preset: Preset) {
+    let currentPanels: Panel[] = []
+
+    for(let panel of this.config.panels) {
+      if(panel.preset === preset.name) {
+        currentPanels.push(panel)
+      }
+    }
+    
+    this.modal.OpenPresetModal(preset, currentPanels, this.config)
   }
 }

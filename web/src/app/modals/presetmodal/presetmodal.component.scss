@@ -1,0 +1,79 @@
+.container {
+    overflow: hidden;
+    max-height: 800px;
+    max-width: 800px;
+    &:hover {
+        overflow: auto;
+    }
+    /* width */
+    &::-webkit-scrollbar {
+        width: 5px;
+    }
+    /* Track */
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+}
+
+.heading {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.fill-remaining-space {
+    flex: 1 1 auto;
+}
+
+.field {
+    margin-right: 2%;
+}
+
+.info {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.checkboxes {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.displays {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: flex-start;
+    width: 85%;
+    max-width: 85%;
+}
+
+.display {
+    margin-right: 10px;
+}
+
+.row {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    align-items: baseline;
+}
+
+.list {
+    display: flex;
+    flex-flow: column wrap;
+    max-height: 300px;
+}

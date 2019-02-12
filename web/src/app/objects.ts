@@ -656,7 +656,8 @@ export const DMPS_ICON = "accessible_forward"
 export class RoomAlerts{
     roomID: string = undefined;
     systemTypeIcon: string = undefined;
-    alerts: Alert[] = Array<Alert>();
+    private alerts: Alert[] = Array<Alert>();
+    map: Map<string, Alert> = new Map();
     incidentID: string;
     maintenanceMode: boolean = false;
     expanded: boolean = false;
@@ -669,6 +670,7 @@ export class RoomAlerts{
         }
 
         if(alertList != null) {
+            this.map.clear();
             this.alerts = alertList;
 
             for(let a of this.alerts) {
@@ -687,7 +689,27 @@ export class RoomAlerts{
                 else {
                     this.systemTypeIcon = PI_ICON
                 }
+
+                this.map.set(a.alertID, a);
             }
+        }
+    }
+
+    GetAlerts() {
+        this.alerts = [];
+        this.map.forEach((value, key) => {
+            this.alerts.push(value);
+        })
+        return this.alerts
+    }
+
+    AddAlert(a: Alert) {
+        this.map.set(a.alertID, a);
+    }
+
+    AddAlerts(aList: Alert[]) {
+        for(let alert of aList) {
+            this.map.set(alert.alertID, alert);
         }
     }
 }

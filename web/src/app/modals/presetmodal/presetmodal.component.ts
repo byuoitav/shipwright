@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
-import { Preset, Panel, UIConfig, DeviceType } from 'src/app/objects';
+import { Preset, Panel, UIConfig, DeviceType, IOConfiguration } from 'src/app/objects';
 import { StringsService } from 'src/app/services/strings.service';
 import { DataService } from 'src/app/services/data.service';
 import { IconModalComponent } from '../iconmodal/iconmodal.component';
@@ -18,8 +18,20 @@ export interface UIInfo{
 })
 export class PresetModalComponent implements OnInit {
   uipath: string
+  inputTypeMap: Map<string, IOConfiguration[]> = new Map();
 
-  constructor(public dialogRef: MatDialogRef<PresetModalComponent>, @Inject(MAT_DIALOG_DATA) public data: UIInfo, public text: StringsService, public dataService: DataService, private dialog: MatDialog) { }
+  constructor(public dialogRef: MatDialogRef<PresetModalComponent>, @Inject(MAT_DIALOG_DATA) public data: UIInfo, public text: StringsService, public dataService: DataService, private dialog: MatDialog) {
+    if(this.data.currentPanels != null && this.data.currentPanels.length > 0) {
+      this.uipath = this.data.currentPanels[0].uiPath
+    }
+    if(this.dataService.finished) {
+      this.CreateInputTypeMap();
+    } else {
+      this.dataService.loaded.subscribe(() => {
+        this.CreateInputTypeMap();
+      })
+    }
+  }
 
   ngOnInit() {
   }
@@ -84,35 +96,127 @@ export class PresetModalComponent implements OnInit {
   }
 
   UpdatePresetInputs(inputName: string, checked: boolean) {
+    if(checked && !this.data.preset.inputs.includes(inputName)) {
+      this.data.preset.inputs.push(inputName);
+    }
 
+    if(!checked && this.data.preset.inputs.includes(inputName)) {
+      this.data.preset.inputs.splice(this.data.preset.inputs.indexOf(inputName), 1)
+    }
+
+    this.data.preset.inputs.sort(this.SortAlphaNum)
   } 
   
   UpdatePresetIndependents(audioName: string, checked: boolean) {
+    if(checked && !this.data.preset.independentAudioDevices.includes(audioName)) {
+      this.data.preset.independentAudioDevices.push(audioName);
+    }
 
+    if(!checked && this.data.preset.independentAudioDevices.includes(audioName)) {
+      this.data.preset.independentAudioDevices.splice(this.data.preset.independentAudioDevices.indexOf(audioName), 1)
+    }
+
+    this.data.preset.independentAudioDevices.sort(this.SortAlphaNum)
   }
 
   ToggleSharing(checked: boolean) {
+    if(this.data.currentPanels != null) {
+      for(let p of this.data.currentPanels) {
+        if(checked && !p.features.includes("share")) {
+          p.features.push("share")
+        }
+        if(!checked && p.features.includes("share")) {
+          p.features.splice(p.features.indexOf("share"))
+        }
 
+        p.features.sort(this.SortAlphaNum)
+      }
+    }
   }
 
   HasSharing(): boolean {
+    if(this.data.currentPanels != null) {
+      for(let p of this.data.currentPanels) {
+        if(p.features.includes("share")) {
+          return true
+        }
+      }
+    }   
     return false;
   }
 
   IsADisplay(displayName: string): boolean {
+    let device = this.dataService.GetDevice(this.data.config.id+"-"+displayName)
+
+    let dType = this.dataService.deviceTypeMap.get(device.type.id)
+
+    if(dType.tags.includes("display")) {
+      this.dataService.DeviceHasRole(device, "VideoOut")
+    }
+
     return false
   }
 
   IsAnAudioDevice(audioName: string): boolean {
+    let device = this.dataService.GetDevice(this.data.config.id+"-"+audioName)
+
+    let dType = this.dataService.deviceTypeMap.get(device.type.id)
+
+    if(dType.tags.includes("display")) {
+      this.dataService.DeviceHasRole(device, "AudioOut")
+    }
+
     return false
   }  
 
   IsAnIndependentAudio(audioName: string): boolean {
+    let device = this.dataService.GetDevice(this.data.config.id+"-"+audioName)
+
+    let dType = this.dataService.deviceTypeMap.get(device.type.id)
+
+    // if(dType.tags.includes("display")) {
+      this.dataService.DeviceHasRole(device, "Microphone")
+    // }
+
+    return false
+  }
+
+  RoomHasIndependentAudios(): boolean {
+    if(this.data.config == null || this.dataService.roomToDevicesMap.get(this.data.config.id) == null) {
+      return false
+    }
+
+    for(let dev of this.dataService.roomToDevicesMap.get(this.data.config.id)) {
+      if(this.dataService.DeviceHasRole(dev, "Microphone")) {
+        return true
+      }
+    }
+    
     return false
   }
 
   GetInputs(deviceType: DeviceType) {
+    return this.inputTypeMap.get(deviceType.id)
+  }
 
+  CreateInputTypeMap() {
+    if(this.data.config == null) {
+      return
+    }
+
+    this.inputTypeMap.clear();
+
+    for(let input of this.data.config.inputConfiguration) {
+      for(let dev of this.dataService.roomToDevicesMap.get(this.data.config.id)) {
+        if(dev.name === input.name && this.dataService.deviceTypeMap.get(dev.type.id).input) {
+          if(this.inputTypeMap.get(dev.type.id) == null) {
+            this.inputTypeMap.set(dev.type.id, [input]);
+          } else {
+            this.inputTypeMap.get(dev.type.id).push(input);
+          }
+        }
+      }
+    }
   }
 
   ChangeIcon(caller: any) {
