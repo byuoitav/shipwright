@@ -2,7 +2,6 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { Alert, RoomAlerts } from '../objects';
 import { StringsService } from './strings.service';
 import { SocketService } from './socket.service';
-import { APIService } from './api.service';
 import { DataService } from './data.service';
 
 @Injectable({
@@ -11,6 +10,7 @@ import { DataService } from './data.service';
 export class MonitoringService {
   roomAlertsMap: Map<string, RoomAlerts> = new Map();
   settingsChanged: EventEmitter<any>;
+  alertEmitter: EventEmitter<Alert>;
   panelCount: number = 1;
 
   CRITICAL = "critical"
@@ -18,6 +18,7 @@ export class MonitoringService {
 
   constructor(private text: StringsService, private socket: SocketService, private data: DataService) {
     this.settingsChanged = new EventEmitter();
+    this.alertEmitter = new EventEmitter();
     if(this.data.finished) {
       console.log("doing 1")
       this.RefreshAlerts();
@@ -42,7 +43,7 @@ export class MonitoringService {
           let ra = new RoomAlerts(a.roomID, [a])
           this.roomAlertsMap.set(a.roomID, ra);
         } else {
-          this.roomAlertsMap.get(a.roomID).alerts.push(a);
+          this.roomAlertsMap.get(a.roomID).AddAlert(a);
         }
       }
   }
@@ -56,8 +57,10 @@ export class MonitoringService {
           let ra = new RoomAlerts(alert.roomID, [alert])
           this.roomAlertsMap.set(alert.roomID, ra);
         } else {
-          this.roomAlertsMap.get(alert.roomID).alerts.push(alert);
+          this.roomAlertsMap.get(alert.roomID).AddAlert(alert);
         }
+
+        this.alertEmitter.emit(alert);
       }   
     });
   }
@@ -77,7 +80,7 @@ export class MonitoringService {
     this.roomAlertsMap.forEach((value, key) => {
       let matches = false
       
-      for(let alert of value.alerts) {
+      for(let alert of value.GetAlerts()) {
         if(alert.severity === severity) {
           matches = true
           break
