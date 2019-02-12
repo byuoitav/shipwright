@@ -4,14 +4,17 @@ import (
 	"context"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/byuoitav/central-event-system/hub/base"
 	"github.com/byuoitav/central-event-system/messenger"
 	"github.com/byuoitav/common"
 	"github.com/byuoitav/common/log"
+	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/v2/auth"
 	"github.com/byuoitav/common/v2/events"
 	"github.com/byuoitav/shipwright/actions"
+	"github.com/byuoitav/shipwright/couch"
 	"github.com/byuoitav/shipwright/state/cache"
 	"github.com/labstack/echo"
 
@@ -26,6 +29,11 @@ import (
 func main() {
 	figure.NewFigure("SMEE", "univers", true).Print()
 	log.SetLevel("info")
+
+	err := resetConfig(context.Background())
+	if err != nil {
+		log.L.Fatalf(err.Error())
+	}
 
 	port := ":9999"
 	router := common.NewRouter()
@@ -141,4 +149,18 @@ func processEvent(event events.Event) {
 
 	cache.GetCache("default").StoreAndForwardEvent(event)
 	actions.DefaultActionManager().EventStream <- event
+}
+
+func resetConfig(actionManagerCtx context.Context) *nerr.E {
+	log.L.Infof("Reseting config for shipwright")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err := couch.UpdateConfigFiles(ctx, "shipwright")
+	if err != nil {
+		return err.Addf("unable to reset config")
+	}
+
+	// then reset the action manager
+	return nil
 }
