@@ -8,40 +8,40 @@
         }
     },
     "then": [{
-            "do": "add-alert",
-            "with": {
-                "alertID": "hi",
-                "buildingID": "ITB",
-                "roomID": "ITB-1101",
-                "deviceID": "ITB-1101-D1",
-                "type": "missing heartbeat",
-                "msg log": ["something went wrong with {{.StaticDevice.DeviceID}}"],
-                "severity": "critical"
-            }
-        },
-        {
-            "do": "add-alert",
-            "with": {
-                "alertID": "1234",
-                "buildingID": "ITB",
-                "roomID": "ITB-1101",
-                "deviceID": "ITB-1101-CP1",
-                "type": "missing heartbeat",
-                "msg log": ["something went wrong with {{.StaticDevice.DeviceID}}"],
-                "severity": "warning"
-            }
-        },
-        {
-            "do": "add-alert",
-            "with": {
-                "alertID": "5678",
-                "buildingID": "HFAC",
-                "roomID": "HFAC-D400",
-                "deviceID": "HFAC-D400-VIA1",
-                "type": "missing heartbeat",
-                "msg log": ["something went wrong with {{.StaticDevice.DeviceID}}"],
-                "severity": "critical"
-            }
+        "do": "add-alert",
+        "with": {
+            "alertID": "hi",
+            "buildingID": "ITB",
+            "roomID": "ITB-1101",
+            "deviceID": "ITB-1101-D1",
+            "type": "missing heartbeat",
+            "msg log": ["something went wrong with {{.StaticDevice.DeviceID}}"],
+            "severity": "critical"
         }
+    },
+    {
+        "do": "add-alert",
+        "with": {
+            "alertID": "1234",
+            "buildingID": "ITB",
+            "roomID": "ITB-1101",
+            "deviceID": "ITB-1101-CP1",
+            "type": "missing heartbeat",
+            "msg log": ["something went wrong with {{.StaticDevice.DeviceID}}"],
+            "severity": "warning"
+        }
+    },
+    {
+        "do": "add-alert",
+        "with": {
+            "alertID": "5678",
+            "buildingID": "HFAC",
+            "roomID": "HFAC-D400",
+            "deviceID": "HFAC-D400-VIA1",
+            "type": "missing heartbeat",
+            "msg log": ["something went wrong with {{.StaticDevice.DeviceID}}"],
+            "severity": "critical"
+        }
+    }
     ]
 }]
