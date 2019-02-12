@@ -73,7 +73,7 @@ export class MonitoringService {
         toReturn.push(value)    
       })
       return toReturn.sort((a, b):number => {
-        return a.roomID.localeCompare(b.roomID);
+        return a!.roomID!.localeCompare(b!.roomID);
       });
     }
     
@@ -93,7 +93,7 @@ export class MonitoringService {
     });
 
     return toReturn.sort((a, b):number => {
-      return a.roomID.localeCompare(b.roomID);
+      return a!.roomID!.localeCompare(b.roomID);
     });
   }
 }

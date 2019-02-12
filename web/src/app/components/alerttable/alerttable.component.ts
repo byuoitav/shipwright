@@ -38,7 +38,7 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   
   constructor(public text: StringsService, public monitor: MonitoringService, public modal: ModalService) {
     this.monitor.alertEmitter.subscribe(alert => {
-      console.log(alert.roomID);
+      // console.log(alert.roomID);
       this.UpdateAlertData(alert.roomID);
     })
   }
