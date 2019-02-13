@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/byuoitav/common/db/couch"
@@ -18,6 +17,7 @@ import (
 
 // ConfigFile represents a generic config file for shipwright
 type ConfigFile struct {
+	ID   string          `json:"_id"`
 	Path string          `json:"path"`
 	File json.RawMessage `json:"contents"`
 }
@@ -113,20 +113,22 @@ func UpdateConfigFiles(ctx context.Context, db string) *nerr.E {
 // WriteFilesToDisk writes each of the config files to disk
 func WriteFilesToDisk(configs []ConfigFile) *nerr.E {
 	for _, config := range configs {
-		if len(config.Path) == 0 {
+		path := strings.TrimRight(config.Path, "/")
+		path = config.Path + "/" + config.ID
+
+		if len(path) == 0 {
 			continue
 		}
 
-		log.L.Infof("Writing new config file to %s", config.Path)
+		log.L.Infof("Writing new config file to %s", path)
 
 		// create dirs in case they don't exist
-		dir := filepath.Dir(config.Path)
-		err := os.MkdirAll(dir, 0775)
+		err := os.MkdirAll(config.Path, 0775)
 		if err != nil {
 			return nerr.Translate(err).Addf("unable to write %s to disk", config.Path)
 		}
 
-		f, err := os.Create(config.Path)
+		f, err := os.Create(path)
 		if err != nil {
 			return nerr.Translate(err).Addf("unable to write %s to disk", config.Path)
 		}
