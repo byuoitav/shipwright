@@ -10,8 +10,8 @@ import (
 	"go.uber.org/zap"
 )
 
-// AddAlert .
-func AddAlert(ctx context.Context, with []byte, log *zap.SugaredLogger) *nerr.E {
+// UpsertAlert .
+func UpsertAlert(ctx context.Context, with []byte, log *zap.SugaredLogger) *nerr.E {
 	alert := structs.Alert{}
 	err := then.FillStructFromTemplate(ctx, string(with), &alert)
 	if err != nil {
