@@ -2,6 +2,7 @@ package alertstore
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/byuoitav/common/log"
@@ -174,6 +175,11 @@ func (a *alertStore) resolveAlerts(resInfo structs.ResolutionInfo, alerts ...str
 				return err.Addf("couldn't resolve alert: %v", err.Error())
 			}
 
+			err = a.removeFromIndicies(v)
+			if err != nil {
+				return err.Addf("Problem removing alert from indicies: %v", err.Error())
+			}
+
 			//submit for persistence
 			persist.GetElkAlertPersist().StoreAlert(v, true)
 			toProcess = append(toProcess, v)
@@ -187,8 +193,29 @@ func (a *alertStore) resolveAlerts(resInfo structs.ResolutionInfo, alerts ...str
 	}
 
 	//we postpone the running of actions until the end to guarentee all alerts resolved as a group are cleared out of the cache before running logic on them.
-	for i := range toProcess {
-		a.runActions(toProcess[i])
+
+	if len(toProcess) > 0 {
+		alerts, err := a.getAlertListByIndex(toProcess[0].RoomID)
+		if err != nil {
+			log.L.Errorf("Couldn't get alerts by index: %v", err.Error())
+		}
+
+		curSev := fmt.Sprintf("%v", toProcess[0].Severity)
+		count := 0
+
+		for i := range alerts {
+			sev := ParseSeverityFromID(alerts[i])
+			if curSev == sev {
+				count++
+			}
+		}
+
+		//check the list for rooms with the same severity.
+
+		for i := range toProcess {
+			toProcess[i].ResolutionInfo.ResolutionHash = fmt.Sprintf("%v/%v", toProcess[i].ResolutionInfo.ResolutionHash, count)
+			a.runActions(toProcess[i])
+		}
 	}
 
 	return nil
@@ -260,6 +287,11 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 			log.L.Errorf("Couldn't save alert %v: %v", alert.AlertID, err.Error())
 			return
 		}
+		err = a.addToIndicies(v)
+		if err != nil {
+			log.L.Errorf("%v", err.Addf("Problem removing alert from indicies: %v", err.Error()))
+			return
+		}
 
 		alert = v
 
@@ -283,7 +315,13 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 		err := alertcache.GetAlertCache("default").PutAlert(alert)
 		if err != nil {
-			log.L.Errorf("Couldn't save alert %v: %v", alert.AlertID, err.Error())
+			log.L.Errorf("%v", "Couldn't save alert %v: %v", alert.AlertID, err.Error())
+			return
+		}
+
+		err = a.addToIndicies(alert)
+		if err != nil {
+			log.L.Errorf("%v", err.Addf("Problem removing alert from indicies: %v", err.Error()))
 			return
 		}
 
@@ -322,6 +360,9 @@ func (a *alertStore) runActions(alert structs.Alert) {
 	if a.actionManager != nil {
 		go func() {
 			acts := actions.DefaultConfig().GetActionsByTrigger("alert-change")
+
+			log.L.Debugf("Running %v alert change actions for alert %v", len(acts), alert.AlertID)
+
 			// a new context for the run of this action
 			actx := actionctx.PutAlert(context.Background(), alert)
 			for i := range acts {
@@ -335,6 +376,8 @@ func (a *alertStore) runInitActions(alert structs.Alert) {
 	if a.actionManager != nil {
 		go func() {
 			acts := actions.DefaultConfig().GetActionsByTrigger("alert-init")
+
+			log.L.Debugf("Running %v alert init actions for alert %v", len(acts), alert.AlertID)
 
 			// a new context for the run of this action
 			actx := actionctx.PutAlert(context.Background(), alert)
@@ -370,4 +413,19 @@ func (a *alertStore) handleRequest(req alertRequest) {
 			Alert: []structs.Alert{v},
 		}
 	}
+}
+
+func (a *alertStore) addToIndicies(alert structs.Alert) *nerr.E {
+	//for now we only care about a 'room' index
+	return alertcache.GetAlertCache("default").AddAlertToIndex(alert.RoomID, alert.AlertID)
+
+}
+
+func (a *alertStore) removeFromIndicies(alert structs.Alert) *nerr.E {
+	//for now we only care about a 'room' index
+	return alertcache.GetAlertCache("default").RemoveAlertFromIndex(alert.RoomID, alert.AlertID)
+}
+
+func (a *alertStore) getAlertListByIndex(indexID string) ([]string, *nerr.E) {
+	return alertcache.GetAlertCache("default").GetAlertsByIndex(indexID)
 }

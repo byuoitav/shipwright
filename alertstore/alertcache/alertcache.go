@@ -19,6 +19,11 @@ type AlertCache interface {
 	GetAllAlerts() ([]structs.Alert, *nerr.E)
 	PutAlert(structs.Alert) *nerr.E
 	DeleteAlert(string) *nerr.E
+
+	//IndexID must be in a separate namespace from the alertID's
+	GetAlertsByIndex(indexID string) ([]string, *nerr.E)
+	AddAlertToIndex(indexID string, AlertID string) *nerr.E
+	RemoveAlertFromIndex(indexID string, AlertID string) *nerr.E
 }
 
 var cacheinit = sync.Once{}
