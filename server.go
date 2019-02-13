@@ -30,10 +30,10 @@ func main() {
 	figure.NewFigure("SMEE", "univers", true).Print()
 	log.SetLevel("info")
 
-	// err := resetConfig(context.Background())
-	// if err != nil {
-	// 	log.L.Fatalf(err.Error())
-	// }
+	err := resetConfig(context.Background())
+	if err != nil {
+		log.L.Fatalf(err.Error())
+	}
 	port := ":9999"
 	router := common.NewRouter()
 

@@ -1,8 +1,9 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import { StaticService } from 'src/app/services/static.service';
-import { StaticDevice } from 'src/app/objects';
+import { StaticDevice, Device } from 'src/app/objects';
 import { DataService } from 'src/app/services/data.service';
+import { StringsService } from 'src/app/services/strings.service';
 
 export interface UserData {
   room: string;
@@ -28,19 +29,19 @@ export class StateComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(private ss: StaticService, private data: DataService) {
+  constructor(public ss: StaticService, public data: DataService, public text: StringsService) {
 
     if(this.ss.finished) {
       this.dataSource = new MatTableDataSource(this.ss.allStaticDevices)
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      console.log(this.ss.allStaticDevices);
+      // console.log(this.ss.allStaticDevices);
     } else {
       this.ss.loaded.subscribe(() => {
         this.dataSource = new MatTableDataSource(this.ss.allStaticDevices)
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-        console.log(this.ss.allStaticDevices);
+        // console.log(this.ss.allStaticDevices);
       })
     }
 
@@ -62,4 +63,29 @@ export class StateComponent implements OnInit {
       }
     }
   }
+
+  IsADisplay(deviceID: string): boolean {
+    let device = this.data.GetDevice(deviceID)
+
+    if(device != null && device.type != null) {
+      return this.data.DeviceHasRole(device, "VideoOut");
+    }
+
+    return false;
+  }
+
+  DisplayIsOn(deviceID: string): boolean {
+    let dRecord = this.ss.GetSingleStaticDevice(deviceID)
+
+    if(dRecord != null) {
+      if(dRecord.power === "on") {
+        return true
+      } else {
+        return false
+      }
+    }
+    
+    return false
+  }
+
 }

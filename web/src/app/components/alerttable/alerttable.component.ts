@@ -44,6 +44,9 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   }
 
   ngOnInit() {
+    if(!(this.data instanceof Array)) {
+      this.data = [this.data]
+    }
     // console.log(this.data);
     this.dataSource = new MatTableDataSource(this.data);
     this.dataSource.paginator = this.paginator;

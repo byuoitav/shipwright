@@ -13,7 +13,7 @@ import { ModalService } from 'src/app/services/modal.service';
   styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent implements OnInit {
-  roomAlerts: RoomAlerts[];
+  roomAlerts: RoomAlerts;
   deviceList: Device[] = [];
   filteredDevices: Device[] = [];
   deviceSearch: string;
@@ -25,12 +25,12 @@ export class SummaryComponent implements OnInit {
       
 
       if(this.data.finished) {
-        this.roomAlerts = [this.monitor.roomAlertsMap.get(this.roomID)]
+        this.roomAlerts = this.monitor.roomAlertsMap.get(this.roomID)
         this.deviceList = this.data.roomToDevicesMap.get(this.roomID)
         this.filteredDevices = this.deviceList;
       } else {
         this.data.loaded.subscribe(() => {
-          this.roomAlerts = [this.monitor.roomAlertsMap.get(this.roomID)]
+          this.roomAlerts = this.monitor.roomAlertsMap.get(this.roomID)
           this.deviceList = this.data.roomToDevicesMap.get(this.roomID)
           this.filteredDevices = this.deviceList;
         })
@@ -88,6 +88,6 @@ export class SummaryComponent implements OnInit {
       return null
     }
 
-    return this.roomAlerts[0]
+    return this.roomAlerts
   }
 }

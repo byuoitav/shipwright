@@ -1,31 +1,52 @@
-<p>
+<!-- <p>
     Respond Modal works!
-</p>
+</p> -->
+<section class="row spread">
+    <h2 class="mat-h2">Responding to alerts in {{ra.roomID}}</h2>
+</section>
 
-<section #send>
+<section #send class="row">
+    <button mat-raised-button color="primary" class="button">Help Sent!</button>
     <!-- <mat-form-field>
         <input matInput [matDatepicker]="sentHelpPicker" [(ngModel)]="sentHelpDate">
         <mat-datepicker-toggle matSuffix [for]="sentHelpPicker"></mat-datepicker-toggle>
         <mat-datepicker #sentHelpPicker></mat-datepicker>
     </mat-form-field> -->
-    <mat-form-field>
+    <mat-label>@</mat-label>
+    <mat-form-field class="time">
         <input type="time" matInput [(ngModel)]="sentTime">
     </mat-form-field>
-    <button mat-raised-button color="primary">Help Sent!</button>
+
 </section>
 
-<section #arrive>
+<section #arrive class="row">
+    <button mat-raised-button color="warn" class="button">Help Arrived!</button>
     <!-- <mat-form-field>
         <input matInput [matDatepicker]="helpArrivedPicker" [(ngModel)]="helpArrivedDate">
         <mat-datepicker-toggle matSuffix [for]="helpArrivedPicker"></mat-datepicker-toggle>
         <mat-datepicker #helpArrivedPicker></mat-datepicker>
     </mat-form-field> -->
-    <mat-form-field>
+    <mat-label>@</mat-label>
+    <mat-form-field class="time">
         <input type="time" matInput [(ngModel)]="arrivedTime">
     </mat-form-field>
-    <button mat-raised-button color="accent">Help Arrived!</button>
+
 </section>
 
-<section #resolve>
-    <button mat-raised-button>Resolve Alerts!</button>
+<section #resolve class="row">
+    <button mat-raised-button color="resolve" class="button resolve">Resolve Alerts!</button>
+    <mat-form-field class="alerts">
+        <mat-select multiple #fixedAlerts>
+            <mat-option *ngFor="let alert of ra.GetAlerts()">
+                {{alert.deviceID}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
 </section>
+
+<!-- <section #save>
+    <mat-action-row class="row spread">
+        <button mat-button class="button save">Save</button>
+        <button mat-button class="button cancel">Cancel</button>
+    </mat-action-row>
+</section> -->

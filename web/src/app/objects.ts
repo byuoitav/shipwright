@@ -41,7 +41,7 @@ export class ResolutionInfo {
     notes: string = undefined;
 
     @JsonProperty("resolved-at", DateConverter)
-    resolvedAt: Date = undefined;
+    resolvedAt: Date = new Date(0);
 }
 
 @JsonObject("Alert")
@@ -83,13 +83,13 @@ export class Alert {
     data: any = undefined;
 
     @JsonProperty("start-time", DateConverter)
-    startTime: Date = undefined;
+    startTime: Date = new Date(0);
 
     @JsonProperty("end-time", DateConverter)
-    endTime: Date = undefined;
+    endTime: Date = new Date(0);
 
     @JsonProperty("update-time", DateConverter)
-    updateTime: Date = undefined;
+    updateTime: Date = new Date(0);
 
     @JsonProperty("active", Boolean)
     active: boolean = true
@@ -101,10 +101,10 @@ export class Alert {
     responders: string[] = Array<string>();
 
     @JsonProperty("help-sent-at", DateConverter)
-    helpSentAt: Date = undefined;
+    helpSentAt: Date = new Date(0);
 
     @JsonProperty("help-arrived-at", DateConverter)
-    helpArrivedAt: Date = undefined;
+    helpArrivedAt: Date = new Date(0);
 
     @JsonProperty("resolution-info", ResolutionInfo)
     resolutionInfo: ResolutionInfo = undefined;
@@ -467,13 +467,13 @@ export class StaticDevice {
     hostname: string = undefined;
 
     @JsonProperty("last-state-received", DateConverter, true)
-    lastStateReceived: Date = undefined;
+    lastStateReceived: Date = new Date(0);
 
     @JsonProperty("last-heartbeat", DateConverter, true)
-    lastHeartbeat: Date = undefined;
+    lastHeartbeat: Date = new Date(0);
 
     @JsonProperty("last-user-input", DateConverter, true)
-    lastUserInput: Date = undefined;
+    lastUserInput: Date = new Date(0);
 
     @JsonProperty("device-type", String, true)
     deviceType: string = undefined;
@@ -622,7 +622,7 @@ export class StaticDevice {
     @JsonProperty("transmit-rf-power", String, true)
     transmitRFPower: string = undefined;
 
-    @JsonProperty("field-state-received", [String, DateConverter], true)
+    @JsonProperty("updateTimes", [String, DateConverter], true)
     updateTimes: Map<string, Date> = new Map();
 }
 
@@ -736,14 +736,14 @@ export class RoomAlerts{
     }
 
     SentIsZero(): boolean {
-        let date = new Date(0)
+        let zero = "0001-01-01T00:00:00.000Z"
 
-        return (this.sentDate.toISOString() === date.toISOString())
+        return (this.sentDate.toISOString() === zero)
     }
 
     ArriveIsZero(): boolean {
-        let date = new Date(0)
+        let zero = "0001-01-01T00:00:00.000Z"
 
-        return (this.arriveDate.toISOString() === date.toISOString())
+        return (this.arriveDate.toISOString() === zero)
     }
 }

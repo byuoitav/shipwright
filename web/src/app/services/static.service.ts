@@ -48,4 +48,20 @@ export class StaticService {
       this.finished = true;
     });
   }
+
+  GetSingleStaticDevice(deviceID: string) {
+    let roomID = deviceID.substring(0, deviceID.lastIndexOf("-"))
+
+    let roomRecords = this.roomToDeviceRecords.get(roomID)
+
+    if(roomRecords != null) {
+      for(let record of roomRecords) {
+        if(record.deviceID === deviceID) {
+          return record
+        }
+      }
+    }
+
+    return null
+  }
 }
