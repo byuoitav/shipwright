@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"strings"
 	"text/template"
 
 	"github.com/byuoitav/common/nerr"
@@ -51,7 +52,11 @@ func FillStructFromTemplate(ctx context.Context, tmpl string, fill interface{}) 
 		return nerr.Translate(gerr).Addf("failed to fill template")
 	}
 
-	gerr = json.Unmarshal(buf.Bytes(), fill)
+	// replace square brackets with curly braces
+	str := strings.Replace(buf.String(), "[[", "{{", -1)
+	str = strings.Replace(buf.String(), "]]", "}}", -1)
+
+	gerr = json.Unmarshal([]byte(str), fill)
 	if gerr != nil {
 		return nerr.Translate(gerr).Addf("failed to add template")
 	}
