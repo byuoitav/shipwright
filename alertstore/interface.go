@@ -71,7 +71,6 @@ func ResolveAlert(resInfo structs.ResolutionInfo, alertID string) *nerr.E {
 
 //Generates a 'Hash that is used to create new values'
 func ResolveAlertSet(resInfo structs.ResolutionInfo, alertIDs ...string) *nerr.E {
-
 	if len(alertIDs) < 1 {
 		return nerr.Create("Must include an alertID", "invalid-input")
 	}
@@ -88,4 +87,16 @@ func ResolveAlertSet(resInfo structs.ResolutionInfo, alertIDs ...string) *nerr.E
 
 	//resolve
 	return store.resolveAlertSet(resInfo, alertIDs...)
+}
+
+// AddTagToAlert .
+func AddTagToAlert(id string, tag string) *nerr.E {
+	/*
+		alert, err := store.getAlert(id)
+		if err != nil {
+			return err.Addf("failed to add tag to alert")
+		}
+	*/
+
+	return nil
 }

@@ -42,12 +42,6 @@ func init() {
 
 // Add .
 func Add(name string, f Func) {
-	/*
-		if thens.m == nil {
-			time.Sleep(1 * time.Second)
-		}
-	*/
-
 	// TODO check if the function already exists
 	thens.Lock()
 	thens.m[name] = f
