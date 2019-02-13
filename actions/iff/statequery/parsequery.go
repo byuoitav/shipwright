@@ -174,8 +174,6 @@ func ParseQuery(q string) (*QueryNode, *nerr.E) {
 				currentNode = curRoot
 			}
 		}
-
-		log.L.Infof("%v", cur)
 	}
 
 	if curRoot != nil {

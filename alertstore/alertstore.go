@@ -223,7 +223,7 @@ func (a *alertStore) resolveAlerts(resInfo structs.ResolutionInfo, alerts ...str
 
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
 func (a *alertStore) storeAlert(alert structs.Alert) {
-	log.L.Infof("Storing alert %v", alert.AlertID)
+	// log.L.Infof("Storing alert %v", alert.AlertID)
 	if alert.Resolved {
 		log.L.Errorf("Can't use storeAlert for resolved alerts: use resolveAlert")
 		return
