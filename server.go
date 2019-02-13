@@ -71,6 +71,7 @@ func main() {
 	read := router.Group("", auth.AuthorizeRequest("read-state", "room", auth.LookupResourceFromAddress))
 
 	router.POST("/test", handlers.Test)
+	router.GET("/actions", actions.DefaultActionManager().Info)
 
 	// Building Endpoints
 	write.POST("/buildings/:building", handlers.AddBuilding)
