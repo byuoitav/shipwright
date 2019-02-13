@@ -113,7 +113,6 @@ func (e *ElkPersist) start() {
 		select {
 
 		case <-tick.C:
-			log.L.Debugf("Tick. Sending Alert Persistence batch.")
 			e.sendUpdate()
 
 		case <-e.ReloadConfig:

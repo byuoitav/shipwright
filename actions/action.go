@@ -59,6 +59,8 @@ func (a *Action) Run(ctx context.Context) {
 		}
 
 		exec := func(c context.Context) {
+			a.Log.Infof("If checks passed --> Running %d thens", len(a.Then))
+
 			for i := range a.Then {
 				err := a.Then[i].Execute(c, a.Log)
 				if err != nil {

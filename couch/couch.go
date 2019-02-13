@@ -68,7 +68,6 @@ func UpdateConfigFiles(ctx context.Context, db string) *nerr.E {
 	uname := os.Getenv("COUCH_USERNAME")
 	pass := os.Getenv("COUCH_PASSWORD")
 	if len(uname) > 0 && len(pass) > 0 {
-		log.L.Infof("%v-%v", uname, pass)
 		req.SetBasicAuth(uname, pass)
 	}
 
@@ -114,6 +113,10 @@ func UpdateConfigFiles(ctx context.Context, db string) *nerr.E {
 // WriteFilesToDisk writes each of the config files to disk
 func WriteFilesToDisk(configs []ConfigFile) *nerr.E {
 	for _, config := range configs {
+		if len(config.Path) == 0 {
+			continue
+		}
+
 		log.L.Infof("Writing new config file to %s", config.Path)
 
 		// create dirs in case they don't exist

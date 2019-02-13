@@ -110,3 +110,15 @@ func ResolveAlertSet(resInfo structs.ResolutionInfo, alertIDs ...string) *nerr.E
 	//resolve
 	return store.resolveAlertSet(resInfo, alertIDs...)
 }
+
+// AddTagToAlert .
+func AddTagToAlert(id string, tag string) *nerr.E {
+	/*
+		alert, err := store.getAlert(id)
+		if err != nil {
+			return err.Addf("failed to add tag to alert")
+		}
+	*/
+
+	return nil
+}

@@ -53,7 +53,6 @@ func DefaultActionManager() *ActionManager {
 
 // Start starts the action manager
 func (a *ActionManager) Start(ctx context.Context) *nerr.E {
-	// var err *nerr.E
 	a.ctx = ctx
 	a.wg = &sync.WaitGroup{}
 	a.reqs = make(chan *ActionRequest, 1000)
