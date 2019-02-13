@@ -1,6 +1,9 @@
 package alertstore
 
 import (
+	"crypto/md5"
+	"fmt"
+
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/structs"
 )
@@ -21,7 +24,7 @@ func GetAllAlerts() ([]structs.Alert, *nerr.E) {
 func GetAllAlertsByRoom(roomID string) ([]structs.Alert, *nerr.E) {
 	toReturn := []structs.Alert{}
 
-	alerts, err := store.GetAllAlerts()
+	alerts, err := store.getAllAlerts()
 	if err != nil {
 		return toReturn, err.Addf("Couldn't get alerts by room.")
 	}
@@ -39,13 +42,13 @@ func GetAllAlertsByRoom(roomID string) ([]structs.Alert, *nerr.E) {
 func GetAllAlertsByIncident(incidentNumber string) ([]structs.Alert, *nerr.E) {
 	toReturn := []structs.Alert{}
 
-	alerts, err := store.GetAllAlerts()
+	alerts, err := store.getAllAlerts()
 	if err != nil {
 		return toReturn, err.Addf("Couldn't get alerts by incident number.")
 	}
 
 	for i := range alerts {
-		if alerts[i].IncidentNumber == incidentNumber {
+		if alerts[i].IncidentID == incidentNumber {
 			toReturn = append(toReturn, alerts[i])
 		}
 	}
@@ -60,9 +63,29 @@ func GetAlert(AlertID string) (structs.Alert, *nerr.E) {
 }
 
 /* ResolveAlert will close the alert id's provided with the resolution info provided.
- * The Function will also check to see if the batch of alerts contains all non-resolved alerts on a room. If it does not it will create a new incident to be attached to these alerts.
+ *
  */
-func ResolveAlerts(resInfo ResolutionInfo, alertIDs ...string) *nerr.E {
-	store.resolveAlertSet()
+func ResolveAlert(resInfo structs.ResolutionInfo, alertID string) *nerr.E {
+	return store.resolveAlertSet(resInfo, alertID)
+}
 
+//Generates a 'Hash that is used to create new values'
+func ResolveAlertSet(resInfo structs.ResolutionInfo, alertIDs ...string) *nerr.E {
+
+	if len(alertIDs) < 1 {
+		return nerr.Create("Must include an alertID", "invalid-input")
+	}
+
+	//generate the hash
+	if len(alertIDs) > 1 {
+		str := ""
+		for i := range alertIDs {
+			str += alertIDs[i]
+		}
+		hash := md5.Sum([]byte(str))
+		resInfo.ResolutionHash = fmt.Sprintf("%x %v", hash, len(alertIDs))
+	}
+
+	//resolve
+	return store.resolveAlertSet(resInfo, alertIDs...)
 }

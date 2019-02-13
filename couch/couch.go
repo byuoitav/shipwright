@@ -68,6 +68,7 @@ func UpdateConfigFiles(ctx context.Context, db string) *nerr.E {
 	uname := os.Getenv("COUCH_USERNAME")
 	pass := os.Getenv("COUCH_PASSWORD")
 	if len(uname) > 0 && len(pass) > 0 {
+		log.L.Infof("%v-%v", uname, pass)
 		req.SetBasicAuth(uname, pass)
 	}
 

@@ -24,6 +24,7 @@ type CouchCache struct {
 //ElkCache .
 type ElkCache struct {
 	DeviceIndex string `json:"device-index"`
+	RoomIndex   string `json:"room-index"`
 	URL         string `json:"url"`
 }
 

@@ -8,9 +8,7 @@ import (
 	"github.com/byuoitav/common/nerr"
 	sd "github.com/byuoitav/common/state/statedefinition"
 	"github.com/byuoitav/common/v2/events"
-	"github.com/byuoitav/shipwright/config"
 	"github.com/byuoitav/shipwright/state/cache/shared"
-	"github.com/byuoitav/shipwright/state/forwarding"
 	"github.com/robfig/cron"
 )
 
@@ -136,17 +134,7 @@ func (c *Memorycache) CheckAndStoreDevice(device sd.StaticDevice) (bool, sd.Stat
 		return false, sd.StaticDevice{}, resp.Error.Addf("Couldn't store device %v.", device)
 	}
 
-	if resp.Changes {
-		list := forwarding.GetManagersForType(c.cacheType, config.DEVICE, config.DELTA)
-		for i := range list {
-			list[i].Send(resp.NewDevice)
-		}
-
-		list = forwarding.GetManagersForType(c.cacheType, config.DEVICE, config.ALL)
-		for i := range list {
-			list[i].Send(resp.NewDevice)
-		}
-	}
+	shared.ForwardDevice(resp.NewDevice, resp.Changes, c)
 
 	return resp.Changes, resp.NewDevice, nil
 }
@@ -194,6 +182,8 @@ func (c *Memorycache) CheckAndStoreRoom(room sd.StaticRoom) (bool, sd.StaticRoom
 	if resp.Error != nil {
 		return false, sd.StaticRoom{}, resp.Error.Addf("Couldn't store room %v.", room)
 	}
+
+	shared.ForwardRoom(resp.NewRoom, resp.Changes, c)
 
 	return resp.Changes, resp.NewRoom, nil
 }
