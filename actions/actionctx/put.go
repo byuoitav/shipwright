@@ -15,6 +15,7 @@ const (
 	staticDevice
 	staticDevices
 	alert
+	alertSet
 )
 
 // PutEvent puts an event into ctx
@@ -35,4 +36,9 @@ func PutStaticDevice(ctx context.Context, v statedefinition.StaticDevice) contex
 // PutAlert puts an event into ctx
 func PutAlert(ctx context.Context, v structs.Alert) context.Context {
 	return context.WithValue(ctx, alert, v)
+}
+
+// PutAlertSet puts an event into ctx
+func PutAlertSet(ctx context.Context, v []structs.Alert) context.Context {
+	return context.WithValue(ctx, alertSet, v)
 }

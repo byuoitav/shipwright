@@ -19,6 +19,7 @@ type BufferManager interface {
 var managerMap map[string][]BufferManager
 
 func init() {
+	pre, _ := log.GetLevel()
 	log.SetLevel("info")
 	log.L.Infof("Initializing buffer managers")
 	c := config.GetConfig()
@@ -64,6 +65,7 @@ func init() {
 	}
 
 	log.L.Infof("Buffer managers initialized")
+	log.SetLevel(pre)
 }
 
 //GetManagersForType a
@@ -71,7 +73,7 @@ func GetManagersForType(cacheName, dataType, eventType string) []BufferManager {
 	log.L.Debugf("Getting %s managers for %v-%v", cacheName, dataType, eventType)
 	v, ok := managerMap[fmt.Sprintf("%s-%s-%s", cacheName, dataType, eventType)]
 	if !ok {
-		log.L.Errorf("Unknown manager type: %v", fmt.Sprintf("%s-%s-%s", cacheName, dataType, eventType))
+		log.L.Debugf("Unknown manager type: %v", fmt.Sprintf("%s-%s-%s", cacheName, dataType, eventType))
 		return []BufferManager{}
 	}
 	return v

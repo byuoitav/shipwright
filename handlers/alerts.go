@@ -32,7 +32,7 @@ func ResolveAlert(context echo.Context) error {
 		return context.JSON(http.StatusBadRequest, err)
 	}
 
-	ne := alertstore.ResolveAlert(alertID, resolution)
+	ne := alertstore.ResolveAlert(resolution, alertID)
 	if ne != nil {
 		log.L.Errorf("failed to resolve alert: %s", ne.Error())
 		return context.JSON(http.StatusBadRequest, err)

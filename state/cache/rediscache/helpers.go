@@ -126,8 +126,10 @@ func (rc *RedisCache) getRoom(id string) (sd.StaticRoom, *nerr.E) {
 	var curRoom sd.StaticRoom
 	by, err := rc.roomclient.Get(id).Bytes()
 	if err == redis.Nil {
+		var er *nerr.E
 		//device doesn't exist - we can create a new one
-		curRoom, er := shared.GetNewRoom(id)
+		log.L.Debugf("Getting new room: %v", id)
+		curRoom, er = shared.GetNewRoom(id)
 		if er != nil {
 			log.L.Errorf("Couldn't generate new room from ID: %v", id)
 			return curRoom, er.Addf("Couldn't get room %v", id)
