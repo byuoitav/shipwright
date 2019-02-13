@@ -1,3 +1,31 @@
 <p>
     Respond Modal works!
 </p>
+
+<section #send>
+    <!-- <mat-form-field>
+        <input matInput [matDatepicker]="sentHelpPicker" [(ngModel)]="sentHelpDate">
+        <mat-datepicker-toggle matSuffix [for]="sentHelpPicker"></mat-datepicker-toggle>
+        <mat-datepicker #sentHelpPicker></mat-datepicker>
+    </mat-form-field> -->
+    <mat-form-field>
+        <input type="time" matInput [(ngModel)]="sentTime">
+    </mat-form-field>
+    <button mat-raised-button color="primary">Help Sent!</button>
+</section>
+
+<section #arrive>
+    <!-- <mat-form-field>
+        <input matInput [matDatepicker]="helpArrivedPicker" [(ngModel)]="helpArrivedDate">
+        <mat-datepicker-toggle matSuffix [for]="helpArrivedPicker"></mat-datepicker-toggle>
+        <mat-datepicker #helpArrivedPicker></mat-datepicker>
+    </mat-form-field> -->
+    <mat-form-field>
+        <input type="time" matInput [(ngModel)]="arrivedTime">
+    </mat-form-field>
+    <button mat-raised-button color="accent">Help Arrived!</button>
+</section>
+
+<section #resolve>
+    <button mat-raised-button>Resolve Alerts!</button>
+</section>

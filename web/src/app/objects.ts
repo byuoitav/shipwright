@@ -117,6 +117,18 @@ export class Alert {
 
     @JsonProperty("device-tags", [String], true)
     deviceTags: string[] = Array<string>();
+
+    SentIsZero(): boolean {
+        let date = new Date(0)
+
+        return (this.helpSentAt.toISOString() === date.toISOString())
+    }
+
+    ArriveIsZero(): boolean {
+        let date = new Date(0)
+
+        return (this.helpArrivedAt.toISOString() === date.toISOString())
+    }
 }
 
 @JsonObject("Building")
@@ -610,7 +622,7 @@ export class StaticDevice {
     @JsonProperty("transmit-rf-power", String, true)
     transmitRFPower: string = undefined;
 
-    // @JsonProperty("field-state-received", [String, DateConverter], true)
+    @JsonProperty("field-state-received", [String, DateConverter], true)
     updateTimes: Map<string, Date> = new Map();
 }
 
@@ -663,6 +675,8 @@ export class RoomAlerts{
     expanded: boolean = false;
     helpSent: boolean = false;
     helpArrived: boolean = false;
+    sentDate: Date = new Date(0);
+    arriveDate: Date = new Date(0);
 
     constructor(roomID?: string, alertList?: Alert[]) {
         if(roomID != null && roomID.length > 0) {
@@ -690,6 +704,14 @@ export class RoomAlerts{
                     this.systemTypeIcon = PI_ICON
                 }
 
+                if(!a.SentIsZero()) {
+                    this.sentDate = a.helpSentAt
+                }
+
+                if(!a.ArriveIsZero()) {
+                    this.arriveDate = a.helpArrivedAt
+                }
+
                 this.map.set(a.alertID, a);
             }
         }
@@ -711,5 +733,17 @@ export class RoomAlerts{
         for(let alert of aList) {
             this.map.set(alert.alertID, alert);
         }
+    }
+
+    SentIsZero(): boolean {
+        let date = new Date(0)
+
+        return (this.sentDate.toISOString() === date.toISOString())
+    }
+
+    ArriveIsZero(): boolean {
+        let date = new Date(0)
+
+        return (this.arriveDate.toISOString() === date.toISOString())
     }
 }

@@ -55,6 +55,8 @@ func DefaultActionManager() *ActionManager {
 func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 	// var err *nerr.E
 	a.ctx = ctx
+	a.wg = &sync.WaitGroup{}
+	a.reqs = make(chan *ActionRequest, 1000)
 
 	if a.Config == nil {
 		a.Config = DefaultConfig()
@@ -66,32 +68,8 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 
 	log.L.Infof("Starting action manager with %d workers", a.Workers)
 
-	/*
-		if a.Messenger == nil {
-			err := &nerr.E{}
-
-			// connect to the hub
-			a.Messenger, err = messenger.BuildMessenger(os.Getenv("HUB_ADDRESS"), base.Messenger, 1000)
-			if err != nil {
-				return err.Addf("failed to start action manager")
-			}
-
-			a.Messenger.SubscribeToRooms("ITB-1010")
-				go func() {
-					for {
-									event := a.Messenger.ReceiveEvent()
-								a.EventStream <- event
-					}
-				}()
-		}
-	*/
-
-	a.reqs = make(chan *ActionRequest, 1000)
-
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel() // clean up resources if the action manager ever exits
-
-	a.wg = &sync.WaitGroup{}
 
 	for i := range a.Config.Actions {
 		a.ManageAction(a.Config.Actions[i])

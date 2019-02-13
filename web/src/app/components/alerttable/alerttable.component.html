@@ -13,7 +13,7 @@
 
         <ng-container matColumnDef="roomID">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Room ID </th>
-            <td mat-cell *matCellDef="let ra">{{ra.roomID}}</td>
+            <td mat-cell *matCellDef="let ra"><button mat-button routerLink="/configuration/{{ra.roomID}}/roompage">{{ra.roomID}}</button></td>
         </ng-container>
 
         <ng-container matColumnDef="alertCount">

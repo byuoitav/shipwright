@@ -132,7 +132,9 @@ func (rc *RedisCache) CheckAndStoreDevice(device sd.StaticDevice) (bool, sd.Stat
 		}
 	}
 
-	return changes, merged, nil
+	err = shared.ForwardDevice(merged, changes, rc)
+
+	return changes, merged, err
 }
 
 func (rc *RedisCache) CheckAndStoreRoom(room sd.StaticRoom) (bool, sd.StaticRoom, *nerr.E) {
@@ -140,17 +142,19 @@ func (rc *RedisCache) CheckAndStoreRoom(room sd.StaticRoom) (bool, sd.StaticRoom
 	v.Lock()
 	defer v.Unlock()
 
+	log.L.Debugf("checking and storing room %v", room)
 	rm, err := rc.getRoom(room.RoomID)
 	if err != nil {
 		return false, rm, err.Addf("Couldn't check and store room")
 	}
+	log.L.Debugf("got room: %v", rm)
 
 	_, merged, changes, err := sd.CompareRooms(rm, room)
 	if err != nil {
 		return false, rm, err.Addf("Couldn't check and store room")
 	}
 
-	return false, sd.StaticRoom{}, nil
+	log.L.Debugf("changes: %v, Room: %+v", changes, merged)
 
 	if changes {
 		err := rc.putRoom(merged)
@@ -159,7 +163,9 @@ func (rc *RedisCache) CheckAndStoreRoom(room sd.StaticRoom) (bool, sd.StaticRoom
 		}
 	}
 
-	return changes, merged, nil
+	err = shared.ForwardRoom(merged, changes, rc)
+
+	return changes, merged, err
 
 }
 

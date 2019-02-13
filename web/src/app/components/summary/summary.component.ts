@@ -82,4 +82,12 @@ export class SummaryComponent implements OnInit {
   GoBack() {
     window.history.back();
   }
+
+  GetRoomAlerts() {
+    if(this.roomAlerts == null) {
+      return null
+    }
+
+    return this.roomAlerts[0]
+  }
 }
