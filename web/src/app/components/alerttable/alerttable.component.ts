@@ -1,11 +1,12 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { IDashPanel } from '../dashpanel/idashpanel';
-import { RoomAlerts, Room } from 'src/app/objects';
+import { RoomAlerts, Room, Alert } from 'src/app/objects';
 import { MonitoringService } from 'src/app/services/monitoring.service';
 import { MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
 import { ModalService } from 'src/app/services/modal.service';
 import {animate, state, style, transition, trigger} from '@angular/animations';
+import { merge } from 'rxjs';
 
 @Component({
   selector: 'alert-table',
@@ -31,9 +32,15 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
+  alertDataMap: Map<string, MatTableDataSource<Alert>> = new Map();
+
   private serviceNowURL: string = "https://it.byu.edu/incident.do?sysparm_query=number="
   
-  constructor(public text: StringsService, public monitor: MonitoringService, public modal: ModalService) { 
+  constructor(public text: StringsService, public monitor: MonitoringService, public modal: ModalService) {
+    this.monitor.alertEmitter.subscribe(alert => {
+      // console.log(alert.roomID);
+      this.UpdateAlertData(alert.roomID);
+    })
   }
 
   ngOnInit() {
@@ -58,14 +65,24 @@ export class AlertTableComponent implements OnInit, IDashPanel {
     }
   }
 
-  GetAlertTypes(alertRow: Room) {
+  GetAlertData(ra: RoomAlerts) {
+    if(this.alertDataMap.get(ra.roomID) == null) {
+      this.alertDataMap.set(ra.roomID, new MatTableDataSource(ra.GetAlerts()));
+    } 
 
+    return this.alertDataMap.get(ra.roomID)
+  }
+
+  UpdateAlertData(roomID: string) {
+    let ra = this.monitor.roomAlertsMap.get(roomID)
+
+    this.alertDataMap.set(ra.roomID, new MatTableDataSource(ra.GetAlerts()));
   }
 
   GetAlertCount(ra: RoomAlerts) {
     let count = 0;
 
-    for(let alert of ra.alerts) {
+    for(let alert of ra.GetAlerts()) {
       if(alert.severity === this.chosenSeverity) {
         count++;
       }

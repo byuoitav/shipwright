@@ -30,13 +30,13 @@
 
     <section class="heading">
         <h2 class="mat-h2">Displays</h2>
-        <mat-slide-toggle #sharing (change)="ToggleSharing($event.checked)" [checked]="HasSharing()" [disabled]="uipath == '/cherry'">{{text.Sharing[HasSharing()]}}</mat-slide-toggle>
+        <mat-slide-toggle #sharing (change)="ToggleSharing($event.checked)" [checked]="HasSharing()" [disabled]="uipath == '/cherry'">{{text.Sharing[sharing.checked]}}</mat-slide-toggle>
     </section>
 
     <section class="checkboxes">
         <mat-label>Displays Controlled:</mat-label>
         <div class="displays">
-            <div *ngFor="let out of data?.config.outputConfiguration" class="display-check">
+            <div *ngFor="let out of data?.config.outputConfiguration" class="display">
                 <ng-container *ngIf="IsADisplay(out.name)">
                     <mat-checkbox [checked]="data?.preset?.displays?.includes(out.name)" (change)="UpdatePresetDisplays(out.name, $event.checked)">{{out.name}}</mat-checkbox>
                     <ng-container *ngIf="uipath == '/cherry'">
@@ -51,7 +51,7 @@
     <section class="checkboxes">
         <mat-label>Audio Devices:</mat-label>
         <div class="displays">
-            <div *ngFor="let out of data.config.outputConfiguration" class="display-check">
+            <div *ngFor="let out of data.config.outputConfiguration" class="display">
                 <mat-checkbox *ngIf="IsAnAudioDevice(out.name)" [checked]="data?.preset?.audioDevices?.includes(out.name)" (change)="UpdatePresetAudioDevices(out.name, $event.checked)">{{out.name}}</mat-checkbox>
             </div>
         </div>
