@@ -50,8 +50,6 @@ func (c *Memorycache) StoreAndForwardEvent(v events.Event) (bool, *nerr.E) {
 	Defer use to CheckAndStoreDevice for internal use, as there are significant speed gains.
 */
 func (c *Memorycache) StoreDeviceEvent(toSave sd.State) (bool, sd.StaticDevice, *nerr.E) {
-	//	log.SetLevel("info")
-	//	defer log.SetLevel("warn")
 	if len(toSave.ID) < 1 {
 		return false, sd.StaticDevice{}, nerr.Create("State must include device ID", "invaid-parameter")
 	}

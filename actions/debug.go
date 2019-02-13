@@ -24,3 +24,8 @@ func (a *ActionManager) Info(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, info)
 }
+
+// ActionsByTrigger .
+func (c *ActionConfig) ActionsByTrigger(ctx echo.Context) error {
+	return ctx.JSON(http.StatusOK, c.GetActionsByTrigger(ctx.Param("trigger")))
+}

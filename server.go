@@ -27,8 +27,8 @@ import (
 )
 
 func main() {
-	figure.NewFigure("SMEE", "univers", true).Print()
 	log.SetLevel("info")
+	figure.NewFigure("SMEE", "univers", true).Print()
 
 	err := resetConfig(context.Background())
 	if err != nil {
@@ -72,6 +72,7 @@ func main() {
 
 	router.POST("/test", handlers.Test)
 	router.GET("/actions", actions.DefaultActionManager().Info)
+	router.GET("/actions/trigger/:trigger", actions.DefaultActionManager().Config.ActionsByTrigger)
 
 	// Building Endpoints
 	write.POST("/buildings/:building", handlers.AddBuilding)

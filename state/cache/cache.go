@@ -9,13 +9,11 @@ import (
 var Caches map[string]shared.Cache
 
 func init() {
-	pre, _ := log.GetLevel()
-	log.SetLevel("info")
 	log.L.Infof("Initializing Caches")
 	//start
 	InitializeCaches()
+
 	log.L.Infof("Caches Initialized.")
-	log.SetLevel(pre)
 }
 
 //GetCache .
