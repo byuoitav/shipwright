@@ -171,7 +171,7 @@ func (a *alertStore) resolveAlerts(resInfo structs.ResolutionInfo, alerts ...str
 
 			err := alertcache.GetAlertCache("default").DeleteAlert(alerts[i])
 			if err != nil {
-				return err.Addf("couldn't resolve alert: %v")
+				return err.Addf("couldn't resolve alert: %v", err.Error())
 			}
 
 			//submit for persistence

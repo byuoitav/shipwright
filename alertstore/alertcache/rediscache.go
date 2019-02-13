@@ -114,6 +114,10 @@ func (r *RedisAlertCache) GetAllAlerts() ([]structs.Alert, *nerr.E) {
 		return toReturn, err.Addf("couldn't get all alerts")
 	}
 
+	if len(keys) < 1 {
+		return toReturn, nil
+	}
+
 	result, er := r.c.MGet(keys...).Result()
 	if er != nil {
 		return toReturn, nerr.Translate(er).Addf("Couldn't get all alerts")
