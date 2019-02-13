@@ -1,0 +1,60 @@
+[
+  {
+    "name": "system-offline-add-alert",
+    "trigger": "interval:60s",
+    "if": {
+      "state-query": {
+        "cache-name": "default",
+        "query": "device-type=='control-processor' && last-heartbeat < '-2m'"
+      }
+    },
+    "then": [
+      {
+        "do": "upsert-alert",
+        "with": {
+          "buildingID": "{{.Event.TargetDevice.BuildingID}}",
+          "roomID": "{{.Event.TargetDevice.RoomID}}",
+          "deviceID": "{{.Event.TargetDevice.DeviceID}}",
+          "type": "System Offline",
+          "category": "System",
+          "severity": "Critical",
+          "message": "{{.Event.TargetDevice.DeviceID}} has not reported a heartbeat for 2 minutes",
+          "data": "{{.Event.Data}}",
+          "active": true
+        }
+      }
+    ]
+  },
+  {
+    "name": "system-offline-alert-init",
+    "trigger": "alert-init",
+    "if": { "alert-match": { "type": "System Offline" } },
+    "then": [
+      {
+        "do": "add-action",
+        "with": {
+          "name": "system-online-{{.Alert.DeviceID}}",
+          "trigger": "interval:30s",
+          "if": {
+            "state-query": {
+              "cache-name": "default",
+              "query": "device-type=='control-processor' && last-heartbeat > '-2m'"
+            }
+          },
+          "then": [
+            {
+              "do": "upsert-alert",
+              "with": {
+                "deviceID": "[[.Event.TargetDevice.DeviceID]]",
+                "type": "System Offline",
+                "category": "System",
+                "active": false,
+                "message": "[[.Event.TargetDevice.DeviceID]] has reported a heartbeat"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,56 @@
+[
+  {
+    "name": "touchpanel-offline-add-alert",
+    "trigger": "event",
+    "if": { "event-match": { "key": "TP_Online", "value": "Offline" } },
+    "then": [
+      {
+        "do": "upsert-alert",
+        "with": {
+          "buildingID": "{{.Event.TargetDevice.BuildingID}}",
+          "roomID": "{{.Event.TargetDevice.RoomID}}",
+          "deviceID": "{{.Event.TargetDevice.DeviceID}}",
+          "type": "Touchpanel Offline",
+          "category": "System",
+          "severity": "Critical",
+          "message": "{{.Event.TargetDevice.DeviceID}} is reporting a touch panel offline",
+          "data": "{{.Event.Data}}",
+          "active": true
+        }
+      }
+    ]
+  },
+  {
+    "name": "touchpanel-offline-alert-init",
+    "trigger": "alert-init",
+    "if": { "alert-match": { "type": "Touchpanel Offline" } },
+    "then": [
+      {
+        "do": "add-action",
+        "with": {
+          "name": "touchpanel-online-{{.Alert.DeviceID}}",
+          "trigger": "event",
+          "if": {
+            "event-match": {
+              "key": "TP_Online",
+              "value": "Online",
+              "target-device": { "deviceID": "{{.Alert.DeviceID}}" }
+            }
+          },
+          "then": [
+            {
+              "do": "upsert-alert",
+              "with": {
+                "deviceID": "[[.Event.TargetDevice.DeviceID]]",
+                "type": "Touchpanel Offline",
+                "category": "System",
+                "active": false,
+                "message": "[[.Event.TargetDevice.DeviceID]] Touchpanel Offline signal has cleared"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

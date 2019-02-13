@@ -114,7 +114,7 @@ func UpdateConfigFiles(ctx context.Context, db string) *nerr.E {
 func WriteFilesToDisk(configs []ConfigFile) *nerr.E {
 	for _, config := range configs {
 		path := strings.TrimRight(config.Path, "/")
-		path = config.Path + "/" + config.ID
+		path = path + "/" + config.ID
 
 		if len(path) == 0 {
 			continue
