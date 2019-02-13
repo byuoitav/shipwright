@@ -8,24 +8,20 @@
     <div class="mat-elevation-z8">
       <table mat-table [dataSource]="dataSource" matSort>
 
-        <ng-container matColumnDef="buildingID">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Buidling ID </th>
-          <td mat-cell *matCellDef="let row"> {{row.buildingID}} </td>
+        <ng-container matColumnDef="room">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Room ID </th>
+          <td mat-cell *matCellDef="let row"> {{row.room}} </td>
         </ng-container>
 
-        <ng-container matColumnDef="progress">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Progress </th>
-          <td mat-cell *matCellDef="let row"> {{row.progress}}% </td>
+        <ng-container matColumnDef="alerts">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Alerts </th>
+          <td mat-cell *matCellDef="let row"> {{row.alerts}} </td>
         </ng-container>
 
-        <ng-container matColumnDef="device">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Device </th>
-          <td mat-cell *matCellDef="let row"> {{row.device}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="color">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Color </th>
-          <td mat-cell *matCellDef="let row" [style.color]="row.color"> {{row.color}} </td>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+          <td mat-cell *matCellDef="let row"> {{row.status}} </td>
+          <button mat-icon-button *ngIf="IsADisplay(device)" [ngClass]="DisplayIsOn(device) ? 'display on' : 'display icon'"><mat-icon>{{text.DefaultIcons[device?.type.id]}}</mat-icon></button>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -48,24 +44,19 @@
     <div class="mat-elevation-z8">
       <table mat-table [dataSource]="dataSource" matSort>
 
-        <ng-container matColumnDef="buildingID">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Building ID </th>
-          <td mat-cell *matCellDef="let row"> {{row.buildingID}} </td>
+        <ng-container matColumnDef="room">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Room </th>
+          <td mat-cell *matCellDef="let row"> {{row.room}} </td>
         </ng-container>
 
-        <ng-container matColumnDef="progress">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Progress </th>
-          <td mat-cell *matCellDef="let row"> {{row.progress}}% </td>
+        <ng-container matColumnDef="alerts">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Alerts </th>
+          <td mat-cell *matCellDef="let row"> {{row.alerts}} </td>
         </ng-container>
 
-        <ng-container matColumnDef="device">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Device </th>
-          <td mat-cell *matCellDef="let row"> {{row.device}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="color">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Color </th>
-          <td mat-cell *matCellDef="let row" [style.color]="row.color"> {{row.color}} </td>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> status </th>
+          <td mat-cell *matCellDef="let row"> {{row.status}} </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

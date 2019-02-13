@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { StringsService } from './strings.service';
 import { APIService } from './api.service';
 import { StaticDevice } from '../objects';
@@ -10,8 +10,12 @@ import { DataService } from './data.service';
 export class StaticService {
   allStaticDevices: StaticDevice[] = [];
   roomToDeviceRecords: Map<string, StaticDevice[]> = new Map();
+  
+  loaded: EventEmitter<boolean>;
+  finished: boolean = false;
 
   constructor(private text: StringsService, private api: APIService, private data: DataService) {
+    this.loaded = new EventEmitter<boolean>();
     if(this.data.finished) {
       this.GetStaticDevices()
     } else {
@@ -40,6 +44,8 @@ export class StaticService {
           }
         }
       }
+      this.loaded.emit(true);
+      this.finished = true;
     });
   }
 }
