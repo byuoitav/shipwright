@@ -1,14 +1,15 @@
 <!-- <p>
     summary works!
 </p> -->
-<!-- <div class="container-full"> -->
+<!-- <div class="container-full"> 
+    *ngIf="roomAlerts != null && GetRoomAlerts() != null"-->
 
 <div class="base">
 
     <div class="container">
         <section class="row">
-            <button mat-raised-button *ngIf="roomAlerts != null && GetRoomAlerts() != null" [disabled]="roomAlerts[0]?.helpSent" color="warn" (click)="modal.OpenRespondModal(roomAlerts[0])">Dispatch Help</button>
-            <button mat-stroked-button *ngIf="roomAlerts == null || GetRoomAlerts() == null" [disabled]="true">No alerts!</button>
+            <button mat-raised-button [disabled]="roomAlerts[0]?.helpSent" color="warn" (click)="modal.OpenRespondModal(roomAlerts[0])">Dispatch Help</button>
+            <!-- <button mat-stroked-button *ngIf="roomAlerts == null || GetRoomAlerts() == null" [disabled]="true">No alerts!</button> -->
         </section>
         <alert-table *ngIf="GetRoomAlerts() != null" [data]="roomAlerts" [singleRoom]="true" [expRoomAlerts]="GetRoomAlerts()"></alert-table>
     </div>
