@@ -24,12 +24,12 @@ type EventMatch struct {
 	AffectedRoom     struct {
 		BuildingID string `json:"buildingID,omitempty"`
 		RoomID     string `json:"roomID,omitempty"`
-	} `json:"target-device"`
+	} `json:"affected-room"`
 	TargetDevice struct {
 		BuildingID string `json:"buildingID,omitempty"`
 		RoomID     string `json:"roomID,omitempty"`
 		DeviceID   string `json:"deviceID,omitempty"`
-	} `json:"affected-room"`
+	} `json:"target-device"`
 
 	Regex struct {
 		GeneratingSystem *regexp.Regexp
