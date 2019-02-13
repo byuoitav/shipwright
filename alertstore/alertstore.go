@@ -17,7 +17,7 @@ import (
 type alertStore struct {
 	inChannel         chan structs.Alert
 	requestChannel    chan alertRequest
-	resolutionChannel chan alertRequest
+	resolutionChannel chan resolutionRequest
 
 	store         map[string]structs.Alert
 	actionManager *actions.ActionManager
@@ -49,7 +49,7 @@ func InitializeAlertStore(a *actions.ActionManager) {
 	store = &alertStore{
 		inChannel:         make(chan structs.Alert, 1000),
 		requestChannel:    make(chan alertRequest, 1000),
-		resolutionChannel: make(chan alertRequest, 1000),
+		resolutionChannel: make(chan resolutionRequest, 1000),
 		store:             map[string]structs.Alert{},
 		actionManager:     a,
 	}
@@ -88,9 +88,9 @@ func (a *alertStore) putAlert(alert structs.Alert) (string, *nerr.E) {
 	return alert.AlertID, nil
 }
 
-func (a *alertStore) resolveAlertSet(resolutionInfo string, alertIDs ...string) *nerr.E {
+func (a *alertStore) resolveAlertSet(resolutionInfo structs.ResolutionInfo, alertIDs ...string) *nerr.E {
 
-	a.ResolutionChannel <- resolutionRequest{
+	a.resolutionChannel <- resolutionRequest{
 		Alerts:         alertIDs,
 		ResolutionInfo: resolutionInfo,
 	}
@@ -146,23 +146,21 @@ func (a *alertStore) run() {
 		case req := <-a.requestChannel:
 			a.handleRequest(req)
 		case req := <-a.resolutionChannel:
-			a.handleRequest(req)
+			a.resolveAlerts(req.ResolutionInfo, req.Alerts...)
 		}
 	}
 }
 
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
-func (a *alertStore) resolveAlertSet(alerts ...string, resInfo structs.ResolutionInfo) *nerr.E {
+func (a *alertStore) resolveAlerts(resInfo structs.ResolutionInfo, alerts ...string) *nerr.E {
 
-	log.L.Infof("Resolving alerts %v", alertID)
+	log.L.Infof("Resolving alerts %v", alerts)
 
 	//we remove it from the store, and ship it off to the persistance stuff.
 	//we should check to see if it already exists
+	toProcess := []structs.Alert{}
 
-	alertsToProcess := []structs.Alert{}
-
-	for _, v := range alerts {
-
+	for i := range alerts {
 		v, err := alertcache.GetAlertCache("default").GetAlert(alerts[i])
 		if err == nil {
 
@@ -171,23 +169,28 @@ func (a *alertStore) resolveAlertSet(alerts ...string, resInfo structs.Resolutio
 			v.ResolutionInfo = resInfo
 			v.AlertID = v.AlertID + "^" + v.AlertStartTime.Format(time.RFC3339) //change the ID so it's unique
 
-			err := alertcache.GetAlertCache("default").DeleteAlert(alertID)
+			err := alertcache.GetAlertCache("default").DeleteAlert(alerts[i])
 			if err != nil {
 				return err.Addf("couldn't resolve alert: %v")
 			}
 
 			//submit for persistence
 			persist.GetElkAlertPersist().StoreAlert(v, true)
+			toProcess = append(toProcess, v)
 			socket.GetManager().WriteToSockets(v)
 
 		} else if err.Type == alertcache.NotFound {
-			return nerr.Create("Unkown alert "+alertID, "not-found")
+			log.L.Errorf("%v", nerr.Create("Unkown alert "+alerts[i], "not-found"))
 		} else {
-			return err.Addf("couldn't resolve alert")
+			log.L.Errorf("%v", err.Addf("couldn't resolve alert"))
 		}
 	}
 
-	a.runAlertSetActions(v)
+	//we postpone the running of actions until the end to guarentee all alerts resolved as a group are cleared out of the cache before running logic on them.
+	for i := range toProcess {
+		a.runActions(toProcess[i])
+	}
+
 	return nil
 }
 
@@ -222,7 +225,35 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		}
 
 		v.Active = alert.Active
+		if !alert.Active && v.Active {
+			if alert.AlertEndTime.IsZero() {
+				v.AlertEndTime = time.Now()
+			} else {
+				v.AlertEndTime = alert.AlertEndTime
+			}
+		}
 		v.AlertLastUpdateTime = time.Now()
+		if alert.IncidentID != "" {
+			v.IncidentID = alert.IncidentID
+		}
+		if !alert.HelpSentAt.IsZero() {
+			v.HelpSentAt = alert.HelpSentAt
+		}
+		if !alert.HelpArrivedAt.IsZero() {
+			v.HelpArrivedAt = alert.HelpArrivedAt
+		}
+		if len(alert.Responders) > 0 {
+			v.Responders = alert.Responders
+		}
+		if len(alert.DeviceTags) >= 0 {
+			v.DeviceTags = alert.DeviceTags
+		}
+		if len(alert.RoomTags) >= 0 {
+			v.RoomTags = alert.RoomTags
+		}
+		if len(alert.AlertTags) >= 0 {
+			v.AlertTags = alert.AlertTags
+		}
 
 		err := alertcache.GetAlertCache("default").PutAlert(v)
 		if err != nil {
@@ -240,6 +271,12 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 		//we store it.
 		alert.AlertLastUpdateTime = time.Now()
+
+		//set the start time
+		if alert.AlertStartTime.IsZero() {
+			alert.AlertStartTime = time.Now()
+		}
+
 		if len(alert.Message) > 0 {
 			alert.MessageLog = append(v.MessageLog, alert.Message)
 		}
@@ -268,7 +305,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 			ResolvedAt: time.Now(),
 		}
 
-		err := a.resolveAlert(alert.AlertID, resInfo)
+		err := a.resolveAlerts(resInfo, alert.AlertID)
 		if err != nil {
 			log.L.Errorf("Problem autoresolving alert %v: %v", alert.AlertID, err.Error())
 		}

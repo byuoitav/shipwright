@@ -56,16 +56,3 @@ func GetRoomsBulk(rooms []string) ([]statedefinition.StaticRoom, *nerr.E) {
 
 	return toReturn, nil
 }
-
-func AlertingSuppressedRooms(toCheck []statedefinition.StaticRoom) (map[string]bool, map[string]bool) {
-	alerting := make(map[string]bool)
-	suppressed := make(map[string]bool)
-	//go through each room in the array and check if it's already alerting
-
-	for i := range toCheck {
-		alerting[toCheck[i].RoomID] = *toCheck[i].Alerting
-		suppressed[toCheck[i].RoomID] = *toCheck[i].NotificationsSuppressed
-	}
-
-	return alerting, suppressed
-}

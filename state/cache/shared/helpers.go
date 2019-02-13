@@ -115,6 +115,36 @@ func ForwardAndStoreEvent(v events.Event, c Cache) (bool, *nerr.E) {
 	return changes, nil
 }
 
+func ForwardRoom(room sd.StaticRoom, changes bool, c Cache) *nerr.E {
+	list := forwarding.GetManagersForType(c.GetCacheName(), config.ROOM, config.ALL)
+	for i := range list {
+		list[i].Send(room)
+	}
+
+	if changes {
+		list = forwarding.GetManagersForType(c.GetCacheName(), config.ROOM, config.DELTA)
+		for i := range list {
+			list[i].Send(room)
+		}
+	}
+	return nil
+}
+
+func ForwardDevice(device sd.StaticDevice, changes bool, c Cache) *nerr.E {
+	list := forwarding.GetManagersForType(c.GetCacheName(), config.DEVICE, config.ALL)
+	for i := range list {
+		list[i].Send(device)
+	}
+
+	if changes {
+		list = forwarding.GetManagersForType(c.GetCacheName(), config.DEVICE, config.DELTA)
+		for i := range list {
+			list[i].Send(device)
+		}
+	}
+	return nil
+}
+
 /*
 	SetDeviceField returns the new device, as well as a boolean denoting if the field was already set to the provided value.
 

@@ -3,7 +3,6 @@ package cache
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
@@ -38,6 +37,13 @@ func InitializeCaches() {
 			if er != nil {
 				log.L.Errorf(er.Addf("Couldn't get information for device cache %v", i.Name).Error())
 			}
+
+			if i.ELKinfo.RoomIndex != "" {
+				rooms, er = GetElkStaticRooms(i.ELKinfo.RoomIndex, i.ELKinfo.URL)
+				if er != nil {
+					log.L.Errorf(er.Addf("Couldn't get information for room cache %v", i.Name).Error())
+				}
+			}
 		default:
 		}
 		cache, err := makeCache(devs, rooms, i)
@@ -66,7 +72,6 @@ func GetElkStaticDevices(index, url string) ([]statedefinition.StaticDevice, *ne
 	if err != nil {
 		return []statedefinition.StaticDevice{}, err.Addf("Couldn't retrieve static index %v for cache", index)
 	}
-	ioutil.WriteFile("/tmp/test", resp, 0777)
 
 	var queryResp elk.StaticDeviceQueryResponse
 
@@ -84,7 +89,7 @@ func GetElkStaticDevices(index, url string) ([]statedefinition.StaticDevice, *ne
 }
 
 //GetElkStaticRooms retrieves the list of static rooms from the privided elk index - assumes the ELK_DIRECT_ADDRESS env variable.
-func GetElkStaticRooms(index string) ([]statedefinition.StaticRoom, *nerr.E) {
+func GetElkStaticRooms(index, url string) ([]statedefinition.StaticRoom, *nerr.E) {
 	query := elk.GenericQuery{
 		Size: maxSize,
 	}
@@ -94,7 +99,7 @@ func GetElkStaticRooms(index string) ([]statedefinition.StaticRoom, *nerr.E) {
 		return []statedefinition.StaticRoom{}, nerr.Translate(er).Addf("Couldn't marshal generic query %v", query)
 	}
 
-	resp, err := elk.MakeELKRequest("GET", fmt.Sprintf("/%v/_search", index), b)
+	resp, err := elk.MakeGenericELKRequest(fmt.Sprintf("%v/%v/_search", url, index), "GET", b, "", "")
 	if err != nil {
 		return []statedefinition.StaticRoom{}, err.Addf("Couldn't retrieve static index %v for cache", index)
 	}

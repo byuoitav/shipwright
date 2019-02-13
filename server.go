@@ -34,7 +34,6 @@ func main() {
 	if err != nil {
 		log.L.Fatalf(err.Error())
 	}
-
 	port := ":9999"
 	router := common.NewRouter()
 
@@ -70,6 +69,8 @@ func main() {
 
 	write := router.Group("", auth.AuthorizeRequest("write-state", "room", auth.LookupResourceFromAddress))
 	read := router.Group("", auth.AuthorizeRequest("read-state", "room", auth.LookupResourceFromAddress))
+
+	router.POST("/test", handlers.Test)
 
 	// Building Endpoints
 	write.POST("/buildings/:building", handlers.AddBuilding)
