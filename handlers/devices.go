@@ -17,7 +17,6 @@ func AddDevice(context echo.Context) error {
 
 	// get information from the context
 	deviceID := context.Param("device")
-	username := getUsernameString(context)
 
 	var device structs.Device
 	err := context.Bind(&device)
@@ -33,8 +32,6 @@ func AddDevice(context echo.Context) error {
 		log.L.Errorf("%s %s", helpers.DevicesTag, ne.Error())
 		return context.JSON(http.StatusInternalServerError, result)
 	}
-
-	helpers.CreateAndAddDeviceChange(device, helpers.AddAction, username)
 
 	log.L.Debugf("%s The device %s was successfully created!", helpers.DevicesTag, deviceID)
 	return context.JSON(http.StatusOK, result)
@@ -159,7 +156,6 @@ func UpdateDevice(context echo.Context) error {
 
 	// get information from the context
 	deviceID := context.Param("room")
-	username := getUsernameString(context)
 
 	var device structs.Device
 	err := context.Bind(&device)
@@ -176,8 +172,6 @@ func UpdateDevice(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, result)
 	}
 
-	helpers.CreateAndAddDeviceChange(device, helpers.UpdateAction, username)
-
 	log.L.Debugf("%s The device %s was successfully updated!", helpers.DevicesTag, deviceID)
 	return context.JSON(http.StatusOK, result)
 }
@@ -185,9 +179,6 @@ func UpdateDevice(context echo.Context) error {
 // UpdateMultipleDevices updates a set of devices in the database
 func UpdateMultipleDevices(context echo.Context) error {
 	log.L.Debugf("%s Starting UpdateMultipleDevices...")
-
-	// get information from the context
-	username := getUsernameString(context)
 
 	var devices map[string]structs.Device
 
@@ -206,7 +197,6 @@ func UpdateMultipleDevices(context echo.Context) error {
 			log.L.Errorf("%s %s", helpers.DevicesTag, ne.Error())
 		}
 
-		helpers.CreateAndAddDeviceChange(device, helpers.UpdateAction, username)
 		results = append(results, res)
 	}
 
@@ -220,9 +210,6 @@ func DeleteDevice(context echo.Context) error {
 
 	// get information from the context
 	deviceID := context.Param("device")
-	username := getUsernameString(context)
-
-	device := structs.Device{ID: deviceID}
 
 	// call helper function
 	result, ne := helpers.DeleteDevice(deviceID)
@@ -230,8 +217,6 @@ func DeleteDevice(context echo.Context) error {
 		log.L.Errorf("%s %s", helpers.DevicesTag, ne.Error())
 		return context.JSON(http.StatusInternalServerError, result)
 	}
-
-	helpers.CreateAndAddDeviceChange(device, helpers.DeleteAction, username)
 
 	log.L.Debugf("%s The device %s was successfully deleted!", helpers.DevicesTag, deviceID)
 	return context.JSON(http.StatusOK, result)

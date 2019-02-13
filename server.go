@@ -1,14 +1,26 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/byuoitav/central-event-system/hub/base"
 	"github.com/byuoitav/central-event-system/messenger"
 	"github.com/byuoitav/common"
 	"github.com/byuoitav/common/log"
+	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/v2/auth"
+	"github.com/byuoitav/common/v2/events"
+	"github.com/byuoitav/shipwright/actions"
+	"github.com/byuoitav/shipwright/couch"
+	"github.com/byuoitav/shipwright/state/cache"
+	"github.com/labstack/echo"
+
+	// imported to initialize the list of then's
+	_ "github.com/byuoitav/shipwright/actions/then/circular"
+	"github.com/byuoitav/shipwright/alertstore"
 	"github.com/byuoitav/shipwright/handlers"
 	"github.com/byuoitav/shipwright/socket"
 	figure "github.com/common-nighthawk/go-figure"
@@ -16,25 +28,50 @@ import (
 
 func main() {
 	figure.NewFigure("SMEE", "univers", true).Print()
+	log.SetLevel("info")
 
+	err := resetConfig(context.Background())
+	if err != nil {
+		log.L.Fatalf(err.Error())
+	}
 	port := ":9999"
 	router := common.NewRouter()
 
+	go actions.DefaultActionManager().Start(context.TODO())
+	alertstore.InitializeAlertStore(actions.DefaultActionManager())
+
+	// connect to the hub
 	messenger, err := messenger.BuildMessenger(os.Getenv("HUB_ADDRESS"), base.Messenger, 1000)
 	if err != nil {
-		log.L.Errorf("unable to build the messenger: %s", err.Error())
-		return
+		log.L.Fatalf("failed to build messenger: %s", err)
 	}
 
-	messenger.SubscribeToRooms("*")
-	socket.GetManager().SetMessenger(messenger)
+	// get events from the hub
+	go func() {
+		messenger.SubscribeToRooms("ITB-2019")
 
-	// Logging Endpoints
-	router.PUT("/log-level/:level", log.SetLogLevel)
-	router.GET("/log-level", log.GetLogLevel)
+		for {
+			processEvent(messenger.ReceiveEvent())
+		}
+	}()
+
+	// get events from external sources
+	router.POST("/event", func(ctx echo.Context) error {
+		e := events.Event{}
+		err := ctx.Bind(&e)
+		if err != nil {
+			return ctx.String(http.StatusBadRequest, err.Error())
+		}
+
+		processEvent(e)
+		return ctx.String(http.StatusOK, "processing event")
+	})
 
 	write := router.Group("", auth.AuthorizeRequest("write-state", "room", auth.LookupResourceFromAddress))
 	read := router.Group("", auth.AuthorizeRequest("read-state", "room", auth.LookupResourceFromAddress))
+
+	router.POST("/test", handlers.Test)
+	router.GET("/actions", actions.DefaultActionManager().Info)
 
 	// Building Endpoints
 	write.POST("/buildings/:building", handlers.AddBuilding)
@@ -85,29 +122,17 @@ func main() {
 	read.GET("/options/icons", handlers.GetIcons)
 	read.GET("/options/templates", handlers.GetTemplates)
 
-	// Metrics Endpoints
-	read.GET("/metrics/added/buildings", handlers.GetAddedBuildings)
-	read.GET("/metrics/added/rooms", handlers.GetAddedRooms)
-	read.GET("/metrics/added/devices", handlers.GetAddedDevices)
-	read.GET("/metrics/added/uiconfigs", handlers.GetAddedUIConfigs)
-	read.GET("/metrics/added", handlers.GetAllAdditions)
-	read.GET("/metrics/updated/buildings", handlers.GetUpdatedBuildings)
-	read.GET("/metrics/updated/rooms", handlers.GetUpdatedRooms)
-	read.GET("/metrics/updated/devices", handlers.GetUpdatedDevices)
-	read.GET("/metrics/updated/uiconfigs", handlers.GetUpdatedUIConfigs)
-	read.GET("/metrics/updated", handlers.GetAllUpdates)
-	read.GET("/metrics/deleted/buildings", handlers.GetDeletedBuildings)
-	read.GET("/metrics/deleted/rooms", handlers.GetDeletedRooms)
-	read.GET("/metrics/deleted/devices", handlers.GetDeletedDevices)
-	read.GET("/metrics/deleted/uiconfigs", handlers.GetDeletedUIConfigs)
-	read.GET("/metrics/deleted", handlers.GetAllDeletions)
-	read.GET("/metrics", handlers.GetFullChangesList)
-
 	// Auth Endpoints
 	read.GET("/users/current/username", handlers.GetUsername)
 	read.GET("/users/current/permissions", handlers.GetUserPermissions)
 
-	// TODO: add alert endpoints...when I know what they are haha
+	// Static Record Endpoints
+	read.GET("/static/devices", handlers.GetAllStaticDeviceRecords)
+	read.GET("/static/rooms", handlers.GetAllStaticRoomRecords)
+
+	// Alert Endpoints
+	read.GET("/alerts", handlers.GetAllAlerts)
+	read.PUT("/alerts/:alertID/resolve", handlers.ResolveAlert)
 
 	// Websocket Endpoints
 	router.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))
@@ -118,4 +143,25 @@ func main() {
 	}
 
 	router.StartServer(&server)
+}
+
+func processEvent(event events.Event) {
+	log.L.Debugf("Got event: %+v", event)
+
+	cache.GetCache("default").StoreAndForwardEvent(event)
+	actions.DefaultActionManager().EventStream <- event
+}
+
+func resetConfig(actionManagerCtx context.Context) *nerr.E {
+	log.L.Infof("Reseting config for shipwright")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err := couch.UpdateConfigFiles(ctx, "shipwright")
+	if err != nil {
+		return err.Addf("unable to reset config")
+	}
+
+	// then reset the action manager
+	return nil
 }

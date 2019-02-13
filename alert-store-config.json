@@ -1,0 +1,29 @@
+{
+  "caches": [
+    {
+      "type": "redis",
+      "name": "default",
+      "redis": {
+        "url": "",
+        "pass": "",
+        "database": 3
+      }
+    }
+  ],
+  "persist": {
+    "persist-resolved-alerts": {
+      "elk": {
+        "index": "oit-av-alerts-resolved"
+      }
+    },
+    "persist-active-alerts": {
+      "elk": {
+        "index": "oit-av-alerts-active"
+      }
+    },
+    "addr": "http://av-elk-rapidmaster1.byu.edu:9200",
+    "user": "",
+    "pass": "",
+    "update-interval": "5s"
+  }
+}

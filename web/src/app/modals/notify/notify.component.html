@@ -1,0 +1,20 @@
+<!-- <p>
+    notify works!
+    </p> -->
+
+    <mat-toolbar [ngClass]="data.success ? 'success' : 'failure'">
+        <span>{{data.objectID}} - {{data.action}}</span>
+        <span class="fill-remaining-space"></span>
+        <button mat-icon-button (click)="dialogRef.close()"><mat-icon>close</mat-icon></button>
+
+    </mat-toolbar>
+    <section *ngIf="data.success" class="row">
+        <mat-icon class="success-icon">check</mat-icon>
+        <span>{{data.message}}</span>
+    </section>
+    <section *ngIf="!data.success" class="row">
+        <mat-icon class="failure-icon">error</mat-icon>
+        <span>{{data.error}}</span>
+    </section>
+    <section>
+    </section>

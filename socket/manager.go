@@ -7,8 +7,6 @@ import (
 
 	"github.com/byuoitav/central-event-system/messenger"
 	"github.com/byuoitav/common/log"
-	"github.com/byuoitav/common/v2/events"
-	"github.com/byuoitav/shipwright/repair/alerts"
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo"
 )
@@ -17,10 +15,10 @@ type (
 	// EventHandler is an interface for handling websocket events
 	EventHandler interface {
 		// OnClientConnect is called once each time a new client connects to the manager.
-		OnClientConnect(sendToClient chan events.Event)
+		OnClientConnect(sendToClient chan interface{})
 
 		// OnEventReceived will be called each time any client sends an event.
-		OnEventReceived(event events.Event, sendToAll chan events.Event)
+		OnEventReceived(event interface{}, sendToAll chan interface{})
 	}
 
 	// A Manager maintains and manages the list of websocket connections
@@ -29,7 +27,7 @@ type (
 		register   chan *Client
 		unregister chan *Client
 
-		broadcast    chan events.Event
+		broadcast    chan interface{}
 		eventHandler EventHandler
 
 		mess *messenger.Messenger
@@ -59,7 +57,7 @@ func newManager() *Manager {
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
 
-		broadcast: make(chan events.Event),
+		broadcast: make(chan interface{}),
 	}
 
 	go m.run()
@@ -129,7 +127,7 @@ func UpgradeToWebsocket(manager *Manager) func(context echo.Context) error {
 		client := &Client{
 			manager:  manager,
 			conn:     conn,
-			sendChan: make(chan events.Event, 256),
+			sendChan: make(chan interface{}, 256),
 		}
 
 		client.manager.register <- client
@@ -142,28 +140,26 @@ func UpgradeToWebsocket(manager *Manager) func(context echo.Context) error {
 }
 
 // WriteToSockets writes events out to the clients on the socket connections
-func (m *Manager) WriteToSockets(event events.Event) {
-	m.broadcast <- event
+func (m *Manager) WriteToSockets(e interface{}) {
+	m.broadcast <- e
 }
 
 type eventHandlerStruct struct{}
 
 // OnClientConnect is called once each time a new client connects to the manager.
-func (eh *eventHandlerStruct) OnClientConnect(sendToClient chan events.Event) {
+func (eh *eventHandlerStruct) OnClientConnect(sendToClient chan interface{}) {
 
 }
 
 // OnEventReceived will be called each time any client sends an event.
-func (eh *eventHandlerStruct) OnEventReceived(event events.Event, sendToAll chan events.Event) {
-	sendToAll <- event
+func (eh *eventHandlerStruct) OnEventReceived(e interface{}, sendToAll chan interface{}) {
+	sendToAll <- e
 }
 
 // StartMessenger starts the messenger for reading
 func StartMessenger() {
 	for {
 		event := socketManager.mess.ReceiveEvent()
-
-		alerts.HandleAlertEvent(event)
 		socketManager.WriteToSockets(event)
 	}
 }

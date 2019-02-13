@@ -1,0 +1,72 @@
+<!-- <p>
+  builder works!
+</p> -->
+
+<div class="row">
+    <ng-container *ngFor="let preset of config?.presets">
+        <mat-card *ngIf="preset != null" class="uiconfig">
+            <mat-card-header>
+                <div mat-card-avatar [ngClass]="{'uipath-blueberry': GetPresetUIPath(preset.name) === '/blueberry', 'uipath-cherry': GetPresetUIPath(preset.name) === '/cherry'}"></div>
+                <mat-card-title>{{preset.name}}</mat-card-title>
+                <mat-card-subtitle>
+                    <ng-container *ngFor="let panel of config?.panels">
+                        <ng-container *ngIf="panel?.preset == preset?.name">
+                            {{panel.hostname.split("-")[2]}}
+                        </ng-container>
+                    </ng-container>
+                </mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-divider></mat-divider>
+
+            <mat-card-content class="row lists">
+                <mat-list *ngIf="preset?.displays?.length > 0">
+                    <h3 mat-subheader>Displays</h3>
+                    <ng-container *ngFor="let display of config?.outputConfiguration">
+                        <mat-list-item *ngIf="preset?.displays?.includes(display?.name)">
+                            <mat-icon mat-list-icon class="pseudo-button" (click)="ChangeIcon(display)">{{display?.icon}}</mat-icon>
+                            <h4 mat-line class="mat-h4">{{display?.name}}</h4>
+                        </mat-list-item>
+                    </ng-container>
+                </mat-list>
+
+                <mat-list *ngIf="preset?.inputs?.length > 0">
+                    <h3 mat-subheader>Inputs</h3>
+                    <ng-container *ngFor="let input of config?.inputConfiguration">
+                        <mat-list-item *ngIf="preset?.inputs?.includes(input.name)">
+                            <!-- <button mat-icon-button (click)="ChangeIcon(input)" [disableRipple]=true><mat-icon mat-list-icon>{{input?.icon}}</mat-icon></button> -->
+                            <mat-icon mat-list-icon class="pseudo-button" (click)="ChangeIcon(input)">{{input?.icon}}</mat-icon>
+                            <mat-form-field class="text-field">
+                                <mat-label>{{input?.name}}</mat-label>
+                                <input matInput matAutosize type="text" [(ngModel)]="GetDeviceByName(input.name).displayName">
+                            </mat-form-field>
+                        </mat-list-item>
+                    </ng-container>
+                </mat-list>
+
+                <mat-list *ngIf="preset?.independentAudioDevices?.length > 0">
+                    <h3 mat-subheader>Independent Audio</h3>
+                    <ng-container *ngFor="let audio of config?.outputConfiguration">
+                        <mat-list-item *ngIf="preset?.independentAudioDevices?.includes(audio.name)">
+                            <mat-icon mat-list-icon class="pseudo-button" (click)="ChangeIcon(audio)">{{audio?.icon}}</mat-icon>
+                            <h4 mat-line class="mat-h4">{{audio?.name}}</h4>
+                        </mat-list-item>
+                    </ng-container>
+                </mat-list>
+                <span class="fill-remaining-space"></span>
+            </mat-card-content>
+
+            <mat-divider></mat-divider>
+            <!-- <mat-card-footer> -->
+            <mat-card-actions #actions>
+                <mat-action-row>
+                    <div class="row buttons">
+                        <button mat-icon-button (click)="modal.OpenPresetModal(preset.name, config)"><mat-icon>more_horiz</mat-icon></button>
+                    </div>
+                </mat-action-row>
+            </mat-card-actions>
+            <!-- </mat-card-footer> -->
+
+        </mat-card>
+    </ng-container>
+</div>

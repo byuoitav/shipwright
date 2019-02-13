@@ -1,0 +1,38 @@
+<section>
+    <mat-form-field>
+        <mat-label>Device Name</mat-label>
+        <input matInput [type] = "'text'" [(ngModel)]="data.name">
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>Display Name</mat-label>
+        <input matInput [type] = "'text'" [(ngModel)]="data.displayName">
+    </mat-form-field>
+</section>
+<section>
+    <mat-form-field>
+        <mat-label>Description</mat-label>
+        <input matInput [type] = "'text'" [(ngModel)]="data.description">
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>Address</mat-label>
+        <input matInput [type] = "'text'" [(ngModel)]="data.address">
+    </mat-form-field>
+</section>
+<section>
+    <mat-form-field>
+        <mat-label>Device Type</mat-label>
+        <mat-select [(ngModel)]="data.type.id">
+            <mat-option *ngFor="let type of dataService.deviceTypeList" [value]="type.id">{{type.id}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>Roles</mat-label>
+        <mat-select multiple [(ngModel)]="data.roles">
+            <ng-container *ngFor="let r of dataService.deviceRoles">
+                <mat-option [value]="r">
+                    {{r.id}}
+                </mat-option>
+            </ng-container>
+        </mat-select>
+    </mat-form-field>
+</section>

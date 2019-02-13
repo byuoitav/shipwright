@@ -3,12 +3,38 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/byuoitav/common/log"
+	sd "github.com/byuoitav/common/state/statedefinition"
 	"github.com/byuoitav/common/structs"
 	"github.com/byuoitav/shipwright/helpers"
+	"github.com/byuoitav/shipwright/state/cache"
 	"github.com/labstack/echo"
 )
+
+func Test(context echo.Context) error {
+
+	log.SetLevel("debug")
+	T := true
+
+	room := sd.StaticRoom{
+		BuildingID:      "ITB",
+		RoomID:          "ITB-1101",
+		MaintenanceMode: &T,
+		UpdateTimes: map[string]time.Time{
+			"maintenance-mode": time.Now(),
+		},
+	}
+	changes, room, err := cache.GetCache("default").CheckAndStoreRoom(room)
+	if err != nil {
+		log.L.Errorf("%s", err.Stack)
+		return context.JSON(http.StatusInternalServerError, err.Error())
+	}
+	log.L.Infof("%v", changes)
+
+	return context.JSON(http.StatusOK, room)
+}
 
 // AddBuilding adds a building to the database
 func AddBuilding(context echo.Context) error {
@@ -16,7 +42,6 @@ func AddBuilding(context echo.Context) error {
 
 	// get information from the context
 	buildingID := context.Param("building")
-	username := getUsernameString(context)
 
 	var building structs.Building
 	err := context.Bind(&building)
@@ -33,8 +58,6 @@ func AddBuilding(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, result)
 	}
 
-	helpers.CreateAndAddBuildingChange(building, helpers.AddAction, username)
-
 	log.L.Debugf("%s The building %s was successfully created!", helpers.BuildingsTag, buildingID)
 	return context.JSON(http.StatusOK, result)
 }
@@ -44,8 +67,6 @@ func AddMultipleBuildings(context echo.Context) error {
 	log.L.Debugf("%s Starting AddMultipleBuildings...", helpers.BuildingsTag)
 
 	// get information from the context
-	username := getUsernameString(context)
-
 	var buildings []structs.Building
 
 	err := context.Bind(&buildings)
@@ -63,7 +84,6 @@ func AddMultipleBuildings(context echo.Context) error {
 			log.L.Errorf("%s %s", helpers.BuildingsTag, ne.Error())
 		}
 
-		helpers.CreateAndAddBuildingChange(b, helpers.AddAction, username)
 		results = append(results, res)
 	}
 
@@ -109,7 +129,6 @@ func UpdateBuilding(context echo.Context) error {
 
 	// get information from the context
 	buildingID := context.Param("building")
-	username := getUsernameString(context)
 
 	var building structs.Building
 	err := context.Bind(&building)
@@ -118,7 +137,7 @@ func UpdateBuilding(context echo.Context) error {
 		log.L.Errorf("%s %s", helpers.BuildingsTag, msg)
 		return context.JSON(http.StatusBadRequest, err)
 	}
-
+	log.L.Debugf("Building: %+v", building)
 	// call helper function
 	result, ne := helpers.UpdateBuilding(buildingID, building)
 	if ne != nil {
@@ -126,9 +145,6 @@ func UpdateBuilding(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, result)
 	}
 
-	helpers.CreateAndAddBuildingChange(building, helpers.UpdateAction, username)
-
-	log.L.Debugf("%s The building %s was successfully updated!", helpers.BuildingsTag, buildingID)
 	return context.JSON(http.StatusOK, result)
 }
 
@@ -137,8 +153,6 @@ func UpdateMultipleBuildings(context echo.Context) error {
 	log.L.Debugf("%s Starting UpdateMultipleBuildings...", helpers.BuildingsTag)
 
 	// get information from the context
-	username := getUsernameString(context)
-
 	var buildings map[string]structs.Building
 
 	err := context.Bind(&buildings)
@@ -156,7 +170,6 @@ func UpdateMultipleBuildings(context echo.Context) error {
 			log.L.Errorf("%s %s", helpers.BuildingsTag, ne.Error())
 		}
 
-		helpers.CreateAndAddBuildingChange(building, helpers.UpdateAction, username)
 		results = append(results, res)
 	}
 
@@ -170,9 +183,6 @@ func DeleteBuilding(context echo.Context) error {
 
 	// get information from the context
 	buildingID := context.Param("building")
-	username := getUsernameString(context)
-
-	building := structs.Building{ID: buildingID}
 
 	// call helper function
 	result, ne := helpers.DeleteBuilding(buildingID)
@@ -180,8 +190,6 @@ func DeleteBuilding(context echo.Context) error {
 		log.L.Errorf("%s %s", helpers.BuildingsTag, ne.Error())
 		return context.JSON(http.StatusInternalServerError, result)
 	}
-
-	helpers.CreateAndAddBuildingChange(building, helpers.DeleteAction, username)
 
 	log.L.Debugf("%s The building %s was successfully deleted!", helpers.BuildingsTag, buildingID)
 	return context.JSON(http.StatusOK, result)

@@ -1,0 +1,33 @@
+$good: #00c853;
+$bad: #e53935;
+.success {
+    background-color: $good;
+    color: white;
+}
+
+.failure {
+    background-color: $bad;
+}
+
+.success-icon {
+    color: $good;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.failure-icon {
+    color: $bad;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.row {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-content: center;
+}
+
+.fill-remaining-space {
+    flex: 1 1 auto;
+}
