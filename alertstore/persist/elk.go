@@ -145,21 +145,12 @@ func (e *ElkPersist) sendUpdate() *nerr.E {
 	//do our active alert stuff
 	for _, v := range e.activeBuffer {
 		if v.Delete {
-			var oldID string
-			//we need to parse out the ID to remove the last bit, if it's there.
-			if strings.Count(v.Alert.AlertID, "^") > 2 {
-				//remove the last bit
-				oldID = v.Alert.AlertID[:strings.LastIndex(v.Alert.AlertID, "^")]
-			} else {
-				oldID = v.Alert.AlertID
-			}
-
 			buf = append(buf, elk.ElkBulkUpdateItem{
 				Delete: elk.ElkDeleteHeader{
 					Header: elk.HeaderIndex{
 						Index: e.config.PersistActiveAlerts.ElkData.IndexPattern,
 						Type:  "alert",
-						ID:    oldID,
+						ID:    v.Alert.AlertID,
 					}},
 			})
 		} else {
@@ -181,7 +172,7 @@ func (e *ElkPersist) sendUpdate() *nerr.E {
 				Header: elk.HeaderIndex{
 					Index: e.config.PersistResolvedAlerts.ElkData.IndexPattern,
 					Type:  "alert",
-					ID:    v.Alert.AlertID,
+					ID:    v.Alert.AlertID + v.Alert.ResolutionInfo.ResolvedAt.Format(time.RFC3339),
 				}},
 			Doc: v.Alert,
 		})

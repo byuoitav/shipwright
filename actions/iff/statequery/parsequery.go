@@ -2,6 +2,7 @@ package statequery
 
 import (
 	"fmt"
+	"regexp"
 	"sync"
 	"unicode"
 
@@ -15,12 +16,13 @@ const (
 	OPENPAREN  = "OPENPAREN"  //(
 	CLOSEPAREN = "CLOSEPAREN" //)
 	NOT        = "NOT"        //!
-	OPERATOR   = "OPERATOR"   // > = < !=
+	OPERATOR   = "OPERATOR"   // > == < != *=
+	EQ         = "EQUALS"     // =
+	STAR       = "REGEX"      // *
 	QUOTE      = "QUOTE"      //" or '
 	KEY        = "KEY"        //Key
 	VALUE      = "VALUE"      //Value
 	LIT        = "LITERAL"    //Any key or value
-	EQ         = "EQUALS"     //==
 )
 
 //QueryRunner .
@@ -43,8 +45,11 @@ type QueryNode struct {
 	Value    string
 
 	//for leaf nodes
-	Left  string
-	Right string
+	Left    string
+	Right   string
+	RightRe *regexp.Regexp
+
+	regexonce sync.Once
 
 	ID int
 }
@@ -196,6 +201,7 @@ var tokenMap = map[rune]string{
 	'!':  NOT,
 	'>':  OPERATOR,
 	'=':  EQ,
+	'*':  STAR,
 	'<':  OPERATOR,
 	'"':  QUOTE,
 	'\'': QUOTE,
@@ -229,6 +235,12 @@ func getTokens(query string) ([]token, *nerr.E) {
 			}
 			i++
 			toReturn = append(toReturn, token{OPERATOR, "=="})
+		case STAR:
+			if runequery[i+1] != '=' {
+				return toReturn, nerr.Create(fmt.Sprintf("invlid query, bad character at position %v", i+1), "invalid")
+			}
+			i++
+			toReturn = append(toReturn, token{OPERATOR, "*="})
 		case OR:
 			if runequery[i+1] != '|' {
 				return toReturn, nerr.Create(fmt.Sprintf("invlid query, bad character at position %v", i+1), "invalid")

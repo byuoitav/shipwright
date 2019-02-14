@@ -162,13 +162,9 @@ func (a *alertStore) resolveAlerts(resInfo structs.ResolutionInfo, alerts ...str
 	toProcess := []structs.Alert{}
 
 	for i := range alerts {
+		log.L.Debugf("resolving alert %v", alerts[i])
 		v, err := alertcache.GetAlertCache("default").GetAlert(alerts[i])
 		if err == nil {
-
-			//it's there, lets get it, mark it as resolved.
-			v.Resolved = true
-			v.ResolutionInfo = resInfo
-			v.AlertID = v.AlertID + "^" + v.AlertStartTime.Format(time.RFC3339) //change the ID so it's unique
 
 			err := alertcache.GetAlertCache("default").DeleteAlert(alerts[i])
 			if err != nil {
@@ -179,6 +175,10 @@ func (a *alertStore) resolveAlerts(resInfo structs.ResolutionInfo, alerts ...str
 			if err != nil {
 				return err.Addf("Problem removing alert from indicies: %v", err.Error())
 			}
+
+			//it's there, lets get it, mark it as resolved.
+			v.Resolved = true
+			v.ResolutionInfo = resInfo
 
 			//submit for persistence
 			persist.GetElkAlertPersist().StoreAlert(v, true)
@@ -293,12 +293,13 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 			return
 		}
 
-		alert = v
-
 		if alert.Source == Init {
 			//create run the actions based on the alert in storage - since that's more up to date
-			a.runInitActions(alert)
+			a.runInitActions(v)
 		}
+
+		alert = v
+
 	} else if err.Type == alertcache.NotFound {
 
 		//we store it.
@@ -325,7 +326,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 			return
 		}
 
-		if alert.Source != Init {
+		if alert.Source == Init {
 			//run the iniitialization actions thing
 			a.runInitActions(alert)
 		}
@@ -337,6 +338,8 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 	//auto-resolution rule
 	if !alert.Active && alert.HelpSentAt.IsZero() {
+
+		log.L.Debugf("Autoresolving alert %v", alert.AlertID)
 		resInfo := structs.ResolutionInfo{
 			Code:       "Auto Resolved",
 			Notes:      "Alert was auto resolved.",

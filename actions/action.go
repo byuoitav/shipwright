@@ -43,6 +43,8 @@ func (a *Action) Run(ctx context.Context) {
 		a.Log = log.L.Named(a.Name)
 	}
 
+	a.Log.Debugf("Runnig if checks")
+
 	if ctx, passed := a.If.Check(ctx, a.Log); passed {
 		count := atomic.AddUint64(&a.runCount, 1)
 		pruneCount := atomic.LoadUint64(&a.PruneCount)
