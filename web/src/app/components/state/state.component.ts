@@ -4,6 +4,7 @@ import { StaticService } from 'src/app/services/static.service';
 import { StaticDevice, Device } from 'src/app/objects';
 import { DataService } from 'src/app/services/data.service';
 import { StringsService } from 'src/app/services/strings.service';
+import { MonitoringService } from 'src/app/services/monitoring.service';
 
 export interface UserData {
   room: string;
@@ -14,22 +15,21 @@ export interface UserData {
   buildingID: string;
 }
 
-/**
- * @title Data table with sorting, pagination, and filtering.
- */
 @Component({
   selector: 'state',
   styleUrls: ['state.component.scss'],
   templateUrl: 'state.component.html',
 })
 export class StateComponent implements OnInit {
-  displayedColumns: string[] = ['room', 'alerts', 'status'];
+  roomStatusColumns = ['room', 'alerts', 'status'];
+  staticDeviceColumns = ['deviceID', 'alerts', 'status'];
+  
   dataSource: MatTableDataSource<StaticDevice>;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(public ss: StaticService, public data: DataService, public text: StringsService) {
+  constructor(public ss: StaticService, public data: DataService, public text: StringsService, public monitor: MonitoringService) {
 
     if(this.ss.finished) {
       this.dataSource = new MatTableDataSource(this.ss.allStaticDevices)
@@ -87,5 +87,17 @@ export class StateComponent implements OnInit {
     
     return false
   }
+
+  // TODO: Implement these guys later?
+  // addColumn() {
+  //   const randomColumn = Math.floor(Math.random() * this.displayedColumns.length);
+  //   this.displayedColumns.push(this.displayedColumns[randomColumn]);
+  // }
+
+  // removeColumn() {
+  //   if (this.displayedColumns.length) {
+  //     this.displayedColumns.pop();
+  //   }
+  // }
 
 }
