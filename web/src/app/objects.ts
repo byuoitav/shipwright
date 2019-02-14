@@ -725,6 +725,22 @@ export class RoomAlerts{
         return this.alerts
     }
 
+    GetVisibleAlerts(severity?: string) {
+        let visAlerts = [];
+        this.map.forEach((v, k) => {
+            if(!v.resolved) {
+                if(severity == null) {
+                    visAlerts.push(v)
+                } 
+                else if(severity === v.severity) {
+                    visAlerts.push(v)
+                }
+            }
+        })
+
+        return visAlerts
+    }
+
     AddAlert(a: Alert) {
         this.map.set(a.alertID, a);
     }

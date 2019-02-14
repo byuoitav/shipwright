@@ -6,7 +6,7 @@
 </section>
 
 <section #send class="row">
-    <button mat-raised-button color="primary" class="button">Help Sent!</button>
+    <button mat-raised-button color="primary" class="button" [disabled]="ra.helpSent || !ra.SentIsZero()" (click)="HelpWasSent()">Help Sent!</button>
     <!-- <mat-form-field>
         <input matInput [matDatepicker]="sentHelpPicker" [(ngModel)]="sentHelpDate">
         <mat-datepicker-toggle matSuffix [for]="sentHelpPicker"></mat-datepicker-toggle>
@@ -20,7 +20,7 @@
 </section>
 
 <section #arrive class="row">
-    <button mat-raised-button color="warn" class="button">Help Arrived!</button>
+    <button mat-raised-button color="warn" class="button" [disabled]="ra.helpArrived || !ra.ArriveIsZero()" (click)="HelpHasArrived()">Help Arrived!</button>
     <!-- <mat-form-field>
         <input matInput [matDatepicker]="helpArrivedPicker" [(ngModel)]="helpArrivedDate">
         <mat-datepicker-toggle matSuffix [for]="helpArrivedPicker"></mat-datepicker-toggle>
@@ -34,10 +34,10 @@
 </section>
 
 <section #resolve class="row">
-    <button mat-raised-button color="resolve" class="button resolve">Resolve Alerts!</button>
+    <button mat-raised-button color="resolve" class="button resolve" [disabled]="!CanResolve()">Resolve Alerts!</button>
     <mat-form-field class="alerts">
-        <mat-select multiple #fixedAlerts>
-            <mat-option *ngFor="let alert of ra.GetAlerts()">
+        <mat-select multiple #fixedAlerts [(ngModel)]="alertsToResolve">
+            <mat-option *ngFor="let alert of ra.GetAlerts()" [value]="alert">
                 {{alert.deviceID}}
             </mat-option>
         </mat-select>

@@ -70,7 +70,7 @@ export class AlertTableComponent implements OnInit, IDashPanel {
 
   GetAlertData(ra: RoomAlerts) {
     if(this.alertDataMap.get(ra.roomID) == null) {
-      this.alertDataMap.set(ra.roomID, new MatTableDataSource(ra.GetAlerts()));
+      this.alertDataMap.set(ra.roomID, new MatTableDataSource(this.GetVisibleAlerts(ra)));
     } 
 
     return this.alertDataMap.get(ra.roomID)
@@ -79,7 +79,18 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   UpdateAlertData(roomID: string) {
     let ra = this.monitor.roomAlertsMap.get(roomID)
 
-    this.alertDataMap.set(ra.roomID, new MatTableDataSource(ra.GetAlerts()));
+    this.alertDataMap.set(ra.roomID, new MatTableDataSource(this.GetVisibleAlerts(ra)));
+  }
+
+  private GetVisibleAlerts(ra: RoomAlerts) {
+    let visAlerts = [];
+
+    for(let alert of ra.GetAlerts()) {
+      if(!alert.resolved) {
+        visAlerts.push(alert)
+      }
+    }
+    return visAlerts;
   }
 
   GetAlertCount(ra: RoomAlerts) {
