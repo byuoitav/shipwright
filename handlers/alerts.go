@@ -35,8 +35,27 @@ func ResolveAlert(context echo.Context) error {
 	ne := alertstore.ResolveAlert(resolution, alertID)
 	if ne != nil {
 		log.L.Errorf("failed to resolve alert: %s", ne.Error())
-		return context.JSON(http.StatusBadRequest, err)
+		return context.JSON(http.StatusBadRequest, ne)
 	}
 
 	return context.JSON(http.StatusOK, "ok")
+}
+
+// AddAlert adds an alert to the store
+func AddAlert(context echo.Context) error {
+	var a structs.Alert
+
+	err := context.Bind(&a)
+	if err != nil {
+		log.L.Errorf("failed to bind resolution body from request: %s", err.Error())
+		return context.JSON(http.StatusBadRequest, err)
+	}
+
+	id, ne := alertstore.AddAlert(a)
+	if ne != nil {
+		log.L.Errorf("failed to add alert: %s", ne.Error())
+		return context.JSON(http.StatusInternalServerError, ne)
+	}
+
+	return context.JSON(http.StatusOK, id)
 }

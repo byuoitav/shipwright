@@ -132,6 +132,7 @@ func main() {
 	// Alert Endpoints
 	read.GET("/alerts", handlers.GetAllAlerts)
 	read.PUT("/alerts/:alertID/resolve", handlers.ResolveAlert)
+	write.PUT("/alerts/add", handlers.AddAlert)
 
 	// Websocket Endpoints
 	router.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))

@@ -1,7 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { RoomAlerts } from 'src/app/objects';
+import { RoomAlerts, Alert } from 'src/app/objects';
 
 @Component({
   selector: 'respond-modal',
@@ -11,14 +11,14 @@ import { RoomAlerts } from 'src/app/objects';
 export class RespondModalComponent implements OnInit {
   sentHelpDate = new Date();
   helpArrivedDate = new Date();
-  ra: RoomAlerts = new RoomAlerts();
+
+  alertsToResolve: Alert[] = [];
 
   sentTime: string;
   arrivedTime: string;
 
-  constructor(public text: StringsService, public dialogRef: MatDialogRef<RespondModalComponent>, @Inject(MAT_DIALOG_DATA) data: RoomAlerts) {
-    if(data != null) {
-      Object.assign(this.ra, data)
+  constructor(public text: StringsService, public dialogRef: MatDialogRef<RespondModalComponent>, @Inject(MAT_DIALOG_DATA) public ra: RoomAlerts) {
+    if(ra != null) {
       // console.log(this.ra.sentDate.toISOString())
       // console.log(this.ra.arriveDate.toISOString())
       // console.log(this.sentHelpDate.toTimeString())
@@ -34,6 +34,8 @@ export class RespondModalComponent implements OnInit {
         // console.log(this.helpArrivedDate.toISOString())
       }
       this.arrivedTime = this.helpArrivedDate.toTimeString().substring(0, this.helpArrivedDate.toTimeString().lastIndexOf(":"))
+      this.alertsToResolve = Array.from(this.ra.GetAlerts())
+      console.log(this.alertsToResolve);
     }
   }
 
@@ -47,5 +49,74 @@ export class RespondModalComponent implements OnInit {
   private timeFromISOFormat(dateString: string):string {
     let timeString = dateString.split("T")[1].split(":");
     return timeString[0]+":"+timeString[1];
+  }
+
+  private to24Hour(time: string): string {
+    let hours = time.split(":")[0]
+    let mins = time.split(":")[1]
+    let period
+
+    let hoursNum = +hours
+
+    if(hoursNum < 12) {
+      period = "AM"
+    }
+    else {
+      period = "PM"
+    }
+
+    if(hoursNum > 12) {
+      hoursNum = hoursNum-12  
+      hours = String(hoursNum)
+      if(hours.length == 1) {
+        hours = "0"+hours
+      }
+    }
+
+    return hours + ":" + mins + " " + period 
+  }
+
+  CanResolve():boolean {
+    if(this.ra.SentIsZero()) {
+      return false
+    }
+
+    for(let a of this.alertsToResolve) {
+      if(a.active) {
+        return false
+      }
+    }
+
+    return true
+  }
+
+  HelpWasSent() {
+    this.ra.helpSent = true
+    console.log(this.sentTime)
+    let d = new Date()
+    console.log(d.toLocaleString())
+
+    let fullDate = new Date().toLocaleString()
+    let today = fullDate.substr(0, fullDate.indexOf(","))
+
+    let time = this.to24Hour(this.sentTime)
+    let timestamp = today + ", " + time
+    this.ra.sentDate = new Date(timestamp)
+    console.log(this.ra.sentDate.toLocaleString())
+  }
+
+  HelpHasArrived() {
+    this.ra.helpArrived = true
+    console.log(this.arrivedTime)
+    let d = new Date()
+    console.log(d.toLocaleString())
+
+    let fullDate = new Date().toLocaleString()
+    let today = fullDate.substr(0, fullDate.indexOf(","))
+
+    let time = this.to24Hour(this.arrivedTime)
+    let timestamp = today + ", " + time
+    this.ra.arriveDate = new Date(timestamp)
+    console.log(this.ra.arriveDate.toLocaleString())
   }
 }
