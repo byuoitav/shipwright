@@ -1,38 +1,60 @@
 <section>
+    <!-- Device Name -->
     <mat-form-field>
         <mat-label>Device Name</mat-label>
         <input matInput [type] = "'text'" [(ngModel)]="data.name">
     </mat-form-field>
+
+    <!-- Display Name -->
     <mat-form-field>
         <mat-label>Display Name</mat-label>
         <input matInput [type] = "'text'" [(ngModel)]="data.displayName">
     </mat-form-field>
 </section>
+
 <section>
+    <!-- Description -->
     <mat-form-field>
         <mat-label>Description</mat-label>
         <input matInput [type] = "'text'" [(ngModel)]="data.description">
     </mat-form-field>
+
+    <!-- Address -->
     <mat-form-field>
         <mat-label>Address</mat-label>
         <input matInput [type] = "'text'" [(ngModel)]="data.address">
     </mat-form-field>
 </section>
+
 <section>
+    <!-- Tags -->
+    <mat-form-field>
+        <mat-label>Tags</mat-label>
+        <mat-chip-list #deviceTags>
+            <mat-chip *ngFor="let tag of data.tags" [selectable]="true" [removable]="true" (removed)="text.RemoveTag(tag, data)">
+                {{tag}}
+                <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input matInput type="text" [matChipInputFor]="deviceTags" [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="text.AddTag($event, data)">
+        </mat-chip-list>
+    </mat-form-field>
+</section>
+
+<section>
+    <!-- Device Type -->
     <mat-form-field>
         <mat-label>Device Type</mat-label>
-        <mat-select [(ngModel)]="data.type.id">
+        <mat-select [(ngModel)]="data.type.id" (selectionChange)="UpdateDeviceType()">
             <mat-option *ngFor="let type of dataService.deviceTypeList" [value]="type.id">{{type.id}}</mat-option>
         </mat-select>
     </mat-form-field>
+
+    <!-- Roles -->
     <mat-form-field>
         <mat-label>Roles</mat-label>
-        <mat-select multiple [(ngModel)]="data.roles">
-            <ng-container *ngFor="let r of dataService.deviceRoles">
-                <mat-option [value]="r">
-                    {{r.id}}
-                </mat-option>
-            </ng-container>
+        <mat-select multiple [(ngModel)]="data.roles" (selectionChange)="UpdateRoleLists()" (valueChange)="UpdateRoleLists()">
+            <mat-option *ngFor="let r of data.roles" [value]="r">{{r.id}}</mat-option>  
+            <mat-option *ngFor="let r of UnappliedRoles" [value]="r">{{r.id}}</mat-option>
         </mat-select>
     </mat-form-field>
 </section>

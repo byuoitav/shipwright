@@ -13,7 +13,7 @@
 
         <ng-container matColumnDef="roomID">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Room ID </th>
-            <td mat-cell *matCellDef="let ra">{{ra.roomID}}</td>
+            <td mat-cell *matCellDef="let ra" (click)="ExpandRow(ra)"><button mat-button color="primary" routerLink="/configuration/{{ra.roomID}}/roompage">{{ra.roomID}}</button></td>
         </ng-container>
 
         <ng-container matColumnDef="alertCount">
@@ -23,7 +23,7 @@
 
         <ng-container matColumnDef="incident">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> INC </th>
-            <td mat-cell *matCellDef="let ra" (click)="ServiceNowRedirect(ra.incidentID)">{{ra.incidentID}}</td>
+            <td mat-cell *matCellDef="let ra" (click)="ExpandRow(ra)"><button mat-button color="primary" (click)="ServiceNowRedirect(ra.incidentID)">{{ra.incidentID}}</button></td>
         </ng-container>
 
         <ng-container matColumnDef="help-sent">
@@ -50,7 +50,7 @@
         <ng-container matColumnDef="expandedDetail">
             <td mat-cell *matCellDef="let ra" [attr.colspan]="alertRowColumns.length">
                 <div class="alert-detail" [@detailExpand]="expRoomAlerts === ra ? 'expanded' : 'collapsed'">
-                    <table mat-table [dataSource]="ra.alerts" multiTemplateDataRows>
+                    <table mat-table [dataSource]="GetAlertData(ra)" multiTemplateDataRows>
                         <ng-container matColumnDef="deviceName">
                             <th mat-header-cell *matHeaderCellDef> Device Name </th>
                             <td mat-cell *matCellDef="let alert">{{alert.deviceID}}</td>
@@ -87,11 +87,11 @@
                         <ng-container matColumnDef="responders">
                             <th mat-header-cell *matHeaderCellDef> Responders </th>
                             <td mat-cell *matCellDef="let alert">
-                                <ng-container *ngIf="alert.responders?.length == 0">
-                                    --
+                                <ng-container *ngIf="alert.responders == null || alert.responders?.length == 0">
+                                    <span>--</span>
                                 </ng-container>
                                 <ng-container *ngIf="alert.responders?.length > 0">
-                                    {{alert.responders}}
+                                    <span>{{alert.responders}}</span>
                                 </ng-container>
                             </td>
 

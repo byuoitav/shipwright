@@ -17,6 +17,7 @@ export class DataService {
   roomConfigurations: RoomConfiguration[] = [];
   roomDesignations: string[] = [];
   templateList: Template[] = [];
+  iconList: string[] = [];
 
   buildingToRoomsMap: Map<string, Room[]> = new Map();
   roomToDevicesMap: Map<string, Device[]> = new Map();
@@ -45,6 +46,7 @@ export class DataService {
     await this.SetBuildingToRoomsMap();
     await this.SetRoomToDevicesMap();
     await this.GetStoredAlerts();
+    await this.GetIconList();
     this.finished = true;
     this.loaded.emit(true);
     console.log("done");
@@ -132,6 +134,14 @@ export class DataService {
     this.api.GetTemplates().then((list) => {
       this.templateList = list;
     });
+  }
+
+  private async GetIconList() {
+    this.iconList = [];
+
+    this.api.GetIcons().then((icons) => {
+      this.iconList = icons as string[]
+    })
   }
 
   private async SetBuildingToRoomsMap() {

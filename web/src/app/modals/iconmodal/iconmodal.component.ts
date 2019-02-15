@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
+import { DataService } from 'src/app/services/data.service';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
 @Component({
   selector: 'icon-modal',
@@ -7,9 +9,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class IconModalComponent implements OnInit {
 
-  constructor() { }
+  constructor(public dialogRef: MatDialogRef<IconModalComponent>, @Inject(MAT_DIALOG_DATA) public data: any, public dataService: DataService) { }
 
   ngOnInit() {
   }
-
 }

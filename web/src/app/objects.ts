@@ -41,7 +41,7 @@ export class ResolutionInfo {
     notes: string = undefined;
 
     @JsonProperty("resolved-at", DateConverter)
-    resolvedAt: Date = undefined;
+    resolvedAt: Date = new Date(0);
 }
 
 @JsonObject("Alert")
@@ -83,13 +83,13 @@ export class Alert {
     data: any = undefined;
 
     @JsonProperty("start-time", DateConverter)
-    startTime: Date = undefined;
+    startTime: Date = new Date(0);
 
     @JsonProperty("end-time", DateConverter)
-    endTime: Date = undefined;
+    endTime: Date = new Date(0);
 
     @JsonProperty("update-time", DateConverter)
-    updateTime: Date = undefined;
+    updateTime: Date = new Date(0);
 
     @JsonProperty("active", Boolean)
     active: boolean = true
@@ -101,10 +101,10 @@ export class Alert {
     responders: string[] = Array<string>();
 
     @JsonProperty("help-sent-at", DateConverter)
-    helpSentAt: Date = undefined;
+    helpSentAt: Date = new Date(0);
 
     @JsonProperty("help-arrived-at", DateConverter)
-    helpArrivedAt: Date = undefined;
+    helpArrivedAt: Date = new Date(0);
 
     @JsonProperty("resolution-info", ResolutionInfo)
     resolutionInfo: ResolutionInfo = undefined;
@@ -117,6 +117,18 @@ export class Alert {
 
     @JsonProperty("device-tags", [String], true)
     deviceTags: string[] = Array<string>();
+
+    SentIsZero(): boolean {
+        let date = new Date(0)
+
+        return (this.helpSentAt.toISOString() === date.toISOString())
+    }
+
+    ArriveIsZero(): boolean {
+        let date = new Date(0)
+
+        return (this.helpArrivedAt.toISOString() === date.toISOString())
+    }
 }
 
 @JsonObject("Building")
@@ -455,13 +467,13 @@ export class StaticDevice {
     hostname: string = undefined;
 
     @JsonProperty("last-state-received", DateConverter, true)
-    lastStateReceived: Date = undefined;
+    lastStateReceived: Date = new Date(0);
 
     @JsonProperty("last-heartbeat", DateConverter, true)
-    lastHeartbeat: Date = undefined;
+    lastHeartbeat: Date = new Date(0);
 
     @JsonProperty("last-user-input", DateConverter, true)
-    lastUserInput: Date = undefined;
+    lastUserInput: Date = new Date(0);
 
     @JsonProperty("device-type", String, true)
     deviceType: string = undefined;
@@ -610,7 +622,7 @@ export class StaticDevice {
     @JsonProperty("transmit-rf-power", String, true)
     transmitRFPower: string = undefined;
 
-    // @JsonProperty("field-state-received", [String, DateConverter], true)
+    @JsonProperty("updateTimes", [String, DateConverter], true)
     updateTimes: Map<string, Date> = new Map();
 }
 
@@ -656,12 +668,15 @@ export const DMPS_ICON = "accessible_forward"
 export class RoomAlerts{
     roomID: string = undefined;
     systemTypeIcon: string = undefined;
-    alerts: Alert[] = Array<Alert>();
+    private alerts: Alert[] = Array<Alert>();
+    map: Map<string, Alert> = new Map();
     incidentID: string;
     maintenanceMode: boolean = false;
     expanded: boolean = false;
     helpSent: boolean = false;
     helpArrived: boolean = false;
+    sentDate: Date = new Date(0);
+    arriveDate: Date = new Date(0);
 
     constructor(roomID?: string, alertList?: Alert[]) {
         if(roomID != null && roomID.length > 0) {
@@ -669,6 +684,7 @@ export class RoomAlerts{
         }
 
         if(alertList != null) {
+            this.map.clear();
             this.alerts = alertList;
 
             for(let a of this.alerts) {
@@ -687,7 +703,63 @@ export class RoomAlerts{
                 else {
                     this.systemTypeIcon = PI_ICON
                 }
+
+                if(!a.SentIsZero()) {
+                    this.sentDate = a.helpSentAt
+                }
+
+                if(!a.ArriveIsZero()) {
+                    this.arriveDate = a.helpArrivedAt
+                }
+
+                this.map.set(a.alertID, a);
             }
         }
+    }
+
+    GetAlerts() {
+        this.alerts = [];
+        this.map.forEach((value, key) => {
+            this.alerts.push(value);
+        })
+        return this.alerts
+    }
+
+    GetVisibleAlerts(severity?: string) {
+        let visAlerts = [];
+        this.map.forEach((v, k) => {
+            if(!v.resolved) {
+                if(severity == null || severity.length == 0) {
+                    visAlerts.push(v)
+                } 
+                else if(severity === v.severity) {
+                    visAlerts.push(v)
+                }
+            }
+        })
+
+        return visAlerts
+    }
+
+    AddAlert(a: Alert) {
+        this.map.set(a.alertID, a);
+    }
+
+    AddAlerts(aList: Alert[]) {
+        for(let alert of aList) {
+            this.map.set(alert.alertID, alert);
+        }
+    }
+
+    SentIsZero(): boolean {
+        let zero = "0001-01-01T00:00:00.000Z"
+
+        return (this.sentDate.toISOString() === zero)
+    }
+
+    ArriveIsZero(): boolean {
+        let zero = "0001-01-01T00:00:00.000Z"
+
+        return (this.arriveDate.toISOString() === zero)
     }
 }
