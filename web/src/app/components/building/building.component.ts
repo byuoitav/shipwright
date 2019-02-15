@@ -40,7 +40,7 @@ export class BuildingComponent implements OnInit {
     for(let room of list) {
       let a = this.monitor.roomAlertsMap.get(room.id)
 
-      if(a != null && a.alerts.length > 0) {
+      if(a != null && a.GetAlerts().length > 0) {
         this.goodRoomCount--;
         this.badRoomCount++;
       }

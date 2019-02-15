@@ -5,7 +5,7 @@ import { RespondModalComponent } from '../modals/respond/respond.component';
 import { BuildingModalComponent } from '../modals/buildingmodal/buildingmodal.component';
 import { RoomModalComponent } from '../modals/roommodal/roommodal.component';
 import { DeviceModalComponent } from '../modals/devicemodal/devicemodal.component';
-import { Building, Room, Device, DBResponse, RoomAlerts, UIConfig } from '../objects';
+import { Building, Room, Device, DBResponse, RoomAlerts, UIConfig, Preset, Panel } from '../objects';
 import { NotifyModalComponent } from '../modals/notify/notify.component';
 import { PresetModalComponent } from '../modals/presetmodal/presetmodal.component';
 import { IconModalComponent } from '../modals/iconmodal/iconmodal.component';
@@ -49,8 +49,8 @@ export class ModalService {
     this.dialog.open(NotifyModalComponent, {data: resp});
   }
 
-  OpenPresetModal(presetName: string, config: UIConfig) {
-    this.dialog.open(PresetModalComponent, {data: {presetName: presetName, uiConfig: config}})
+  OpenPresetModal(preset: Preset, cps: Panel[], config: UIConfig) {
+    this.dialog.open(PresetModalComponent, {data: {preset: preset, currentPanels: cps, config: config}})
   }
 
   OpenIconModal(caller: any) {

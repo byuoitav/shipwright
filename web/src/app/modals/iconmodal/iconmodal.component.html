@@ -1,3 +1,10 @@
-<p>
-  iconmodal works!
-</p>
+<section class="header">
+    <h2 class="mat-h2 title">Choose an icon:</h2>
+    <button mat-icon-button (click)="dialogRef.close()"><mat-icon>close</mat-icon></button>
+</section>
+
+<mat-divider class="space"></mat-divider>
+
+<div class="row">
+    <button class="icon" mat-icon-button *ngFor="let icon of dataService.iconList" (click)="dialogRef.close(icon)"><mat-icon>{{icon}}</mat-icon></button>
+</div>

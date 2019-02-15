@@ -114,7 +114,7 @@ export class RoomComponent implements OnInit {
 
     let alerts
     if(ra != null) {
-      alerts = ra.alerts
+      alerts = ra.GetAlerts()
     }
     
     if(alerts != null && alerts.length > 0) {

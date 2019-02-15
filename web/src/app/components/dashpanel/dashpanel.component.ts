@@ -47,6 +47,11 @@ export class DashPanelComponent implements OnInit {
 
     let componentRef = viewContainerRef.createComponent(componentFactory);
     (<IDashPanel>componentRef.instance).data = data;
+
+    if(panelType == this.AllAlerts) {
+      panelType = ""
+    }
+    
     (<IDashPanel>componentRef.instance).chosenSeverity = panelType;
   }
 

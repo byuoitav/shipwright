@@ -1,51 +1,47 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import { StaticService } from 'src/app/services/static.service';
-import { StaticDevice } from 'src/app/objects';
+import { StaticDevice, Device } from 'src/app/objects';
 import { DataService } from 'src/app/services/data.service';
+import { StringsService } from 'src/app/services/strings.service';
+import { MonitoringService } from 'src/app/services/monitoring.service';
 
 export interface UserData {
-  buildingID: string;
+  room: string;
+  activeSignal: boolean;
+  alerts: Int16Array;
   device: string;
-  progress: string;
-  color: string;
+  status: string;
+  buildingID: string;
 }
 
-/** Constants used to fill up our data base. */
-const COLORS: string[] = ['maroon', 'red', 'orange', 'yellow', 'olive', 'green', 'purple',
-  'fuchsia', 'lime', 'teal', 'aqua', 'blue', 'navy', 'black', 'gray'];
-const NAMES: string[] = ['Maia', 'Asher', 'Olivia', 'Atticus', 'Amelia', 'Jack',
-  'Charlotte', 'Theodore', 'Isla', 'Oliver', 'Isabella', 'Jasper',
-  'Cora', 'Levi', 'Violet', 'Arthur', 'Mia', 'Thomas', 'Elizabeth'];
-
-/**
- * @title Data table with sorting, pagination, and filtering.
- */
 @Component({
   selector: 'state',
   styleUrls: ['state.component.scss'],
   templateUrl: 'state.component.html',
 })
 export class StateComponent implements OnInit {
-  displayedColumns: string[] = ['buildingID', 'device', 'progress', 'color'];
+  roomStatusColumns = ['room', 'alerts', 'status'];
+  staticDeviceColumns = ['deviceID', 'alerts', 'status'];
+  
   dataSource: MatTableDataSource<StaticDevice>;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(private ss: StaticService, private data: DataService) {
+  constructor(public ss: StaticService, public data: DataService, public text: StringsService, public monitor: MonitoringService) {
 
-    if(this.data.finished) {
+    if(this.ss.finished) {
       this.dataSource = new MatTableDataSource(this.ss.allStaticDevices)
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      console.log(this.ss.allStaticDevices);
+      // console.log(this.ss.allStaticDevices);
     } else {
-      this.data.loaded.subscribe(() => {
+      this.ss.loaded.subscribe(() => {
         this.dataSource = new MatTableDataSource(this.ss.allStaticDevices)
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-        console.log(this.ss.allStaticDevices);
+        // console.log(this.ss.allStaticDevices);
       })
     }
 
@@ -67,4 +63,41 @@ export class StateComponent implements OnInit {
       }
     }
   }
+
+  IsADisplay(deviceID: string): boolean {
+    let device = this.data.GetDevice(deviceID)
+
+    if(device != null && device.type != null) {
+      return this.data.DeviceHasRole(device, "VideoOut");
+    }
+
+    return false;
+  }
+
+  DisplayIsOn(deviceID: string): boolean {
+    let dRecord = this.ss.GetSingleStaticDevice(deviceID)
+
+    if(dRecord != null) {
+      if(dRecord.power === "on") {
+        return true
+      } else {
+        return false
+      }
+    }
+    
+    return false
+  }
+
+  // TODO: Implement these guys later?
+  // addColumn() {
+  //   const randomColumn = Math.floor(Math.random() * this.displayedColumns.length);
+  //   this.displayedColumns.push(this.displayedColumns[randomColumn]);
+  // }
+
+  // removeColumn() {
+  //   if (this.displayedColumns.length) {
+  //     this.displayedColumns.pop();
+  //   }
+  // }
+
 }

@@ -1,32 +1,45 @@
 @import "../../themes.scss";
-.base {
-    max-height: 800px;
-    max-width: 800px;
-    overflow: auto;
-}
-
+$resolve: #18b32c;
+$cancel:#e53935;
+$save:#0046c8;
 .row {
     display: flex;
     flex-flow: row nowrap;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: baseline;
-    width: 100%;
-    &.actions {
+    margin-top: 2vh;
+    margin-bottom: 4vh;
+    &.spread {
         justify-content: space-evenly;
+        margin-top: 1vh;
+        margin-bottom: 1vh;
     }
-}
-
-.timefield {
-    margin-left: 20px;
-    margin-right: 10px;
-    width: 95px;
 }
 
 .button {
+    width: 120px;
+    margin-left: 10px;
+    margin-right: 10px;
+    &.resolve {
+        background-color: $resolve;
+        color: white;
+    }
     &.save {
-        color: #43a047;
+        color: $save;
     }
     &.cancel {
-        color: #d50000;
+        color: $cancel;
     }
+}
+
+.time {
+    width: 100px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.alerts {
+    width: 300px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
