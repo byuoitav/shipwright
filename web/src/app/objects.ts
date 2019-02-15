@@ -729,7 +729,7 @@ export class RoomAlerts{
         let visAlerts = [];
         this.map.forEach((v, k) => {
             if(!v.resolved) {
-                if(severity == null) {
+                if(severity == null || severity.length == 0) {
                     visAlerts.push(v)
                 } 
                 else if(severity === v.severity) {

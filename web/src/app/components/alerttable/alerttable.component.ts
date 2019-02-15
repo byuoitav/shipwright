@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { IDashPanel } from '../dashpanel/idashpanel';
 import { RoomAlerts, Room, Alert } from 'src/app/objects';
@@ -36,10 +36,13 @@ export class AlertTableComponent implements OnInit, IDashPanel {
 
   private serviceNowURL: string = "https://it.byu.edu/incident.do?sysparm_query=number="
   
-  constructor(public text: StringsService, public monitor: MonitoringService, public modal: ModalService) {
+  constructor(public text: StringsService, public monitor: MonitoringService, public modal: ModalService, private change: ChangeDetectorRef) {
     this.monitor.alertEmitter.subscribe(alert => {
       // console.log(alert.roomID);
       this.UpdateAlertData(alert.roomID);
+      console.log(this.monitor.GetAllAlerts(this.chosenSeverity));
+      this.dataSource.data = this.monitor.GetAllAlerts(this.chosenSeverity);
+    this.change.detectChanges();
     })
   }
 
@@ -79,7 +82,7 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   UpdateAlertData(roomID: string) {
     let ra = this.monitor.roomAlertsMap.get(roomID)
 
-    this.alertDataMap.set(ra.roomID, new MatTableDataSource(this.GetVisibleAlerts(ra)));
+    this.alertDataMap.set(ra.roomID, new MatTableDataSource(this.GetVisibleAlerts(ra))); 
   }
 
   private GetVisibleAlerts(ra: RoomAlerts) {

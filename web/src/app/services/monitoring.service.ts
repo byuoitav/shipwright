@@ -68,9 +68,11 @@ export class MonitoringService {
   GetAllAlerts(severity?: string) {
     let toReturn: RoomAlerts[] = [];
 
-    if(severity == null || severity.length == 0) {
+    if(severity == null || severity.length == 0 || severity === "all-alerts") {
       this.roomAlertsMap.forEach((value, key) => {
-        toReturn.push(value)    
+        if(value.GetVisibleAlerts(severity).length > 0) {
+          toReturn.push(value)
+        }
       })
       return toReturn.sort((a, b):number => {
         return a!.roomID!.localeCompare(b!.roomID);
@@ -78,17 +80,19 @@ export class MonitoringService {
     }
     
     this.roomAlertsMap.forEach((value, key) => {
-      let matches = false
+      if(value.GetVisibleAlerts(severity).length != 0) {
+        let matches = false
       
-      for(let alert of value.GetAlerts()) {
-        if(alert.severity === severity) {
-          matches = true
-          break
+        for(let alert of value.GetAlerts()) {
+          if(alert.severity === severity) {
+            matches = true
+            break
+          }
         }
-      }
-
-      if(matches) {
-        toReturn.push(value);
+  
+        if(matches) {
+          toReturn.push(value);
+        }
       }
     });
 
