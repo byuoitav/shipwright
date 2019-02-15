@@ -33,11 +33,11 @@ export class SocketService {
     jsonConvert.ignorePrimitiveChecks = false;
 
     this.socket.onMessage(msg => {
-      // const data = JSON.parse(msg.data);
-      const alert = jsonConvert.deserialize(msg, Alert);
+      const data = JSON.parse(msg.data);
+      const a = jsonConvert.deserialize(data, Alert);
 
-      console.log("received alert", alert);
-      this.listener.emit(alert);
+      console.log("received alert", a);
+      this.listener.emit(a);
     });
 
     this.socket.onOpen(msg => {
