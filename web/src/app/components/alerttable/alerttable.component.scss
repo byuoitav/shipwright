@@ -82,3 +82,20 @@ td.alert-detail-row {
     width: 95%;
     margin: auto;
 }
+
+
+/* Column Widths */
+
+.mat-column-number,
+.mat-column-state {
+    max-width: 64px;
+}
+
+.mat-column-created {
+    max-width: 124px;
+}
+
+.mat-column-icon {
+    max-width: 70px;
+    width: 70px;
+}
