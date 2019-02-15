@@ -66,6 +66,7 @@ func InitializeAlertStore(a *actions.ActionManager) {
 		alerts[i].Source = Init
 		store.inChannel <- alerts[i]
 	}
+
 	log.L.Infof("Alert store initialized with %v alerts", len(alerts))
 }
 
@@ -326,10 +327,8 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 			return
 		}
 
-		if alert.Source == Init {
-			//run the iniitialization actions thing
-			a.runInitActions(alert)
-		}
+		//run the iniitialization actions thing
+		a.runInitActions(alert)
 
 	} else {
 		log.L.Errorf("Error: %v", err.Error())

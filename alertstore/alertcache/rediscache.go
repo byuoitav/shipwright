@@ -221,6 +221,7 @@ func (r *RedisAlertCache) GetAllAlerts() ([]structs.Alert, *nerr.E) {
 	}
 
 	var tmp structs.Alert
+	var indx []string
 
 	for i := range result {
 
@@ -229,8 +230,13 @@ func (r *RedisAlertCache) GetAllAlerts() ([]structs.Alert, *nerr.E) {
 
 		er = dec.Decode(&tmp)
 		if er != nil {
-			return toReturn, nerr.Translate(er).Addf("Couldn't get all alerts")
+			er = dec.Decode(&indx)
+			if er != nil {
+				return toReturn, nerr.Translate(er).Addf("Couldn't get all alerts")
+			}
+			log.L.Debugf("Discarding event: %v. It was an index")
 		}
+
 		toReturn = append(toReturn, tmp)
 	}
 

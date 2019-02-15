@@ -42,7 +42,7 @@ func init() {
 
 func GetAllActiveAlertsFromPersist() ([]structs.Alert, *nerr.E) {
 	alerts := []structs.Alert{}
-	query := elk.AllQuery{}
+	query := elk.AllQuery{Size: 10000}
 	query.Query.MatchAll = map[string]interface{}{}
 
 	config := config.GetConfig().Persist
