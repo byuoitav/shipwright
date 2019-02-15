@@ -4,14 +4,12 @@ import (
 	"crypto/md5"
 	"fmt"
 
-	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/structs"
 )
 
 //AddAlert takes an alert and stores it in the store. It will return the AlertID.
 func AddAlert(a structs.Alert) (string, *nerr.E) {
-	log.L.Info("%v", a)
 	a.Source = Interface
 	return store.putAlert(a)
 }
@@ -99,15 +97,12 @@ func ResolveAlertSet(resInfo structs.ResolutionInfo, alertIDs ...string) *nerr.E
 		return nerr.Create("Must include an alertID", "invalid-input")
 	}
 
-	//generate the hash
-	if len(alertIDs) > 1 {
-		str := ""
-		for i := range alertIDs {
-			str += alertIDs[i]
-		}
-		hash := md5.Sum([]byte(str))
-		resInfo.ResolutionHash = fmt.Sprintf("%x %v", hash, len(alertIDs))
+	str := ""
+	for i := range alertIDs {
+		str += alertIDs[i]
 	}
+	hash := md5.Sum([]byte(str))
+	resInfo.ResolutionHash = fmt.Sprintf("%x %v", hash, len(alertIDs))
 
 	//resolve
 	return store.resolveAlertSet(resInfo, alertIDs...)

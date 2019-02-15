@@ -8,6 +8,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/state/statedefinition"
 	"github.com/byuoitav/common/structs"
@@ -20,6 +21,16 @@ type templateData struct {
 	StaticDevices []statedefinition.StaticDevice
 	StaticDevice  statedefinition.StaticDevice
 	Alert         structs.Alert
+}
+
+func init() {
+	locationMap := map[string]*time.Location{}
+	var err error
+
+	locationMap["America/Denver"], err = time.LoadLocation("America/Denver")
+	if err != nil {
+		log.L.Fatalf("unable to load timezone information: %s", err)
+	}
 }
 
 // FillStructFromTemplate .
@@ -65,10 +76,16 @@ func FillStructFromTemplate(ctx context.Context, tmpl string, fill interface{}) 
 	return nil
 }
 
+var locationMap map[string]*time.Location
+
 func (t templateData) FormatTimeInTimezone(ti time.Time, zone, format string) (string, error) {
-	tz, err := time.LoadLocation(zone)
-	if err != nil {
-		return ti.Format(format), err
+	tz, ok := locationMap[zone]
+	if !ok {
+		var err error
+		tz, err = time.LoadLocation(zone)
+		if err != nil {
+			return ti.Format(format), err
+		}
 	}
 
 	return ti.In(tz).Format(format), nil
