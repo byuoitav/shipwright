@@ -16,12 +16,10 @@ type If struct {
 // Check returns whether or not the if check passes
 func (i *If) Check(ctx context.Context, log *zap.SugaredLogger) (context.Context, bool) {
 	if i.EventMatch != nil && !i.EventMatch.DoesEventMatch(ctx) {
-		log.Debugf("Failed if check at event match")
 		return ctx, false
 	}
 
 	if i.AlertMatch != nil && !i.AlertMatch.DoesAlertMatch(ctx) {
-		log.Debugf("Failed if check at alert match")
 		return ctx, false
 	}
 
@@ -30,10 +28,8 @@ func (i *If) Check(ctx context.Context, log *zap.SugaredLogger) (context.Context
 		cont, ctx = i.StateQuery.CheckStore(ctx)
 		if cont {
 			return ctx, true
-		} else {
-			log.Debugf("Failed if check at alert match")
-			return ctx, false
 		}
+		return ctx, false
 	}
 
 	return ctx, true

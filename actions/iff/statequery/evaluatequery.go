@@ -90,6 +90,8 @@ func (q *QueryNode) compareFields(in interface{}) (bool, *nerr.E) {
 			return *structv != v, nil
 		case "==":
 			return *structv == v, nil
+		case "*=":
+			return false, nerr.Create(fmt.Sprintf("Invalid comparison %v for int field.", q.Value), "invalid-comparison")
 
 		}
 
@@ -110,7 +112,11 @@ func (q *QueryNode) compareFields(in interface{}) (bool, *nerr.E) {
 			return structv != q.Right, nil
 		case "==":
 			return structv == q.Right, nil
-
+		case "*=":
+			q.regexonce.Do(func() {
+				q.RightRe = regexp.MustCompile(q.Right)
+			})
+			return q.RightRe.MatchString(structv), nil
 		}
 
 	case time.Time:
@@ -138,6 +144,8 @@ func (q *QueryNode) compareFields(in interface{}) (bool, *nerr.E) {
 			return !t.Equal(structv), nil
 		case "==":
 			return t.Equal(structv), nil
+		case "*=":
+			return false, nerr.Create(fmt.Sprintf("Invalid comparison %v for time field.", q.Value), "invalid-comparison")
 		}
 
 	case *bool:
@@ -161,6 +169,8 @@ func (q *QueryNode) compareFields(in interface{}) (bool, *nerr.E) {
 			return b != *structv, nil
 		case "==":
 			return b == *structv, nil
+		case "*=":
+			return false, nerr.Create(fmt.Sprintf("Invalid comparison %v for bool field.", q.Value), "invalid-comparison")
 		}
 
 	}

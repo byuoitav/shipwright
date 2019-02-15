@@ -12,4 +12,5 @@ type AllQuery struct {
 	Query struct {
 		MatchAll map[string]interface{} `json:"match_all"`
 	} `json:"query"`
+	Size int `json:"size"`
 }

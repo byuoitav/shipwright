@@ -54,7 +54,7 @@ func FillStructFromTemplate(ctx context.Context, tmpl string, fill interface{}) 
 
 	// replace square brackets with curly braces
 	str := strings.Replace(buf.String(), "[[", "{{", -1)
-	str = strings.Replace(buf.String(), "]]", "}}", -1)
+	str = strings.Replace(str, "]]", "}}", -1)
 
 	gerr = json.Unmarshal([]byte(str), fill)
 	if gerr != nil {

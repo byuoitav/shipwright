@@ -27,8 +27,8 @@ import (
 )
 
 func main() {
-	figure.NewFigure("SMEE", "univers", true).Print()
 	log.SetLevel("info")
+	figure.NewFigure("SMEE", "univers", true).Print()
 
 	err := resetConfig(context.Background())
 	if err != nil {
@@ -48,7 +48,7 @@ func main() {
 
 	// get events from the hub
 	go func() {
-		messenger.SubscribeToRooms("ITB-2019")
+		messenger.SubscribeToRooms("*")
 
 		for {
 			processEvent(messenger.ReceiveEvent())
@@ -71,6 +71,8 @@ func main() {
 	read := router.Group("", auth.AuthorizeRequest("read-state", "room", auth.LookupResourceFromAddress))
 
 	router.POST("/test", handlers.Test)
+	router.GET("/actions", actions.DefaultActionManager().Info)
+	router.GET("/actions/trigger/:trigger", actions.DefaultActionManager().Config.ActionsByTrigger)
 
 	// Building Endpoints
 	write.POST("/buildings/:building", handlers.AddBuilding)
@@ -146,7 +148,6 @@ func main() {
 }
 
 func processEvent(event events.Event) {
-	log.SetLevel("debug")
 	log.L.Debugf("Got event: %+v", event)
 
 	cache.GetCache("default").StoreAndForwardEvent(event)

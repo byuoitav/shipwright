@@ -53,7 +53,6 @@ func DefaultActionManager() *ActionManager {
 
 // Start starts the action manager
 func (a *ActionManager) Start(ctx context.Context) *nerr.E {
-	// var err *nerr.E
 	a.ctx = ctx
 	a.wg = &sync.WaitGroup{}
 	a.reqs = make(chan *ActionRequest, 1000)
@@ -79,7 +78,7 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 	for i := 0; i < a.Workers; i++ {
 		go func(index int) {
 			defer a.wg.Done()
-			defer log.L.Infof("Closed action maanger worker %d", index)
+			defer log.L.Infof("Closed action manager worker %d", index)
 
 			for {
 				select {

@@ -14,8 +14,6 @@ import (
 )
 
 func Test(context echo.Context) error {
-
-	log.SetLevel("debug")
 	T := true
 
 	room := sd.StaticRoom{
