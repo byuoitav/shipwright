@@ -48,7 +48,7 @@ func main() {
 
 	// get events from the hub
 	go func() {
-		messenger.SubscribeToRooms("ITB-2019")
+		messenger.SubscribeToRooms("*")
 
 		for {
 			processEvent(messenger.ReceiveEvent())
