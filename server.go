@@ -15,7 +15,6 @@ import (
 	"github.com/byuoitav/common/v2/events"
 	"github.com/byuoitav/shipwright/actions"
 	"github.com/byuoitav/shipwright/couch"
-	"github.com/byuoitav/shipwright/state/cache"
 	"github.com/labstack/echo"
 
 	// imported to initialize the list of then's
@@ -41,7 +40,7 @@ func main() {
 	alertstore.InitializeAlertStore(actions.DefaultActionManager())
 
 	// connect to the hub
-	messenger, err := messenger.BuildMessenger(os.Getenv("HUB_ADDRESS"), base.Messenger, 1000)
+	messenger, err := messenger.BuildMessenger(os.Getenv("HUB_ADDRESS"), base.Messenger, 5000)
 	if err != nil {
 		log.L.Fatalf("failed to build messenger: %s", err)
 	}
@@ -150,7 +149,6 @@ func main() {
 func processEvent(event events.Event) {
 	log.L.Debugf("Got event: %+v", event)
 
-	cache.GetCache("default").StoreAndForwardEvent(event)
 	actions.DefaultActionManager().EventStream <- event
 }
 

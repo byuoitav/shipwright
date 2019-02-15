@@ -43,8 +43,8 @@ func DefaultActionManager() *ActionManager {
 	defaultOnce.Do(func() {
 		defaultAM = &ActionManager{
 			Config:      DefaultConfig(),
-			Workers:     20,
-			EventStream: make(chan events.Event, 1000),
+			Workers:     200,
+			EventStream: make(chan events.Event, 10000),
 		}
 	})
 
