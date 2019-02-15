@@ -78,7 +78,7 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 	for i := 0; i < a.Workers; i++ {
 		go func(index int) {
 			defer a.wg.Done()
-			defer log.L.Infof("Closed action maanger worker %d", index)
+			defer log.L.Infof("Closed action manager worker %d", index)
 
 			for {
 				select {
