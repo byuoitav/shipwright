@@ -221,7 +221,6 @@ func (r *RedisAlertCache) GetAllAlerts() ([]structs.Alert, *nerr.E) {
 	}
 
 	var tmp structs.Alert
-	var indx []string
 
 	for i := range result {
 
