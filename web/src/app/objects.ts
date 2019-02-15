@@ -735,9 +735,9 @@ export class RoomAlerts {
     let visAlerts = [];
     this.map.forEach((v, k) => {
       if (!v.resolved) {
-        if (severity == null || severity.length == 0) {
+        if (severity == null || severity.length == 0 || severity == "all-alerts") {
           visAlerts.push(v);
-        } else if (severity === v.severity) {
+        } else if (severity.toLowerCase() === v.severity.toLowerCase()) {
           visAlerts.push(v);
         }
       }
@@ -746,9 +746,9 @@ export class RoomAlerts {
     return visAlerts;
   }
 
-  GetActiveAlertCount() {
+  GetActiveAlertCount(severity?: string) {
     let count = 0;
-    for(let alert of this.GetAlerts()) {
+    for(let alert of this.GetVisibleAlerts(severity)) {
       if(alert.active) {
         count++;
       }

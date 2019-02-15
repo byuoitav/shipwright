@@ -85,12 +85,17 @@ export class AlertTableComponent implements OnInit, IDashPanel {
     this.alertDataMap.set(ra.roomID, new MatTableDataSource(this.GetVisibleAlerts(ra))); 
   }
 
-  private GetVisibleAlerts(ra: RoomAlerts) {
+  GetVisibleAlerts(ra: RoomAlerts) {
     let visAlerts = [];
 
-    for(let alert of ra.GetAlerts()) {
+    for(let alert of ra.GetVisibleAlerts()) {
       if(!alert.resolved) {
-        visAlerts.push(alert)
+        if(this.chosenSeverity == null || this.chosenSeverity.length == 0) {
+          visAlerts.push(alert)
+        }
+        else if(alert.severity.toLowerCase() == this.chosenSeverity.toLowerCase()){
+          visAlerts.push(alert)
+        }
       }
     }
     return visAlerts;

@@ -89,8 +89,8 @@ export class MonitoringService {
       if(value.GetVisibleAlerts(severity).length != 0) {
         let matches = false
       
-        for(let alert of value.GetAlerts()) {
-          if(alert.severity === severity) {
+        for(let alert of value.GetVisibleAlerts()) {
+          if(alert.severity.toLowerCase() === severity.toLowerCase()) {
             matches = true
             break
           }

@@ -20,7 +20,7 @@
 
         <ng-container matColumnDef="alertCount">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> # </th>
-            <td mat-cell *matCellDef="let ra" (click)="ExpandRow(ra)">{{ra.GetActiveAlertCount()}}/{{ra.GetAlerts().length}}</td>
+            <td mat-cell *matCellDef="let ra" (click)="ExpandRow(ra)">{{ra.GetActiveAlertCount(chosenSeverity)}}/{{ra.GetVisibleAlerts(chosenSeverity).length}}</td>
         </ng-container>
 
         <ng-container matColumnDef="incident">
@@ -54,70 +54,61 @@
             <td mat-cell *matCellDef="let ra"><button mat-raised-button color='accent' (click)="modal.OpenRespondModal(ra)">Respond</button></td>
         </ng-container> -->
 
-    <ng-container matColumnDef="expandedDetail">
-      <td mat-cell *matCellDef="let ra" [attr.colspan]="alertRowColumns.length">
-        <div
-          class="alert-detail"
-          [@detailExpand]="expRoomAlerts === ra ? 'expanded' : 'collapsed'"
-        >
-          <table
-            mat-table
-            [dataSource]="GetAlertData(ra)"
-            multiTemplateDataRows
-          >
-            <ng-container matColumnDef="deviceName">
-              <th mat-header-cell *matHeaderCellDef>Device Name</th>
-              <td mat-cell *matCellDef="let alert">{{ alert.deviceID }}</td>
-            </ng-container>
+        <ng-container matColumnDef="expandedDetail">
+            <td mat-cell *matCellDef="let ra" [attr.colspan]="alertRowColumns.length">
+                <div class="alert-detail" [@detailExpand]="expRoomAlerts === ra ? 'expanded' : 'collapsed'">
+                    <table mat-table [dataSource]="GetAlertData(ra)" multiTemplateDataRows>
+                        <ng-container matColumnDef="deviceName">
+                            <th mat-header-cell *matHeaderCellDef>Device Name</th>
+                            <td mat-cell *matCellDef="let alert">{{ alert.deviceID }}</td>
+                        </ng-container>
 
-            <ng-container matColumnDef="alertType">
-              <th mat-header-cell *matHeaderCellDef>Type</th>
-              <td mat-cell *matCellDef="let alert">
-                {{ text.Title(alert.type) }}
-              </td>
-            </ng-container>
+                        <ng-container matColumnDef="alertType">
+                            <th mat-header-cell *matHeaderCellDef>Type</th>
+                            <td mat-cell *matCellDef="let alert">
+                                {{ text.Title(alert.type) }}
+                            </td>
+                        </ng-container>
 
-            <ng-container matColumnDef="severity">
-              <th mat-header-cell *matHeaderCellDef>Severity</th>
-              <td mat-cell *matCellDef="let alert">
-                <span [ngClass]="alert.severity + '-severity'">{{
+                        <ng-container matColumnDef="severity">
+                            <th mat-header-cell *matHeaderCellDef>Severity</th>
+                            <td mat-cell *matCellDef="let alert">
+                                <span [ngClass]="alert.severity + '-severity'">{{
                   text.Title(alert.severity)
                 }}</span>
-              </td>
-            </ng-container>
+                            </td>
+                        </ng-container>
 
-            <!-- <ng-container matColumnDef="message">
+                        <!-- <ng-container matColumnDef="message">
                             <th mat-header-cell *matHeaderCellDef> Message </th>
                             <td mat-cell *matCellDef="let alert">{{alert.message}}</td>
                         </ng-container> -->
 
-            <!-- <ng-container matColumnDef="alert-started">
+                        <!-- <ng-container matColumnDef="alert-started">
                             <th mat-header-cell *matHeaderCellDef> Alert Started At </th>
                             <td mat-cell *matCellDef="let alert">{{GetReadableTimestamp(alert.helpSentAt.toLocaleString())}}</td>
                         </ng-container> -->
 
-            <!-- <ng-container matColumnDef="alert-resolved">
+                        <!-- <ng-container matColumnDef="alert-resolved">
                             <th mat-header-cell *matHeaderCellDef> Alert Resolved At </th>
                             <td mat-cell *matCellDef="let alert">{{alert.helpSentAt.toLocaleString('en-US')}}</td>
                         </ng-container> -->
 
-            <ng-container matColumnDef="responders">
-              <th mat-header-cell *matHeaderCellDef>Responders</th>
-              <td mat-cell *matCellDef="let alert">
-                <ng-container
-                  *ngIf="
+                        <ng-container matColumnDef="responders">
+                            <th mat-header-cell *matHeaderCellDef>Responders</th>
+                            <td mat-cell *matCellDef="let alert">
+                                <ng-container *ngIf="
                     alert.responders == null || alert.responders?.length == 0
-                  "
-                >
-                  <span>--</span>
-                </ng-container>
-                <ng-container *ngIf="alert.responders?.length > 0">
-                  <span>{{ alert.responders }}</span>
-                </ng-container>
-              </td>
-            </ng-container>
+                  ">
+                                    <span>--</span>
+                                </ng-container>
+                                <ng-container *ngIf="alert.responders?.length > 0">
+                                    <span>{{ alert.responders }}</span>
+                                </ng-container>
+                            </td>
+                        </ng-container>
 
-            <!-- <ng-container matColumnDef="help-sent-at">
+                        <!-- <ng-container matColumnDef="help-sent-at">
                             <th mat-header-cell *matHeaderCellDef> Help Sent At </th>
                             <td mat-cell *matCellDef="let alert">{{GetReadableTimestamp(alert.helpSentAt.toLocaleString())}}</td>
                         </ng-container>
