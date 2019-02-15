@@ -75,6 +75,8 @@ export class MonitoringService {
         }
       })
       return toReturn.sort((a, b):number => {
+        if(a.roomID == null && b.roomID != null) {return 1}
+        if(b.roomID == null && a.roomID != null) {return -1}
         return a!.roomID!.localeCompare(b!.roomID);
       });
     }
@@ -97,6 +99,8 @@ export class MonitoringService {
     });
 
     return toReturn.sort((a, b):number => {
+      if(a.roomID == null && b.roomID != null) {return 1}
+      if(b.roomID == null && a.roomID != null) {return -1}
       return a!.roomID!.localeCompare(b.roomID);
     });
   }
