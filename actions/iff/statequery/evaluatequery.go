@@ -70,7 +70,7 @@ func (q *QueryNode) compareFields(in interface{}) (bool, *nerr.E) {
 	switch curstruct.(type) {
 	case *int:
 		structv, ok := curstruct.(*int)
-		if !ok {
+		if !ok || structv == nil {
 			log.L.Errorf("Can't cast. Weird problems are afoot.")
 
 			return false, nerr.Create(fmt.Sprintf("Couldn't compare %v and %v. An error occurred extracting value from struct.", q.Right, q.Left), "invalid-comparison")
@@ -78,6 +78,32 @@ func (q *QueryNode) compareFields(in interface{}) (bool, *nerr.E) {
 
 		//cast right side value to an integer
 		v, err := strconv.Atoi(q.Right)
+		if err != nil {
+			return false, nerr.Create(fmt.Sprintf("%v is not an integer, cannot compare to an integer field %v", q.Right, q.Left), "invalid-comparison")
+		}
+		switch q.Value {
+		case "<":
+			return *structv < v, nil
+		case ">":
+			return *structv > v, nil
+		case "!=":
+			return *structv != v, nil
+		case "==":
+			return *structv == v, nil
+		case "*=":
+			return false, nerr.Create(fmt.Sprintf("Invalid comparison %v for int field.", q.Value), "invalid-comparison")
+
+		}
+	case *float64:
+		structv, ok := curstruct.(*float64)
+		if !ok || structv == nil {
+			log.L.Errorf("Can't cast. Weird problems are afoot.")
+
+			return false, nerr.Create(fmt.Sprintf("Couldn't compare %v and %v. An error occurred extracting value from struct.", q.Right, q.Left), "invalid-comparison")
+		}
+
+		//cast right side value to an integer
+		v, err := strconv.ParseFloat(q.Right, 64)
 		if err != nil {
 			return false, nerr.Create(fmt.Sprintf("%v is not an integer, cannot compare to an integer field %v", q.Right, q.Left), "invalid-comparison")
 		}
@@ -150,7 +176,7 @@ func (q *QueryNode) compareFields(in interface{}) (bool, *nerr.E) {
 
 	case *bool:
 		structv, ok := curstruct.(*bool)
-		if !ok {
+		if !ok || structv == nil {
 			log.L.Errorf("Can't cast. Weird problems are afoot.")
 
 			return false, nerr.Create(fmt.Sprintf("Couldn't compare %v and %v. An error occurred extracting value from struct.", q.Right, q.Left), "invalid-comparison")
@@ -159,7 +185,6 @@ func (q *QueryNode) compareFields(in interface{}) (bool, *nerr.E) {
 		if err != nil {
 			return false, nerr.Create(fmt.Sprintf("Couldn't parse bool %v. %v", q.Right, err.Error()), "invalid-comparison")
 		}
-
 		switch q.Value {
 		case "<":
 			return false, nerr.Create(fmt.Sprintf("Invalid comparison %v for bool field.", q.Value), "invalid-comparison")
