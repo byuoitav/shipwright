@@ -8,6 +8,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/state/statedefinition"
 	"github.com/byuoitav/common/structs"
@@ -23,9 +24,13 @@ type templateData struct {
 }
 
 func init() {
-	locationMap := map[string]*Location{}
+	locationMap := map[string]*time.Location{}
+	tz, err := time.LoadLocation("America/Denver")
+	if err != nil {
+		log.L.Fatalf("can't access timzeone database: %v", err.Error())
+	}
 
-	locationMap["America/Denver"] = time.LoadLocation("America/Denver")
+	locationMap["America/Denver"] = tz
 }
 
 // FillStructFromTemplate .
@@ -71,7 +76,7 @@ func FillStructFromTemplate(ctx context.Context, tmpl string, fill interface{}) 
 	return nil
 }
 
-var locationMap map[string]*Location
+var locationMap map[string]*time.Location
 
 func (t templateData) FormatTimeInTimezone(ti time.Time, zone, format string) (string, error) {
 	tz, ok := locationMap[zone]
