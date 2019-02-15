@@ -53,7 +53,7 @@ export class ResolutionInfo {
 
 @JsonObject("Alert")
 export class Alert {
-  @JsonProperty("alertID", String, true)
+  @JsonProperty("id", String, true)
   alertID: string = undefined;
 
   @JsonProperty("buildingID", String, true)
