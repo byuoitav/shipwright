@@ -230,13 +230,7 @@ func (r *RedisAlertCache) GetAllAlerts() ([]structs.Alert, *nerr.E) {
 		er = dec.Decode(&tmp)
 
 		if er != nil {
-
-			buf.Write([]byte(result[i].(string)))
-			er = dec.Decode(&indx)
-			if er != nil {
-				return toReturn, nerr.Translate(er).Addf("Couldn't get all alerts. Key %v")
-			}
-			log.L.Debugf("Discarding event: %v. It was an index")
+			log.L.Debugf("Discarding event: %v. It was probably an index", result[i].(string))
 		}
 
 		toReturn = append(toReturn, tmp)
