@@ -1,8 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Device } from 'src/app/objects';
-import { DeviceType} from 'src/app/objects';
+import { Device, DeviceType, Port } from 'src/app/objects';
 import { DataService} from 'src/app/services/data.service';
 
 @Component({
@@ -18,6 +17,8 @@ export class DeviceModalComponent implements OnInit {
   constructor(public text: StringsService, public dialogRef: MatDialogRef<DeviceModalComponent>, @Inject(MAT_DIALOG_DATA) public data: Device, public dataService: DataService) {
     this.RoleList = data.roles;
     this.UpdateRoleLists();
+    this.CurrentType = this.dataService.deviceTypeMap.get(this.data.type.id);
+    this.FixMe();
   }
 
   ngOnInit() {
@@ -27,6 +28,21 @@ export class DeviceModalComponent implements OnInit {
   Close() {
     this.dialogRef.close();
   }
+
+  FixMe(){
+    for (let port of this.data.ports){
+      if (port.tags == null || port.tags.length == 0){
+        for (let typePort of this.CurrentType.ports){
+          if (typePort.id == port.id){
+            for (let tag of typePort.tags){
+              port.tags.push(tag);
+            }
+          }
+        }
+      }
+    }
+  }
+
 
   UpdateRoleLists(){
     this.UnappliedRoles = [];
@@ -53,14 +69,16 @@ export class DeviceModalComponent implements OnInit {
   UpdateDeviceType(){
     if (this.data != null && this.data.type != null){
       this.CurrentType = this.dataService.deviceTypeMap.get(this.data.type.id);
-      
+
       if (this.CurrentType != null && this.CurrentType.roles != null) {
         this.data.roles = this.CurrentType.roles;
       }
 
       this.UpdateRoleLists();
-      console.log("3");
     }
-    console.log("3");
+  }
+
+  IsAnInPort(port : Port) : boolean {
+    return port.tags.includes("port-in");
   }
 }
