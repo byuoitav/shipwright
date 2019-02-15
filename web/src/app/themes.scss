@@ -2,7 +2,7 @@
 @include mat-core();
 // default (light) theme
 $default-primary: mat-palette($mat-blue, 800, 600, 900);
-$default-accent: mat-palette($mat-gray, 600, 500, 700);
+$default-accent: mat-palette($mat-grey, 300, 200, 400);
 $default-warn: mat-palette($mat-amber);
 $default: mat-light-theme($default-primary, $default-accent, $default-warn);
 @include angular-material-theme($default);

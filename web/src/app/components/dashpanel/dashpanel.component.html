@@ -3,8 +3,17 @@
 </p> -->
 
 <div class="row">
+    <!-- <mat-chip-list> -->
+    <!-- <button mat-flat-button [disableRipple]=true style="cursor: default; font-size: 15pt" color="primary"> -->
+    <h2 class="mat-h2">
+        Total Alerts: {{totalAlertsNum}}
+    </h2>
+
+    <!-- </button> -->
+    <!-- </mat-chip-list> -->
+
     <mat-form-field>
-        <mat-select [value]="AllAlerts" (selectionChange)="choosePanel($event.value)" color="accent">
+        <mat-select [value]="AllAlerts" (selectionChange)="choosePanel($event.value)" color="accent" #pType>
             <mat-option [value]=null>None</mat-option>
             <mat-option [value]="AllAlerts">All Alerts</mat-option>
             <mat-option [value]="CritAlerts">Critical Alerts</mat-option>

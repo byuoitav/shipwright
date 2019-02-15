@@ -15,17 +15,22 @@ import { DataService } from 'src/app/services/data.service';
 export class DashPanelComponent implements OnInit {
   @ViewChild(forwardRef(()=>DashPanelDirective)) direct: DashPanelDirective;
 
-  constructor(private resolver: ComponentFactoryResolver, private dashServe: DashPanelService, private monitor: MonitoringService, private data: DataService) {
+  totalAlertsNum: number = 0;
+  panelType: string = "all-alerts";
+
+  constructor(private resolver: ComponentFactoryResolver, private dashServe: DashPanelService, public monitor: MonitoringService, private data: DataService) {
     
   }
 
   ngOnInit() {
     if(this.data.finished) {
-      this.choosePanel(this.AllAlerts);
+      this.choosePanel();
+      this.GetTotalAlertsDisplay();
     }
     else {
       this.data.loaded.subscribe(() => {
-        this.choosePanel(this.AllAlerts);
+        this.choosePanel();
+        this.GetTotalAlertsDisplay();
       })
     }
   }
@@ -33,14 +38,20 @@ export class DashPanelComponent implements OnInit {
   AllAlerts = "all-alerts";
   CritAlerts = "critical"
   WarnAlerts = "warning"
+  Battery = "battery"
 
-  choosePanel(panelType: string) {
-    if(panelType == null) {
+  choosePanel(pType?: string) {
+    if(this.panelType == null) {
       return
     }
-    let data = this.determineData(panelType);
 
-    let panel = this.dashServe.getPanel(panelType, data)
+    if(pType != null) {
+      this.panelType = pType;
+    }
+
+    let data = this.determineData();
+
+    let panel = this.dashServe.getPanel(this.panelType, data)
     let componentFactory = this.resolver.resolveComponentFactory(panel.component);
     let viewContainerRef = this.direct.viewContainerRef;
     viewContainerRef.clear();
@@ -48,23 +59,35 @@ export class DashPanelComponent implements OnInit {
     let componentRef = viewContainerRef.createComponent(componentFactory);
     (<IDashPanel>componentRef.instance).data = data;
 
-    if(panelType == this.AllAlerts) {
-      panelType = ""
+    if(this.panelType == this.AllAlerts) {
+      this.panelType = ""
     }
     
-    (<IDashPanel>componentRef.instance).chosenSeverity = panelType;
+    (<IDashPanel>componentRef.instance).chosenSeverity = this.panelType;
   }
 
-  determineData(panelType: string): any {
-    if(panelType === this.AllAlerts) {
+  determineData(): any {
+    if(this.panelType === this.AllAlerts) {
       return this.monitor.GetAllAlerts();
     }
-    if(panelType === this.CritAlerts) {
+    if(this.panelType === this.CritAlerts) {
       return this.monitor.GetAllAlerts(this.CritAlerts);
     }
-    if(panelType === this.WarnAlerts) {
+    if(this.panelType === this.WarnAlerts) {
       return this.monitor.GetAllAlerts(this.WarnAlerts);
     }
     // TODO get data for battery report
+  }
+
+  GetTotalAlertsDisplay() {
+    if(this.panelType != null && this.panelType != this.Battery) {
+      let rows = this.monitor.GetAllAlerts(this.panelType)
+      
+      if(rows != null) {
+        for(let r of rows) {
+         this.totalAlertsNum += r.GetVisibleAlerts().length 
+        }
+      }
+    }
   }
 }

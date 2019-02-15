@@ -746,8 +746,25 @@ export class RoomAlerts {
     return visAlerts;
   }
 
+  GetActiveAlertCount() {
+    let count = 0;
+    for(let alert of this.GetAlerts()) {
+      if(alert.active) {
+        count++;
+      }
+    }
+
+    return count;
+  }
+
   AddAlert(a: Alert) {
-    this.map.set(a.alertID, a);
+    if(!a.resolved) {
+      this.map.set(a.alertID, a);
+    } else {
+      // if(this.map.get(a.alertID) != null) {
+        this.map.delete(a.alertID)
+      // }
+    }
   }
 
   AddAlerts(aList: Alert[]) {
