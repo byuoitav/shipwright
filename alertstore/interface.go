@@ -4,12 +4,14 @@ import (
 	"crypto/md5"
 	"fmt"
 
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/structs"
 )
 
 //AddAlert takes an alert and stores it in the store. It will return the AlertID.
 func AddAlert(a structs.Alert) (string, *nerr.E) {
+	log.L.Info("%v", a)
 	a.Source = Interface
 	return store.putAlert(a)
 }
