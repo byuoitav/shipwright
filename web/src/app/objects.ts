@@ -41,13 +41,13 @@ class DateConverter implements JsonCustomConvert<Date> {
 
 @JsonObject("ResolutionInfo")
 export class ResolutionInfo {
-  @JsonProperty("resolution-code", String)
+  @JsonProperty("resolution-code", String, true)
   code: string = undefined;
 
-  @JsonProperty("notes", String)
+  @JsonProperty("notes", String, true)
   notes: string = undefined;
 
-  @JsonProperty("resolved-at", DateConverter)
+  @JsonProperty("resolved-at", DateConverter, true)
   resolvedAt: Date = new Date(0);
 }
 
@@ -89,31 +89,31 @@ export class Alert {
   @JsonProperty("data", Any, true)
   data: any = undefined;
 
-  @JsonProperty("start-time", DateConverter)
+  @JsonProperty("start-time", DateConverter, true)
   startTime: Date = new Date(0);
 
-  @JsonProperty("end-time", DateConverter)
+  @JsonProperty("end-time", DateConverter, true)
   endTime: Date = new Date(0);
 
-  @JsonProperty("update-time", DateConverter)
+  @JsonProperty("update-time", DateConverter, true)
   updateTime: Date = new Date(0);
 
-  @JsonProperty("active", Boolean)
-  active: boolean = true;
+  @JsonProperty("active", Boolean, true)
+  active: boolean = undefined;
 
-  @JsonProperty("resolved", Boolean)
-  resolved: boolean = true;
+  @JsonProperty("resolved", Boolean, true)
+  resolved: boolean = undefined;
 
-  @JsonProperty("responders", [String])
+  @JsonProperty("responders", [String], true)
   responders: string[] = Array<string>();
 
-  @JsonProperty("help-sent-at", DateConverter)
+  @JsonProperty("help-sent-at", DateConverter, true)
   helpSentAt: Date = new Date(0);
 
-  @JsonProperty("help-arrived-at", DateConverter)
+  @JsonProperty("help-arrived-at", DateConverter, true)
   helpArrivedAt: Date = new Date(0);
 
-  @JsonProperty("resolution-info", ResolutionInfo)
+  @JsonProperty("resolution-info", ResolutionInfo, true)
   resolutionInfo: ResolutionInfo = undefined;
 
   @JsonProperty("alert-tags", [String], true)

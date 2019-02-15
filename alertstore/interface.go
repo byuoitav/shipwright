@@ -4,12 +4,14 @@ import (
 	"crypto/md5"
 	"fmt"
 
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/structs"
 )
 
 //AddAlert takes an alert and stores it in the store. It will return the AlertID.
 func AddAlert(a structs.Alert) (string, *nerr.E) {
+	log.L.Info("%v", a)
 	a.Source = Interface
 	return store.putAlert(a)
 }
@@ -111,14 +113,36 @@ func ResolveAlertSet(resInfo structs.ResolutionInfo, alertIDs ...string) *nerr.E
 	return store.resolveAlertSet(resInfo, alertIDs...)
 }
 
-// AddTagToAlert .
+// AddTagToAlert adds tag to the alert matching id and resubmits it to the alert store.
 func AddTagToAlert(id string, tag string) *nerr.E {
-	/*
-		alert, err := store.getAlert(id)
-		if err != nil {
-			return err.Addf("failed to add tag to alert")
-		}
-	*/
+	alert, err := store.getAlert(id)
+	if err != nil {
+		return err.Addf("failed to add tag to alert")
+	}
 
-	return nil
+	alert.AlertTags = append(alert.AlertTags, tag)
+
+	_, err = store.putAlert(alert)
+	return err
+}
+
+// RemoveTagFromAlert removes all tags matching tag from the alert matching id and resubmits it to the alert store.
+func RemoveTagFromAlert(id string, tag string) *nerr.E {
+	alert, err := store.getAlert(id)
+	if err != nil {
+		return err.Addf("failed to remove tag from alert")
+	}
+
+	tags := []string{}
+
+	for i := range alert.AlertTags {
+		if alert.AlertTags[i] != tag {
+			tags = append(tags, alert.AlertTags[i])
+		}
+	}
+
+	alert.AlertTags = tags
+
+	_, err = store.putAlert(alert)
+	return err
 }

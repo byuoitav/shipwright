@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/state/statedefinition"
@@ -62,4 +63,14 @@ func FillStructFromTemplate(ctx context.Context, tmpl string, fill interface{}) 
 	}
 
 	return nil
+}
+
+func (t templateData) FormatTimeInTimezone(ti time.Time, zone, format string) (string, error) {
+	tz, err := time.LoadLocation(zone)
+	if err != nil {
+		return ti.Format(format), err
+	}
+
+	return ti.In(tz).Format(format), nil
+
 }

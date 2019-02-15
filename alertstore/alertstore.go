@@ -327,8 +327,10 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 			return
 		}
 
-		//run the iniitialization actions thing
-		a.runInitActions(alert)
+		if alert.Active {
+			//run the iniitialization actions thing
+			a.runInitActions(alert)
+		}
 
 	} else {
 		log.L.Errorf("Error: %v", err.Error())

@@ -90,17 +90,19 @@ func (c *Client) writePump() {
 
 			writer.Write(bytes)
 
-			n := len(c.sendChan)
-			for i := 0; i < n; i++ {
-				writer.Write(newLine)
+			/*
+				n := len(c.sendChan)
+				for i := 0; i < n; i++ {
+					writer.Write(newLine)
 
-				bytes, err := json.Marshal(<-c.sendChan)
-				if err != nil {
-					return
+					bytes, err := json.Marshal(<-c.sendChan)
+					if err != nil {
+						return
+					}
+
+					writer.Write(bytes)
 				}
-
-				writer.Write(bytes)
-			}
+			*/
 
 			if err := writer.Close(); err != nil {
 				return
