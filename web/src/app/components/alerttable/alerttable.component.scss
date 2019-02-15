@@ -1,16 +1,16 @@
 table {
     width: 100%;
-    margin: auto;
+    // margin: auto;
 }
 
 tr.alert-detail-row {
     height: 0;
-    font-size: 5pt;
+    font-size: 7pt;
 }
 
 td.alert-detail-row {
     height: 0;
-    font-size: 5pt;
+    font-size: 7pt;
 }
 
 button {
@@ -71,6 +71,13 @@ button {
     text-align: center;
 }
 
+.fake-hyperlink {
+    text-align: left;
+    color: #2196f3;
+    cursor: pointer;
+    width: 100px;
+}
+
 .filter {
     // margin: auto;
     width: 200px;
@@ -85,23 +92,56 @@ button {
 }
 
 .container {
-    width: 95%;
+    // width: 95%;
     margin: auto;
 }
 
 
 /* Column Widths */
 
-.mat-column-number,
-.mat-column-state {
-    max-width: 64px;
-}
-
-.mat-column-created {
-    max-width: 124px;
-}
-
 .mat-column-icon {
-    max-width: 70px;
-    width: 70px;
+    max-width: 60px;
+    width: 60px;
+    // flex: 0 1 60px;
+}
+
+.mat-column-roomID {
+    max-width: 150px;
+    width: 150px;
+    // flex: 0 1 150px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.mat-column-alertCount {
+    max-width: 40px;
+    width: 40px;
+    // flex: 0 1 40px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.mat-column-incident {
+    max-width: 200px;
+    width: 200px;
+    // flex: 0 1 200px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.mat-column-alertTypes {
+    max-width: 200px;
+    // width: 200px;
+    // flex: 0 1 200px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.mat-column-help-sent,
+.mat-column-help-arrived {
+    max-width: 100px;
+    width: 100px;
+    // flex: 0 1 100px;
+    padding-left: 10px;
+    padding-right: 10px;
 }

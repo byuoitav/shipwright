@@ -53,7 +53,7 @@ export class ResolutionInfo {
 
 @JsonObject("Alert")
 export class Alert {
-  @JsonProperty("alertID", String, true)
+  @JsonProperty("id", String, true)
   alertID: string = undefined;
 
   @JsonProperty("buildingID", String, true)
@@ -80,10 +80,10 @@ export class Alert {
   @JsonProperty("severity", String, true)
   severity: string = undefined;
 
-  @JsonProperty("message", String)
+  @JsonProperty("message", String, true)
   message: string = undefined;
 
-  @JsonProperty("message-log", [String])
+  @JsonProperty("message-log", [String], true)
   messageLog: string[] = Array<string>();
 
   @JsonProperty("data", Any, true)
@@ -746,8 +746,25 @@ export class RoomAlerts {
     return visAlerts;
   }
 
+  GetActiveAlertCount() {
+    let count = 0;
+    for(let alert of this.GetAlerts()) {
+      if(alert.active) {
+        count++;
+      }
+    }
+
+    return count;
+  }
+
   AddAlert(a: Alert) {
-    this.map.set(a.alertID, a);
+    if(!a.resolved) {
+      this.map.set(a.alertID, a);
+    } else {
+      // if(this.map.get(a.alertID) != null) {
+        this.map.delete(a.alertID)
+      // }
+    }
   }
 
   AddAlerts(aList: Alert[]) {

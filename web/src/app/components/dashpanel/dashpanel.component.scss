@@ -1,5 +1,10 @@
 .row {
     display: flex;
     flex-flow: row nowrap;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-left: 3em;
+    padding-right: 3em;
+    padding-top: 1em;
+    // padding-bottom: 1em;
 }

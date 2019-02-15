@@ -23,7 +23,7 @@ import { merge } from 'rxjs';
 export class AlertTableComponent implements OnInit, IDashPanel {
   @Input() data: any;
   @Input() singleRoom: boolean = false;
-  alertRowColumns = ['icon', 'roomID', 'alertCount', 'incident', 'help-sent', 'help-arrived'];
+  alertRowColumns = ['icon', 'roomID', 'alertCount', 'incident', 'alertTypes', 'help-sent', 'help-arrived'];
   alertDetailColumns = ['deviceName', 'severity', 'alertType', 'responders', 'message'];
   @Input() expRoomAlerts: RoomAlerts | null;
   @Input() chosenSeverity: string;
@@ -134,5 +134,17 @@ export class AlertTableComponent implements OnInit, IDashPanel {
     let finalTime = timeString.substring(0, timeString.lastIndexOf(":")) + timeString.substring(timeString.lastIndexOf(" "));
 
     return finalDate + finalTime;
+  }
+
+  GetAlertTypes(ra: RoomAlerts): string {
+    let types: string[] = []
+
+    for(let alert of ra.GetVisibleAlerts(this.chosenSeverity)) {
+      if(!types.includes(this.text.Title(alert.type))) {
+        types.push(this.text.Title(alert.type))
+      }
+    }
+
+    return types.toString()
   }
 }

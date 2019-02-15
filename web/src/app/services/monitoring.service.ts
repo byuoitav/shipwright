@@ -37,7 +37,8 @@ export class MonitoringService {
   }
 
   async RefreshAlerts() {
-    console.log(this.data.storedAlertList)
+    // console.log(this.data.storedAlertList)
+    if(this.data.storedAlertList) {
       for(let a of this.data.storedAlertList) {
         if(this.roomAlertsMap.get(a.roomID) == null) {
           let ra = new RoomAlerts(a.roomID, [a])
@@ -46,6 +47,7 @@ export class MonitoringService {
           this.roomAlertsMap.get(a.roomID).AddAlert(a);
         }
       }
+    }
   }
 
   
@@ -74,6 +76,8 @@ export class MonitoringService {
           toReturn.push(value)
         }
       })
+
+      console.log(toReturn);
       return toReturn.sort((a, b):number => {
         if(a.roomID == null && b.roomID != null) {return 1}
         if(b.roomID == null && a.roomID != null) {return -1}
@@ -103,5 +107,14 @@ export class MonitoringService {
       if(b.roomID == null && a.roomID != null) {return -1}
       return a!.roomID!.localeCompare(b.roomID);
     });
+  }
+
+  GetTotalAlertsDisplay(panelType?: string) {
+    if(panelType != null && panelType != "battery") {
+      let count = this.GetAllAlerts(panelType).length
+      console.log(count)
+
+      return "Total Alerts: "+count
+    }
   }
 }

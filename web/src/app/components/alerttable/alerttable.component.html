@@ -5,25 +5,32 @@
 <div class="mat-elevation-z3 container">
     <table mat-table [dataSource]="dataSource" matSort multiTemplateDataRows class="mat-elevation-z0">
         <ng-container matColumnDef="icon">
-            <th mat-header-cell *matHeaderCellDef class="centered"> System Type </th>
-            <td mat-cell *matCellDef="let ra" (click)="ExpandRow(ra)" class="centered">
+            <th mat-header-cell *matHeaderCellDef> System Type </th>
+            <td mat-cell *matCellDef="let ra" (click)="ExpandRow(ra)">
                 <mat-icon>{{ra.systemTypeIcon}}</mat-icon>
             </td>
         </ng-container>
 
         <ng-container matColumnDef="roomID">
             <th mat-header-cell *matHeaderCellDef mat-sort-header class="centered"> Room ID </th>
-            <td mat-cell *matCellDef="let ra" (click)="ExpandRow(ra)"><button mat-button color="primary" routerLink="/configuration/{{ra.roomID}}/roompage">{{ra.roomID}}</button></td>
+            <td mat-cell *matCellDef="let ra" (click)="ExpandRow(ra)">
+                <div routerLink="/configuration/{{ra.roomID}}/roompage" class="fake-hyperlink">{{ra.roomID}}</div>
+            </td>
         </ng-container>
 
         <ng-container matColumnDef="alertCount">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> # </th>
-            <td mat-cell *matCellDef="let ra" (click)="ExpandRow(ra)">{{ra.alerts.length}}</td>
+            <td mat-cell *matCellDef="let ra" (click)="ExpandRow(ra)">{{ra.GetActiveAlertCount()}}/{{ra.GetAlerts().length}}</td>
         </ng-container>
 
         <ng-container matColumnDef="incident">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> INC </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Incident ID </th>
             <td mat-cell *matCellDef="let ra" (click)="ExpandRow(ra)"><button mat-button color="primary" (click)="ServiceNowRedirect(ra.incidentID)">{{ra.incidentID}}</button></td>
+        </ng-container>
+
+        <ng-container matColumnDef="alertTypes">
+            <th mat-header-cell *matHeaderCellDef> Alert Types </th>
+            <td mat-cell *matCellDef="let ra">{{GetAlertTypes(ra).length > 40 ? (GetAlertTypes(ra) | slice:0:40)+'..' : (GetAlertTypes(ra))}}</td>
         </ng-container>
 
         <ng-container matColumnDef="help-sent">
@@ -124,6 +131,6 @@
         <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="alert-detail-row"></tr>
 
     </table>
-    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]">
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="50">
     </mat-paginator>
 </div>
