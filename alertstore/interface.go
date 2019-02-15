@@ -99,15 +99,12 @@ func ResolveAlertSet(resInfo structs.ResolutionInfo, alertIDs ...string) *nerr.E
 		return nerr.Create("Must include an alertID", "invalid-input")
 	}
 
-	//generate the hash
-	if len(alertIDs) > 1 {
-		str := ""
-		for i := range alertIDs {
-			str += alertIDs[i]
-		}
-		hash := md5.Sum([]byte(str))
-		resInfo.ResolutionHash = fmt.Sprintf("%x %v", hash, len(alertIDs))
+	str := ""
+	for i := range alertIDs {
+		str += alertIDs[i]
 	}
+	hash := md5.Sum([]byte(str))
+	resInfo.ResolutionHash = fmt.Sprintf("%x %v", hash, len(alertIDs))
 
 	//resolve
 	return store.resolveAlertSet(resInfo, alertIDs...)
