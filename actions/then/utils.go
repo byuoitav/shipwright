@@ -25,12 +25,12 @@ type templateData struct {
 
 func init() {
 	locationMap := map[string]*time.Location{}
-	tz, err := time.LoadLocation("America/Denver")
-	if err != nil {
-		log.L.Fatalf("can't access timzeone database: %v", err.Error())
-	}
+	var err error
 
-	locationMap["America/Denver"] = tz
+	locationMap["America/Denver"], err = time.LoadLocation("America/Denver")
+	if err != nil {
+		log.L.Fatalf("unable to load timezone information: %s", err)
+	}
 }
 
 // FillStructFromTemplate .

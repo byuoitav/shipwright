@@ -47,6 +47,7 @@ export class DashPanelComponent implements OnInit {
 
     if(pType != null) {
       this.panelType = pType;
+      this.GetTotalAlertsDisplay();
     }
 
     let data = this.determineData();
@@ -67,6 +68,7 @@ export class DashPanelComponent implements OnInit {
   }
 
   determineData(): any {
+    console.log(this.panelType);
     if(this.panelType === this.AllAlerts) {
       return this.monitor.GetAllAlerts();
     }
@@ -80,12 +82,13 @@ export class DashPanelComponent implements OnInit {
   }
 
   GetTotalAlertsDisplay() {
+    this.totalAlertsNum = 0
     if(this.panelType != null && this.panelType != this.Battery) {
       let rows = this.monitor.GetAllAlerts(this.panelType)
       
       if(rows != null) {
         for(let r of rows) {
-         this.totalAlertsNum += r.GetVisibleAlerts().length 
+         this.totalAlertsNum += r.GetVisibleAlerts(this.panelType).length 
         }
       }
     }
