@@ -376,6 +376,7 @@ var translationMap = map[string]string{
 	"CP": "control-processor",
 
 	"DSP":   "digital-signal-processor",
+	"DMPS":  "dmps",
 	"PC":    "computer",
 	"SW":    "video-switcher",
 	"MICJK": "microphone-jack",
