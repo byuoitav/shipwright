@@ -68,11 +68,16 @@ func (q *QueryNode) compareFields(in interface{}) (bool, *nerr.E) {
 
 	//curstruct *should* be our field
 	switch curstruct.(type) {
+	case nil:
+		return false, nil
 	case *int:
 		structv, ok := curstruct.(*int)
-		if !ok || structv == nil {
-			log.L.Errorf("Can't cast. Weird problems are afoot.")
+		if structv == nil {
+			return false, nil
+		}
 
+		if !ok {
+			log.L.Errorf("Can't cast or nil. Weird problems are afoot.")
 			return false, nerr.Create(fmt.Sprintf("Couldn't compare %v and %v. An error occurred extracting value from struct.", q.Right, q.Left), "invalid-comparison")
 		}
 
@@ -96,7 +101,11 @@ func (q *QueryNode) compareFields(in interface{}) (bool, *nerr.E) {
 		}
 	case *float64:
 		structv, ok := curstruct.(*float64)
-		if !ok || structv == nil {
+		if structv == nil {
+			return false, nil
+		}
+
+		if !ok {
 			log.L.Errorf("Can't cast. Weird problems are afoot.")
 
 			return false, nerr.Create(fmt.Sprintf("Couldn't compare %v and %v. An error occurred extracting value from struct.", q.Right, q.Left), "invalid-comparison")
@@ -176,7 +185,11 @@ func (q *QueryNode) compareFields(in interface{}) (bool, *nerr.E) {
 
 	case *bool:
 		structv, ok := curstruct.(*bool)
-		if !ok || structv == nil {
+		if structv == nil {
+			return false, nil
+		}
+
+		if !ok {
 			log.L.Errorf("Can't cast. Weird problems are afoot.")
 
 			return false, nerr.Create(fmt.Sprintf("Couldn't compare %v and %v. An error occurred extracting value from struct.", q.Right, q.Left), "invalid-comparison")
