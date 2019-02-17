@@ -10,7 +10,15 @@ import (
 
 //AddAlert takes an alert and stores it in the store. It will return the AlertID.
 func AddAlert(a structs.Alert) (string, *nerr.E) {
+
 	a.Source = Interface
+	var err *nerr.E
+	a, err = AddRoomInformationToAlert(a)
+	if err != nil {
+		return "", err.Addf("Couldn't add room info to alert")
+
+	}
+
 	return store.putAlert(a)
 }
 

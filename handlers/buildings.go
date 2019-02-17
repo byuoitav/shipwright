@@ -19,7 +19,7 @@ func Test(context echo.Context) error {
 	room := sd.StaticRoom{
 		BuildingID:      "ITB",
 		RoomID:          "ITB-1101",
-		MaintenanceMode: &T,
+		MaintenenceMode: &T,
 		UpdateTimes: map[string]time.Time{
 			"maintenance-mode": time.Now(),
 		},

@@ -30,7 +30,6 @@ type RedisCache struct {
 func init() {
 	gob.Register(sd.StaticDevice{})
 	gob.Register(sd.StaticRoom{})
-
 }
 
 func MakeRedisCache(devices []sd.StaticDevice, rooms []sd.StaticRoom, pushCron string, configuration config.Cache) (shared.Cache, *nerr.E) {

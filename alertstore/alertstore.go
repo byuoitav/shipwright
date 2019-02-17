@@ -64,6 +64,11 @@ func InitializeAlertStore(a *actions.ActionManager) {
 
 	for i := range alerts {
 		alerts[i].Source = Init
+		alerts[i], err = AddRoomInformationToAlert(alerts[i])
+
+		if err != nil {
+			log.L.Warnf("Problem adding room info to alert %v", err.Error())
+		}
 		store.inChannel <- alerts[i]
 	}
 
@@ -251,6 +256,12 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 			v.MessageLog = append(v.MessageLog, alert.Message)
 			v.Message = alert.Message
 		}
+		if len(alert.LastNote) > 0 &&
+			(len(v.Notes) == 0 || v.Notes[len(v.Notes)-1] != alert.LastNote) {
+
+			v.Notes = append(v.Notes, alert.LastNote)
+			v.LastNote = alert.LastNote
+		}
 
 		v.Active = alert.Active
 		if !alert.Active && v.Active {
@@ -260,10 +271,16 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 				v.AlertEndTime = alert.AlertEndTime
 			}
 		}
+
 		v.AlertLastUpdateTime = time.Now()
 		if alert.IncidentID != "" {
 			v.IncidentID = alert.IncidentID
 		}
+
+		if alert.SystemType != "" {
+			v.SystemType = alert.SystemType
+		}
+
 		if !alert.HelpSentAt.IsZero() {
 			v.HelpSentAt = alert.HelpSentAt
 		}

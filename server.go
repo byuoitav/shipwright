@@ -15,6 +15,7 @@ import (
 	"github.com/byuoitav/common/v2/events"
 	"github.com/byuoitav/shipwright/actions"
 	"github.com/byuoitav/shipwright/couch"
+	"github.com/byuoitav/shipwright/state/roomsync"
 	"github.com/labstack/echo"
 
 	// imported to initialize the list of then's
@@ -38,6 +39,7 @@ func main() {
 
 	go actions.DefaultActionManager().Start(context.TODO())
 	alertstore.InitializeAlertStore(actions.DefaultActionManager())
+	go roomsync.StartRoomSync(24*time.Hour, context.Background())
 
 	// connect to the hub
 	messenger, err := messenger.BuildMessenger(os.Getenv("HUB_ADDRESS"), base.Messenger, 5000)
@@ -47,7 +49,7 @@ func main() {
 
 	// get events from the hub
 	go func() {
-		messenger.SubscribeToRooms("*")
+		messenger.SubscribeToRooms("ITB-2019")
 
 		for {
 			processEvent(messenger.ReceiveEvent())

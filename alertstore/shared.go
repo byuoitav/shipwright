@@ -5,7 +5,11 @@ import (
 	"strings"
 
 	"github.com/byuoitav/common/log"
+	"github.com/byuoitav/common/nerr"
+	sd "github.com/byuoitav/common/state/statedefinition"
 	"github.com/byuoitav/common/structs"
+	"github.com/byuoitav/shipwright/state/cache"
+	"github.com/fatih/color"
 )
 
 const (
@@ -39,4 +43,60 @@ func ParseSeverityFromID(alertID string) string {
 	}
 
 	return parts[3]
+}
+
+//AddRoomInformationToAlert will check
+// A) System Type
+// B) Designation
+// C) Maintenence Mode
+// D) Monitoring
+func AddRoomInformationToAlert(a structs.Alert) (structs.Alert, *nerr.E) {
+
+	//get the room from the Cache
+	rm, err := cache.GetCache("default").GetRoomRecord(a.RoomID)
+	if err != nil {
+		return a, err.Addf("Couldn't add room info to alert")
+	}
+
+	a.SystemType = getSystemType(a.DeviceID, rm)
+
+	if a.SystemType == sd.DMPS {
+		log.L.Info(color.HiRedString("ADDING DMPS TYPE"))
+	}
+
+	if rm.Designation != "" {
+		a.RoomTags = structs.AddToTags(a.RoomTags, rm.Designation)
+	}
+	if rm.MaintenenceMode != nil && *rm.MaintenenceMode {
+		a.RoomTags = structs.AddToTags(a.RoomTags, "maintenence-mode")
+	}
+	if rm.Monitoring != nil && !(*rm.Monitoring) {
+		a.RoomTags = structs.AddToTags(a.RoomTags, "not-monitoring")
+	}
+
+	return a, nil
+}
+
+func getSystemType(d string, rm sd.StaticRoom) string {
+	if len(rm.SystemType) == 0 {
+		return "unknown"
+	}
+
+	if len(rm.SystemType) == 1 {
+		return rm.SystemType[0]
+	}
+
+	def := "unknown"
+	for i := range rm.SystemType {
+		if sd.IsDefaultSystemType(rm.SystemType[i]) {
+			def = rm.SystemType[i]
+		}
+
+		//check if the deviceID corresponds to the type provided
+		if sd.IsDeviceOfType(d, rm.SystemType[i]) {
+			return rm.SystemType[i]
+		}
+	}
+
+	return def
 }

@@ -38,7 +38,7 @@ func GetNewRoomManager(id string) RoomItemManager {
 	room := sd.StaticRoom{
 		RoomID:          id,
 		UpdateTimes:     make(map[string]time.Time),
-		MaintenanceMode: &F,
+		MaintenenceMode: &F,
 	}
 
 	go StartRoomManager(a, room)

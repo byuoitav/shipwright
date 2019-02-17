@@ -4,7 +4,7 @@
       "type": "redis",
       "name": "default",
       "redis": {
-        "url": "10.0.8.47:6379",
+        "url": "localhost:6379",
         "pass": "",
         "database": 3
       }

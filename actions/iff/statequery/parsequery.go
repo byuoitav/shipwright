@@ -260,7 +260,12 @@ func getTokens(query string) ([]token, *nerr.E) {
 			log.L.Debugf("Starting a literal.", poss)
 			literal := []rune{}
 			for {
+
 				i++
+				if i >= len(runequery) {
+					log.L.Fatalf("Unterminated string literal in query: %v", query)
+				}
+
 				if runequery[i] == '"' || runequery[i] == '\'' {
 					log.L.Debugf("Found end of literal.", poss)
 					break
