@@ -32,6 +32,8 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
+  charCount: number = 100;
+
   alertDataMap: Map<string, MatTableDataSource<Alert>> = new Map();
 
   private serviceNowURL: string = "https://it.byu.edu/incident.do?sysparm_query=number="
@@ -43,6 +45,15 @@ export class AlertTableComponent implements OnInit, IDashPanel {
       console.log(this.monitor.GetAllAlerts(this.chosenSeverity));
       this.dataSource.data = this.monitor.GetAllAlerts(this.chosenSeverity);
     this.change.detectChanges();
+    })
+
+    this.monitor.settingsChanged.subscribe(panelCount => {
+        if(panelCount > 1) {
+          this.charCount = 40;
+        }
+        else {
+          this.charCount = 100;
+        }
     })
   }
 

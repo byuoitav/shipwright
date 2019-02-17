@@ -92,8 +92,11 @@ button {
 }
 
 .container {
-    // width: 95%;
+    width: 95%;
     margin: auto;
+    &.small {
+        width: 50%;
+    }
 }
 
 
@@ -131,7 +134,7 @@ button {
 
 .mat-column-alertTypes {
     max-width: 200px;
-    // width: 200px;
+    width: 200px;
     // flex: 0 1 200px;
     padding-left: 10px;
     padding-right: 10px;
