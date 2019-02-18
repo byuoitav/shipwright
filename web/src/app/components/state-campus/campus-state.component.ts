@@ -6,6 +6,16 @@ import { MonitoringService } from 'src/app/services/monitoring.service';
 import { DataService } from 'src/app/services/data.service';
 import { StaticDevice } from 'src/app/objects';
 
+
+export interface UserData {
+  room: string;
+  activeSignal: boolean;
+  alerts: Int16Array;
+  device: string;
+  status: string;
+  buildingID: string;
+}
+
 @Component({
   selector: 'campus-state',
   templateUrl: './campus-state.component.html',
@@ -20,13 +30,15 @@ export class CampusStateComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(public text: StringsService, public ss: StaticService, public monitor: MonitoringService, public data: DataService) {
-    if(this.ss.finished) {
+    if (this.ss.finished) {
+      console.log(this.ss.staticRoomList);
       this.dataSource = new MatTableDataSource(this.ss.staticRoomList)
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       // console.log(this.ss.allStaticDevices);
     } else {
       this.ss.loaded.subscribe(() => {
+        console.log(this.ss.staticRoomList);
         this.dataSource = new MatTableDataSource(this.ss.staticRoomList)
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
@@ -36,6 +48,43 @@ export class CampusStateComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+    applyFilter(filterValue: string) {
+    if (this.dataSource == null) {
+      return
+    }
+    else {
+      this.dataSource.filter = filterValue.trim().toLowerCase();
+
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+    }
+  }
+
+  IsADisplay(deviceID: string): boolean {
+    let device = this.data.GetDevice(deviceID)
+
+    if (device != null && device.type != null) {
+      return this.data.DeviceHasRole(device, "VideoOut");
+    }
+
+    return false;
+  }
+
+  DisplayIsOn(deviceID: string): boolean {
+    let dRecord = this.ss.GetSingleStaticDevice(deviceID)
+
+    if (dRecord != null) {
+      if (dRecord.power === "on") {
+        return true
+      } else {
+        return false
+      }
+    }
+
+    return false
   }
 
 }

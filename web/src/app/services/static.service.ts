@@ -25,14 +25,20 @@ export class StaticService {
   constructor(private text: StringsService, private api: APIService, private data: DataService, private monitor: MonitoringService) {
     this.loaded = new EventEmitter<boolean>();
     if(this.data.finished) {
-      this.GetStaticDevices()
-      this.SetListOfFakeStaticRooms()
+      this.GetState()
     } else {
       this.data.loaded.subscribe(() => {
-        this.GetStaticDevices()
-        this.SetListOfFakeStaticRooms()
+        this.GetState()
       })
     }
+  }
+
+  private async GetState() {
+    await this.GetStaticDevices()
+    await this.SetListOfFakeStaticRooms()
+
+    this.loaded.emit(true);
+    this.finished = true;
   }
 
   private async GetStaticDevices() {
@@ -54,8 +60,6 @@ export class StaticService {
           }
         }
       }
-      this.loaded.emit(true);
-      this.finished = true;
     });
   }
 
@@ -75,19 +79,26 @@ export class StaticService {
     return null
   }
 
-  SetListOfFakeStaticRooms() {
+  async SetListOfFakeStaticRooms() {
     let list: FakeStaticRoom[] = []
 
     this.roomToDeviceRecords.forEach((v, k) => {
       let fsr = new FakeStaticRoom()
 
+      let ra = this.monitor.roomAlertsMap.get(k)
+
       fsr.roomID = k
-      fsr.alerts = this.monitor.roomAlertsMap.get(k).GetAlerts();
+      if (ra != null )
+      {
+        fsr.alerts = this.monitor.roomAlertsMap.get(k).GetAlerts();
+      }
+      
       fsr.staticDevices = v
 
       list.push(fsr);
     })
 
     this.staticRoomList = list;
+
   }
 }
