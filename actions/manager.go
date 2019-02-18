@@ -55,7 +55,7 @@ func DefaultActionManager() *ActionManager {
 func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 	a.ctx = ctx
 	a.wg = &sync.WaitGroup{}
-	a.reqs = make(chan *ActionRequest, 1000)
+	a.reqs = make(chan *ActionRequest, 5000)
 
 	if a.Config == nil {
 		a.Config = DefaultConfig()
@@ -100,10 +100,14 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 
 					a.matchActionsMu.RLock()
 					for i := range a.matchActions {
+						a.matchActionsMu.RUnlock()
+
 						a.reqs <- &ActionRequest{
 							Context: actx,
 							Action:  a.matchActions[i],
 						}
+
+						a.matchActionsMu.RLock()
 					}
 
 					a.matchActionsMu.RUnlock()

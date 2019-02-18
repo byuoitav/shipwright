@@ -1,11 +1,44 @@
 package statequery
 
 import (
+	"sync"
+	"time"
+
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	sd "github.com/byuoitav/common/state/statedefinition"
 	"github.com/byuoitav/shipwright/state/cache"
 )
+
+var (
+	deviceRecords   []sd.StaticDevice
+	deviceRecordsMu sync.RWMutex
+)
+
+func init() {
+	// update the deviceRecords every 10 seconds
+	updateCache := func(cacheType string) {
+		d, err := cache.GetCache(cacheType).GetAllDeviceRecords()
+		if err != nil {
+			log.L.Errorf("problem getting all devices from the cache: %v", err.Error())
+			return
+		}
+
+		deviceRecordsMu.Lock()
+		deviceRecords = d
+		deviceRecordsMu.Unlock()
+	}
+
+	go func() {
+		ticker := time.NewTicker(10 * time.Second)
+
+		for range ticker.C {
+			updateCache("default")
+		}
+
+		log.L.Fatalf("caches are no longer being updated.")
+	}()
+}
 
 /*
 Run is a job that will query the state of the static cache and generate events.
@@ -43,17 +76,10 @@ The type of record within the cache to query. See the cache config for acceptabl
 */
 func (j *QueryRunner) Run() ([]sd.StaticDevice, *nerr.E) {
 
-	var d []sd.StaticDevice
-	var er *nerr.E
-	//we're gonna get all the records from the cache
-	d, er = cache.GetCache(j.CacheName).GetAllDeviceRecords()
-	if er != nil {
-		log.L.Errorf("Problem getting all devices from the cache: %v", er.Error())
-		return d, er
-	}
-
 	j.initOnce.Do(func() {
-		//build our query
+		var er *nerr.E
+		// build our query
+
 		j.rootNode, er = ParseQuery(j.Query)
 		if er != nil {
 			log.L.Fatalf("There was a building running the query %v: %v", j.Query, er.Error())
@@ -63,11 +89,11 @@ func (j *QueryRunner) Run() ([]sd.StaticDevice, *nerr.E) {
 	var toReturn []sd.StaticDevice
 
 	//now we take our matching rooms and matching devices and pass them to the action generation function
-	for _, i := range d {
+	for _, i := range deviceRecords {
 		t, er := j.rootNode.Evaluate(i)
 		if er != nil {
 			log.L.Errorf("Couldn't evaluate device %v with query %v. Problem: %v", i.DeviceID, j.Query, er.Error())
-			return d, er.Addf("Couldn't evaluate device %v with query %v. Problem: %v", i.DeviceID, j.Query, er.Error())
+			return deviceRecords, er.Addf("Couldn't evaluate device %v with query %v. Problem: %v", i.DeviceID, j.Query, er.Error())
 		}
 		if t {
 			toReturn = append(toReturn, i)
