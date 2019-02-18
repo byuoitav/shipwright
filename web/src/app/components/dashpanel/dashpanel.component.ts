@@ -81,16 +81,7 @@ export class DashPanelComponent implements OnInit {
     // TODO get data for battery report
   }
 
-  GetTotalAlertsDisplay() {
-    this.totalAlertsNum = 0
-    if(this.panelType != null && this.panelType != this.Battery) {
-      let rows = this.monitor.GetAllAlerts(this.panelType)
-      
-      if(rows != null) {
-        for(let r of rows) {
-         this.totalAlertsNum += r.GetVisibleAlerts(this.panelType).length 
-        }
-      }
-    }
+  GetTotalAlertsDisplay():number  {
+    return this.monitor.GetTotalAlertsDisplay(this.panelType)
   }
 }

@@ -1,12 +1,12 @@
 import { Component, OnInit, Input, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { IDashPanel } from '../dashpanel/idashpanel';
-import { RoomAlerts, Room, Alert } from 'src/app/objects';
+import { RoomAlerts, Alert } from 'src/app/objects';
 import { MonitoringService } from 'src/app/services/monitoring.service';
 import { MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
 import { ModalService } from 'src/app/services/modal.service';
 import {animate, state, style, transition, trigger} from '@angular/animations';
-import { merge } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'alert-table',
@@ -38,10 +38,21 @@ export class AlertTableComponent implements OnInit, IDashPanel {
 
   private serviceNowURL: string = "https://it.byu.edu/incident.do?sysparm_query=number="
   
-  constructor(public text: StringsService, public monitor: MonitoringService, public modal: ModalService, private change: ChangeDetectorRef) {
+  constructor(public text: StringsService, public monitor: MonitoringService, public modal: ModalService, private change: ChangeDetectorRef, route: ActivatedRoute) {
     this.monitor.alertEmitter.subscribe(alert => {
       // console.log(alert.roomID);
-      this.UpdateAlertData(alert.roomID);
+      if(this.singleRoom) {
+        let rID: string;
+        let par = route.params.subscribe(par => {
+          rID = par["roomID"];
+        })
+
+        if(rID === alert.roomID) {
+          this.UpdateAlertData(alert.roomID);
+        }
+      } else {
+        this.UpdateAlertData(alert.roomID);
+      }
       console.log(this.monitor.GetAllAlerts(this.chosenSeverity));
       this.dataSource.data = this.monitor.GetAllAlerts(this.chosenSeverity);
     this.change.detectChanges();
@@ -91,6 +102,9 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   }
 
   UpdateAlertData(roomID: string) {
+    if(this.singleRoom && (roomID != this.data.roomID)) {
+      return
+    }
     let ra = this.monitor.roomAlertsMap.get(roomID)
 
     this.alertDataMap.set(ra.roomID, new MatTableDataSource(this.GetVisibleAlerts(ra))); 
