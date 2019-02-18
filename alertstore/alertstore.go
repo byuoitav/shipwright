@@ -256,11 +256,11 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 			v.MessageLog = append(v.MessageLog, alert.Message)
 			v.Message = alert.Message
 		}
-		if len(alert.LastNote) > 0 &&
-			(len(v.Notes) == 0 || v.Notes[len(v.Notes)-1] != alert.LastNote) {
+		if len(alert.Notes) > 0 &&
+			(len(v.NotesLog) == 0 || v.NotesLog[len(v.NotesLog)-1] != alert.Notes) {
 
-			v.Notes = append(v.Notes, alert.LastNote)
-			v.LastNote = alert.LastNote
+			v.NotesLog = append(v.NotesLog, alert.Notes)
+			v.Notes = alert.Notes
 		}
 
 		v.Active = alert.Active
