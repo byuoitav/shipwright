@@ -75,7 +75,6 @@ The type of record within the cache to query. See the cache config for acceptabl
 
 */
 func (j *QueryRunner) Run() ([]sd.StaticDevice, *nerr.E) {
-
 	j.initOnce.Do(func() {
 		var er *nerr.E
 		// build our query
@@ -88,6 +87,7 @@ func (j *QueryRunner) Run() ([]sd.StaticDevice, *nerr.E) {
 
 	var toReturn []sd.StaticDevice
 
+	deviceRecordsMu.RLock()
 	//now we take our matching rooms and matching devices and pass them to the action generation function
 	for _, i := range deviceRecords {
 		t, er := j.rootNode.Evaluate(i)
@@ -99,6 +99,8 @@ func (j *QueryRunner) Run() ([]sd.StaticDevice, *nerr.E) {
 			toReturn = append(toReturn, i)
 		}
 	}
+	deviceRecordsMu.RUnlock()
+
 	return toReturn, nil
 }
 
