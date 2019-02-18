@@ -10,9 +10,9 @@
         "url": "http://av-elk-rapidmaster1:9200"
       },
       "redis-cache": {
-          "device-database": 0,
-          "room-database": 1,
-          "url": "10.0.12.115:6379"
+        "device-database": 0,
+        "room-database": 1,
+        "url": "localhost:6379"
       }
     }
   ],
