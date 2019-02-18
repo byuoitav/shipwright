@@ -70,7 +70,7 @@ func AddRoomInformationToAlert(a structs.Alert) (structs.Alert, *nerr.E) {
 	a.SystemType = getSystemType(a.DeviceID, rm)
 
 	if a.SystemType == sd.DMPS {
-		log.L.Info(color.HiRedString("ADDING DMPS TYPE"))
+		log.L.Debugf(color.HiRedString("ADDING DMPS TYPE"))
 	}
 
 	if rm.Designation != "" {

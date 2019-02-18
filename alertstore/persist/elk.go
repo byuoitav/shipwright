@@ -28,6 +28,7 @@ type ElkPersist struct {
 type AlertWrapper struct {
 	Alert  structs.Alert //alert to send
 	Delete bool          //true if we want to delete the active alert if resolved
+	Format bool          //true if we want to reformat the alert id when I submit
 }
 
 var initOnce sync.Once
@@ -92,8 +93,8 @@ func GetElkAlertPersist() *ElkPersist {
 	return per
 }
 
-func (e *ElkPersist) StoreAlert(a structs.Alert, del bool) *nerr.E {
-	e.InChannel <- AlertWrapper{Alert: a, Delete: del}
+func (e *ElkPersist) StoreAlert(a structs.Alert, del, reformatID bool) *nerr.E {
+	e.InChannel <- AlertWrapper{Alert: a, Delete: del, Format: reformatID}
 	return nil
 }
 
@@ -167,12 +168,17 @@ func (e *ElkPersist) sendUpdate() *nerr.E {
 	}
 	//do our reolved alert stuff
 	for _, v := range e.resolvedBuffer {
+
+		if v.Format {
+			v.Alert.AlertID = v.Alert.AlertID + v.Alert.ResolutionInfo.ResolvedAt.Format(time.RFC3339)
+		}
+
 		buf = append(buf, elk.ElkBulkUpdateItem{
 			Index: elk.ElkUpdateHeader{
 				Header: elk.HeaderIndex{
 					Index: e.config.PersistResolvedAlerts.ElkData.IndexPattern,
 					Type:  "alert",
-					ID:    v.Alert.AlertID + v.Alert.ResolutionInfo.ResolvedAt.Format(time.RFC3339),
+					ID:    v.Alert.AlertID,
 				}},
 			Doc: v.Alert,
 		})

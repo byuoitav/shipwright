@@ -187,7 +187,7 @@ func (a *alertStore) resolveAlerts(resInfo structs.ResolutionInfo, alerts ...str
 			v.ResolutionInfo = resInfo
 
 			//submit for persistence
-			persist.GetElkAlertPersist().StoreAlert(v, true)
+			persist.GetElkAlertPersist().StoreAlert(v, true, true)
 			toProcess = append(toProcess, v)
 			socket.GetManager().WriteToSockets(v)
 
@@ -372,7 +372,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		return
 	}
 
-	persist.GetElkAlertPersist().StoreAlert(alert, false)
+	persist.GetElkAlertPersist().StoreAlert(alert, false, false)
 	a.runActions(alert)
 	socket.GetManager().WriteToSockets(alert)
 }
