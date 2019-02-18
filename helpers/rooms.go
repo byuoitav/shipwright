@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/byuoitav/common/db"
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/structs"
 )
@@ -151,10 +152,14 @@ func compiledRooms() ([]structs.Room, *nerr.E) {
 		return nil, err
 	}
 
+	log.L.Infof("# of Pi rooms returned: %d\n", len(piRooms))
+
 	dmpsRooms, err := GetDMPSRooms()
 	if err != nil {
 		return nil, err
 	}
+
+	log.L.Infof("# of DMPS rooms returned: %d\n", len(dmpsRooms))
 
 	for _, dmpsR := range dmpsRooms {
 		found := false
@@ -166,6 +171,7 @@ func compiledRooms() ([]structs.Room, *nerr.E) {
 		}
 
 		if !found {
+			log.L.Infof("\nhere's a straggler: %s\n", dmpsR.ID)
 			piRooms = append(piRooms, dmpsR)
 		}
 	}

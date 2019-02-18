@@ -13,6 +13,8 @@ export class MonitoringService {
   alertEmitter: EventEmitter<Alert>;
   panelCount: number = 1;
 
+  totalAlertsCount = 0;
+
   CRITICAL = "critical"
   WARNING = "warning"
 
@@ -47,6 +49,7 @@ export class MonitoringService {
           this.roomAlertsMap.get(a.roomID).AddAlert(a);
         }
       }
+      this.GetTotalAlertsDisplay()
     }
   }
 
@@ -78,6 +81,7 @@ export class MonitoringService {
       })
 
       console.log(toReturn);
+      // this.GetTotalAlertsDisplay(severity)
       return toReturn.sort((a, b):number => {
         if(a.roomID == null && b.roomID != null) {return 1}
         if(b.roomID == null && a.roomID != null) {return -1}
@@ -102,6 +106,7 @@ export class MonitoringService {
       }
     });
 
+    // this.GetTotalAlertsDisplay(severity)
     return toReturn.sort((a, b):number => {
       if(a.roomID == null && b.roomID != null) {return 1}
       if(b.roomID == null && a.roomID != null) {return -1}
@@ -111,10 +116,7 @@ export class MonitoringService {
 
   GetTotalAlertsDisplay(panelType?: string) {
     if(panelType != null && panelType != "battery") {
-      let count = this.GetAllAlerts(panelType).length
-      console.log(count)
-
-      return "Total Alerts: "+count
+      this.totalAlertsCount = this.GetAllAlerts(panelType).length
     }
   }
 }

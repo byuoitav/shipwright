@@ -30,7 +30,7 @@
 
         <ng-container matColumnDef="alertTypes">
             <th mat-header-cell *matHeaderCellDef> Alert Types </th>
-            <td mat-cell *matCellDef="let ra">{{GetAlertTypes(ra).length > 40 ? (GetAlertTypes(ra) | slice:0:40)+'..' : (GetAlertTypes(ra))}}</td>
+            <td mat-cell *matCellDef="let ra">{{GetAlertTypes(ra).length > charCount ? (GetAlertTypes(ra) | slice:0:charCount)+'..' : (GetAlertTypes(ra))}}</td>
         </ng-container>
 
         <ng-container matColumnDef="help-sent">

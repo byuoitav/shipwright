@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"github.com/byuoitav/common/db"
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/structs"
 )
@@ -111,10 +112,14 @@ func compiledBuildings() ([]structs.Building, *nerr.E) {
 		return nil, err
 	}
 
+	log.L.Infof("# of Pi buildings returned: %d\n", len(piBuildings))
+
 	dmpsBuildings, err := GetDMPSBuildings()
 	if err != nil {
 		return nil, err
 	}
+
+	log.L.Infof("# of DMPS buildings returned: %d\n", len(dmpsBuildings))
 
 	for _, dmpsB := range dmpsBuildings {
 		found := false
@@ -126,6 +131,7 @@ func compiledBuildings() ([]structs.Building, *nerr.E) {
 		}
 
 		if !found {
+			log.L.Infof("\nhere's a straggler: %s\n", dmpsB.ID)
 			piBuildings = append(piBuildings, dmpsB)
 		}
 	}

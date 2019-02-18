@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
-import { StaticService } from 'src/app/services/static.service';
-import { StaticDevice, Device } from 'src/app/objects';
+import { StaticService, FakeStaticRoom } from 'src/app/services/static.service';
+import { StaticDevice } from 'src/app/objects';
 import { DataService } from 'src/app/services/data.service';
 import { StringsService } from 'src/app/services/strings.service';
 import { MonitoringService } from 'src/app/services/monitoring.service';
@@ -24,7 +24,7 @@ export class StateComponent implements OnInit {
   roomStatusColumns = ['room', 'alerts', 'status'];
   staticDeviceColumns = ['deviceID', 'alerts', 'status'];
   
-  dataSource: MatTableDataSource<StaticDevice>;
+  dataSource: MatTableDataSource<FakeStaticRoom>;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -32,13 +32,13 @@ export class StateComponent implements OnInit {
   constructor(public ss: StaticService, public data: DataService, public text: StringsService, public monitor: MonitoringService) {
 
     if(this.ss.finished) {
-      this.dataSource = new MatTableDataSource(this.ss.allStaticDevices)
+      this.dataSource = new MatTableDataSource(this.ss.staticRoomList)
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       // console.log(this.ss.allStaticDevices);
     } else {
       this.ss.loaded.subscribe(() => {
-        this.dataSource = new MatTableDataSource(this.ss.allStaticDevices)
+        this.dataSource = new MatTableDataSource(this.ss.staticRoomList)
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         // console.log(this.ss.allStaticDevices);

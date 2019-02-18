@@ -70,6 +70,8 @@ import { NotifyModalComponent } from './modals/notify/notify.component';
 import { DndModule } from 'ng2-dnd';
 import { PresetModalComponent } from './modals/presetmodal/presetmodal.component';
 import { IconModalComponent } from './modals/iconmodal/iconmodal.component';
+import { CampusStateComponent } from './components/state-campus/campus-state.component';
+import { RoomStateComponent } from './components/state-room/room-state.component';
 
 @NgModule({
   declarations: [
@@ -97,7 +99,9 @@ import { IconModalComponent } from './modals/iconmodal/iconmodal.component';
     DashPanelDirective,
     NotifyModalComponent,
     PresetModalComponent,
-    IconModalComponent
+    IconModalComponent,
+    CampusStateComponent,
+    RoomStateComponent
   ],
   imports: [
     BrowserModule,

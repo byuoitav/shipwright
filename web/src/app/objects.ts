@@ -74,7 +74,7 @@ export class Alert {
   @JsonProperty("incident-id", String, true)
   incidentID: string = undefined;
 
-  @JsonProperty("system-type", String, true)
+  @JsonProperty("system-type", String)
   systemType: string = undefined;
 
   @JsonProperty("severity", String, true)
@@ -671,6 +671,8 @@ export class BuildingStatus {
 
 export const PI_ICON = "video_label";
 export const DMPS_ICON = "accessible_forward";
+export const SCHEDULING_ICON = "today";
+export const TIMECLOCK_ICON = "schedule";
 
 export class RoomAlerts {
   roomID: string = undefined;
@@ -704,10 +706,14 @@ export class RoomAlerts {
         if (a.incidentID != null) {
           this.incidentID = a.incidentID;
         }
-        if (a.systemType == "DMPS") {
+        if (a.systemType == "dmps") {
           this.systemTypeIcon = DMPS_ICON;
-        } else {
+        } else if(a.systemType == "pi") {
           this.systemTypeIcon = PI_ICON;
+        } else if(a.systemType == "scheduling") {
+          this.systemTypeIcon = SCHEDULING_ICON;
+        } else if(a.systemType == "timeclock") {
+          this.systemTypeIcon = TIMECLOCK_ICON;
         }
 
         if (!a.SentIsZero()) {
