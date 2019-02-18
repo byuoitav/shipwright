@@ -37,11 +37,6 @@ type Config struct {
 
 var config Config
 
-func init() {
-	//if no one else does, get the config
-	GetConfig()
-}
-
 //GetConfig .
 func GetConfig() Config {
 	once.Do(func() {

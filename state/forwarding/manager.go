@@ -2,6 +2,7 @@ package forwarding
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/byuoitav/common/log"
@@ -17,10 +18,13 @@ type BufferManager interface {
 //Key is made up of the CacheName-DataType-EventType
 //e.g. default-device-all or legacy-event-all
 var managerMap map[string][]BufferManager
+var managerInit sync.Once
 
-func init() {
+func initManagers() {
 	log.L.Infof("Initializing buffer managers")
+
 	c := config.GetConfig()
+
 	managerMap = make(map[string][]BufferManager)
 	for _, i := range c.Forwarders {
 		curName := fmt.Sprintf(fmt.Sprintf("%v-%v-%v", i.CacheName, i.DataType, i.EventType))
@@ -67,6 +71,8 @@ func init() {
 
 //GetManagersForType a
 func GetManagersForType(cacheName, dataType, eventType string) []BufferManager {
+	managerInit.Do(initManagers)
+
 	log.L.Debugf("Getting %s managers for %v-%v", cacheName, dataType, eventType)
 	v, ok := managerMap[fmt.Sprintf("%s-%s-%s", cacheName, dataType, eventType)]
 	if !ok {
