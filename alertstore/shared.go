@@ -52,6 +52,15 @@ func ParseSeverityFromID(alertID string) string {
 // D) Monitoring
 func AddRoomInformationToAlert(a structs.Alert) (structs.Alert, *nerr.E) {
 
+	if a.RoomID == "" {
+		//set the room ID based on the device ID
+		a.RoomID = structs.GetRoomIDFromDevice(a.DeviceID)
+	}
+	if a.BuildingID == "" {
+		a.BuildingID = strings.Split(a.RoomID, "-")[0]
+
+	}
+
 	//get the room from the Cache
 	rm, err := cache.GetCache("default").GetRoomRecord(a.RoomID)
 	if err != nil {

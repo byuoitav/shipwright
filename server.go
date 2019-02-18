@@ -39,6 +39,7 @@ func main() {
 
 	go actions.DefaultActionManager().Start(context.TODO())
 	alertstore.InitializeAlertStore(actions.DefaultActionManager())
+
 	go roomsync.StartRoomSync(24*time.Hour, context.Background())
 
 	// connect to the hub
