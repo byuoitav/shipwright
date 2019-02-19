@@ -48,9 +48,9 @@ func init() {
 	gob.Register(structs.RoomIssue{})
 }
 
-func (r *RedisAlertCache) GetRoomIssue(id string) (structs.RoomIssue, *nerr.E) {
+func (r *RedisAlertCache) GetIssue(id string) (structs.RoomIssue, *nerr.E) {
 	log.L.Debugf("getting alert %v from redis cache", id)
-	var tmp structs.Alert
+	var tmp structs.RoomIssue
 
 	by, err := r.c.Get(id).Bytes()
 	if err == redis.Nil {

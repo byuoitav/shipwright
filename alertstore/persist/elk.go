@@ -94,7 +94,7 @@ func GetElkAlertPersist() *ElkPersist {
 }
 
 func (e *ElkPersist) StoreIssue(a structs.RoomIssue, del, reformatID bool) *nerr.E {
-	e.InChannel <- AlertWrapper{RoomIssue: a, Delete: del, Format: reformatID}
+	e.InChannel <- AlertWrapper{Issue: a, Delete: del, Format: reformatID}
 	return nil
 }
 

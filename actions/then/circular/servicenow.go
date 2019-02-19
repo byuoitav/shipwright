@@ -3,7 +3,6 @@ package circular
 import (
 	"context"
 
-	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/servicenow"
 	"github.com/byuoitav/shipwright/actions/actionctx"
