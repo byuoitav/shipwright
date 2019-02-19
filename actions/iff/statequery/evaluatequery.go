@@ -2,6 +2,7 @@ package statequery
 
 import (
 	"fmt"
+	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
@@ -59,6 +60,24 @@ func (q *QueryNode) compareFields(in interface{}) (bool, *nerr.E) {
 
 	curstruct = in
 	for i := 0; i < len(splitName); i++ {
+
+		//check if it's a map
+		ty := reflect.ValueOf(curstruct).Kind()
+		if ty == reflect.Map {
+			tmp, ok := curstruct.(map[string]time.Time)
+			if !ok {
+				log.L.Errorf("Can't cast from map to map[string]time.Time")
+				return false, nerr.Create("Can't cast from map to map[string]interface", "invalid-cast")
+			}
+
+			curstruct, ok = tmp[splitName[i]]
+			if !ok {
+				return false, nil
+			}
+
+			continue
+		}
+
 		//it's a subfield, get the subfield
 		curstruct, err = reflections.GetField(curstruct, splitName[i])
 		if err != nil {
