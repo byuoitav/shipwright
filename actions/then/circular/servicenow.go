@@ -4,27 +4,27 @@ import (
 	"context"
 
 	"github.com/byuoitav/shipwright/alertstore"
+	"go.uber.org/zap"
 
-	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/servicenow"
 	"github.com/byuoitav/shipwright/actions/actionctx"
 )
 
 //SyncRoomIssueWithServiceNow will sync the RoomIssue with an ticket (incident or repair)
-func SyncRoomIssueWithServiceNow(ctx context.Context, with []byte) (err *nerr.E) {
+func SyncRoomIssueWithServiceNow(ctx context.Context, with []byte, log *zap.SugaredLogger) (err *nerr.E) {
 	//get the RoomIssue from the context
 	roomIssue, ok := actionctx.GetRoomIssue(ctx)
 
 	if !ok {
-		log.L.Errorf("Failed to get RoomIssue")
+		log.Errorf("Failed to get RoomIssue")
 		return nerr.Create("Must have RoomIssue to create ticket", "")
 	}
 
 	incidentID, syncError := servicenow.SyncServiceNowWithRoomIssue(roomIssue)
 
 	if syncError != nil {
-		log.L.Errorf("Unable to sync ticket with room issue")
+		log.Errorf("Unable to sync ticket with room issue")
 		return nerr.Translate(syncError)
 	}
 
@@ -33,7 +33,7 @@ func SyncRoomIssueWithServiceNow(ctx context.Context, with []byte) (err *nerr.E)
 		roomIssueError := alertstore.UpdateRoomIssue(roomIssue)
 
 		if roomIssueError != nil {
-			log.L.Errorf("Unable to update Room Issue in persistence store")
+			log.Errorf("Unable to update Room Issue in persistence store")
 			return nerr.Translate(roomIssueError)
 		}
 	}
