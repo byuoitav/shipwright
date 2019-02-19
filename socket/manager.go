@@ -53,11 +53,11 @@ func GetManager() *Manager {
 
 func newManager() *Manager {
 	m := &Manager{
-		clients:    make(map[*Client]bool),
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
+		clients:    make(map[*Client]bool, 5),
+		register:   make(chan *Client, 5),
+		unregister: make(chan *Client, 5),
 
-		broadcast: make(chan interface{}),
+		broadcast: make(chan interface{}, 5000),
 	}
 
 	go m.run()
@@ -97,7 +97,11 @@ func (m *Manager) run() {
 				select {
 				case client.sendChan <- message:
 				default:
-					m.unregister <- client
+					if _, ok := m.clients[client]; ok {
+						log.L.Infof("Removing %s from websocket manager", client.conn.RemoteAddr())
+						close(client.sendChan)
+						delete(m.clients, client)
+					}
 				}
 			}
 		}

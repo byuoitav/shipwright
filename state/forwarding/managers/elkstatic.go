@@ -55,11 +55,11 @@ func (e *ElkStaticDeviceForwarder) Send(toSend interface{}) error {
 
 	var event sd.StaticDevice
 
-	switch e := toSend.(type) {
+	switch ev := toSend.(type) {
 	case *sd.StaticDevice:
-		event = *e
+		event = *ev
 	case sd.StaticDevice:
-		event = e
+		event = ev
 	default:
 		return nerr.Create("Invalid type to send via an Elk device Forwarder, must be a static device as defined in byuoitav/state-parser/state/statedefinition", "invalid-type")
 	}
@@ -149,10 +149,6 @@ func (e *ElkStaticDeviceForwarder) bufferevent(event sd.StaticDevice) {
 		return
 	}
 
-	if len(event.DeviceID) < 1 {
-		return
-	}
-
 	//check to see if we already have one for this device
 	v, ok := e.buffer[event.DeviceID]
 	if !ok {
@@ -168,6 +164,7 @@ func (e *ElkStaticDeviceForwarder) bufferevent(event sd.StaticDevice) {
 			Doc:   event,
 		}
 	} else {
+		//we replace
 		v.Doc = event
 		e.buffer[event.DeviceID] = v
 	}
