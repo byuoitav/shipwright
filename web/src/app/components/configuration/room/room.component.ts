@@ -11,7 +11,7 @@ import { RoomStatus } from 'src/app/objects/static';
   styleUrls: ['./room.component.scss']
 })
 export class RoomComponent implements OnInit {
-  @Input() room: Room;
+  @Input() room: Room = new Room();
   deviceList: Device[] = [];
   state: RoomStatus = new RoomStatus();
 

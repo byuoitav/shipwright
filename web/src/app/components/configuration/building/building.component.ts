@@ -11,7 +11,7 @@ import { BuildingStatus } from 'src/app/objects/static';
   styleUrls: ['./building.component.scss']
 })
 export class BuildingComponent implements OnInit {
-  @Input() building: Building;
+  @Input() building: Building = new Building();
   state: BuildingStatus = new BuildingStatus();
 
   constructor(public text: StringsService, public modal: ModalService, private data: DataService) {
@@ -29,7 +29,7 @@ export class BuildingComponent implements OnInit {
   }
 
   GetImage(): string {
-    return "assets/" + this.building.id + ".jpg"
+    return "assets/images/" + this.building.id + ".jpg"
   }
 
   GetBuildingState() {

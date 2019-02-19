@@ -47,7 +47,7 @@ export class DataService {
   }
 
   private async LoadData() {
-    Promise.all([
+    /*Promise.all([
       await this.GetStaticDevices(),
       await this.GetAllBuildings(),
     await this.GetAllRooms(),
@@ -70,26 +70,27 @@ export class DataService {
       this.loaded.emit(true);
       console.log("done");
     })
-    // await this.GetAllBuildings();
-    // await this.GetAllRooms();
-    // await this.GetAllDevices();
-    // await this.GetAllUIConfigs();
-    // await this.GetAllDeviceTypes();
-    // await this.GetAllDeviceRoles();
-    // await this.GetAllTemplates();
-    // await this.GetAllRoomConfigurations();
-    // await this.GetAllRoomDesignations();
-    // await this.SetBuildingToRoomsMap();
-    // await this.SetRoomToDevicesMap();
-    // await this.GetIconList();
-    // await this.GetStoredRoomIssues();
-    // await this.GetStaticDevices();
-    // await this.GetRoomStatusList();
-    // await this.GetBuildingStatusList();
-    // await this.GetClosureCodes();
-    // this.finished = true;
-    // this.loaded.emit(true);
-    // console.log("done");
+     */
+     await this.GetAllBuildings();
+     await this.GetAllRooms();
+     await this.GetAllDevices();
+     await this.GetAllUIConfigs();
+     await this.GetAllDeviceTypes();
+     await this.GetAllDeviceRoles();
+     await this.GetAllTemplates();
+     await this.GetAllRoomConfigurations();
+     await this.GetAllRoomDesignations();
+     await this.SetBuildingToRoomsMap();
+     await this.SetRoomToDevicesMap();
+     await this.GetIconList();
+     await this.GetStoredRoomIssues();
+     await this.GetStaticDevices();
+     await this.GetRoomStatusList();
+     await this.GetBuildingStatusList();
+     await this.GetClosureCodes();
+     this.finished = true;
+     this.loaded.emit(true);
+     console.log("done");
   }
 
   private async GetAllBuildings() {
@@ -259,7 +260,6 @@ export class DataService {
   private async GetStaticDevices() { 
     this.api.GetAllStaticDeviceRecords().then((records) => {
       this.staticDeviceList = records;
-      console.log(this.staticDeviceList)
       this.GetRoomStatusList();
     })
   }
@@ -285,7 +285,6 @@ export class DataService {
         roomState.deviceStates = [sd]
         roomState.Update()
         this.roomStatusList.push(roomState)
-        console.log(this.roomStatusList)
       }
     }
     this.GetBuildingStatusList()
@@ -311,7 +310,6 @@ export class DataService {
         buildingState.roomStates = [rs]
         buildingState.Update()
         this.buildingStatusList.push(buildingState)
-        console.log(this.buildingStatusList)
       }
     }
   }
