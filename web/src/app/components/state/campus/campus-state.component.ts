@@ -1,8 +1,9 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
-import { DataService } from 'src/app/services/data.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { StringsService } from 'src/app/services/strings.service';
 import { MonitoringService } from 'src/app/services/monitoring.service';
+import { DataService } from 'src/app/services/data.service';
+
 
 export interface UserData {
   room: string;
@@ -14,42 +15,40 @@ export interface UserData {
 }
 
 @Component({
-  selector: 'state',
-  styleUrls: ['state.component.scss'],
-  templateUrl: 'state.component.html',
+  selector: 'campus-state',
+  templateUrl: './campus-state.component.html',
+  styleUrls: ['./campus-state.component.scss']
 })
-export class StateComponent implements OnInit {
-  roomStatusColumns = ['room', 'alerts', 'status'];
-  staticDeviceColumns = ['deviceID', 'alerts', 'status'];
-  
+export class CampusStateComponent implements OnInit {
+  stateColumns = ['room', 'alerts', 'status'];
+
   // dataSource: MatTableDataSource<FakeStaticRoom>;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(public data: DataService, public text: StringsService, public monitor: MonitoringService) {
-
-    // if(this.ss.finished) {
+  constructor(public text: StringsService, public monitor: MonitoringService, public data: DataService) {
+    // if (this.ss.finished) {
+    //   console.log(this.ss.staticRoomList);
     //   this.dataSource = new MatTableDataSource(this.ss.staticRoomList)
     //   this.dataSource.paginator = this.paginator;
     //   this.dataSource.sort = this.sort;
     //   // console.log(this.ss.allStaticDevices);
     // } else {
     //   this.ss.loaded.subscribe(() => {
+    //     console.log(this.ss.staticRoomList);
     //     this.dataSource = new MatTableDataSource(this.ss.staticRoomList)
     //     this.dataSource.paginator = this.paginator;
     //     this.dataSource.sort = this.sort;
     //     // console.log(this.ss.allStaticDevices);
     //   })
     // }
-
   }
 
   ngOnInit() {
-
   }
 
-  // applyFilter(filterValue: string) {
+  //   applyFilter(filterValue: string) {
   //   if (this.dataSource == null) {
   //     return
   //   }
@@ -65,7 +64,7 @@ export class StateComponent implements OnInit {
   IsADisplay(deviceID: string): boolean {
     let device = this.data.GetDevice(deviceID)
 
-    if(device != null && device.type != null) {
+    if (device != null && device.type != null) {
       return this.data.DeviceHasRole(device, "VideoOut");
     }
 
@@ -75,27 +74,15 @@ export class StateComponent implements OnInit {
   DisplayIsOn(deviceID: string): boolean {
     // let dRecord = this.ss.GetSingleStaticDevice(deviceID)
 
-    // if(dRecord != null) {
-    //   if(dRecord.power === "on") {
+    // if (dRecord != null) {
+    //   if (dRecord.power === "on") {
     //     return true
     //   } else {
     //     return false
     //   }
     // }
-    
+
     return false
   }
-
-  // TODO: Implement these guys later?
-  // addColumn() {
-  //   const randomColumn = Math.floor(Math.random() * this.displayedColumns.length);
-  //   this.displayedColumns.push(this.displayedColumns[randomColumn]);
-  // }
-
-  // removeColumn() {
-  //   if (this.displayedColumns.length) {
-  //     this.displayedColumns.pop();
-  //   }
-  // }
 
 }

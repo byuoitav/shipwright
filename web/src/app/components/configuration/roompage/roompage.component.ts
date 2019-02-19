@@ -1,0 +1,47 @@
+import { Component, OnInit } from '@angular/core';
+import { StringsService } from 'src/app/services/strings.service';
+import { ActivatedRoute } from '@angular/router';
+import { DataService } from 'src/app/services/data.service';
+import { Room, Device } from 'src/app/objects/database';
+
+@Component({
+  selector: 'room-page',
+  templateUrl: './roompage.component.html',
+  styleUrls: ['./roompage.component.scss']
+})
+export class RoomPageComponent implements OnInit {
+  roomID: string;
+  room: Room;
+  devices: Device[] = [];
+
+  constructor(public text: StringsService, private route: ActivatedRoute, public data: DataService) {
+    this.route.params.subscribe(params => {
+      this.roomID = params["roomID"];
+      
+      if(this.data.finished) {
+        this.room = this.data.GetRoom(this.roomID);
+        if(this.NotADump()) {
+          this.devices = this.data.roomToDevicesMap.get(this.roomID);
+        }
+      } else {
+        this.data.loaded.subscribe(() => {
+          this.room = this.data.GetRoom(this.roomID);
+          if(this.NotADump()) {
+            this.devices = this.data.roomToDevicesMap.get(this.roomID);
+          }
+        })
+      }
+      
+    })
+  }
+
+  ngOnInit() {
+  }
+
+  NotADump(): boolean {
+    if(this.room == null) {
+      return false
+    }
+    return this.room.configuration.id != "DMPS"
+  }
+}

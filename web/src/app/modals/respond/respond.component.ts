@@ -1,7 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { RoomAlerts, Alert } from 'src/app/objects';
+import { Alert, RoomIssue } from 'src/app/objects/alerts';
 
 @Component({
   selector: 'respond-modal',
@@ -17,24 +17,24 @@ export class RespondModalComponent implements OnInit {
   sentTime: string;
   arrivedTime: string;
 
-  constructor(public text: StringsService, public dialogRef: MatDialogRef<RespondModalComponent>, @Inject(MAT_DIALOG_DATA) public ra: RoomAlerts) {
-    if(ra != null) {
-      // console.log(this.ra.sentDate.toISOString())
-      // console.log(this.ra.arriveDate.toISOString())
+  constructor(public text: StringsService, public dialogRef: MatDialogRef<RespondModalComponent>, @Inject(MAT_DIALOG_DATA) public issue: RoomIssue) {
+    if(issue != null) {
+      // console.log(this.issue.helpSentAt.toISOString())
+      // console.log(this.issue.helpArrivedAt.toISOString())
       // console.log(this.sentHelpDate.toTimeString())
       // console.log(this.helpArrivedDate.toISOString())
 
-      if(!this.ra.SentIsZero()) {
-        this.sentHelpDate = this.ra.sentDate;
+      if(!this.issue.SentIsZero()) {
+        this.sentHelpDate = this.issue.helpSentAt;
         // console.log(this.sentHelpDate.toISOString())
       }
       this.sentTime = this.sentHelpDate.toTimeString().substring(0, this.sentHelpDate.toTimeString().lastIndexOf(":"))
-      if(!this.ra.ArriveIsZero()) {
-        this.helpArrivedDate = this.ra.arriveDate;
+      if(!this.issue.ArrivedIsZero()) {
+        this.helpArrivedDate = this.issue.helpArrivedAt;
         // console.log(this.helpArrivedDate.toISOString())
       }
       this.arrivedTime = this.helpArrivedDate.toTimeString().substring(0, this.helpArrivedDate.toTimeString().lastIndexOf(":"))
-      this.alertsToResolve = Array.from(this.ra.GetAlerts())
+      this.alertsToResolve = Array.from(this.issue.GetAlerts())
       console.log(this.alertsToResolve);
     }
   }
@@ -77,7 +77,7 @@ export class RespondModalComponent implements OnInit {
   }
 
   CanResolve():boolean {
-    if(this.ra.SentIsZero()) {
+    if(this.issue.SentIsZero()) {
       return false
     }
 
@@ -91,7 +91,6 @@ export class RespondModalComponent implements OnInit {
   }
 
   HelpWasSent() {
-    this.ra.helpSent = true
     console.log(this.sentTime)
     let d = new Date()
     console.log(d.toLocaleString())
@@ -101,12 +100,11 @@ export class RespondModalComponent implements OnInit {
 
     let time = this.to24Hour(this.sentTime)
     let timestamp = today + ", " + time
-    this.ra.sentDate = new Date(timestamp)
-    console.log(this.ra.sentDate.toLocaleString())
+    this.issue.helpSentAt = new Date(timestamp)
+    console.log(this.issue.helpSentAt.toLocaleString())
   }
 
   HelpHasArrived() {
-    this.ra.helpArrived = true
     console.log(this.arrivedTime)
     let d = new Date()
     console.log(d.toLocaleString())
@@ -116,7 +114,7 @@ export class RespondModalComponent implements OnInit {
 
     let time = this.to24Hour(this.arrivedTime)
     let timestamp = today + ", " + time
-    this.ra.arriveDate = new Date(timestamp)
-    console.log(this.ra.arriveDate.toLocaleString())
+    this.issue.helpArrivedAt = new Date(timestamp)
+    console.log(this.issue.helpArrivedAt.toLocaleString())
   }
 }

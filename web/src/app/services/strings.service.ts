@@ -80,4 +80,16 @@ export class StringsService {
     true: "Sharing enabled",
     false: "Sharing disabled"
   };
+
+  public SystemTypeIcon = {
+    "dmps": DMPS_ICON,
+    "pi": PI_ICON,
+    "scheduling": SCHEDULING_ICON,
+    "timeclock": TIMECLOCK_ICON
+  }
 }
+
+export const PI_ICON = "video_label";
+export const DMPS_ICON = "accessible_forward";
+export const SCHEDULING_ICON = "today";
+export const TIMECLOCK_ICON = "schedule";

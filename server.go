@@ -138,7 +138,7 @@ func main() {
 
 	// Alert Endpoints
 	read.GET("/issues", handlers.GetAllRoomIssues)
-	read.PUT("/alerts/:issueID/resolve", handlers.ResolveIssue)
+	read.PUT("/issues/:issueID/resolve", handlers.ResolveIssue)
 	write.PUT("/alerts/add", handlers.AddAlert)
 
 	// Websocket Endpoints
