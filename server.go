@@ -154,7 +154,6 @@ func main() {
 }
 
 func processEvent(event events.Event) {
-	log.L.Debugf("Got event: %+v", event)
 	actions.DefaultActionManager().EventStream <- event
 }
 
