@@ -77,9 +77,7 @@ func MakeRedisCache(devices []sd.StaticDevice, rooms []sd.StaticRoom, pushCron s
 	//for each device check to see if it's there, if it is we don't do anything, otherwise we add it from storage.
 	keys, er := GetAllKeys(toReturn.devclient)
 	if err != nil {
-
 		return toReturn, er.Addf("Couldn't intialize redis cache")
-
 	}
 
 	keyMap := map[string]bool{}
@@ -203,9 +201,8 @@ func (rc *RedisCache) GetAllDeviceRecords() ([]sd.StaticDevice, *nerr.E) {
 
 	var toReturn []sd.StaticDevice
 
-	var tmp sd.StaticDevice
-
 	for i := range result {
+		var tmp sd.StaticDevice
 
 		buf := bytes.NewBuffer([]byte(result[i].(string)))
 		dec := gob.NewDecoder(buf)
@@ -270,6 +267,7 @@ func (rc *RedisCache) StoreDeviceEvent(toSave sd.State) (bool, sd.StaticDevice, 
 	if err != nil {
 		return false, sd.StaticDevice{}, err.Addf("Couldn't store device event")
 	}
+
 	err = rc.putDevice(merged)
 
 	return changes, merged, err

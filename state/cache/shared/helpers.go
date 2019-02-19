@@ -63,8 +63,6 @@ func PushAllDevices(c Cache) {
 
 func ForwardAndStoreEvent(v events.Event, c Cache) (bool, *nerr.E) {
 
-	log.L.Debugf("Event: %+v", v)
-
 	//Forward All
 	list := forwarding.GetManagersForType(c.GetCacheName(), config.EVENT, config.ALL)
 	for i := range list {
