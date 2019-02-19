@@ -12,44 +12,49 @@ import (
 
 // AlertMatch .
 type AlertMatch struct {
-	Count int
+	count int
 	init  sync.Once
 
+	AlertID    string `json:"id"`
 	BuildingID string `json:"buildingID"`
 	RoomID     string `json:"roomID"`
 	DeviceID   string `json:"deviceID"`
-	AlertID    string `json:"_id"`
 
-	Type       string   `json:"type"`
-	Category   string   `json:"category"`
-	Severity   string   `json:"severity"`
+	Type     string `json:"type"`
+	Category string `json:"category"`
+	Severity string `json:"severity"`
+
 	Message    string   `json:"message"`
 	MessageLog []string `json:"message-log"`
 	Data       string   `json:"data,omitempty"`
-	IncidentID string   `json:"incident-id"`
+	SystemType string   `json:"system-type"`
+	Requester  string   `json:"requester"`
 
 	AlertStartTime      string `json:"start-time"`
 	AlertEndTime        string `json:"end-time"`
 	AlertLastUpdateTime string `json:"update-time"`
-	Active              *bool  `json:"active"`
+
+	Active *bool `json:"active"`
 
 	AlertTags  []string `json:"alert-tags"`
 	RoomTags   []string `json:"room-tags"`
 	DeviceTags []string `json:"device-tags"`
 
 	Regex struct {
+		AlertID    *regexp.Regexp
 		BuildingID *regexp.Regexp
 		RoomID     *regexp.Regexp
 		DeviceID   *regexp.Regexp
-		AlertID    *regexp.Regexp
 
-		Type       *regexp.Regexp
-		Category   *regexp.Regexp
-		Severity   *regexp.Regexp
+		Type     *regexp.Regexp
+		Category *regexp.Regexp
+		Severity *regexp.Regexp
+
 		Message    *regexp.Regexp
 		MessageLog []*regexp.Regexp
 		Data       *regexp.Regexp
-		IncidentID *regexp.Regexp
+		SystemType *regexp.Regexp
+		Requester  *regexp.Regexp
 
 		AlertStartTime      *regexp.Regexp
 		AlertEndTime        *regexp.Regexp
@@ -65,7 +70,7 @@ type AlertMatch struct {
 func (m *AlertMatch) DoesAlertMatch(ctx context.Context) bool {
 	m.init.Do(m.buildRegex)
 
-	if m.Count == 0 {
+	if m.count == 0 {
 		return true
 	}
 
@@ -171,6 +176,20 @@ func (m *AlertMatch) DoesAlertMatch(ctx context.Context) bool {
 		}
 	}
 
+	if m.Regex.SystemType != nil {
+		reg := m.Regex.SystemType.Copy()
+		if !reg.MatchString(alert.SystemType) {
+			return false
+		}
+	}
+
+	if m.Regex.Requester != nil {
+		reg := m.Regex.Requester.Copy()
+		if !reg.MatchString(alert.Requester) {
+			return false
+		}
+	}
+
 	if m.Regex.AlertStartTime != nil {
 		reg := m.Regex.AlertStartTime.Copy()
 		if !reg.MatchString(alert.AlertStartTime.String()) {
@@ -253,90 +272,95 @@ func (m *AlertMatch) DoesAlertMatch(ctx context.Context) bool {
 }
 
 func (m *AlertMatch) buildRegex() {
-	m.Count = 0
+	m.count = 0
 
 	if len(m.AlertID) > 0 {
 		m.Regex.AlertID = regexp.MustCompile(m.AlertID)
-		m.Count++
+		m.count++
 	}
 
 	if len(m.BuildingID) > 0 {
 		m.Regex.BuildingID = regexp.MustCompile(m.BuildingID)
-		m.Count++
+		m.count++
 	}
 
 	if len(m.RoomID) > 0 {
 		m.Regex.RoomID = regexp.MustCompile(m.RoomID)
-		m.Count++
+		m.count++
 	}
 
 	if len(m.DeviceID) > 0 {
 		m.Regex.DeviceID = regexp.MustCompile(m.DeviceID)
-		m.Count++
+		m.count++
 	}
 
 	if len(m.Type) > 0 {
 		m.Regex.Type = regexp.MustCompile(m.Type)
-		m.Count++
+		m.count++
 	}
 
 	if len(m.Category) > 0 {
 		m.Regex.Category = regexp.MustCompile(m.Category)
-		m.Count++
+		m.count++
 	}
 
 	if len(m.Severity) > 0 {
 		m.Regex.Severity = regexp.MustCompile(m.Severity)
-		m.Count++
+		m.count++
 	}
 
 	if len(m.Message) > 0 {
 		m.Regex.Message = regexp.MustCompile(m.Message)
-		m.Count++
+		m.count++
 	}
 
 	for _, msg := range m.MessageLog {
 		m.Regex.MessageLog = append(m.Regex.MessageLog, regexp.MustCompile(msg))
-		m.Count++
+		m.count++
 	}
 
 	if len(m.Data) > 0 {
 		m.Regex.Data = regexp.MustCompile(m.Data)
-		m.Count++
+		m.count++
 	}
 
-	if len(m.IncidentID) > 0 {
-		m.Regex.IncidentID = regexp.MustCompile(m.IncidentID)
-		m.Count++
+	if len(m.SystemType) > 0 {
+		m.Regex.SystemType = regexp.MustCompile(m.SystemType)
+		m.count++
+	}
+
+	if len(m.Requester) > 0 {
+		m.Regex.Requester = regexp.MustCompile(m.Requester)
+		m.count++
 	}
 
 	if len(m.AlertStartTime) > 0 {
 		m.Regex.AlertStartTime = regexp.MustCompile(m.AlertStartTime)
-		m.Count++
+		m.count++
 	}
 
 	if len(m.AlertEndTime) > 0 {
 		m.Regex.AlertEndTime = regexp.MustCompile(m.AlertEndTime)
-		m.Count++
+		m.count++
 	}
 
 	if len(m.AlertLastUpdateTime) > 0 {
 		m.Regex.AlertLastUpdateTime = regexp.MustCompile(m.AlertLastUpdateTime)
-		m.Count++
+		m.count++
 	}
 
 	for _, tag := range m.AlertTags {
 		m.Regex.AlertTags = append(m.Regex.AlertTags, regexp.MustCompile(tag))
-		m.Count++
+		m.count++
 	}
 
 	for _, tag := range m.RoomTags {
 		m.Regex.RoomTags = append(m.Regex.RoomTags, regexp.MustCompile(tag))
-		m.Count++
+		m.count++
 	}
 
 	for _, tag := range m.DeviceTags {
 		m.Regex.DeviceTags = append(m.Regex.DeviceTags, regexp.MustCompile(tag))
-		m.Count++
+		m.count++
 	}
 }
