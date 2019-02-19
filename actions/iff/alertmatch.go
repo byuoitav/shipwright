@@ -33,16 +33,6 @@ type AlertMatch struct {
 	AlertLastUpdateTime string `json:"update-time"`
 	Active              *bool  `json:"active"`
 
-	Resolved       *bool    `json:"resolved"`
-	Responders     []string `json:"responders"`
-	HelpSentAt     string   `json:"help-sent-at"`
-	HelpArrivedAt  string   `json:"help-arrived-at"`
-	ResolutionInfo struct {
-		Code       string `json:"resolution-code"`
-		Notes      string `json:"notes"`
-		ResolvedAt string `json:"resolved-at"`
-	} `json:"resolution-info"`
-
 	AlertTags  []string `json:"alert-tags"`
 	RoomTags   []string `json:"room-tags"`
 	DeviceTags []string `json:"device-tags"`
@@ -64,15 +54,6 @@ type AlertMatch struct {
 		AlertStartTime      *regexp.Regexp
 		AlertEndTime        *regexp.Regexp
 		AlertLastUpdateTime *regexp.Regexp
-
-		Responders     []*regexp.Regexp
-		HelpSentAt     *regexp.Regexp
-		HelpArrivedAt  *regexp.Regexp
-		ResolutionInfo struct {
-			Code       *regexp.Regexp `json:"resolution-code"`
-			Notes      *regexp.Regexp `json:"notes"`
-			ResolvedAt *regexp.Regexp `json:"resolved-at"`
-		} `json:"resolution-info"`
 
 		AlertTags  []*regexp.Regexp
 		RoomTags   []*regexp.Regexp
@@ -96,12 +77,6 @@ func (m *AlertMatch) DoesAlertMatch(ctx context.Context) bool {
 	// do the bools first, they are the fastest
 	if m.Active != nil {
 		if alert.Active != *m.Active {
-			return false
-		}
-	}
-
-	if m.Resolved != nil {
-		if alert.Resolved != *m.Resolved {
 			return false
 		}
 	}
@@ -196,13 +171,6 @@ func (m *AlertMatch) DoesAlertMatch(ctx context.Context) bool {
 		}
 	}
 
-	if m.Regex.IncidentID != nil {
-		reg := m.Regex.IncidentID.Copy()
-		if !reg.MatchString(alert.IncidentID) {
-			return false
-		}
-	}
-
 	if m.Regex.AlertStartTime != nil {
 		reg := m.Regex.AlertStartTime.Copy()
 		if !reg.MatchString(alert.AlertStartTime.String()) {
@@ -220,60 +188,6 @@ func (m *AlertMatch) DoesAlertMatch(ctx context.Context) bool {
 	if m.Regex.AlertLastUpdateTime != nil {
 		reg := m.Regex.AlertLastUpdateTime.Copy()
 		if !reg.MatchString(alert.AlertLastUpdateTime.String()) {
-			return false
-		}
-	}
-
-	if len(m.Regex.Responders) > 0 {
-		matched := 0
-
-		for _, regex := range m.Regex.Responders {
-			reg := regex.Copy()
-
-			for _, r := range alert.Responders {
-				if reg.MatchString(r) {
-					matched++
-					break
-				}
-			}
-		}
-
-		if matched != len(m.Regex.Responders) {
-			return false
-		}
-	}
-
-	if m.Regex.HelpSentAt != nil {
-		reg := m.Regex.HelpSentAt.Copy()
-		if !reg.MatchString(alert.HelpSentAt.String()) {
-			return false
-		}
-	}
-
-	if m.Regex.HelpArrivedAt != nil {
-		reg := m.Regex.HelpArrivedAt.Copy()
-		if !reg.MatchString(alert.HelpArrivedAt.String()) {
-			return false
-		}
-	}
-
-	if m.Regex.ResolutionInfo.Code != nil {
-		reg := m.Regex.ResolutionInfo.Code.Copy()
-		if !reg.MatchString(alert.ResolutionInfo.Code) {
-			return false
-		}
-	}
-
-	if m.Regex.ResolutionInfo.Notes != nil {
-		reg := m.Regex.ResolutionInfo.Notes.Copy()
-		if !reg.MatchString(alert.ResolutionInfo.Notes) {
-			return false
-		}
-	}
-
-	if m.Regex.ResolutionInfo.ResolvedAt != nil {
-		reg := m.Regex.ResolutionInfo.ResolvedAt.Copy()
-		if !reg.MatchString(alert.ResolutionInfo.ResolvedAt.String()) {
 			return false
 		}
 	}
@@ -408,36 +322,6 @@ func (m *AlertMatch) buildRegex() {
 
 	if len(m.AlertLastUpdateTime) > 0 {
 		m.Regex.AlertLastUpdateTime = regexp.MustCompile(m.AlertLastUpdateTime)
-		m.Count++
-	}
-
-	for _, r := range m.Responders {
-		m.Regex.Responders = append(m.Regex.Responders, regexp.MustCompile(r))
-		m.Count++
-	}
-
-	if len(m.HelpSentAt) > 0 {
-		m.Regex.HelpSentAt = regexp.MustCompile(m.HelpSentAt)
-		m.Count++
-	}
-
-	if len(m.HelpArrivedAt) > 0 {
-		m.Regex.HelpArrivedAt = regexp.MustCompile(m.HelpArrivedAt)
-		m.Count++
-	}
-
-	if len(m.ResolutionInfo.Code) > 0 {
-		m.Regex.ResolutionInfo.Code = regexp.MustCompile(m.ResolutionInfo.Code)
-		m.Count++
-	}
-
-	if len(m.ResolutionInfo.Notes) > 0 {
-		m.Regex.ResolutionInfo.Notes = regexp.MustCompile(m.ResolutionInfo.Notes)
-		m.Count++
-	}
-
-	if len(m.ResolutionInfo.ResolvedAt) > 0 {
-		m.Regex.ResolutionInfo.ResolvedAt = regexp.MustCompile(m.ResolutionInfo.ResolvedAt)
 		m.Count++
 	}
 

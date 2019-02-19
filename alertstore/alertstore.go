@@ -6,6 +6,7 @@ import (
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
+	"github.com/byuoitav/common/structs"
 	"github.com/byuoitav/shipwright/actions"
 	"github.com/byuoitav/shipwright/actions/actionctx"
 	"github.com/byuoitav/shipwright/alertstore/alertcache"
@@ -56,25 +57,30 @@ func InitializeAlertStore(a *actions.ActionManager) {
 
 	go store.run()
 
-	alerts, err := persist.GetAllActiveAlertsFromPersist()
+	issues, err := persist.GetAllActiveIssuesFromPersist()
 	if err != nil {
 		log.L.Errorf("Couldn't get all active alerts: %v", err.Error())
 	}
 
-	for i := range alerts {
-		alerts[i].Source = Init
-		alerts[i], err = AddRoomInformationToAlert(alerts[i])
+	for i := range issues {
+		for _, v := range issues[i].Alerts {
+			v.Source = Init
+			v, err = AddRoomInformationToAlert(v)
 
-		if err != nil {
-			log.L.Warnf("Problem adding room info to alert %v", err.Error())
+			if err != nil {
+				log.L.Warnf("Problem adding room info to alert %v", err.Error())
+			}
+			store.inChannel <- v
 		}
-		store.inChannel <- alerts[i]
+
+		//then we go and add the RoomIssueInfo
+		store.issueEditChannel <- issues[i]
 	}
 
-	log.L.Infof("Alert store initialized with %v alerts", len(alerts))
+	log.L.Infof("Alert store initialized with %v issues", len(issues))
 }
 
-func (a *alertStore) setRoomIssueInfo(issue structs.RoomInfo) *nerr.E {
+func (a *alertStore) setRoomIssueInfo(issue structs.RoomIssue) *nerr.E {
 
 	//we must have a room issue ID
 	if issue.RoomIssueID == "" {
@@ -101,7 +107,7 @@ func (a *alertStore) putAlert(alert structs.Alert) (string, *nerr.E) {
 	//Check to make sure we have an ID
 	if alert.AlertID == "" {
 		//we need to generate
-		alert.AlertID = GenerateID(alert)
+		alert.AlertID = GenerateAlertID(alert)
 	}
 
 	log.L.Infof("Adding alert %v for device %v", alert.AlertID, alert.DeviceID)
@@ -124,7 +130,7 @@ func (a *alertStore) getAllIssues() ([]structs.RoomIssue, *nerr.E) {
 	log.L.Infof("Getting all room issues")
 
 	//make our request
-	respChan := make(chan alertResponse, 1)
+	respChan := make(chan issueResponse, 1)
 
 	a.requestChannel <- issueRequest{
 		All:          true,
@@ -134,6 +140,26 @@ func (a *alertStore) getAllIssues() ([]structs.RoomIssue, *nerr.E) {
 	resp := <-respChan
 
 	return resp.RoomIssues, resp.Error
+
+}
+func (a *alertStore) getRoomIssue(id string) (structs.RoomIssue, *nerr.E) {
+	log.L.Infof("Getting room issue %v", id)
+
+	//make our request
+	respChan := make(chan issueResponse, 1)
+
+	a.requestChannel <- issueRequest{
+		RoomIssueID:  id,
+		ResponseChan: respChan,
+	}
+
+	resp := <-respChan
+
+	if len(resp.RoomIssues) < 1 {
+		return structs.RoomIssue{}, resp.Error
+	}
+
+	return resp.RoomIssues[0], resp.Error
 
 }
 
@@ -152,7 +178,7 @@ func (a *alertStore) run() {
 		case req := <-a.requestChannel:
 			a.handleRequest(req)
 		case req := <-a.resolutionChannel:
-			a.resolve(req.ResolutionInfo, req.RoomIssue)
+			a.resolveIssue(req.ResolutionInfo, req.RoomIssue)
 		}
 	}
 }
@@ -165,7 +191,7 @@ func (a *alertStore) editIssueInformation(issue structs.RoomIssue) *nerr.E {
 	if err != nil {
 		if err.Type == alertcache.NotFound {
 			log.L.Errorf("Trying to edit room issue that doesn't exist: %v", issue.RoomIssueID)
-			return
+			return nerr.Create("Trying to edit room issue that doesn't exist", "bad-id")
 		} else {
 			log.L.Errorf("Couldn't get room issue %v from cache %v", issue.RoomIssueID, err.Error())
 		}
@@ -179,6 +205,8 @@ func (a *alertStore) editIssueInformation(issue structs.RoomIssue) *nerr.E {
 		persist.GetElkAlertPersist().StoreIssue(i, false, false)
 		alertcache.GetAlertCache("default").PutIssue(i)
 	}
+
+	return nil
 }
 
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
@@ -190,10 +218,10 @@ func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue stri
 	//we should check to see if it already exists
 
 	log.L.Debugf("resolving issue %v", roomIssue)
-	v, err := alertcache.GetAlertCache("default").GetIssue(alerts[i])
+	v, err := alertcache.GetAlertCache("default").GetIssue(roomIssue)
 	if err == nil {
 
-		err := alertcache.GetAlertCache("default").DeleteIssue(alerts[i])
+		err := alertcache.GetAlertCache("default").DeleteIssue(roomIssue)
 		if err != nil {
 			return err.Addf("couldn't resolve issue: %v", err.Error())
 		}
@@ -225,10 +253,23 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 	issueID := GetIssueIDFromAlertID(alert.AlertID)
 
 	//we should check to see if the room already has an issue associated with it.
-	issue, err := alertcache.GetAlertCache("default").GetIssue(alert.issueID)
+	issue, err := alertcache.GetAlertCache("default").GetIssue(issueID)
 	if err == nil {
+
 		//we need to check to see if this alert exists on the issuecheck to see if this alert exists on the issue
-		v, ok := v.Alerts[alert.AlertID]
+		var v structs.Alert
+		var ok bool
+		var indx int
+		for i := range issue.Alerts {
+			if issue.Alerts[i].AlertID == alert.AlertID {
+				ok = true
+				v = issue.Alerts[i]
+				indx = i
+
+				break
+			}
+		}
+
 		if ok {
 			//check to see if our last update time is non-blank and before the one already in the cache, if so we don't do anything
 			if !alert.AlertLastUpdateTime.IsZero() && alert.AlertLastUpdateTime.Before(v.AlertLastUpdateTime) {
@@ -236,7 +277,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 				//check if it's an init
 				if alert.Source == Init {
 					//create run the actions based on the alert in storage - since that's more up to date
-					a.runInitActions(v)
+					a.runAlertInitActions(v)
 				}
 				return
 			}
@@ -275,10 +316,10 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 			if alert.Source == Init {
 				//create run the actions based on the alert in storage - since that's more up to date
-				a.runInitActions(v)
+				a.runAlertInitActions(v)
 			}
 
-			alert = v
+			issue.Alerts[indx] = alert
 		} else {
 
 			//we store it.
@@ -295,13 +336,11 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 			if alert.Active {
 				//run the iniitialization actions thing
-				a.runInitActions(alert)
+				a.runAlertInitActions(alert)
 			}
-
+			issue.Alerts = append(issue.Alerts, alert)
 		}
 
-		//add/update the alert in the issue
-		issue.Alerts[alert.AlertID] = alert
 		issue.CalculateTypeCategories()
 
 	} else if err.Type == alertcache.NotFound {
@@ -315,17 +354,17 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		}
 
 		if len(alert.Message) > 0 {
-			alert.MessageLog = append(v.MessageLog, alert.Message)
+			alert.MessageLog = append(alert.MessageLog, alert.Message)
 		}
 
 		if alert.Active {
 			//run the iniitialization actions thing
-			a.runInitActions(alert)
+			a.runAlertInitActions(alert)
 		}
 
 		if alert.Active {
 			//run the iniitialization actions thing
-			a.runInitActions(alert)
+			a.runAlertInitActions(alert)
 		}
 
 		issue = structs.RoomIssue{
@@ -333,8 +372,11 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 			BasicRoomInfo:   alert.BasicDeviceInfo.BasicRoomInfo,
 			Severity:        alert.Severity,
 			RoomTags:        alert.RoomTags,
-			AlertTypes:      []AlertTypes{issue.Type},
-			AlertCategories: []AlertCategories{issue.Category},
+			AlertTypes:      []structs.AlertType{alert.Type},
+			AlertCategories: []structs.AlertCategory{alert.Category},
+			Alerts: []structs.Alert{
+				alert,
+			},
 		}
 
 	} else {
@@ -342,7 +384,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		return
 	}
 
-	err := alertcache.GetAlertCache("default").PutIssue(issue)
+	err = alertcache.GetAlertCache("default").PutIssue(issue)
 	if err != nil {
 		log.L.Errorf("%v", "Couldn't save issue %v: %v", issue.RoomIssueID, err.Error())
 		return
@@ -384,7 +426,7 @@ func (a *alertStore) runIssueActions(issue structs.RoomIssue) {
 		go func() {
 			acts := actions.DefaultConfig().GetActionsByTrigger("issue-change")
 
-			log.L.Debugf("Running %v alert change actions for issue %v", len(acts), alert.AlertID)
+			log.L.Debugf("Running %v alert change actions for issue %v", len(acts), issue.RoomIssueID)
 
 			// a new context for the run of this action
 			actx := actionctx.PutRoomIssue(context.Background(), issue)
@@ -417,15 +459,15 @@ func (a *alertStore) handleRequest(req issueRequest) {
 	log.L.Infof("Handling request %+v", req)
 
 	if req.All {
-		toReturn, err := alertcache.GetAlertCache("default").GetAllAlerts()
+		toReturn, err := alertcache.GetAlertCache("default").GetAllIssues()
 
 		for i := range toReturn {
 			toReturn[i].Source = Cache
 		}
 
 		req.ResponseChan <- issueResponse{
-			Error: err,
-			Alert: toReturn,
+			Error:      err,
+			RoomIssues: toReturn,
 		}
 
 	} else {
@@ -440,10 +482,10 @@ func (a *alertStore) handleRequest(req issueRequest) {
 
 }
 
-func combineIssues(n, o structs.RoomIssue) (structs.RoomIssue, changes) {
+func combineIssues(n, o structs.RoomIssue) (structs.RoomIssue, bool) {
 	changes := false
 
-	if len(n.IssueTags) != len(o.IssueTags) || !structs.ContainsAllTags(n.IssueTags, o.IssueTags) {
+	if len(n.IssueTags) != len(o.IssueTags) || !structs.ContainsAllTags(n.IssueTags, o.IssueTags...) {
 		o.IssueTags = n.IssueTags
 		changes = true
 	}
@@ -459,20 +501,20 @@ func combineIssues(n, o structs.RoomIssue) (structs.RoomIssue, changes) {
 		changes = true
 	}
 
-	if len(n.Responders) > 0 && len(n.Responders) != len(o.Responders) && structs.ContainsAllTags(o.Responders, n.Responders) {
+	if len(n.Responders) > 0 && len(n.Responders) != len(o.Responders) && structs.ContainsAllTags(o.Responders, n.Responders...) {
 		o.Responders = n.Responders
 		changes = true
 	}
 
-	if !n.HelpSentAt.IsZero() && !n.HelpSentAt.Equals(o.HelpSentAt) {
+	if !n.HelpSentAt.IsZero() && !n.HelpSentAt.Equal(o.HelpSentAt) {
 		o.HelpSentAt = n.HelpSentAt
 		changes = true
 	}
 
-	if !n.HelpArrivedAt.IsZero() && !n.HelpArrivedAt.Equals(o.HelpArrivedAt) {
+	if !n.HelpArrivedAt.IsZero() && !n.HelpArrivedAt.Equal(o.HelpArrivedAt) {
 		o.HelpArrivedAt = n.HelpArrivedAt
 		changes = true
 	}
 
-	return structs.RoomIssue{}
+	return o, changes
 }

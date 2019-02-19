@@ -10,9 +10,9 @@ import (
 	"github.com/labstack/echo"
 )
 
-// GetAllAlerts returns all alerts from the alert store
-func GetAllAlerts(context echo.Context) error {
-	alerts, err := alertstore.GetAllAlerts()
+// GetAllRoomIssues returns all alerts from the alert store
+func GetAllRoomIssues(context echo.Context) error {
+	alerts, err := alertstore.GetAllIssues()
 	if err != nil {
 		return context.JSON(http.StatusInternalServerError, err)
 	}
@@ -21,8 +21,8 @@ func GetAllAlerts(context echo.Context) error {
 }
 
 // ResolveAlert resolves an alert on the server side alert store
-func ResolveAlert(context echo.Context) error {
-	alertID := context.Param("alertID")
+func ResolveIssue(context echo.Context) error {
+	issueID := context.Param("issueID")
 
 	var resolution structs.ResolutionInfo
 
@@ -32,7 +32,7 @@ func ResolveAlert(context echo.Context) error {
 		return context.JSON(http.StatusBadRequest, err)
 	}
 
-	ne := alertstore.ResolveAlert(resolution, alertID)
+	ne := alertstore.ResolveIssue(resolution, issueID)
 	if ne != nil {
 		log.L.Errorf("failed to resolve alert: %s", ne.Error())
 		return context.JSON(http.StatusBadRequest, ne)

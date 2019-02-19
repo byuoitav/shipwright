@@ -33,7 +33,7 @@ func GetAlert(ctx context.Context) (structs.Alert, bool) {
 }
 
 // GetRoomIssue returns an alert/true from ctx if there is one, and false if there isn't.
-func GetRoomIssue(ctx context.Context) ([]structs.Alert, bool) {
+func GetRoomIssue(ctx context.Context) (structs.RoomIssue, bool) {
 	v, ok := ctx.Value(roomIssue).(structs.RoomIssue)
 
 	return v, ok
