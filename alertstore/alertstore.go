@@ -360,11 +360,6 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 			a.runAlertInitActions(alert)
 		}
 
-		if alert.Active {
-			//run the iniitialization actions thing
-			a.runAlertInitActions(alert)
-		}
-
 		issue = structs.RoomIssue{
 			RoomIssueID:     GetIssueIDFromAlertID(alert.AlertID),
 			BasicRoomInfo:   alert.BasicDeviceInfo.BasicRoomInfo,

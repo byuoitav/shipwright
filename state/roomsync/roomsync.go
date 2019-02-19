@@ -88,9 +88,6 @@ func GetRoomsWithTypes() ([]sd.StaticRoom, *nerr.E) {
 	for i := range devs {
 		//check the type against our map
 		if v, ok := TypeMappings[devs[i].Type.ID]; ok {
-			if v == "dmps" {
-				log.L.Infof(color.HiRedString("adding a dmps device"))
-			}
 
 			//check to see if we already have this room
 			rmID := devs[i].GetDeviceRoomID()
