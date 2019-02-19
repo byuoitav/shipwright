@@ -22,9 +22,9 @@
             <div class="row buttons">
                 <a routerLink="/configuration/{{room?.id}}/roompage" class="row">
                     <mat-icon class="good">check_circle</mat-icon>
-                    <span class="count">{{state.goodCount}}</span>
+                    <span class="count">{{state?.goodCount}}</span>
                     <mat-icon class="bad">cancel</mat-icon>
-                    <span class="count">{{state.alertingCount}}</span>
+                    <span class="count">{{state?.alertingCount}}</span>
                 </a>
                 <span class="fill-remaining-space"></span>
                 <button mat-icon-button class="edit" (click)="modal.OpenRoomModal(room)"><mat-icon>more_horiz</mat-icon></button>

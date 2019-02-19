@@ -39,9 +39,12 @@ export class DataService {
   settingsChanged: EventEmitter<any>;
   panelCount: number = 1;
 
+  issueEmitter: EventEmitter<any>;
+
   constructor(public api: APIService, private socket: SocketService) {
     this.loaded = new EventEmitter<boolean>();
     this.settingsChanged = new EventEmitter<number>();
+    this.issueEmitter = new EventEmitter<any>();
     this.LoadData();
     this.ListenForIssues();
   }
@@ -86,7 +89,7 @@ export class DataService {
      await this.GetStoredRoomIssues();
      await this.GetStaticDevices();
      await this.GetRoomStatusList();
-     await this.GetBuildingStatusList();
+    //  await this.GetBuildingStatusList();
      await this.GetClosureCodes();
      this.finished = true;
      this.loaded.emit(true);
@@ -239,6 +242,7 @@ export class DataService {
           this.roomIssueList.push(issue);
           this.roomIssueList = this.roomIssueList.sort(this.RoomIssueSorter)
         }
+        this.issueEmitter.emit();
       }
     })
   }
@@ -258,9 +262,10 @@ export class DataService {
   }
 
   private async GetStaticDevices() { 
-    this.api.GetAllStaticDeviceRecords().then((records) => {
+    await this.api.GetAllStaticDeviceRecords().then((records) => {
       this.staticDeviceList = records;
-      this.GetRoomStatusList();
+      // this.GetRoomStatusList();
+      console.log("found devices")
     })
   }
 
@@ -280,6 +285,7 @@ export class DataService {
         }
       }
       if(!added) {
+        
         let roomState = new RoomStatus()
         roomState.roomID = roomID
         roomState.deviceStates = [sd]
@@ -287,10 +293,12 @@ export class DataService {
         this.roomStatusList.push(roomState)
       }
     }
+    console.log("I am done")
     this.GetBuildingStatusList()
   }
 
   private async GetBuildingStatusList() {
+    console.log("building list starting")
     this.buildingStatusList = [];
 
     for(let rs of this.roomStatusList) {
@@ -305,6 +313,8 @@ export class DataService {
         }
       }
       if(!added) {
+        console.log("derek")
+        console.log(buildingID);
         let buildingState = new BuildingStatus()
         buildingState.buildingID = buildingID
         buildingState.roomStates = [rs]

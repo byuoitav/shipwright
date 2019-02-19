@@ -654,8 +654,6 @@ export class APIService {
       for (let sd of data) {
         let rec = this.converter.deserializeObject(sd, StaticDevice);
 
-        console.log(rec);
-
         rec.updateTimes = sd["field-state-received"];
 
         records.push(rec);
@@ -687,7 +685,7 @@ export class APIService {
         .get("issues/"+issue.issueID+"/resolve", { headers: this.headers })
         .toPromise();
 
-      const response = this.converter.deserialize(data, DBResponse);
+      const response = this.converter.deserializeObject(data, DBResponse);
 
       return response;
     } catch (e) {
@@ -704,6 +702,20 @@ export class APIService {
       return data;
     } catch (e) {
       throw new Error("error trying to get the closure codes: " + e);
+    }
+  }
+
+  public async UpdateIssue(issue: RoomIssue) {
+    try {
+      const data: any = await this.http
+        .put("issues", this.converter.serialize(issue), { headers: this.headers })
+        .toPromise();
+
+      // const response = this.converter.deserializeObject(data, DBResponse);
+
+      return data;
+    } catch (e) {
+      throw new Error("error trying to resolve an issue: " + e);
     }
   }
 }

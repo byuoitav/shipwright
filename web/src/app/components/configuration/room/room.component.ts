@@ -20,10 +20,11 @@ export class RoomComponent implements OnInit {
   constructor(public text: StringsService, public modal: ModalService, public data: DataService) {
     if(this.data.finished) {
       this.GetRoomState();
-      
+      this.deviceList = this.data.roomToDevicesMap.get(this.room.id);
     } else {
       this.data.loaded.subscribe(() => {
         this.GetRoomState();
+        this.deviceList = this.data.roomToDevicesMap.get(this.room.id);
       })
     }
   }
@@ -32,15 +33,15 @@ export class RoomComponent implements OnInit {
     
   }
 
-  ngOnChanges() {
-    if(this.data.finished) {
-      this.GetRoomState();
-    } else {
-      this.data.loaded.subscribe(() => {
-        this.GetRoomState();
-      })
-    }
-  }
+  // ngOnChanges() {
+  //   if(this.data.finished) {
+  //     this.GetRoomState();
+  //   } else {
+  //     this.data.loaded.subscribe(() => {
+  //       this.GetRoomState();
+  //     })
+  //   }
+  // }
 
   GetRoomState() {
     this.state = this.data.GetRoomState(this.room.id);

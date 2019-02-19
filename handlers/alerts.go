@@ -23,7 +23,7 @@ func GetAllRoomIssues(context echo.Context) error {
 	return context.JSON(http.StatusOK, alerts)
 }
 
-// ResolveAlert resolves an alert on the server side alert store
+// ResolveIssue resolves an alert on the server side alert store
 func ResolveIssue(context echo.Context) error {
 	issueID := context.Param("issueID")
 
