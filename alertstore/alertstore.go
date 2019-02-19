@@ -63,6 +63,7 @@ func InitializeAlertStore(a *actions.ActionManager) {
 	}
 
 	for i := range issues {
+
 		for _, v := range issues[i].Alerts {
 			v.Source = Init
 			v, err = AddRoomInformationToAlert(v)
@@ -73,7 +74,6 @@ func InitializeAlertStore(a *actions.ActionManager) {
 			store.inChannel <- v
 		}
 
-		//then we go and add the RoomIssueInfo
 		store.issueEditChannel <- issues[i]
 	}
 
@@ -319,7 +319,9 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 				a.runAlertInitActions(v)
 			}
 
-			issue.Alerts[indx] = alert
+			issue.Alerts[indx] = v
+
+			alert = v
 		} else {
 
 			//we store it.

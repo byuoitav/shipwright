@@ -37,7 +37,27 @@ func ResolveIssue(context echo.Context) error {
 
 	ne := alertstore.ResolveIssue(resolution, issueID)
 	if ne != nil {
-		log.L.Errorf("failed to resolve alert: %s", ne.Error())
+		log.L.Errorf("failed to resolve issue: %s", ne.Error())
+		return context.JSON(http.StatusBadRequest, ne)
+	}
+
+	return context.JSON(http.StatusOK, "ok")
+}
+
+// UpdateRoomIssue resolves an alert on the server side alert store
+func UpdateRoomIssue(context echo.Context) error {
+
+	var issue structs.RoomIssue
+
+	err := context.Bind(&issue)
+	if err != nil {
+		log.L.Errorf("failed to bind resolution body from request: %s", err.Error())
+		return context.JSON(http.StatusBadRequest, err)
+	}
+
+	ne := alertstore.UpdateRoomIssue(issue)
+	if ne != nil {
+		log.L.Errorf("failed to update issue: %s", ne.Error())
 		return context.JSON(http.StatusBadRequest, ne)
 	}
 
@@ -70,8 +90,6 @@ func GetClosureCodes(context echo.Context) error {
 		log.L.Errorf("failed to get closure codes: %s", err.Error())
 		return context.JSON(http.StatusInternalServerError, err)
 	}
-
-	log.L.Info(codes)
 
 	var actualCodes []string
 	for _, code := range codes.Result {
