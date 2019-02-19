@@ -1,8 +1,8 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Device, DeviceType, Port } from 'src/app/objects';
 import { DataService} from 'src/app/services/data.service';
+import { Device, DeviceType, Port } from 'src/app/objects/database';
 
 @Component({
   selector: 'device-modal',

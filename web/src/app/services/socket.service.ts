@@ -4,7 +4,7 @@ import {
   WebSocketConfig
 } from "angular2-websocket/angular2-websocket";
 import { JsonConvert } from "json2typescript";
-import { Alert } from "../objects";
+import { RoomIssue } from '../objects/alerts';
 
 export const OPEN = "open";
 export const CLOSE = "close";
@@ -34,9 +34,9 @@ export class SocketService {
 
     this.socket.onMessage(msg => {
       const data = JSON.parse(msg.data);
-      const a = jsonConvert.deserialize(data, Alert);
+      const a = jsonConvert.deserialize(data, RoomIssue);
 
-      console.log("received alert", a);
+      console.log("received issue", a);
       this.listener.emit(a);
     });
 

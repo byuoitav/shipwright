@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { AlertTableComponent } from '../components/alerttable/alerttable.component';
-import { BatteryReportComponent } from '../components/batteryreport/batteryreport.component';
-import { DashPanel } from '../components/dashpanel/idashpanel';
+import { AlertTableComponent } from '../components/dashboard/alerttable/alerttable.component';
+import { BatteryReportComponent } from '../components/dashboard/batteryreport/batteryreport.component';
+import { DashPanel } from '../components/dashboard/dashpanel/idashpanel';
 
 
 @Injectable({
@@ -15,7 +15,7 @@ export class DashPanelService {
     "battery": BatteryReportComponent 
   }
 
-  getPanel(panelType: string, data: any) {
-    return new DashPanel(this.PanelMap[panelType], data);
+  getPanel(panelType: string) {
+    return new DashPanel(this.PanelMap[panelType]);
   }
 }

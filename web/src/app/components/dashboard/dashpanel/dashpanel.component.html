@@ -1,0 +1,19 @@
+<div class="row">
+    <!-- <h2 class="mat-h2">
+        Total Alerts: {{GetTotalAlertsDisplay()}}
+    </h2> -->
+
+    <mat-form-field>
+        <mat-select [value]="GetValue('AllAlerts')" (selectionChange)="ChoosePanel($event.value)" color="accent" #pType>
+            <mat-option [value]="GetValue('AllAlerts')">All Alerts</mat-option>
+            <mat-option [value]="GetValue('CritAlerts')">Critical Alerts</mat-option>
+            <mat-option [value]="GetValue('WarnAlerts')">Warning Alerts</mat-option>
+            <!-- <mat-option [value]="'battery'">Battery Report</mat-option> -->
+        </mat-select>
+    </mat-form-field>
+</div>
+
+
+<div>
+    <ng-template dashDirect></ng-template>
+</div>
