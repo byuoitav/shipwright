@@ -419,7 +419,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 	persist.GetElkAlertPersist().StoreIssue(issue, false, false)
 	a.runIssueActions(issue)
-	socket.GetManager().WriteToSockets(alert)
+	socket.GetManager().WriteToSockets(issue)
 }
 
 func (a *alertStore) runIssueActions(issue structs.RoomIssue) {
