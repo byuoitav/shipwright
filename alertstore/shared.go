@@ -33,7 +33,11 @@ func GetIssueIDFromAlertID(alertID string) string {
 		log.L.Errorf("Unkown id format %v", alertID)
 		return ""
 	}
-	devparts := strings.Split("-", parts[0])
+	devparts := strings.Split(parts[0], "-")
+	if len(devparts) < 3 {
+		log.L.Errorf("Unkown id format %v", alertID)
+		return ""
+	}
 
 	return fmt.Sprintf("%v-%v^%v", devparts[0], devparts[1], parts[3])
 

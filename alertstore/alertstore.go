@@ -341,8 +341,6 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 			issue.Alerts = append(issue.Alerts, alert)
 		}
 
-		issue.CalculateTypeCategories()
-
 	} else if err.Type == alertcache.NotFound {
 
 		//generate the new roomIssue.
@@ -374,6 +372,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 			RoomTags:        alert.RoomTags,
 			AlertTypes:      []structs.AlertType{alert.Type},
 			AlertCategories: []structs.AlertCategory{alert.Category},
+			SystemType:      alert.SystemType,
 			Alerts: []structs.Alert{
 				alert,
 			},
@@ -383,6 +382,8 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		log.L.Errorf("Error: %v", err.Error())
 		return
 	}
+
+	issue.CalculateAggregateInfo()
 
 	err = alertcache.GetAlertCache("default").PutIssue(issue)
 	if err != nil {
