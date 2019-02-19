@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { SettingsModalComponent } from '../modals/settings/settings.component';
 import { RespondModalComponent } from '../modals/respond/respond.component';
@@ -8,7 +8,7 @@ import { DeviceModalComponent } from '../modals/devicemodal/devicemodal.componen
 import { NotifyModalComponent } from '../modals/notify/notify.component';
 import { PresetModalComponent } from '../modals/presetmodal/presetmodal.component';
 import { IconModalComponent } from '../modals/iconmodal/iconmodal.component';
-import { RoomIssue } from '../objects/alerts';
+import { RoomIssue, Alert } from '../objects/alerts';
 import { Building, Room, Device, DBResponse, Preset, Panel, UIConfig } from '../objects/database';
 
 @Injectable({
@@ -22,8 +22,8 @@ export class ModalService {
     this.dialog.open(SettingsModalComponent);
   }
 
-  OpenRespondModal(issue: RoomIssue) {
-    this.dialog.open(RespondModalComponent, {data: issue});
+  OpenRespondModal(issue: RoomIssue, selected: Alert[]) {
+    this.dialog.open(RespondModalComponent, {data: {issue: issue, selected: selected}});
   }
 
   OpenBuildingModal(building: Building) {

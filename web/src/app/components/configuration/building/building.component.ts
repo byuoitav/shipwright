@@ -12,16 +12,24 @@ import { BuildingStatus } from 'src/app/objects/static';
 })
 export class BuildingComponent implements OnInit {
   @Input() building: Building;
-  state: BuildingStatus;
+  state: BuildingStatus = new BuildingStatus();
 
-  constructor(public text: StringsService, public modal: ModalService, private data: DataService) { }
+  constructor(public text: StringsService, public modal: ModalService, private data: DataService) {
+    
+  }
 
   ngOnInit() {
-    this.GetBuildingState()
+    if(this.data.finished) {
+      this.GetBuildingState()
+    } else {
+      this.data.loaded.subscribe(() => {
+        this.GetBuildingState()
+      })
+    }
   }
 
   GetImage(): string {
-    return "../../../../assets" + this.building.id + ".jpg"
+    return "assets/" + this.building.id + ".jpg"
   }
 
   GetBuildingState() {

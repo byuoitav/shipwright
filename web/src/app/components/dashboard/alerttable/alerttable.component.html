@@ -19,25 +19,25 @@
         <ng-container matColumnDef="severity">
             <th mat-header-cell *matHeaderCellDef> Severity </th>
             <td mat-cell *matCellDef="let issue">
-                <span [ngClass]="issue.severity + '-severity'">{{text.Title(issue.severity)}}</span>
+                <span [ngClass]="issue.severity + '-severity'" (click)="ExpandRow(issue)">{{text.Title(issue.severity)}}</span>
             </td>
         </ng-container>
 
         <ng-container matColumnDef="count">
-            <th mat-header-cell *matHeaderCellDef> Active/Total </th>
-            <td mat-cell *matCellDef="let issue">{{issue.ActiveAlertCount()}}/{{issue.TotalAlertCount()}}</td>
+            <th mat-header-cell *matHeaderCellDef class="centered"> Active/Total </th>
+            <td mat-cell *matCellDef="let issue" (click)="ExpandRow(issue)" class="centered">{{issue.activeAlertCount}}/{{issue.alertCount}}</td>
         </ng-container>
 
         <ng-container matColumnDef="types">
             <th mat-header-cell *matHeaderCellDef> Alert Types </th>
-            <td mat-cell *matCellDef="let issue" (click)="ExpandRow(issue)">{{issue.alertTypes.length > charCount ? (issue.alertTypes.toString() | slice:0:charCount)+".." : issue.alertTypes.toString()}}</td>
+            <td mat-cell *matCellDef="let issue" (click)="ExpandRow(issue)">{{issue.activeAlertTypes?.length > charCount ? (ArrayToString(issue.activeAlertTypes) | slice:0:charCount)+".." : ArrayToString(issue.activeAlertTypes)}}</td>
         </ng-container>
 
         <ng-container matColumnDef="incident">
             <th mat-header-cell *matHeaderCellDef> Incident ID </th>
             <td mat-cell *matCellDef="let issue">
                 <div (click)="ServiceNowRedirect(issue.incidentID)" class="fake-hyperlink">
-                    {{issue.roomID}}
+                    {{issue.incidentID}}
                 </div>
             </td>
         </ng-container>
@@ -61,7 +61,7 @@
         <ng-container matColumnDef="responders">
             <th mat-header-cell *matHeaderCellDef> Responders </th>
             <td mat-cell *matCellDef="let issue" (click)="ExpandRow(issue)">
-                {{issue.responders.toString()}}
+                {{ArrayToString(issue.responders)}}
             </td>
         </ng-container>
 
@@ -69,14 +69,22 @@
             <td mat-cell *matCellDef="let issue" [attr.colspan]="issueColumns.length">
                 <div class="alert-detail" [@detailExpand]="expIssue === issue ? 'expanded' : 'collapsed'">
                     <table mat-table [dataSource]="issue.alerts" class="mat-elevation-z0">
-                        <ng-container *ngIf="singleRoom" matColumnDef="select">
+
+                        <ng-container matColumnDef="select">
+
                             <th mat-header-cell *matHeaderCellDef>
-                                <mat-checkbox (change)="$event ? MasterToggle() : null" [checked]="selection.hasValue() && IsAllSelected()" [indeterminate]="selection.hasValue() && !IsAllSelected()"></mat-checkbox>
+                                <ng-container *ngIf="singleRoom">
+                                    <mat-checkbox color="warn" (change)="$event ? MasterToggle() : null" [checked]="selection.hasValue() && IsAllSelected()" [indeterminate]="selection.hasValue() && !IsAllSelected()"></mat-checkbox>
+                                </ng-container>
                             </th>
                             <td mat-cell *matCellDef="let alert">
-                                <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(alert) : null" [checked]="selection.isSelected(alert)"></mat-checkbox>
+                                <ng-container *ngIf="singleRoom">
+                                    <mat-checkbox color="warn" (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(alert) : null" [checked]="selection.isSelected(alert)"></mat-checkbox>
+                                </ng-container>
                             </td>
+
                         </ng-container>
+
 
                         <ng-container matColumnDef="name">
                             <th mat-header-cell *matHeaderCellDef> Device Name </th>

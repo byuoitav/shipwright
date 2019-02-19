@@ -262,6 +262,10 @@ export class BuildingStatus {
   @JsonProperty("room-states", [RoomStatus], true)
   roomStates: RoomStatus[] = Array<RoomStatus>();
 
+  constructor() {
+    
+  }
+
   Update() {
     this.roomCount = 0;
     this.alertingCount = 0;

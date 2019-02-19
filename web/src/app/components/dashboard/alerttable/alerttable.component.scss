@@ -102,77 +102,109 @@ button {
 
 /* Column Widths */
 
-.mat-column-icon {
-    max-width: 60px;
-    width: 60px;
-    // flex: 0 1 60px;
-}
-
-.mat-column-roomID {
-    max-width: 150px;
-    width: 150px;
-    // flex: 0 1 150px;
-    padding-left: 15px;
-    padding-right: 15px;
-}
-
-.mat-column-alertCount {
-    max-width: 40px;
-    width: 40px;
-    // flex: 0 1 40px;
+.mat-column {
     padding-left: 10px;
     padding-right: 10px;
+    &.icon {
+        max-width: 70px;
+        width: 70px;
+    }
+    &.roomID {
+        max-width: 150px;
+        width: 150px;
+    }
+    &.severity {
+        max-width: 100px;
+        width: 100px;
+    }
+    &.count {
+        max-width: 100px;
+        width: 100px;
+    }
+    &.types {
+        max-width: 120px;
+        width: 120px;
+    }
+    &.incident {
+        max-width: 150px;
+        width: 150px;
+    }
+    &.help-sent {
+        max-width: 70px;
+        width: 70px;
+    }
+    &.help-arrived {
+        max-width: 70px;
+        width: 70px;
+    }
+    &.responders {
+        max-width: 120px;
+        width: 120px;
+    }
 }
 
-.mat-column-incident {
-    max-width: 200px;
-    width: 200px;
-    // flex: 0 1 200px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
-.mat-column-alertTypes {
-    max-width: 200px;
-    width: 200px;
-    // flex: 0 1 200px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
-.mat-column-help-sent,
-.mat-column-help-arrived {
-    max-width: 100px;
-    width: 100px;
-    // flex: 0 1 100px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
-.mat-column-deviceName {
-    max-width: 60px;
-    width: 60px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
-.mat-column-alertType {
-    max-width: 150px;
-    width: 150px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
-.mat-column-severity {
-    max-width: 80px;
-    width: 80px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
-.mat-column-responders {
-    max-width: 120px;
-    width: 120px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
+// .mat-column-icon {
+//     max-width: 60px;
+//     width: 60px;
+//     // flex: 0 1 60px;
+// }
+// .mat-column-roomID {
+//     max-width: 150px;
+//     width: 150px;
+//     // flex: 0 1 150px;
+//     padding-left: 15px;
+//     padding-right: 15px;
+// }
+// .mat-column-alertCount {
+//     max-width: 40px;
+//     width: 40px;
+//     // flex: 0 1 40px;
+//     padding-left: 10px;
+//     padding-right: 10px;
+// }
+// .mat-column-incident {
+//     max-width: 200px;
+//     width: 200px;
+//     // flex: 0 1 200px;
+//     padding-left: 10px;
+//     padding-right: 10px;
+// }
+// .mat-column-alertTypes {
+//     max-width: 200px;
+//     width: 200px;
+//     // flex: 0 1 200px;
+//     padding-left: 10px;
+//     padding-right: 10px;
+// }
+// .mat-column-help-sent,
+// .mat-column-help-arrived {
+//     max-width: 100px;
+//     width: 100px;
+//     // flex: 0 1 100px;
+//     padding-left: 10px;
+//     padding-right: 10px;
+// }
+// .mat-column-deviceName {
+//     max-width: 60px;
+//     width: 60px;
+//     padding-left: 10px;
+//     padding-right: 10px;
+// }
+// .mat-column-alertType {
+//     max-width: 150px;
+//     width: 150px;
+//     padding-left: 10px;
+//     padding-right: 10px;
+// }
+// .mat-column-severity {
+//     max-width: 80px;
+//     width: 80px;
+//     padding-left: 10px;
+//     padding-right: 10px;
+// }
+// .mat-column-responders {
+//     max-width: 120px;
+//     width: 120px;
+//     padding-left: 10px;
+//     padding-right: 10px;
+// }

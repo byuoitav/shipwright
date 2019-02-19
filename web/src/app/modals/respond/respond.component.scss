@@ -20,15 +20,15 @@ $save:#0046c8;
     width: 120px;
     margin-left: 10px;
     margin-right: 10px;
+    color: white;
     &.resolve {
         background-color: $resolve;
-        color: white;
     }
     &.save {
-        color: $save;
+        background-color: $save;
     }
     &.cancel {
-        color: $cancel;
+        background-color: $cancel;
     }
 }
 

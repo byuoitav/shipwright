@@ -101,4 +101,12 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   GetDeviceName(deviceID: string): string {
     return deviceID.split("-")[2];
   }
+
+  ArrayToString(array: any[]): string {
+    if(array == null) {
+      return ""
+    } else {
+      return array.toString();
+    }
+  }
 }

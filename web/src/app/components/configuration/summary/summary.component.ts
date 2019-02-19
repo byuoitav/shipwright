@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { ActivatedRoute } from '@angular/router';
 import { MonitoringService } from 'src/app/services/monitoring.service';
@@ -6,6 +6,7 @@ import { DataService } from 'src/app/services/data.service';
 import { ModalService } from 'src/app/services/modal.service';
 import { RoomIssue, Alert } from 'src/app/objects/alerts';
 import { Device } from 'src/app/objects/database';
+import { AlertTableComponent } from '../../dashboard/alerttable/alerttable.component';
 
 @Component({
   selector: 'summary',
@@ -13,7 +14,7 @@ import { Device } from 'src/app/objects/database';
   styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent implements OnInit {
-  roomAlerts: RoomIssue;
+  roomIssue: RoomIssue;
   deviceList: Device[] = [];
   filteredDevices: Device[] = [];
   deviceSearch: string;
@@ -25,24 +26,24 @@ export class SummaryComponent implements OnInit {
   sentTime: string;
   arrivedTime: string;
 
-  constructor(public text: StringsService, private route: ActivatedRoute, public monitor: MonitoringService, public data: DataService, public modal: ModalService) {
+  @ViewChild(AlertTableComponent) table: AlertTableComponent;
+
+  constructor(public text: StringsService, private route: ActivatedRoute, public data: DataService, public modal: ModalService) {
     this.route.params.subscribe(params => {
       this.roomID = params["roomID"]
       
 
-      // if(this.data.finished) {
-      //   this.roomAlerts = this.monitor.roomAlertsMap.get(this.roomID)
-      //   this.deviceList = this.data.roomToDevicesMap.get(this.roomID)
-      //   this.filteredDevices = this.deviceList;
-      //   this.SetResponders();
-      // } else {
-      //   this.data.loaded.subscribe(() => {
-      //     this.roomAlerts = this.monitor.roomAlertsMap.get(this.roomID)
-      //     this.deviceList = this.data.roomToDevicesMap.get(this.roomID)
-      //     this.filteredDevices = this.deviceList;
-      //     this.SetResponders();
-      //   })
-      // }
+      if(this.data.finished) {
+        this.roomIssue = this.data.GetRoomIssue(this.roomID)
+        this.deviceList = this.data.roomToDevicesMap.get(this.roomID)
+        this.filteredDevices = this.deviceList;
+      } else {
+        this.data.loaded.subscribe(() => {
+          this.roomIssue = this.data.GetRoomIssue(this.roomID)
+          this.deviceList = this.data.roomToDevicesMap.get(this.roomID)
+          this.filteredDevices = this.deviceList;
+        })
+      }
       
     })
   }
@@ -92,11 +93,11 @@ export class SummaryComponent implements OnInit {
   }
 
   GetRoomAlerts() {
-    if(this.roomAlerts == null) {
+    if(this.roomIssue == null) {
       return null
     }
 
-    return this.roomAlerts
+    return this.roomIssue
   }
 
   HelpWasSent() {
@@ -109,8 +110,8 @@ export class SummaryComponent implements OnInit {
 
     let time = this.to24Hour(this.sentTime)
     let timestamp = today + ", " + time
-    this.roomAlerts.helpSentAt = new Date(timestamp)
-    console.log(this.roomAlerts.helpSentAt.toLocaleString())
+    this.roomIssue.helpSentAt = new Date(timestamp)
+    console.log(this.roomIssue.helpSentAt.toLocaleString())
   }
 
   HelpHasArrived() {
@@ -123,8 +124,8 @@ export class SummaryComponent implements OnInit {
 
     let time = this.to24Hour(this.arrivedTime)
     let timestamp = today + ", " + time
-    this.roomAlerts.helpArrivedAt = new Date(timestamp)
-    console.log(this.roomAlerts.helpArrivedAt.toLocaleString())
+    this.roomIssue.helpArrivedAt = new Date(timestamp)
+    console.log(this.roomIssue.helpArrivedAt.toLocaleString())
   }
 
   private to24Hour(time: string): string {
@@ -154,11 +155,11 @@ export class SummaryComponent implements OnInit {
 
   // SetResponders(changed?: boolean) {
   //   if(changed) {
-  //     for(let alert of this.roomAlerts.GetAlerts()) {
+  //     for(let alert of this.roomIssue.GetAlerts()) {
   //       alert.responders = this.responders;
   //     }
   //   } else {
-  //     this.responders = this.roomAlerts.GetAlerts()[0].responders;
+  //     this.responders = this.roomIssue.GetAlerts()[0].responders;
   //   }
   // }
 }

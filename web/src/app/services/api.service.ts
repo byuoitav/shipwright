@@ -654,6 +654,8 @@ export class APIService {
       for (let sd of data) {
         let rec = this.converter.deserializeObject(sd, StaticDevice);
 
+        console.log(rec);
+
         rec.updateTimes = sd["field-state-received"];
 
         records.push(rec);
@@ -675,7 +677,33 @@ export class APIService {
 
       return alerts;
     } catch (e) {
-      throw new Error("error getting all alerts: " + e);
+      throw new Error("error getting all issues: " + e);
+    }
+  }
+
+  public async ResolveIssue(issue: RoomIssue) {
+    try {
+      const data: any = await this.http
+        .get("issues/"+issue.issueID+"/resolve", { headers: this.headers })
+        .toPromise();
+
+      const response = this.converter.deserialize(data, DBResponse);
+
+      return response;
+    } catch (e) {
+      throw new Error("error trying to resolve an issue: " + e);
+    }
+  }
+
+  public async GetClosureCodes() {
+    try {
+      const data: any = await this.http
+        .get("issues/resolutions", { headers: this.headers })
+        .toPromise();
+
+      return data;
+    } catch (e) {
+      throw new Error("error trying to get the closure codes: " + e);
     }
   }
 }

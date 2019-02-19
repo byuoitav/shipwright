@@ -13,7 +13,7 @@ import { RoomStatus } from 'src/app/objects/static';
 export class RoomComponent implements OnInit {
   @Input() room: Room;
   deviceList: Device[] = [];
-  state: RoomStatus;
+  state: RoomStatus = new RoomStatus();
 
 
 

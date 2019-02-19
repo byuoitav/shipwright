@@ -26,12 +26,12 @@ import (
 	figure "github.com/common-nighthawk/go-figure"
 )
 
-func init() {
-	err := resetConfig(context.Background())
-	if err != nil {
-		log.L.Fatalf(err.Error())
-	}
-}
+// func init() {
+// 	err := resetConfig(context.Background())
+// 	if err != nil {
+// 		log.L.Fatalf(err.Error())
+// 	}
+// }
 
 func main() {
 	log.SetLevel("info")
@@ -140,6 +140,7 @@ func main() {
 	read.GET("/issues", handlers.GetAllRoomIssues)
 	read.PUT("/issues/:issueID/resolve", handlers.ResolveIssue)
 	write.PUT("/alerts/add", handlers.AddAlert)
+	read.GET("/issues/resolutions", handlers.GetClosureCodes)
 
 	// Websocket Endpoints
 	router.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))

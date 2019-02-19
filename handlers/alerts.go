@@ -2,6 +2,9 @@ package handlers
 
 import (
 	"net/http"
+	"sort"
+
+	"github.com/byuoitav/common/servicenow"
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/structs"
@@ -58,4 +61,35 @@ func AddAlert(context echo.Context) error {
 	}
 
 	return context.JSON(http.StatusOK, id)
+}
+
+// GetClosureCodes gets the list of closure codes for ServiceNow
+func GetClosureCodes(context echo.Context) error {
+	codes, err := servicenow.GetResolutionActions()
+	if err != nil {
+		log.L.Errorf("failed to get closure codes: %s", err.Error())
+		return context.JSON(http.StatusInternalServerError, err)
+	}
+
+	log.L.Info(codes)
+
+	var actualCodes []string
+	for _, code := range codes.Result {
+		if !contains(actualCodes, code.UAction) {
+			actualCodes = append(actualCodes, code.UAction)
+		}
+	}
+
+	sort.Strings(actualCodes)
+
+	return context.JSON(http.StatusOK, actualCodes)
+}
+
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }

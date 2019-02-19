@@ -1,17 +1,10 @@
-<!-- <p>
-    summary works!
-</p> -->
-<!-- <div class="container-full"> 
-    *ngIf="roomAlerts != null && GetRoomAlerts() != null"-->
-
 <div class="base">
-
     <div class="container">
         <!-- <section class="row">
-            <button mat-raised-button [disabled]="roomAlerts?.helpSent" color="warn" (click)="modal.OpenRespondModal(roomAlerts)">Dispatch Help</button>
-            <button mat-stroked-button *ngIf="roomAlerts == null || GetRoomAlerts() == null" [disabled]="true">No alerts!</button>
+            <button mat-raised-button [disabled]="roomIssue?.helpSent" color="warn" (click)="modal.OpenRespondModal(roomIssue)">Dispatch Help</button>
+            <button mat-stroked-button *ngIf="roomIssue == null || GetRoomAlerts() == null" [disabled]="true">No alerts!</button>
         </section> -->
-        <alert-table *ngIf="GetRoomAlerts() != null" [singleRoom]="true" [expIssue]="roomAlerts"></alert-table>
+        <alert-table *ngIf="GetRoomAlerts() != null" [singleRoom]="true" [expIssue]="roomIssue"></alert-table>
         <section class="row">
             <div class="row-help">
                 <button mat-raised-button color="primary" class="button" (click)="HelpWasSent()">Help Sent!</button>
@@ -40,15 +33,22 @@
                 </mat-form-field>
             </div>
 
-            <mat-form-field>
+            <mat-form-field *ngIf="roomIssue != null">
                 <mat-label>Responders</mat-label>
-                <mat-select multiple [(ngModel)]="roomAlerts.responders">
+                <mat-select multiple [(ngModel)]="roomIssue.responders">
                     <mat-option [value]="'Derek'">Derek</mat-option>
                     <mat-option [value]="'Todd'">Todd</mat-option>
                     <mat-option [value]="'Tiffany'">Tiffany</mat-option>
                 </mat-select>
             </mat-form-field>
 
+        </section>
+
+        <section class="row resolve">
+            <button mat-raised-button class="button resolve" (click)="modal.OpenRespondModal(roomIssue, table.selection.selected)">Resolve Alerts</button>
+            <mat-form-field class="notes mat-elevation-z1">
+                <textarea matInput placeholder="Notes" [matTextareaAutosize]=true></textarea>
+            </mat-form-field>
         </section>
     </div>
 
@@ -71,4 +71,3 @@
         </mat-list>
     </div>
 </div>
-<!-- </div> -->

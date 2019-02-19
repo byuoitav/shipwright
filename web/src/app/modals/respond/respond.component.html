@@ -1,52 +1,24 @@
-<!-- <p>
-    Respond Modal works!
-</p> -->
-<section class="row spread">
-    <h2 class="mat-h2">Responding to alerts in {{issue.roomID}}</h2>
-</section>
+<div *ngIf="info.selected.length == 0">
+    <section>
+        <h2 class="mat-h2">You selected no alerts...</h2>
+    </section>
+    <section>
+        <h4 class="mat-h4">I will now try to resolve all of them. Do you wish to continue?</h4>
+    </section>
+    <section class="row spread">
+        <button mat-flat-button (click)="UpdateSelected()" class="button save">YES</button>
+        <button mat-flat-button (click)="dialogRef.close()" class="button cancel">NO</button>
+    </section>
 
-<section #send class="row">
-    <button mat-raised-button color="primary" class="button" [disabled]="!issue.SentIsZero()" (click)="HelpWasSent()">Help Sent!</button>
-    <!-- <mat-form-field>
-        <input matInput [matDatepicker]="sentHelpPicker" [(ngModel)]="sentHelpDate">
-        <mat-datepicker-toggle matSuffix [for]="sentHelpPicker"></mat-datepicker-toggle>
-        <mat-datepicker #sentHelpPicker></mat-datepicker>
-    </mat-form-field> -->
-    <mat-label>@</mat-label>
-    <mat-form-field class="time">
-        <input type="time" matInput [(ngModel)]="sentTime">
-    </mat-form-field>
+</div>
+<div *ngIf="info.selected.length > 0">
+    <section>
+        <h2 class="mat-h2">Choose a resolution code</h2>
+    </section>
+    <mat-form-field>
 
-</section>
-
-<section #arrive class="row">
-    <button mat-raised-button color="warn" class="button" [disabled]="!issue.ArriveIsZero()" (click)="HelpHasArrived()">Help Arrived!</button>
-    <!-- <mat-form-field>
-        <input matInput [matDatepicker]="helpArrivedPicker" [(ngModel)]="helpArrivedDate">
-        <mat-datepicker-toggle matSuffix [for]="helpArrivedPicker"></mat-datepicker-toggle>
-        <mat-datepicker #helpArrivedPicker></mat-datepicker>
-    </mat-form-field> -->
-    <mat-label>@</mat-label>
-    <mat-form-field class="time">
-        <input type="time" matInput [(ngModel)]="arrivedTime">
-    </mat-form-field>
-
-</section>
-
-<section #resolve class="row">
-    <button mat-raised-button color="resolve" class="button resolve" [disabled]="!CanResolve()">Resolve Alerts!</button>
-    <mat-form-field class="alerts">
-        <mat-select multiple #fixedAlerts [(ngModel)]="alertsToResolve">
-            <mat-option *ngFor="let alert of issue.GetAlerts()" [value]="alert">
-                {{alert.deviceID}}
-            </mat-option>
+        <mat-select [(ngModel)]="info.issue.resolutionInfo.code">
+            <mat-option *ngFor="let code of data.closureCodes" [value]="code">{{code}}</mat-option>
         </mat-select>
     </mat-form-field>
-</section>
-
-<!-- <section #save>
-    <mat-action-row class="row spread">
-        <button mat-button class="button save">Save</button>
-        <button mat-button class="button cancel">Cancel</button>
-    </mat-action-row>
-</section> -->
+</div>

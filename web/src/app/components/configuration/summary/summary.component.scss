@@ -3,7 +3,7 @@ $cancel:#e53935;
 $save:#0046c8;
 .base {
     min-height: 100%;
-    height: 100%;
+    height: 100vh;
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-evenly;
@@ -13,7 +13,7 @@ $save:#0046c8;
 .container {
     height: 100%;
     // width: 40%;
-    // flex: 1 1 auto;
+    flex: 1 1 auto;
     &.full {
         width: 100%;
         padding: 1%;
@@ -30,7 +30,8 @@ $save:#0046c8;
     // background-color: white;
     margin-left: 4vw;
     margin-right: 4vw;
-    max-height: 60vh;
+    height: wrap;
+    max-height: 50vh;
     width: 220px;
     &.back {
         width: 100px;
@@ -105,6 +106,9 @@ $save:#0046c8;
     &.help {
         justify-content: flex-start;
     }
+    &.resolve {
+        align-items: flex-start;
+    }
 }
 
 .button {
@@ -127,4 +131,11 @@ $save:#0046c8;
     width: 100px;
     margin-left: 10px;
     margin-right: 10px;
+}
+
+.notes {
+    width: 15vw;
+    // height: 20vh;
+    padding-left: 15px;
+    padding-right: 15px;
 }

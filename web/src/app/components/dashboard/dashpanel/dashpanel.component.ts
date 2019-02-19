@@ -18,7 +18,7 @@ export class DashPanelComponent implements OnInit {
   totalAlertsNum: number = 0;
   panelType: string = "all-alerts";
 
-  constructor(private resolver: ComponentFactoryResolver, private dashServe: DashPanelService, private data: DataService) {
+  constructor(private resolver: ComponentFactoryResolver, private dashServe: DashPanelService, public data: DataService) {
     
   }
 
@@ -77,5 +77,21 @@ export class DashPanelComponent implements OnInit {
     if(value == "WarnAlerts") {
       return WarnAlerts
     }
+  }
+
+  TotalAlerts() {
+    let count = 0;
+    for(let issue of this.data.roomIssueList) {
+      count += issue.alertCount
+    }
+    return count
+  }
+
+  TotalActiveAlerts() {
+    let count = 0;
+    for(let issue of this.data.roomIssueList) {
+      count += issue.activeAlertCount
+    }
+    return count
   }
 }

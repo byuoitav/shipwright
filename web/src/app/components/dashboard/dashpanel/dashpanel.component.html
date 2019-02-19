@@ -1,7 +1,15 @@
 <div class="row">
-    <!-- <h2 class="mat-h2">
-        Total Alerts: {{GetTotalAlertsDisplay()}}
-    </h2> -->
+    <h2 class="mat-h2">
+        Total Issues: {{data.roomIssueList.length}}
+    </h2>
+
+    <h2 class="mat-h2">
+        Total Alerts: {{TotalAlerts()}}
+    </h2>
+
+    <h2 class="mat-h2">
+        Active Alerts: {{TotalActiveAlerts()}}
+    </h2>
 
     <mat-form-field>
         <mat-select [value]="GetValue('AllAlerts')" (selectionChange)="ChoosePanel($event.value)" color="accent" #pType>

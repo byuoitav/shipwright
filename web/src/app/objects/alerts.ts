@@ -96,6 +96,9 @@ export class Alert {
     
     @JsonProperty("device-tags", [String], true)
     deviceTags: string[] = Array<string>();
+
+    @JsonProperty("requester", String, true)
+    requester: string = undefined;
 }
 
 @JsonObject("RoomIssue")
@@ -121,8 +124,26 @@ export class RoomIssue {
     @JsonProperty("alert-types", [String], true)
     alertTypes: string[] = Array<string>();
 
+    @JsonProperty("alert-devices", [String], true)
+    alertDevices: string[] = Array<string>();
+
     @JsonProperty("alert-categories", [String], true)
     alertCategories: string[] = Array<string>();
+
+    @JsonProperty("alert-count", Number, true)
+    alertCount: number = undefined;
+
+    @JsonProperty("active-alert-types", [String], true)
+    activeAlertTypes: string[] = Array<string>();
+
+    @JsonProperty("active-alert-categories", [String], true)
+    activeAlertCategories: string[] = Array<string>();
+
+    @JsonProperty("active-alert-devices", [String], true)
+    activeAlertDevices: string[] = Array<string>();
+
+    @JsonProperty("active-alert-count", Number, true)
+    activeAlertCount: number = undefined;
 
     @JsonProperty("incident-id", String, true)
     incidentID: string = undefined;
@@ -131,10 +152,10 @@ export class RoomIssue {
     systemType: string = undefined;
 
     @JsonProperty("notes", String, true)
-    message: string = undefined;
+    notes: string = undefined;
     
     @JsonProperty("notes-log", [String], true)
-    messageLog: string[] = Array<string>();
+    notesLog: string[] = Array<string>();
 
     @JsonProperty("responders", [String], true)
     responders: string[] = Array<string>();
@@ -164,39 +185,6 @@ export class RoomIssue {
         let zero = "0001-01-01T00:00:00.000Z";
 
         return this.helpArrivedAt.toISOString() === zero;
-    }
-
-    GetAlerts(severity?: string): Alert[] {
-        let toReturn: Alert[] = [];
-
-        this.alerts.forEach((alert, id) => {
-            if(severity != null) {
-                if(alert.severity == severity) {
-                    toReturn.push(alert);
-                }
-            } else {
-                toReturn.push(alert);
-            }
-        })
-        
-        return toReturn;
-    }
-
-    ActiveAlertCount(): number {
-        let count = 0;
-
-        for(let alert of this.GetAlerts()) {
-            if(alert.active) {
-                count++
-            }
-        }
-
-        return count
-    }
-
-    TotalAlertCount(): number {
-        let count = this.GetAlerts().length
-        return count
     }
 }
 
