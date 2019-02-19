@@ -91,6 +91,7 @@ func (j *QueryRunner) Run() ([]sd.StaticDevice, *nerr.E) {
 	var toReturn []sd.StaticDevice
 
 	deviceRecordsMu.RLock()
+	defer deviceRecordsMu.RUnlock()
 
 	//now we take our matching rooms and matching devices and pass them to the action generation function
 	for _, i := range deviceRecords {
@@ -100,12 +101,12 @@ func (j *QueryRunner) Run() ([]sd.StaticDevice, *nerr.E) {
 			log.L.Errorf("Couldn't evaluate device %v with query %v. Problem: %v", i.DeviceID, j.Query, er.Error())
 			return deviceRecords, er.Addf("Couldn't evaluate device %v with query %v. Problem: %v", i.DeviceID, j.Query, er.Error())
 		}
+
 		if t {
 			//			log.L.Infof("%v matches.", i.DeviceID)
 			toReturn = append(toReturn, i)
 		}
 	}
-	deviceRecordsMu.RUnlock()
 
 	return toReturn, nil
 }
