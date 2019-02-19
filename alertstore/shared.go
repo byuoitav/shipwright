@@ -18,13 +18,29 @@ const (
 	Cache     = "cache"
 )
 
-//GenerateID will give you the generated id back
-func GenerateID(a structs.Alert) string {
+//GenerateAlertID will give you the generated id back
+func GenerateAlertID(a structs.Alert) string {
 	return fmt.Sprintf("%v^%v^%v^%v", a.DeviceID, a.Type, a.Category, a.Severity)
 }
 
+func GenerateIssueID(a structs.Alert) string {
+	return fmt.Sprintf("%v^%v^%v^%v", a.RoomID, a.Severity)
+}
+
+func GetIssueIDFromAlertID(alertID string) string {
+	parts := strings.Split(alertID, "^")
+	if len(parts) < 4 {
+		log.L.Errorf("Unkown id format %v", alertID)
+		return ""
+	}
+	devparts := strings.Split("-", parts[0])
+
+	return fmt.Sprintf("%v-%v^%v", devparts[0], devparts[1], parts[3])
+
+}
+
 //ParseRoomFromID .
-func ParseRoomFromID(alertID string) string {
+func ParseRoomFromAlertID(alertID string) string {
 	parts := strings.Split(alertID, "^")
 	if len(parts) < 4 {
 		log.L.Errorf("Unkown id format %v", alertID)

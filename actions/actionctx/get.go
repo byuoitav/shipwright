@@ -32,17 +32,9 @@ func GetAlert(ctx context.Context) (structs.Alert, bool) {
 	return v, ok
 }
 
-// GetAlert returns an alert/true from ctx if there is one, and false if there isn't.
-func GetAlertSet(ctx context.Context) ([]structs.Alert, bool) {
-	v, ok := ctx.Value(alertSet).([]structs.Alert)
-	if !ok || len(v) == 0 {
-		//check if there's a singular alert, if there is we'll put that in the array to return.
-		tmp, ok := GetAlert(ctx)
-		if !ok {
-			return v, ok
-		}
+// GetRoomIssue returns an alert/true from ctx if there is one, and false if there isn't.
+func GetRoomIssue(ctx context.Context) ([]structs.Alert, bool) {
+	v, ok := ctx.Value(roomIssue).(structs.RoomIssue)
 
-		return []structs.Alert{tmp}, true
-	}
 	return v, ok
 }

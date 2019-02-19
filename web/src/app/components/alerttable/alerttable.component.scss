@@ -148,3 +148,31 @@ button {
     padding-left: 10px;
     padding-right: 10px;
 }
+
+.mat-column-deviceName {
+    max-width: 60px;
+    width: 60px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.mat-column-alertType {
+    max-width: 150px;
+    width: 150px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.mat-column-severity {
+    max-width: 80px;
+    width: 80px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.mat-column-responders {
+    max-width: 120px;
+    width: 120px;
+    padding-left: 10px;
+    padding-right: 10px;
+}

@@ -45,11 +45,11 @@ type StaticRoomQueryResponse struct {
 		} `json:"hits"`
 	} `json:"hits"`
 }
-type AlertQueryResponse struct {
+type RoomIssueQueryResponse struct {
 	Hits struct {
 		Wrappers []struct {
-			ID    string        `json:"_id"`
-			Alert structs.Alert `json:"_source"`
+			ID    string            `json:"_id"`
+			Alert structs.RoomIssue `json:"_source"`
 		} `json:"hits"`
 	} `json:"hits"`
 }

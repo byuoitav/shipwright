@@ -708,11 +708,14 @@ export class RoomAlerts {
         }
         if (a.systemType == "dmps") {
           this.systemTypeIcon = DMPS_ICON;
-        } else if(a.systemType == "pi") {
+        } 
+        if(a.systemType == "pi") {
           this.systemTypeIcon = PI_ICON;
-        } else if(a.systemType == "scheduling") {
+        }
+        if(a.systemType == "scheduling") {
           this.systemTypeIcon = SCHEDULING_ICON;
-        } else if(a.systemType == "timeclock") {
+        }
+        if(a.systemType == "timeclock") {
           this.systemTypeIcon = TIMECLOCK_ICON;
         }
 

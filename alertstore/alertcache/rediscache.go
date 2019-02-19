@@ -45,12 +45,10 @@ func getRedisAlertCache(c aconfig.CacheConfig) AlertCache {
 }
 
 func init() {
-	gob.Register(structs.Alert{})
-	gob.Register([]string{})
-
+	gob.Register(structs.RoomIssue{})
 }
 
-func (r *RedisAlertCache) GetAlert(id string) (structs.Alert, *nerr.E) {
+func (r *RedisAlertCache) GetRoomIssue(id string) (structs.RoomIssue, *nerr.E) {
 	log.L.Debugf("getting alert %v from redis cache", id)
 	var tmp structs.Alert
 
@@ -76,139 +74,43 @@ func (r *RedisAlertCache) GetAlert(id string) (structs.Alert, *nerr.E) {
 
 }
 
-func (r *RedisAlertCache) GetAlertsByIndex(IndexID string) ([]string, *nerr.E) {
-
-	var tmp []string
-
-	by, err := r.c.Get(IndexID).Bytes()
-	if err == redis.Nil {
-		return tmp, nerr.Create("alert not found", NotFound)
-	} else if err != nil {
-		log.L.Errorf("Error accessing redis cache: %v", err.Error())
-		return tmp, nerr.Translate(err).Addf("Couldn't access redis cache")
-	} else {
-		buf := bytes.NewBuffer(by)
-		dec := gob.NewDecoder(buf)
-
-		err = dec.Decode(&tmp)
-		if err != nil {
-			log.L.Errorf("Error decoding device from cache record: %v", err.Error())
-			return tmp, nerr.Translate(err).Addf("Bad data in redis cluster: %s: %s", err.Error(), by)
-		}
-	}
-	log.L.Debugf("retrieved alerts %v from redis cache index %v", tmp, IndexID)
-
-	return tmp, nil
-
-}
-
-func (r *RedisAlertCache) AddAlertToIndex(IndexID, AlertID string) *nerr.E {
-
-	alerts, er := r.GetAlertsByIndex(IndexID)
-	if er != nil && er.Type != NotFound {
-		return er.Addf("Coudln't add alert %v to index %v", AlertID, IndexID)
-	}
-
-	for i := range alerts {
-		if alerts[i] == AlertID {
-			return nil
-		}
-	}
-	//it's not there, lets add it
-	alerts = append(alerts, AlertID)
-
-	er = r.putIndex(IndexID, alerts)
-	if er != nil {
-		return er.Addf("Coudln't add alert %v to index %v", AlertID, IndexID)
-	}
-	return nil
-}
-
-func (r *RedisAlertCache) RemoveAlertFromIndex(IndexID, AlertID string) *nerr.E {
-
-	alerts, er := r.GetAlertsByIndex(IndexID)
-	if er != nil && er.Type != NotFound {
-		return er.Addf("Coudln't remote alert %v from index %v", AlertID, IndexID)
-	}
-
-	newAlerts := []string{}
-	changes := false
-
-	for i := range alerts {
-		if alerts[i] != AlertID {
-			newAlerts = append(newAlerts, alerts[i])
-		} else {
-			changes = true
-		}
-	}
-
-	if changes {
-		er := r.putIndex(IndexID, newAlerts)
-		if er != nil {
-			return er.Addf("Coudln't remove alert %v from index %v", AlertID, IndexID)
-		}
-	}
-	return nil
-}
-
-func (r *RedisAlertCache) putIndex(indexID string, alerts []string) *nerr.E {
-	log.L.Debugf("saving index %v to redis cache with values %v", indexID, alerts)
-
-	var al bytes.Buffer
-	enc := gob.NewEncoder(&al)
-	err := enc.Encode(alerts)
-	if err != nil {
-		log.L.Errorf("%v", err.Error())
-		return nerr.Translate(err).Addf("Couldn't put index in redis cache: Couldn't encode index: %v", err.Error())
-	}
-
-	err = r.c.Set(indexID, al.Bytes(), 0).Err()
-	if err != nil {
-		return nerr.Translate(err).Addf("Couldn't put index in reids cache: Couldn't access redis cache")
-	}
-
-	log.L.Debugf("added index %v to redis cache", indexID)
-
-	return nil
-}
-
-func (r *RedisAlertCache) PutAlert(a structs.Alert) *nerr.E {
-	log.L.Debugf("Putting alert %v to redis cache", a.AlertID)
+func (r *RedisAlertCache) PutIssue(a structs.RoomIssue) *nerr.E {
+	log.L.Debugf("Putting issue %v to redis cache", a.RoomIssueID)
 
 	var al bytes.Buffer
 	enc := gob.NewEncoder(&al)
 	err := enc.Encode(a)
 	if err != nil {
 		log.L.Errorf("%v", err.Error())
-		return nerr.Translate(err).Addf("Couldn't put alert in redis cache: Couldn't encode alert: %v", err.Error())
+		return nerr.Translate(err).Addf("Couldn't put issue in redis cache: Couldn't encode alert: %v", err.Error())
 	}
 
-	err = r.c.Set(a.AlertID, al.Bytes(), 0).Err()
+	err = r.c.Set(a.RoomIssueID, al.Bytes(), 0).Err()
 	if err != nil {
-		return nerr.Translate(err).Addf("Couldn't put alert in reids cache: Couldn't access redis cache")
+		return nerr.Translate(err).Addf("Couldn't put issue in reids cache: Couldn't access redis cache")
 	}
 
-	log.L.Debugf("retrieved alert %v to redis cache", a.AlertID)
+	log.L.Debugf("added issue %v to redis cache", a.RoomIssueID)
 
 	return nil
 }
 
-func (r *RedisAlertCache) DeleteAlert(id string) *nerr.E {
-	log.L.Debugf("Deleting alert %v from cache", id)
+func (r *RedisAlertCache) DeleteIssue(id string) *nerr.E {
+	log.L.Debugf("Deleting issue %v from cache", id)
 
 	err := r.c.Del(id).Err()
 	if err != nil {
-		return nerr.Translate(err).Addf("Couldn't delete alert from redis cache")
+		return nerr.Translate(err).Addf("Couldn't delete Issue from redis cache")
 	}
 	return nil
 }
 
-func (r *RedisAlertCache) GetAllAlerts() ([]structs.Alert, *nerr.E) {
-	var toReturn []structs.Alert
+func (r *RedisAlertCache) GetAllIssues() ([]structs.RoomIssue, *nerr.E) {
+	var toReturn []structs.RoomIssue
 
 	keys, err := rediscache.GetAllKeys(r.c)
 	if err != nil {
-		return toReturn, err.Addf("couldn't get all alerts")
+		return toReturn, err.Addf("couldn't get all room issues")
 	}
 
 	if len(keys) < 1 {
@@ -217,11 +119,11 @@ func (r *RedisAlertCache) GetAllAlerts() ([]structs.Alert, *nerr.E) {
 
 	result, er := r.c.MGet(keys...).Result()
 	if er != nil {
-		return toReturn, nerr.Translate(er).Addf("Couldn't get all alerts")
+		return toReturn, nerr.Translate(er).Addf("Couldn't get all room issues")
 	}
 
 	for i := range result {
-		var tmp structs.Alert
+		var tmp structs.RoomIssue
 		buf := bytes.NewBuffer([]byte(result[i].(string)))
 		dec := gob.NewDecoder(buf)
 		er = dec.Decode(&tmp)
@@ -234,7 +136,7 @@ func (r *RedisAlertCache) GetAllAlerts() ([]structs.Alert, *nerr.E) {
 		toReturn = append(toReturn, tmp)
 	}
 
-	log.L.Infof("Got %v alerts from %v records", len(toReturn), len(result))
+	log.L.Infof("Got %v issues from %v records", len(toReturn), len(result))
 
 	return toReturn, nil
 }

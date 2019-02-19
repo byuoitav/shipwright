@@ -1,9 +1,6 @@
 package alertstore
 
 import (
-	"crypto/md5"
-	"fmt"
-
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/structs"
 )
@@ -22,61 +19,12 @@ func AddAlert(a structs.Alert) (string, *nerr.E) {
 	return store.putAlert(a)
 }
 
-//GetAllAlerts get all alerts currently active in the store
-func GetAllAlerts() ([]structs.Alert, *nerr.E) {
-	return store.getAllAlerts()
-
-}
-
-//GetAllAlertsByRoom get all alerts currently active in the store
-func GetAllAlertsByRoom(roomID string) ([]structs.Alert, *nerr.E) {
-	toReturn := []structs.Alert{}
-
-	alerts, err := store.getAllAlerts()
-	if err != nil {
-		return toReturn, err.Addf("Couldn't get alerts by room.")
-	}
-
-	for i := range alerts {
-		if alerts[i].RoomID == roomID {
-			toReturn = append(toReturn, alerts[i])
-		}
-	}
-
-	return toReturn, nil
-}
-
-//GetAllAlertsByIncident get all alerts currently active in the store
-func GetAllAlertsByIncident(incidentNumber string) ([]structs.Alert, *nerr.E) {
-	toReturn := []structs.Alert{}
-
-	alerts, err := store.getAllAlerts()
-	if err != nil {
-		return toReturn, err.Addf("Couldn't get alerts by incident number.")
-	}
-
-	for i := range alerts {
-		if alerts[i].IncidentID == incidentNumber {
-			toReturn = append(toReturn, alerts[i])
-		}
-	}
-
-	return toReturn, nil
-
-}
-
 //GetAlert Gets a specific alert by AlertID
 func GetAlert(AlertID string) (structs.Alert, *nerr.E) {
 	return store.getAlert(AlertID)
 }
 
-/* ResolveAlert will close the alert id's provided with the resolution info provided.
- *
- */
-func ResolveAlert(resInfo structs.ResolutionInfo, alertID string) *nerr.E {
-	return store.resolveAlertSet(resInfo, alertID)
-}
-
+/*
 //Generates a 'Hash that is used to create new values'
 func ResolveAlertSet(resInfo structs.ResolutionInfo, alertIDs ...string) *nerr.E {
 
@@ -149,3 +97,4 @@ func RemoveTagFromAlert(id string, tag string) *nerr.E {
 	_, err = store.putAlert(alert)
 	return err
 }
+*/

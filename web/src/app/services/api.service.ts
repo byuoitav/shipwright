@@ -10,10 +10,7 @@ import {
   DeviceType,
   Role,
   UIConfig,
-  BuildingStatus,
-  RoomStatus,
   Template,
-  MetricsResponse,
   StaticDevice,
   Alert
 } from "../objects";

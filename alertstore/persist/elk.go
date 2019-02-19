@@ -26,9 +26,9 @@ type ElkPersist struct {
 }
 
 type AlertWrapper struct {
-	Alert  structs.Alert //alert to send
-	Delete bool          //true if we want to delete the active alert if resolved
-	Format bool          //true if we want to reformat the alert id when I submit
+	Issue  structs.RoomIssue //alert to send
+	Delete bool              //true if we want to delete the issue if resolved
+	Format bool
 }
 
 var initOnce sync.Once
@@ -41,8 +41,8 @@ func init() {
 	initMu = sync.Mutex{}
 }
 
-func GetAllActiveAlertsFromPersist() ([]structs.Alert, *nerr.E) {
-	alerts := []structs.Alert{}
+func GetAllActiveIssuesFromPersist() ([]structs.RoomIssue, *nerr.E) {
+	alerts := []structs.RoomIssue{}
 	query := elk.AllQuery{Size: 10000}
 	query.Query.MatchAll = map[string]interface{}{}
 
@@ -53,7 +53,7 @@ func GetAllActiveAlertsFromPersist() ([]structs.Alert, *nerr.E) {
 		log.L.Fatalf("Couldn't get active alerts from persistence: %v", err.Error())
 	}
 
-	resp := elk.AlertQueryResponse{}
+	resp := elk.RoomIssueQueryResponse{}
 
 	er := json.Unmarshal(b, &resp)
 	if er != nil {
@@ -93,8 +93,8 @@ func GetElkAlertPersist() *ElkPersist {
 	return per
 }
 
-func (e *ElkPersist) StoreAlert(a structs.Alert, del, reformatID bool) *nerr.E {
-	e.InChannel <- AlertWrapper{Alert: a, Delete: del, Format: reformatID}
+func (e *ElkPersist) StoreIssue(a structs.RoomIssue, del, reformatID bool) *nerr.E {
+	e.InChannel <- AlertWrapper{RoomIssue: a, Delete: del, Format: reformatID}
 	return nil
 }
 
@@ -122,10 +122,10 @@ func (e *ElkPersist) start() {
 			return
 
 		case a := <-e.InChannel:
-			if a.Alert.Resolved {
+			if a.Issue.Resolved {
 				if a.Delete {
 					//we need to remove from the active alerts as well
-					e.activeBuffer[a.Alert.AlertID] = a
+					e.activeBuffer[a.Issue.RoomIssueID] = a
 				}
 				e.resolvedBuffer = append(e.resolvedBuffer, a)
 
@@ -134,7 +134,7 @@ func (e *ElkPersist) start() {
 					//we need to add it to the resolved buffer
 					e.resolvedBuffer = append(e.resolvedBuffer, a)
 				}
-				e.activeBuffer[a.Alert.AlertID] = a
+				e.activeBuffer[a.Issue.RoomIssueID] = a
 			}
 		}
 	}
@@ -150,8 +150,8 @@ func (e *ElkPersist) sendUpdate() *nerr.E {
 				Delete: elk.ElkDeleteHeader{
 					Header: elk.HeaderIndex{
 						Index: e.config.PersistActiveAlerts.ElkData.IndexPattern,
-						Type:  "alert",
-						ID:    v.Alert.AlertID,
+						Type:  "room-issue",
+						ID:    v.Issue.RoomIssueID,
 					}},
 			})
 		} else {
@@ -159,10 +159,10 @@ func (e *ElkPersist) sendUpdate() *nerr.E {
 				Index: elk.ElkUpdateHeader{
 					Header: elk.HeaderIndex{
 						Index: e.config.PersistActiveAlerts.ElkData.IndexPattern,
-						Type:  "alert",
-						ID:    v.Alert.AlertID,
+						Type:  "room-issue",
+						ID:    v.Issue.RoomIssueID,
 					}},
-				Doc: v.Alert,
+				Doc: v.Issue,
 			})
 		}
 	}
@@ -170,7 +170,7 @@ func (e *ElkPersist) sendUpdate() *nerr.E {
 	for _, v := range e.resolvedBuffer {
 
 		if v.Format {
-			v.Alert.AlertID = v.Alert.AlertID + v.Alert.ResolutionInfo.ResolvedAt.Format(time.RFC3339)
+			v.Issue.RoomIssueID = v.Issue.RoomIssueID + v.Issue.ResolutionInfo.ResolvedAt.Format(time.RFC3339)
 		}
 
 		buf = append(buf, elk.ElkBulkUpdateItem{
@@ -178,9 +178,9 @@ func (e *ElkPersist) sendUpdate() *nerr.E {
 				Header: elk.HeaderIndex{
 					Index: e.config.PersistResolvedAlerts.ElkData.IndexPattern,
 					Type:  "alert",
-					ID:    v.Alert.AlertID,
+					ID:    v.Issue.RoomIssueID,
 				}},
-			Doc: v.Alert,
+			Doc: v.Issue,
 		})
 	}
 

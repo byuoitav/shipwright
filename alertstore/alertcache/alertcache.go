@@ -15,15 +15,10 @@ const (
 
 //NOTE: the assumption is that the alert caches are NOT safe for concurrent access, concurrency saftey is handled at a higher level.
 type AlertCache interface {
-	GetAlert(string) (structs.Alert, *nerr.E)
-	GetAllAlerts() ([]structs.Alert, *nerr.E)
-	PutAlert(structs.Alert) *nerr.E
-	DeleteAlert(string) *nerr.E
-
-	//IndexID must be in a separate namespace from the alertID's
-	GetAlertsByIndex(indexID string) ([]string, *nerr.E)
-	AddAlertToIndex(indexID string, AlertID string) *nerr.E
-	RemoveAlertFromIndex(indexID string, AlertID string) *nerr.E
+	GetIssue(string) (structs.RoomIssue, *nerr.E)
+	GetAllIssues() ([]structs.RoomIssue, *nerr.E)
+	PutIssue(structs.RoomIssue) *nerr.E
+	DeleteIssue(string) *nerr.E
 }
 
 var cacheinit = sync.Once{}
@@ -39,8 +34,6 @@ func initializecaches() {
 	c := config.GetConfig().Caches
 	for i := range c {
 		switch c[i].Type {
-		case config.Memory:
-			caches[c[i].Name] = getMemoryAlertCache(c[i])
 		case config.Redis:
 			caches[c[i].Name] = getRedisAlertCache(c[i])
 

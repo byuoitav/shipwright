@@ -26,14 +26,17 @@ import (
 	figure "github.com/common-nighthawk/go-figure"
 )
 
-func main() {
-	log.SetLevel("info")
-	figure.NewFigure("SMEE", "univers", true).Print()
-
+func init() {
 	err := resetConfig(context.Background())
 	if err != nil {
 		log.L.Fatalf(err.Error())
 	}
+}
+
+func main() {
+	log.SetLevel("info")
+	figure.NewFigure("SMEE", "univers", true).Print()
+
 	port := ":9999"
 	router := common.NewRouter()
 
@@ -151,7 +154,6 @@ func main() {
 
 func processEvent(event events.Event) {
 	log.L.Debugf("Got event: %+v", event)
-
 	actions.DefaultActionManager().EventStream <- event
 }
 

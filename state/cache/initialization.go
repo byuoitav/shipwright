@@ -20,10 +20,10 @@ const pushCron = "0 0 0 * * *"
 
 //InitializeCaches initializes the caches with data from ELK
 func InitializeCaches() {
+	log.L.Infof("Initializing Caches")
 	Caches = make(map[string]shared.Cache)
 
 	c := config.GetConfig()
-
 	for _, i := range c.Caches {
 		log.L.Infof("Initializing cache %v", i.Name)
 		var devs []statedefinition.StaticDevice
@@ -54,6 +54,8 @@ func InitializeCaches() {
 		Caches[i.Name] = cache
 		log.L.Infof("Cache %v initialized with type %v. %v devices and %v rooms", i.Name, i.CacheType, len(devs), len(rooms))
 	}
+
+	log.L.Infof("Caches Initialized.")
 }
 
 //GetElkStaticDevices queries the provided index in ELK and unmarshals the records into a list of static devices

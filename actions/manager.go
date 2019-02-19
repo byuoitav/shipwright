@@ -43,7 +43,7 @@ func DefaultActionManager() *ActionManager {
 	defaultOnce.Do(func() {
 		defaultAM = &ActionManager{
 			Config:      DefaultConfig(),
-			Workers:     200,
+			Workers:     500,
 			EventStream: make(chan events.Event, 10000),
 		}
 	})
@@ -55,7 +55,7 @@ func DefaultActionManager() *ActionManager {
 func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 	a.ctx = ctx
 	a.wg = &sync.WaitGroup{}
-	a.reqs = make(chan *ActionRequest, 1000)
+	a.reqs = make(chan *ActionRequest, 5000)
 
 	if a.Config == nil {
 		a.Config = DefaultConfig()
@@ -86,12 +86,41 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 					return
 				case req := <-a.reqs:
 					req.Action.Run(req.Context)
+				case event, ok := <-a.EventStream:
+					if !ok {
+						log.L.Warnf("action manager event stream closed")
+						return
+					}
+
+					//get the cache and submit for persistence
+					cache.GetCache("default").StoreAndForwardEvent(event)
+
+					// a new context for this action
+					actx := actionctx.PutEvent(ctx, event)
+
+					a.matchActionsMu.RLock()
+					for i := range a.matchActions {
+						a.matchActionsMu.RUnlock()
+
+						a.reqs <- &ActionRequest{
+							Context: actx,
+							Action:  a.matchActions[i],
+						}
+
+						a.matchActionsMu.RLock()
+					}
+
+					a.matchActionsMu.RUnlock()
 				}
 			}
 		}(i)
 	}
 
-	go a.runActionsFromEvents(ctx)
+	a.wg.Add(1)
+	go func() {
+		a.pruneMatchActions(ctx)
+		a.wg.Done()
+	}()
 
 	a.wg.Wait()
 	log.L.Infof("Action manager stopped.")
@@ -99,11 +128,8 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 	return nil
 }
 
-func (a *ActionManager) runActionsFromEvents(ctx context.Context) {
-	a.wg.Add(1)
-	defer a.wg.Done()
-	defer log.L.Infof("Finished running actions from events")
-
+func (a *ActionManager) pruneMatchActions(ctx context.Context) {
+	defer log.L.Infof("Finished pruning match actions")
 	pruneTick := time.NewTicker(20 * time.Second)
 
 	for {
@@ -124,27 +150,6 @@ func (a *ActionManager) runActionsFromEvents(ctx context.Context) {
 
 			a.matchActions = keep
 			a.matchActionsMu.Unlock()
-		case event, ok := <-a.EventStream:
-			if !ok {
-				log.L.Warnf("action manager event stream closed")
-				return
-			}
-
-			//get the cache and submit for persistence
-			cache.GetCache("default").StoreAndForwardEvent(event)
-
-			// a new context for this action
-			actx := actionctx.PutEvent(ctx, event)
-
-			a.matchActionsMu.RLock()
-			for i := range a.matchActions {
-				a.reqs <- &ActionRequest{
-					Context: actx,
-					Action:  a.matchActions[i],
-				}
-			}
-
-			a.matchActionsMu.RUnlock()
 		}
 	}
 }

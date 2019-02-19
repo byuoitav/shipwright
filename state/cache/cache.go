@@ -1,22 +1,17 @@
 package cache
 
 import (
-	"github.com/byuoitav/common/log"
+	"sync"
+
 	"github.com/byuoitav/shipwright/state/cache/shared"
 )
 
 //Caches .
 var Caches map[string]shared.Cache
-
-func init() {
-	log.L.Infof("Initializing Caches")
-	//start
-	InitializeCaches()
-
-	log.L.Infof("Caches Initialized.")
-}
+var cachesInit sync.Once
 
 //GetCache .
 func GetCache(cacheType string) shared.Cache {
+	cachesInit.Do(InitializeCaches)
 	return Caches[cacheType]
 }

@@ -82,11 +82,7 @@ export class MonitoringService {
 
       console.log(toReturn);
       // this.GetTotalAlertsDisplay(severity)
-      return toReturn.sort((a, b):number => {
-        if(a.roomID == null && b.roomID != null) {return 1}
-        if(b.roomID == null && a.roomID != null) {return -1}
-        return a!.roomID!.localeCompare(b!.roomID);
-      });
+      return toReturn.sort(this.RoomAlertSort);
     }
     
     this.roomAlertsMap.forEach((value, key) => {
@@ -107,16 +103,22 @@ export class MonitoringService {
     });
 
     // this.GetTotalAlertsDisplay(severity)
-    return toReturn.sort((a, b):number => {
-      if(a.roomID == null && b.roomID != null) {return 1}
-      if(b.roomID == null && a.roomID != null) {return -1}
-      return a!.roomID!.localeCompare(b.roomID);
-    });
+    return toReturn.sort(this.RoomAlertSort);
+  }
+
+  private RoomAlertSort(a, b): number {
+    if(a.roomID == null && b.roomID != null) {return 1}
+    if(b.roomID == null && a.roomID != null) {return -1}
+    return a!.roomID!.localeCompare(b.roomID);
   }
 
   GetTotalAlertsDisplay(panelType?: string) {
     if(panelType != null && panelType != "battery") {
-      this.totalAlertsCount = this.GetAllAlerts(panelType).length
+      this.totalAlertsCount = 0
+      for(let ra of this.GetAllAlerts(panelType)) {
+        this.totalAlertsCount += ra.GetVisibleAlerts(panelType).length
+      }
+      return this.totalAlertsCount
     }
   }
 }

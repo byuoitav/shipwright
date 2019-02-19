@@ -60,7 +60,7 @@
                     <table mat-table [dataSource]="GetAlertData(ra)" multiTemplateDataRows>
                         <ng-container matColumnDef="deviceName">
                             <th mat-header-cell *matHeaderCellDef>Device Name</th>
-                            <td mat-cell *matCellDef="let alert">{{ alert.deviceID }}</td>
+                            <td mat-cell *matCellDef="let alert">{{ GetDeviceName(alert.deviceID) }}</td>
                         </ng-container>
 
                         <ng-container matColumnDef="alertType">
@@ -73,9 +73,7 @@
                         <ng-container matColumnDef="severity">
                             <th mat-header-cell *matHeaderCellDef>Severity</th>
                             <td mat-cell *matCellDef="let alert">
-                                <span [ngClass]="alert.severity + '-severity'">{{
-                  text.Title(alert.severity)
-                }}</span>
+                                <span [ngClass]="alert.severity + '-severity'">{{text.Title(alert.severity)}}</span>
                             </td>
                         </ng-container>
 
@@ -97,9 +95,7 @@
                         <ng-container matColumnDef="responders">
                             <th mat-header-cell *matHeaderCellDef>Responders</th>
                             <td mat-cell *matCellDef="let alert">
-                                <ng-container *ngIf="
-                    alert.responders == null || alert.responders?.length == 0
-                  ">
+                                <ng-container *ngIf="alert.responders == null || alert.responders?.length == 0">
                                     <span>--</span>
                                 </ng-container>
                                 <ng-container *ngIf="alert.responders?.length > 0">

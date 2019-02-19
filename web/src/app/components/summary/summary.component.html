@@ -7,11 +7,49 @@
 <div class="base">
 
     <div class="container">
-        <section class="row">
+        <!-- <section class="row">
             <button mat-raised-button [disabled]="roomAlerts?.helpSent" color="warn" (click)="modal.OpenRespondModal(roomAlerts)">Dispatch Help</button>
-            <!-- <button mat-stroked-button *ngIf="roomAlerts == null || GetRoomAlerts() == null" [disabled]="true">No alerts!</button> -->
-        </section>
+            <button mat-stroked-button *ngIf="roomAlerts == null || GetRoomAlerts() == null" [disabled]="true">No alerts!</button>
+        </section> -->
         <alert-table *ngIf="GetRoomAlerts() != null" [data]="roomAlerts" [singleRoom]="true" [expRoomAlerts]="GetRoomAlerts()"></alert-table>
+        <section class="row">
+            <div class="row-help">
+                <button mat-raised-button color="primary" class="button" (click)="HelpWasSent()">Help Sent!</button>
+                <!-- <mat-form-field>
+                        <input matInput [matDatepicker]="sentHelpPicker" [(ngModel)]="sentHelpDate">
+                        <mat-datepicker-toggle matSuffix [for]="sentHelpPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #sentHelpPicker></mat-datepicker>
+                    </mat-form-field> -->
+                <mat-label>@</mat-label>
+                <mat-form-field class="time">
+                    <input type="time" matInput [(ngModel)]="sentTime">
+                </mat-form-field>
+
+            </div>
+
+            <div class="row-help">
+                <button mat-raised-button color="warn" class="button" (click)="HelpHasArrived()">Help Arrived!</button>
+                <!-- <mat-form-field>
+                                <input matInput [matDatepicker]="helpArrivedPicker" [(ngModel)]="helpArrivedDate">
+                                <mat-datepicker-toggle matSuffix [for]="helpArrivedPicker"></mat-datepicker-toggle>
+                                <mat-datepicker #helpArrivedPicker></mat-datepicker>
+                        </mat-form-field> -->
+                <mat-label>@</mat-label>
+                <mat-form-field class="time">
+                    <input type="time" matInput [(ngModel)]="arrivedTime">
+                </mat-form-field>
+            </div>
+
+            <mat-form-field>
+                <mat-label>Responders</mat-label>
+                <mat-select multiple [(ngModel)]="responders" (selectionChange)="SetResponders(true)">
+                    <mat-option [value]="'Derek'">Derek</mat-option>
+                    <mat-option [value]="'Todd'">Todd</mat-option>
+                    <mat-option [value]="'Tiffany'">Tiffany</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+        </section>
     </div>
 
     <div class="column mat-elevation-z3" *ngIf="filteredDevices != null">
