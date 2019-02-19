@@ -1,8 +1,8 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Building } from 'src/app/objects';
 import { APIService } from 'src/app/services/api.service';
+import { Building } from 'src/app/objects/database';
 
 @Component({
   selector: 'building-modal',

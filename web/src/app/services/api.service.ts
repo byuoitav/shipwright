@@ -1,19 +1,9 @@
 import { Injectable, EventEmitter } from "@angular/core";
 import { JsonConvert, Any } from "json2typescript";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
-import {
-  Building,
-  DBResponse,
-  Room,
-  RoomConfiguration,
-  Device,
-  DeviceType,
-  Role,
-  UIConfig,
-  Template,
-  StaticDevice,
-  Alert
-} from "../objects";
+import { Building, DBResponse, Room, RoomConfiguration, Device, DeviceType, Role, UIConfig, Template } from '../objects/database';
+import { StaticDevice } from '../objects/static';
+import { RoomIssue } from '../objects/alerts';
 
 @Injectable({
   providedIn: "root"
@@ -293,10 +283,7 @@ export class APIService {
       const data: any = await this.http
         .get("rooms/configurations", { headers: this.headers })
         .toPromise();
-      const roomConfigs = this.converter.deserializeArray(
-        data,
-        RoomConfiguration
-      );
+      const roomConfigs = this.converter.deserializeArray(data, RoomConfiguration);
 
       return roomConfigs;
     } catch (e) {
@@ -679,12 +666,12 @@ export class APIService {
   }
 
   // Alert Functions
-  public async GetAllAlerts() {
+  public async GetAllIssues() {
     try {
       const data: any = await this.http
-        .get("alerts/", { headers: this.headers })
+        .get("issues/", { headers: this.headers })
         .toPromise();
-      const alerts = this.converter.deserializeArray(data, Alert);
+      const alerts = this.converter.deserializeArray(data, RoomIssue);
 
       return alerts;
     } catch (e) {

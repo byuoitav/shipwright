@@ -35,6 +35,12 @@
         "logLevel": "debug",
         "changeOrigin": true
     },
+    "/issues": {
+        "target": "http://localhost:9999",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true
+    },
     "/static": {
         "target": "http://localhost:9999",
         "secure": false,

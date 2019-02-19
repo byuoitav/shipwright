@@ -1,6 +1,9 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { APIService } from './api.service';
-import { Building, Room, Device, DeviceType, Role, RoomConfiguration, UIConfig, Template, Alert } from '../objects';
+import { Building, Room, Device, UIConfig, DeviceType, Role, RoomConfiguration, Template } from '../objects/database';
+import { RoomIssue } from '../objects/alerts';
+import { SocketService } from './socket.service';
+import { StaticDevice, RoomStatus, BuildingStatus } from '../objects/static';
 
 @Injectable({
   providedIn: 'root'
@@ -23,14 +26,23 @@ export class DataService {
   roomToDevicesMap: Map<string, Device[]> = new Map();
   roomToUIConfigMap: Map<string, UIConfig> = new Map();
 
-  storedAlertList: Alert[];
+  roomIssueList: RoomIssue[] = [];
+
+  staticDeviceList: StaticDevice[] = [];
+  roomStatusList: RoomStatus[] = [];
+  buildingStatusList: BuildingStatus[] = [];
 
   loaded: EventEmitter<boolean>;
   finished: boolean = false;
 
-  constructor(public api: APIService) {
+  settingsChanged: EventEmitter<any>;
+  panelCount: number = 1;
+
+  constructor(public api: APIService, private socket: SocketService) {
     this.loaded = new EventEmitter<boolean>();
+    this.settingsChanged = new EventEmitter<number>();
     this.LoadData();
+    this.ListenForIssues();
   }
 
   private async LoadData() {
@@ -45,8 +57,11 @@ export class DataService {
     await this.GetAllRoomDesignations();
     await this.SetBuildingToRoomsMap();
     await this.SetRoomToDevicesMap();
-    await this.GetStoredAlerts();
     await this.GetIconList();
+    await this.GetStoredRoomIssues();
+    await this.GetStaticDevices();
+    await this.GetRoomStatusList();
+    await this.GetBuildingStatusList();
     this.finished = true;
     this.loaded.emit(true);
     console.log("done");
@@ -176,13 +191,90 @@ export class DataService {
     }
   }
 
-  async GetStoredAlerts() {
-    this.storedAlertList = [];
+  private async GetStoredRoomIssues() {    
+    await this.api.GetAllIssues().then((issues) => {
+      this.roomIssueList = issues
+    })
+  }
 
-    await this.api.GetAllAlerts().then((alerts) => {
-      this.storedAlertList = alerts;
-      console.log("the alerts are gotten");
-    });
+  private ListenForIssues() {
+    this.socket.listener.subscribe(issue => {
+      if(this.roomIssueList == null) {
+        this.roomIssueList = [issue]
+      } else {
+        let found = false;
+        for(let i of this.roomIssueList) {
+          if(i.issueID == issue.issueID) {
+            i = issue;
+            found = true;
+          }
+        }
+        if(!found) {
+          this.roomIssueList.push(issue);
+          this.roomIssueList = this.roomIssueList.sort(this.RoomIssueSorter)
+        }
+      }
+    })
+  }
+
+  private RoomIssueSorter(a, b): number {
+    if(a.roomID == null && b.roomID != null) {return 1}
+    if(b.roomID == null && a.roomID != null) {return -1}
+    return a!.roomID!.localeCompare(b.roomID);
+  }
+
+  private async GetStaticDevices() { 
+    this.api.GetAllStaticDeviceRecords().then((records) => {
+      this.staticDeviceList = records;
+    })
+  }
+
+  private async GetRoomStatusList() {
+    this.roomStatusList = [];
+
+    for(let sd of this.staticDeviceList) {
+      let roomID = sd.deviceID.substring(0, sd.deviceID.lastIndexOf("-"))
+      let added = false;
+
+      for(let rs of this.roomStatusList) {
+        if(rs.roomID == roomID) {
+          rs.deviceStates.push(sd)
+          rs.Update()
+          added = true
+        }
+      }
+      if(!added) {
+        let roomState = new RoomStatus()
+        roomState.roomID = roomID
+        roomState.deviceStates = [sd]
+        roomState.Update()
+        this.roomStatusList.push(roomState)
+      }
+    }
+  }
+
+  private async GetBuildingStatusList() {
+    this.buildingStatusList = [];
+
+    for(let rs of this.roomStatusList) {
+      let buildingID = rs.roomID.substring(0, rs.roomID.lastIndexOf("-"))
+      let added = false;
+
+      for(let bs of this.buildingStatusList) {
+        if(bs.buildingID = buildingID) {
+          bs.roomStates.push(rs)
+          bs.Update()
+          added = true;
+        }
+      }
+      if(!added) {
+        let buildingState = new BuildingStatus()
+        buildingState.buildingID = buildingID
+        buildingState.roomStates = [rs]
+        buildingState.Update()
+        this.buildingStatusList.push(buildingState)
+      }
+    }
   }
 
   GetBuilding(buildingID: string): Building {
@@ -226,5 +318,52 @@ export class DataService {
     }
 
     return false;
+  }
+
+  GetRoomIssue(roomID): RoomIssue {
+    for(let issue of this.roomIssueList) {
+      if(issue.roomID == roomID) {
+        return issue;
+      }
+    }
+  }
+
+  GetStaticDevice(deviceID: string): StaticDevice {
+    for(let record of this.staticDeviceList) {
+      if(record.deviceID == deviceID) {
+        return record
+      }
+    }
+  }
+
+  GetRoomState(roomID: string): RoomStatus {
+    for(let record of this.roomStatusList) {
+      if(record.roomID == roomID) {
+        return record
+      }
+    }
+  }
+
+  GetBuildingState(buildingID: string): BuildingStatus {
+    for(let record of this.buildingStatusList) {
+      if(record.buildingID == buildingID) {
+        return record
+      }
+    }
+  }
+
+  GetRoomIssues(severity?: string): RoomIssue[] {
+    let temp: RoomIssue[] = [];
+
+    for(let issue of this.roomIssueList) {
+      if(severity != null) {
+        if(issue.severity == severity) {
+          temp.push(issue);
+        }
+      } else {
+        temp.push(issue);
+      }
+    }
+    return temp;
   }
 }

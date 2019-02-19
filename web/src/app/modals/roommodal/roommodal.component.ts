@@ -1,9 +1,9 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Room } from 'src/app/objects';
 import { APIService} from 'src/app/services/api.service';
 import { DataService} from 'src/app/services/data.service';
+import { Room } from 'src/app/objects/database';
 
 @Component({
   selector: 'room-modal',

@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { DBResponse } from 'src/app/objects';
+import { DBResponse } from 'src/app/objects/database';
 
 @Component({
   selector: 'app-notify',

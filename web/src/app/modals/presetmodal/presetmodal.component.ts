@@ -1,9 +1,9 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
-import { Preset, Panel, UIConfig, DeviceType, IOConfiguration } from 'src/app/objects';
 import { StringsService } from 'src/app/services/strings.service';
 import { DataService } from 'src/app/services/data.service';
 import { IconModalComponent } from '../iconmodal/iconmodal.component';
+import { Preset, Panel, UIConfig, IOConfiguration, DeviceType } from 'src/app/objects/database';
 
 export interface UIInfo{
   preset: Preset

@@ -5,10 +5,11 @@ import { RespondModalComponent } from '../modals/respond/respond.component';
 import { BuildingModalComponent } from '../modals/buildingmodal/buildingmodal.component';
 import { RoomModalComponent } from '../modals/roommodal/roommodal.component';
 import { DeviceModalComponent } from '../modals/devicemodal/devicemodal.component';
-import { Building, Room, Device, DBResponse, RoomAlerts, UIConfig, Preset, Panel } from '../objects';
 import { NotifyModalComponent } from '../modals/notify/notify.component';
 import { PresetModalComponent } from '../modals/presetmodal/presetmodal.component';
 import { IconModalComponent } from '../modals/iconmodal/iconmodal.component';
+import { RoomIssue } from '../objects/alerts';
+import { Building, Room, Device, DBResponse, Preset, Panel, UIConfig } from '../objects/database';
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +22,8 @@ export class ModalService {
     this.dialog.open(SettingsModalComponent);
   }
 
-  OpenRespondModal(ra: RoomAlerts) {
-    this.dialog.open(RespondModalComponent, {data: ra});
+  OpenRespondModal(issue: RoomIssue) {
+    this.dialog.open(RespondModalComponent, {data: issue});
   }
 
   OpenBuildingModal(building: Building) {
