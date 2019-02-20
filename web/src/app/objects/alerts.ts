@@ -175,23 +175,33 @@ export class RoomIssue {
     @JsonProperty("alerts", [Alert], true)
     alerts: Alert[] = Array<Alert>();
 
-    SentIsZero(): boolean {
-        let zero = "0001-01-01T00:00:00.000Z";
-
-        return this.helpSentAt.toISOString() === zero;
+  SentIsZero(): boolean {
+    if (this.helpSentAt == undefined){
+      return true;
     }
 
-    ArrivedIsZero(): boolean {
-        let zero = "0001-01-01T00:00:00.000Z";
+    let zero = "0001-01-01T00:00:00.000Z";
 
-        return this.helpArrivedAt.toISOString() === zero;
+    return this.helpSentAt.toISOString() === zero;
+  }
+
+  ArrivedIsZero(): boolean {
+    if (this.helpArrivedAt == undefined){
+      return true;
     }
+    let zero = "0001-01-01T00:00:00.000Z";
 
-    ResolvedAtIsZero(): boolean {
-        let zero = "0001-01-01T00:00:00.000Z";
+    return this.helpArrivedAt.toISOString() === zero;
+  }
 
-        return this.resolutionInfo.resolvedAt.toISOString() === zero;
+  ResolvedAtIsZero(): boolean {
+    if (this.resolutionInfo.resolvedAt == undefined){
+      return true;
     }
+    let zero = "0001-01-01T00:00:00.000Z";
+
+    return this.resolutionInfo.resolvedAt.toISOString() === zero;
+  }
 }
 
 export const AllAlerts = "all-alerts";

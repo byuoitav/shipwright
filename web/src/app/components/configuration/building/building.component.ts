@@ -21,7 +21,6 @@ export class BuildingComponent implements OnInit {
 
   ngOnInit() {
     if(this.data.finished) {
-      console.log(this.data.finished);
       this.GetBuildingState()
       } else {
         this.data.loaded.subscribe(() => {

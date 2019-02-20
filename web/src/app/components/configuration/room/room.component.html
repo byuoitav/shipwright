@@ -1,7 +1,7 @@
 <mat-card>
     <a routerLink="/configuration/{{room?.id}}/roompage">
         <mat-card-header>
-            <mat-icon mat-card-avatar>{{text.SystemTypeIcon[data.GetRoomIssue(room.id)]}}</mat-icon>
+            <mat-icon mat-card-avatar>{{text.SystemTypeIcon[data.GetRoomIssue(room.id).systemType]}}</mat-icon>
             <mat-card-title>{{room.id}}</mat-card-title>
             <mat-card-subtitle>{{room.name}}</mat-card-subtitle>
         </mat-card-header>
