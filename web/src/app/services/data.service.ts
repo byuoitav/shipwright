@@ -74,23 +74,23 @@ export class DataService {
       console.log("done");
     })
      */
-     await this.GetAllBuildings();
-     await this.GetAllRooms();
-     await this.GetAllDevices();
-     await this.GetAllUIConfigs();
-     await this.GetAllDeviceTypes();
-     await this.GetAllDeviceRoles();
-     await this.GetAllTemplates();
-     await this.GetAllRoomConfigurations();
-     await this.GetAllRoomDesignations();
-     await this.SetBuildingToRoomsMap();
-     await this.SetRoomToDevicesMap();
-     await this.GetIconList();
-     await this.GetStoredRoomIssues();
-     await this.GetStaticDevices();
-     await this.GetRoomStatusList();
-    //  await this.GetBuildingStatusList();
-     await this.GetClosureCodes();
+    await this.GetAllBuildings(); //          1
+    await this.GetAllRooms(); //              2
+    await this.GetAllDevices(); //            3
+    await this.GetAllUIConfigs(); //          4
+    await this.GetAllDeviceTypes(); //        5
+    await this.GetAllDeviceRoles(); //        6
+    await this.GetAllTemplates(); //          7
+    await this.GetAllRoomConfigurations(); // 8
+    await this.GetAllRoomDesignations(); //   9
+    await this.SetBuildingToRoomsMap(); //   10
+    await this.SetRoomToDevicesMap(); //     11
+    await this.GetIconList(); //             12
+    await this.GetStoredRoomIssues(); //     13
+    await this.GetStaticDevices(); //        14
+    await this.GetRoomStatusList(); //       15
+    await this.GetBuildingStatusList(); //   16
+    await this.GetClosureCodes(); //         17
      this.finished = true;
      this.loaded.emit(true);
      console.log("done");
@@ -177,7 +177,7 @@ export class DataService {
 
     this.api.GetTemplates().then((list) => {
       this.templateList = list;
-    });
+    })
   }
 
   private async GetIconList() {
@@ -265,12 +265,10 @@ export class DataService {
     await this.api.GetAllStaticDeviceRecords().then((records) => {
       this.staticDeviceList = records;
       // this.GetRoomStatusList();
-      console.log("found devices")
     })
   }
 
   private async GetRoomStatusList() {
-    console.log("hello")
     this.roomStatusList = [];
 
     for(let sd of this.staticDeviceList) {
@@ -285,7 +283,7 @@ export class DataService {
         }
       }
       if(!added) {
-        
+
         let roomState = new RoomStatus()
         roomState.roomID = roomID
         roomState.deviceStates = [sd]
@@ -293,12 +291,9 @@ export class DataService {
         this.roomStatusList.push(roomState)
       }
     }
-    console.log("I am done")
-    this.GetBuildingStatusList()
   }
 
   private async GetBuildingStatusList() {
-    console.log("building list starting")
     this.buildingStatusList = [];
 
     for(let rs of this.roomStatusList) {
@@ -306,15 +301,13 @@ export class DataService {
       let added = false;
 
       for(let bs of this.buildingStatusList) {
-        if(bs.buildingID = buildingID) {
+        if(bs.buildingID == buildingID) {
           bs.roomStates.push(rs)
           bs.Update()
           added = true;
         }
       }
       if(!added) {
-        console.log("derek")
-        console.log(buildingID);
         let buildingState = new BuildingStatus()
         buildingState.buildingID = buildingID
         buildingState.roomStates = [rs]
@@ -322,6 +315,7 @@ export class DataService {
         this.buildingStatusList.push(buildingState)
       }
     }
+
   }
 
   GetBuilding(buildingID: string): Building {
@@ -373,22 +367,25 @@ export class DataService {
         return issue;
       }
     }
+    return new RoomIssue();
   }
 
   GetStaticDevice(deviceID: string): StaticDevice {
     for(let record of this.staticDeviceList) {
       if(record.deviceID == deviceID) {
-        return record
+        return record;
       }
     }
+    return new StaticDevice();
   }
 
   GetRoomState(roomID: string): RoomStatus {
     for(let record of this.roomStatusList) {
       if(record.roomID == roomID) {
-        return record
+        return record;
       }
     }
+    return new RoomStatus();
   }
 
   GetBuildingState(buildingID: string): BuildingStatus {
@@ -397,6 +394,7 @@ export class DataService {
         return record
       }
     }
+    return new BuildingStatus();
   }
 
   GetRoomIssues(severity?: string): RoomIssue[] {

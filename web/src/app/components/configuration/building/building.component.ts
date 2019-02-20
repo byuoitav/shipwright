@@ -12,17 +12,19 @@ import { BuildingStatus } from 'src/app/objects/static';
 })
 export class BuildingComponent implements OnInit {
   @Input() building: Building = new Building();
-  state: BuildingStatus = new BuildingStatus();
+  state: BuildingStatus;
+  goodCount : int = 0;
 
   constructor(public text: StringsService, public modal: ModalService, private data: DataService) {
-    
+    this.state = new BuildingStatus();
   }
 
   ngOnInit() {
     if(this.data.finished) {
+      console.log(this.data.finished);
       this.GetBuildingState()
-    } else {
-      this.data.loaded.subscribe(() => {
+      } else {
+        this.data.loaded.subscribe(() => {
         this.GetBuildingState()
       })
     }
@@ -33,6 +35,6 @@ export class BuildingComponent implements OnInit {
   }
 
   GetBuildingState() {
-    this.data.GetBuildingState(this.building.id)
+    this.state = this.data.GetBuildingState(this.building.id);
   }
 }

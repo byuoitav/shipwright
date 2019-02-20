@@ -17,7 +17,9 @@ export class RoomComponent implements OnInit {
 
 
 
-  constructor(public text: StringsService, public modal: ModalService, public data: DataService) {
+  constructor(public text: StringsService, public modal: ModalService, public data: DataService) {}
+
+  ngOnInit() {
     if(this.data.finished) {
       this.GetRoomState();
       this.deviceList = this.data.roomToDevicesMap.get(this.room.id);
@@ -27,10 +29,7 @@ export class RoomComponent implements OnInit {
         this.deviceList = this.data.roomToDevicesMap.get(this.room.id);
       })
     }
-  }
 
-  ngOnInit() {
-    
   }
 
   // ngOnChanges() {

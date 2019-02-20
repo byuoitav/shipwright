@@ -36,7 +36,6 @@ export class SocketService {
       const data = JSON.parse(msg.data);
       const a = jsonConvert.deserialize(data, RoomIssue);
 
-      console.log("received issue", a);
       this.listener.emit(a);
     });
 
