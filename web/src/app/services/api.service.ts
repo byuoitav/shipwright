@@ -682,7 +682,7 @@ export class APIService {
   public async ResolveIssue(issue: RoomIssue) {
     try {
       const data: any = await this.http
-        .get("issues/"+issue.issueID+"/resolve", { headers: this.headers })
+        .put("issues/"+issue.issueID+"/resolve", this.converter.serialize(issue), { headers: this.headers })
         .toPromise();
 
       const response = this.converter.deserializeObject(data, DBResponse);

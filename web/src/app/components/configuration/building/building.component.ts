@@ -13,7 +13,6 @@ import { BuildingStatus } from 'src/app/objects/static';
 export class BuildingComponent implements OnInit {
   @Input() building: Building = new Building();
   state: BuildingStatus;
-  goodCount : int = 0;
 
   constructor(public text: StringsService, public modal: ModalService, private data: DataService) {
     this.state = new BuildingStatus();
