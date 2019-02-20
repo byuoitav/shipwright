@@ -33,6 +33,9 @@ type issueRequest struct {
 type resolutionRequest struct {
 	RoomIssue      string //resolve a room issue
 	ResolutionInfo structs.ResolutionInfo
+
+	Partial  bool     //resolve a room issue
+	AlertIDs []string //for use if partial
 }
 
 //issueResponse should always have the error checked before retrieving the alert
@@ -116,11 +119,23 @@ func (a *alertStore) putAlert(alert structs.Alert) (string, *nerr.E) {
 	return alert.AlertID, nil
 }
 
-func (a *alertStore) ResolveRoomIssue(resolutionInfo structs.ResolutionInfo, roomIssue string) *nerr.E {
+func (a *alertStore) resolveRoomIssue(resolutionInfo structs.ResolutionInfo, roomIssue string) *nerr.E {
 
 	a.resolutionChannel <- resolutionRequest{
 		RoomIssue:      roomIssue,
 		ResolutionInfo: resolutionInfo,
+	}
+
+	return nil
+}
+
+func (a *alertStore) resolvePartialRoomIssue(resolutionInfo structs.ResolutionInfo, roomIssue string, alertIDs []string) *nerr.E {
+
+	a.resolutionChannel <- resolutionRequest{
+		RoomIssue:      roomIssue,
+		ResolutionInfo: resolutionInfo,
+		Partial:        true,
+		AlertIDs:       alertIDs,
 	}
 
 	return nil
@@ -178,7 +193,7 @@ func (a *alertStore) run() {
 		case req := <-a.requestChannel:
 			a.handleRequest(req)
 		case req := <-a.resolutionChannel:
-			a.resolveIssue(req.ResolutionInfo, req.RoomIssue)
+			a.resolveIssue(req.ResolutionInfo, req.RoomIssue, req.Partial, req.AlertIDs)
 		}
 	}
 }
@@ -210,37 +225,84 @@ func (a *alertStore) editIssueInformation(issue structs.RoomIssue) *nerr.E {
 }
 
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
-func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue string) *nerr.E {
+func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue string, partial bool, alertIDs []string) *nerr.E {
 
 	log.L.Infof("Resolving issue %v", roomIssue)
-
-	//we remove it from the store, and ship it off to the persistance stuff.
-	//we should check to see if it already exists
-
-	log.L.Debugf("resolving issue %v", roomIssue)
 	v, err := alertcache.GetAlertCache("default").GetIssue(roomIssue)
 	if err == nil {
+		if partial {
+			log.L.Infof("Resolving partial issue %v. Resolving alerts: %v", roomIssue, alertIDs)
 
-		err := alertcache.GetAlertCache("default").DeleteIssue(roomIssue)
-		if err != nil {
-			return err.Addf("couldn't resolve issue: %v", err.Error())
+			//we need to copy the RoomIssue
+			newRoomIssue := v
+
+			//copy all of our slices
+			copy(newRoomIssue.RoomTags, v.RoomTags)
+			copy(newRoomIssue.AlertTypes, v.AlertTypes)
+			copy(newRoomIssue.AlertCategories, v.AlertCategories)
+			copy(newRoomIssue.ActiveAlertTypes, v.ActiveAlertTypes)
+			copy(newRoomIssue.ActiveAlertCategories, v.ActiveAlertCategories)
+			newRoomIssue.Alerts = []structs.Alert{}
+			copy(newRoomIssue.Responders, v.Responders)
+			copy(newRoomIssue.NotesLog, v.NotesLog)
+
+			keepAlerts := []structs.Alert{}
+
+			//go through and parse out the alerts from old and move them to the new one.
+			for i := range v.Alerts {
+				found := false
+				for j := range alertIDs {
+					if alertIDs[j] == v.Alerts[i].AlertID {
+						//they match, add it to our new boy
+						newRoomIssue.Alerts = append(newRoomIssue.Alerts, v.Alerts[i])
+						found = true
+					}
+				}
+				if !found {
+					//add it to old
+					keepAlerts = append(keepAlerts, v.Alerts[i])
+				}
+			}
+
+			v.Alerts = keepAlerts
+
+			newRoomIssue.ResolutionInfo = resInfo
+			newRoomIssue.Resolved = true
+
+			v.CalculateAggregateInfo()
+			newRoomIssue.CalculateAggregateInfo()
+
+			persist.GetElkAlertPersist().StoreIssue(v, true, false)
+			socket.GetManager().WriteToSockets(v)
+			a.runIssueActions(v)
+
+			persist.GetElkAlertPersist().StoreIssue(newRoomIssue, true, true)
+			socket.GetManager().WriteToSockets(newRoomIssue)
+			a.runIssueActions(newRoomIssue)
+
+		} else {
+			log.L.Infof("Resolving full issue %v", roomIssue)
+			err := alertcache.GetAlertCache("default").DeleteIssue(roomIssue)
+			if err != nil {
+				return err.Addf("couldn't resolve issue: %v", err.Error())
+			}
+
+			//it's there, lets get it, mark it as resolved.
+			v.Resolved = true
+			v.ResolutionInfo = resInfo
+
+			//submit for persistence
+			persist.GetElkAlertPersist().StoreIssue(v, true, true)
+			socket.GetManager().WriteToSockets(v)
+
+			v.CalculateAggregateInfo()
+			a.runIssueActions(v)
 		}
-
-		//it's there, lets get it, mark it as resolved.
-		v.Resolved = true
-		v.ResolutionInfo = resInfo
-
-		//submit for persistence
-		persist.GetElkAlertPersist().StoreIssue(v, true, true)
-		socket.GetManager().WriteToSockets(v)
-
 	} else if err.Type == alertcache.NotFound {
 		log.L.Errorf("%v", nerr.Create("Unkown room issue "+roomIssue, "not-found"))
 	} else {
 		log.L.Errorf("%v", err.Addf("couldn't resolve room issue"))
 	}
-
-	a.runIssueActions(v)
 
 	return nil
 }
@@ -406,7 +468,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 			ResolvedAt: time.Now(),
 		}
 
-		err := a.resolveIssue(resInfo, issue.RoomIssueID)
+		err := a.resolveIssue(resInfo, issue.RoomIssueID, false, []string{})
 		if err != nil {
 			log.L.Errorf("Problem autoresolving issue %v: %v", issue.RoomIssueID, err.Error())
 		}

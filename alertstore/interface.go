@@ -24,17 +24,22 @@ func GetRoomIssue(IssueID string) (structs.RoomIssue, *nerr.E) {
 	return store.getRoomIssue(IssueID)
 }
 
-//GetAllIssues Gets a specific roomIssue by IssueID
+//GetAllIssues  .
 func GetAllIssues() ([]structs.RoomIssue, *nerr.E) {
 	return store.getAllIssues()
 }
 
-//UpdateRoomIssue Gets a specific roomIssue by IssueID
+//UpdateRoomIssue  .
 func UpdateRoomIssue(i structs.RoomIssue) *nerr.E {
 	return store.editIssueInformation(i)
 }
 
-//ResolveIssue Gets a specific roomIssue by IssueID
+//ResolveIssue  .
 func ResolveIssue(resInfo structs.ResolutionInfo, id string) *nerr.E {
-	return store.resolveIssue(resInfo, id)
+	return store.resolveRoomIssue(resInfo, id)
+}
+
+//ResolvePartialIssue .
+func ResolvePartialIssue(resInfo structs.ResolutionInfo, id string, alertIDs []string) *nerr.E {
+	return store.resolvePartialRoomIssue(resInfo, id, alertIDs)
 }
