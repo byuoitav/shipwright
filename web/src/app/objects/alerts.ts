@@ -41,7 +41,7 @@ export class ResolutionInfo {
     notes: string = undefined;
     
     @JsonProperty("resolved-at", DateConverter, true)
-    resolvedAt: Date = new Date(0);
+    resolvedAt: Date = new Date("1970-01-01T00:00:00.000Z");
 }
 
 @JsonObject("Alert")
@@ -80,13 +80,13 @@ export class Alert {
     systemType: string = undefined;
     
     @JsonProperty("start-time", DateConverter, true)
-    startTime: Date = new Date(0);
+    startTime: Date = undefined;
     
     @JsonProperty("end-time", DateConverter, true)
-    endTime: Date = new Date(0);
+    endTime: Date = undefined;
     
     @JsonProperty("update-time", DateConverter, true)
-    updateTime: Date = new Date(0);
+    updateTime: Date = undefined;
     
     @JsonProperty("active", Boolean, true)
     active: boolean = undefined;
@@ -161,16 +161,16 @@ export class RoomIssue {
     responders: string[] = Array<string>();
     
     @JsonProperty("help-sent-at", DateConverter, true)
-    helpSentAt: Date = new Date(0);
+    helpSentAt: Date = undefined;
     
     @JsonProperty("help-arrived-at", DateConverter, true)
-    helpArrivedAt: Date = new Date(0);
+    helpArrivedAt: Date = undefined;
 
     @JsonProperty("resolved", Boolean, true)
     resolved: boolean = undefined;
     
     @JsonProperty("resolution-info", ResolutionInfo, true)
-    resolutionInfo: ResolutionInfo = undefined;
+    resolutionInfo: ResolutionInfo = new ResolutionInfo();
 
     @JsonProperty("alerts", [Alert], true)
     alerts: Alert[] = Array<Alert>();
@@ -185,6 +185,12 @@ export class RoomIssue {
         let zero = "0001-01-01T00:00:00.000Z";
 
         return this.helpArrivedAt.toISOString() === zero;
+    }
+
+    ResolvedAtIsZero(): boolean {
+        let zero = "0001-01-01T00:00:00.000Z";
+
+        return this.resolutionInfo.resolvedAt.toISOString() === zero;
     }
 }
 

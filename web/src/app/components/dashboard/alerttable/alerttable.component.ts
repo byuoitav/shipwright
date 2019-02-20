@@ -36,9 +36,9 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   issueColumns: string[] = ["icon", "roomID", "severity", "count", "types", "incident", "help-sent", "help-arrived", "responders"];
   alertColumns: string[] = ["select", "name", "type", "category", "message"];
 
-  private serviceNowURL: string = "https://it.byu.edu/incident.do?sysparm_query=number="
+  private serviceNowURL: string = "https://ittest.byu.edu/incident.do?sysparm_query=number="
 
-  constructor(public text: StringsService, public data: DataService, private route: ActivatedRoute) {
+  constructor(public text: StringsService, public data: DataService, private route: ActivatedRoute, private changes: ChangeDetectorRef) {
     if(this.singleRoom) {
       this.route.params.subscribe(par => {
         this.roomID = par["roomID"]
@@ -53,6 +53,12 @@ export class AlertTableComponent implements OnInit, IDashPanel {
 
     this.issueData.paginator = this.paginator;
     this.issueData.sort = this.sort;
+
+    this.data.issueEmitter.subscribe(() => {
+      if (!this.changes['destroyed']) {
+        this.changes.detectChanges();
+    }
+    })
   }
 
   ngOnInit() {
@@ -70,6 +76,12 @@ export class AlertTableComponent implements OnInit, IDashPanel {
 
     this.issueData.paginator = this.paginator;
     this.issueData.sort = this.sort;
+
+    this.data.issueEmitter.subscribe(() => {
+      if (!this.changes['destroyed']) {
+        this.changes.detectChanges();
+    }
+    })
   }
 
   ExpandRow(issue: RoomIssue) {

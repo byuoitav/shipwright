@@ -28,6 +28,7 @@ export class StringsService {
     "Crestron RMC-3 Gateway": "security",
     "DM-MD16x16": "device_hub",
     DividerSensors: "leak_add",
+    "DMPS": "accessible_forward",
     FunnelGateway: "security",
     Gefen4x1: "device_hub",
     JAP3GRX: "flip_to_back",

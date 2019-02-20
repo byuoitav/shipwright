@@ -7,6 +7,7 @@ import { ModalService } from 'src/app/services/modal.service';
 import { RoomIssue, Alert } from 'src/app/objects/alerts';
 import { Device } from 'src/app/objects/database';
 import { AlertTableComponent } from '../../dashboard/alerttable/alerttable.component';
+import { APIService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'summary',
@@ -16,19 +17,19 @@ import { AlertTableComponent } from '../../dashboard/alerttable/alerttable.compo
 export class SummaryComponent implements OnInit {
   roomIssue: RoomIssue;
   deviceList: Device[] = [];
-  filteredDevices: Device[] = [];
+  filteredDevices: Device[];
   deviceSearch: string;
   roomID: string;
 
   alertsToResolve: Alert[] = [];
-  responders: string[] = [];
+  responders: string = "";
 
   sentTime: string;
   arrivedTime: string;
 
   @ViewChild(AlertTableComponent) table: AlertTableComponent;
 
-  constructor(public text: StringsService, private route: ActivatedRoute, public data: DataService, public modal: ModalService) {
+  constructor(public text: StringsService, private route: ActivatedRoute, public data: DataService, public modal: ModalService, private api: APIService) {
     this.route.params.subscribe(params => {
       this.roomID = params["roomID"]
       
@@ -37,11 +38,23 @@ export class SummaryComponent implements OnInit {
         this.roomIssue = this.data.GetRoomIssue(this.roomID)
         this.deviceList = this.data.roomToDevicesMap.get(this.roomID)
         this.filteredDevices = this.deviceList;
+        if(this.roomIssue.responders != null) {
+          this.responders = this.roomIssue.responders.toString()
+        }
+        this.SetTimes();
+        
       } else {
         this.data.loaded.subscribe(() => {
           this.roomIssue = this.data.GetRoomIssue(this.roomID)
           this.deviceList = this.data.roomToDevicesMap.get(this.roomID)
           this.filteredDevices = this.deviceList;
+
+          if(this.roomIssue.responders != null) {
+            this.responders = this.roomIssue.responders.toString()
+          }
+          
+          this.SetTimes();
+          
         })
       }
       
@@ -98,6 +111,26 @@ export class SummaryComponent implements OnInit {
     }
 
     return this.roomIssue
+  }
+
+  SetTimes() {
+    if(this.roomIssue != null) {
+      if(!this.roomIssue.SentIsZero()) {
+        let time = this.roomIssue.helpSentAt.toTimeString();
+        this.sentTime = time.substring(0, time.lastIndexOf(":"));
+      } else {
+        let time = new Date().toTimeString();
+        this.sentTime = time.substring(0, time.lastIndexOf(":"));
+      }
+      if(!this.roomIssue.ArrivedIsZero()) {
+        let time = this.roomIssue.helpArrivedAt.toTimeString();
+        this.arrivedTime = time.substring(0, time.lastIndexOf(":"));
+      }
+      else {
+        let time = new Date().toTimeString();
+        this.arrivedTime = time.substring(0, time.lastIndexOf(":"));
+      }
+    }
   }
 
   HelpWasSent() {
@@ -162,4 +195,21 @@ export class SummaryComponent implements OnInit {
   //     this.responders = this.roomIssue.GetAlerts()[0].responders;
   //   }
   // }
+
+  UpdateIssue() {
+    if(this.roomIssue.ResolvedAtIsZero()) {
+      console.log("derek")
+      this.roomIssue.resolutionInfo.resolvedAt = new Date("1970-01-01T00:00:00.000Z")
+    }
+    for(let alert of this.roomIssue.alerts) {
+      alert.endTime = new Date("1970-01-01T00:00:00.000Z")
+    }
+    this.roomIssue.responders = [];
+    let commaSep = this.responders.split(",")
+    for(let s of commaSep) {
+      this.roomIssue.responders.push(s.trim())
+    }
+    console.log(this.roomIssue);
+    this.api.UpdateIssue(this.roomIssue);
+  }
 }
