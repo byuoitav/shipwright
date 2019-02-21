@@ -4,7 +4,7 @@
 
 <mat-form-field>
     <mat-label># of Dashboard Panels</mat-label>
-    <mat-select matInput (selectionChange)="SetPanelCount($event.value)" color="accent" [(ngModel)]="monitor.panelCount">
+    <mat-select matInput (selectionChange)="SetPanelCount($event.value)" color="accent" [(ngModel)]="data.panelCount">
         <mat-option *ngFor="let num of panelMax" [value]="num">{{num}}</mat-option>
     </mat-select>
 </mat-form-field>

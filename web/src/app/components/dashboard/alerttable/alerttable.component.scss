@@ -13,6 +13,19 @@ td.alert-detail-row {
     font-size: 7pt;
 }
 
+// .inactive-alert {
+//     // background-color: #e0e0e0;
+// }
+.inactive-alert td {
+    color: #9e9e9e;
+    background-color: #eeeeee;
+}
+
+.inactive-alert-dark td {
+    color: #757575;
+    background-color: #424242;
+}
+
 button {
     text-align: left;
     padding: 0px 0px;

@@ -36,7 +36,7 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   selection = new SelectionModel<Alert>(true, []);
 
   issueColumns: string[] = ["icon", "roomID", "severity", "count", "types", "incident", "help-sent", "help-arrived", "responders"];
-  alertColumns: string[] = ["select", "name", "type", "category", "message"];
+  alertColumns: string[] = ["select", "name", "type", "category", "message", "start-time", "end-time"];
 
   private serviceNowURL: string = "https://ittest.byu.edu/incident.do?sysparm_query=number="
 
@@ -122,6 +122,36 @@ export class AlertTableComponent implements OnInit, IDashPanel {
       return ""
     } else {
       return array.toString();
+    }
+  }
+
+  TimeIsZero(time: Date): boolean  {
+    if (time == undefined){
+      return true;
+    }
+    let zero = "0001-01-01T00:00:00.000Z";
+
+    return time.toISOString() === zero;
+  }
+
+  GetReadableTimestamp(time: Date): string {
+    let diff = time.valueOf() - new Date().valueOf();
+    let duration = Math.abs(Math.trunc((diff / (1000*60*60)) % 24));
+    let answer;
+    
+    if(duration >= 1 && duration < 2) {
+      answer = duration + " hour ago (" + time.toLocaleTimeString() + ")"
+    } else {
+      answer = duration + " hours ago (" + time.toLocaleTimeString() + ")"
+    }
+    
+    return answer
+  }
+
+  OnDefaultTheme(): boolean {
+    let urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has("theme")) {
+      return urlParams.get("theme") == "default"
     }
   }
 }

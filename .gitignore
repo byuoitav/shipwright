@@ -1,3 +1,6 @@
 service-config.json
 action-config.json
 actions/config/
+shipwright-bin
+dist
+web-dist
