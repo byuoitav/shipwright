@@ -131,7 +131,7 @@
                         </ng-container>
 
                         <tr mat-header-row *matHeaderRowDef="alertColumns"></tr>
-                        <tr mat-row *matRowDef="let alert; columns: alertColumns;" (click)="selection.toggle(alert)" [class.inactive-alert]="!alert.active" [class.inactive-alert-dark]="!alert.active && !OnDefaultTheme()"></tr>
+                        <tr mat-row *matRowDef="let alert; columns: alertColumns;" (click)="selection.toggle(alert)" [class.inactive-alert]="!alert.active"></tr>
                     </table>
                 </div>
             </td>
