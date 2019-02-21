@@ -14,13 +14,15 @@ import { SelectionModel } from '@angular/cdk/collections';
   styleUrls: ['./alerttable.component.scss'],
   animations: [
     trigger('detailExpand', [
-      state('collapsed', style({height: '0px', minHeight: '0', display: 'none'})),
-      state('expanded', style({height: '*'})),
+      state('collapsed', style({ height: '0px', minHeight: '0', display: 'none' })),
+      state('expanded', style({ height: '*' })),
       transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
     ]),
   ],
 })
+
 export class AlertTableComponent implements OnInit, IDashPanel {
+  @Input() info: RoomIssue[] = [];
   @Input() chosenSeverity: string;
   @Input() singleRoom: boolean = false;
   roomID: string;
@@ -39,54 +41,55 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   private serviceNowURL: string = "https://ittest.byu.edu/incident.do?sysparm_query=number="
 
   constructor(public text: StringsService, public data: DataService, private route: ActivatedRoute, private changes: ChangeDetectorRef) {
-    if(this.singleRoom) {
-      this.route.params.subscribe(par => {
-        this.roomID = par["roomID"]
-      })
-
-      let issue = this.data.GetRoomIssue(this.roomID);
-      
-      this.issueData = new MatTableDataSource([issue]);
+    if(this.data.finished) {
+      this.Setup();
     } else {
-      this.issueData = new MatTableDataSource(this.data.GetRoomIssues(this.chosenSeverity));
+      this.data.loaded.subscribe(() => {
+        this.Setup();
+      })
     }
-
-    this.issueData.paginator = this.paginator;
-    this.issueData.sort = this.sort;
-
-    this.data.issueEmitter.subscribe(() => {
-      if (!this.changes['destroyed']) {
-        this.changes.detectChanges();
-    }
-    })
   }
 
   ngOnInit() {
+    if(this.data.finished) {
+      this.Setup();
+    } else {
+      this.data.loaded.subscribe(() => {
+        this.Setup();
+      })
+    }
+  }
+
+  Setup() {
     if(this.singleRoom) {
       this.route.params.subscribe(par => {
-        this.roomID = par["roomID"]
+        this.roomID = par["roomID"];
       })
-
-      let issue = this.data.GetRoomIssue(this.roomID);
-      
-      this.issueData = new MatTableDataSource([issue]);
+      this.issueData = new MatTableDataSource([this.data.GetRoomIssue(this.roomID)]);
     } else {
       this.issueData = new MatTableDataSource(this.data.GetRoomIssues(this.chosenSeverity));
     }
 
-    this.issueData.paginator = this.paginator;
-    this.issueData.sort = this.sort;
-
     this.data.issueEmitter.subscribe(() => {
-      if (!this.changes['destroyed']) {
+      if(!this.changes['destroyed']) {
         this.changes.detectChanges();
-    }
+      }
     })
   }
 
+  ngOnChanges() {
+    if(this.chosenSeverity != null) {
+      this.issueData.data = this.data.GetRoomIssues(this.chosenSeverity);
+
+      if(!this.changes['destroyed']) {
+        this.changes.detectChanges();
+      }
+    }
+  }
+
   ExpandRow(issue: RoomIssue) {
-    if(!this.singleRoom) {
-      if(this.expIssue === issue) {
+    if (!this.singleRoom) {
+      if (this.expIssue === issue) {
         this.expIssue = null
       } else {
         this.expIssue = issue
@@ -95,7 +98,7 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   }
 
   ServiceNowRedirect(incidentID: string) {
-    window.open(this.serviceNowURL+incidentID, "_blank");
+    window.open(this.serviceNowURL + incidentID, "_blank");
   }
 
   IsAllSelected() {
@@ -115,7 +118,7 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   }
 
   ArrayToString(array: any[]): string {
-    if(array == null) {
+    if (array == null) {
       return ""
     } else {
       return array.toString();

@@ -1,9 +1,10 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { APIService } from './api.service';
 import { Building, Room, Device, UIConfig, DeviceType, Role, RoomConfiguration, Template } from '../objects/database';
-import { RoomIssue } from '../objects/alerts';
+import { RoomIssue, AllAlerts } from '../objects/alerts';
 import { SocketService } from './socket.service';
 import { StaticDevice, RoomStatus, BuildingStatus } from '../objects/static';
+import { StringsService } from './strings.service';
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +42,7 @@ export class DataService {
 
   issueEmitter: EventEmitter<any>;
 
-  constructor(public api: APIService, private socket: SocketService) {
+  constructor(public api: APIService, private socket: SocketService, private text: StringsService) {
     this.loaded = new EventEmitter<boolean>();
     this.settingsChanged = new EventEmitter<number>();
     this.issueEmitter = new EventEmitter<any>();
@@ -223,6 +224,7 @@ export class DataService {
   private async GetStoredRoomIssues() {    
     await this.api.GetAllIssues().then((issues) => {
       this.roomIssueList = issues
+      console.log(issues);
     })
   }
 
@@ -398,18 +400,18 @@ export class DataService {
   }
 
   GetRoomIssues(severity?: string): RoomIssue[] {
-    // let temp: RoomIssue[] = [];
+    let temp: RoomIssue[] = [];
 
-    // for(let issue of this.roomIssueList) {
-    //   if(severity != null) {
-    //     if(issue.severity == severity) {
-    //       temp.push(issue);
-    //     }
-    //   } else {
-    //     temp.push(issue);
-    //   }
-    // }
-    // return temp;
-    return this.roomIssueList
+    if(severity == null || severity == AllAlerts || severity == undefined) {
+      return this.roomIssueList;
+    }
+    else {
+      for(let issue of this.roomIssueList) {
+        if(issue.severity.toLowerCase() == severity.toLowerCase()) {
+          temp.push(issue)
+        }
+      }
+    }
+    return temp;
   }
 }

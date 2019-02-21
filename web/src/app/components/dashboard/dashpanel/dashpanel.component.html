@@ -1,6 +1,6 @@
 <div class="row">
     <h3 class="mat-h3">
-        Total Issues: {{data.roomIssueList.length}}
+        Total Issues: {{data.GetRoomIssues(panelType).length}}
     </h3>
 
     <h3 class="mat-h3">
@@ -12,7 +12,7 @@
     </h3>
 
     <mat-form-field>
-        <mat-select [value]="GetValue('AllAlerts')" (selectionChange)="ChoosePanel($event.value)" color="accent" #pType>
+        <mat-select [value]="GetValue('AllAlerts')" [(ngModel)]="panelType" (ngModelChange)="ChoosePanel(panelType)" color="accent" #pType>
             <mat-option [value]="GetValue('AllAlerts')">All Alerts</mat-option>
             <mat-option [value]="GetValue('CritAlerts')">Critical Alerts</mat-option>
             <mat-option [value]="GetValue('WarnAlerts')">Warning Alerts</mat-option>

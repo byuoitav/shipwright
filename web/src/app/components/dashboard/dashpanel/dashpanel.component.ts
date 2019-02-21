@@ -16,7 +16,7 @@ export class DashPanelComponent implements OnInit {
   @ViewChild(forwardRef(()=>DashPanelDirective)) direct: DashPanelDirective;
 
   totalAlertsNum: number = 0;
-  panelType: string = "all-alerts";
+  panelType: string = AllAlerts;
 
   constructor(private resolver: ComponentFactoryResolver, private dashServe: DashPanelService, public data: DataService) {
     
@@ -24,23 +24,26 @@ export class DashPanelComponent implements OnInit {
 
   ngOnInit() {
     if(this.data.finished) {
-      this.ChoosePanel();
+      console.log("derek 1")
+      this.ChoosePanel(this.panelType);
     }
     else {
       this.data.loaded.subscribe(() => {
-        this.ChoosePanel();
+        console.log("derek 2")
+        this.ChoosePanel(this.panelType);
       })
     }
   }
 
   ChoosePanel(pType?: string) {
-    if(this.panelType == null) {
-      return
-    }
+    console.log(pType);
+    // if(this.panelType == null) {
+    //   return
+    // }
 
-    if(pType != null) {
-      this.panelType = pType;
-    }
+    // if(pType != null) {
+    //   this.panelType = pType;
+    // }
 
 
     let panel = this.dashServe.getPanel(this.panelType)
@@ -49,8 +52,11 @@ export class DashPanelComponent implements OnInit {
     viewContainerRef.clear();
 
     let componentRef = viewContainerRef.createComponent(componentFactory);
+
+    // let info = this.DetermineData();
     
     (<IDashPanel>componentRef.instance).chosenSeverity = this.panelType;
+    // (<IDashPanel>componentRef.instance).info = info;
   }
 
   // DetermineData(): any {
@@ -81,7 +87,7 @@ export class DashPanelComponent implements OnInit {
 
   TotalAlerts() {
     let count = 0;
-    for(let issue of this.data.roomIssueList) {
+    for(let issue of this.data.GetRoomIssues(this.panelType)) {
       count += issue.alertCount
     }
     return count
@@ -89,7 +95,7 @@ export class DashPanelComponent implements OnInit {
 
   TotalActiveAlerts() {
     let count = 0;
-    for(let issue of this.data.roomIssueList) {
+    for(let issue of this.data.GetRoomIssues(this.panelType)) {
       count += issue.activeAlertCount
     }
     return count
