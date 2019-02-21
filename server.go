@@ -17,6 +17,7 @@ import (
 	"github.com/byuoitav/shipwright/couch"
 	"github.com/byuoitav/shipwright/state/roomsync"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 
 	// imported to initialize the list of then's
 	_ "github.com/byuoitav/shipwright/actions/then/circular"
@@ -146,6 +147,13 @@ func main() {
 
 	// Websocket Endpoints
 	router.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))
+
+	router.Group("/", middleware.StaticWithConfig(middleware.StaticConfig{
+		Root:   "web-dist",
+		Index:  "index.html",
+		HTML5:  true,
+		Browse: true,
+	}))
 
 	server := http.Server{
 		Addr:           port,
