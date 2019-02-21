@@ -49,7 +49,8 @@ build-x86:
 build-web: $(NG1)
 	# ng1
 	cd $(NG1) && $(NPM_INSTALL) && $(NG_BUILD) --base-href="/"
-	mv $(NG1)/dist/$(NG1) $(NG1)-dist
+	rm -rf $(NG1)-dist
+	mv -f $(NG1)/dist/$(NG1) $(NG1)-dist
 
 test: 
 	$(GOTEST) -v -race $(go list ./... | grep -v /vendor/) 

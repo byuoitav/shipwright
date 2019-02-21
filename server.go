@@ -28,9 +28,11 @@ import (
 )
 
 func init() {
-	err := resetConfig(context.Background())
-	if err != nil {
-		log.L.Fatalf(err.Error())
+	if os.Getenv("NO_PULL") == "" {
+		err := resetConfig(context.Background())
+		if err != nil {
+			log.L.Fatalf(err.Error())
+		}
 	}
 }
 
