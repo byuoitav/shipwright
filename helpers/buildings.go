@@ -131,7 +131,6 @@ func compiledBuildings() ([]structs.Building, *nerr.E) {
 		}
 
 		if !found {
-			log.L.Infof("\nhere's a straggler: %s\n", dmpsB.ID)
 			piBuildings = append(piBuildings, dmpsB)
 		}
 	}
