@@ -442,6 +442,13 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		return
 	}
 
+	if issue.SystemType == "unkown" {
+		issue, err = AddSystemTypeToIssue(issue)
+		if err != nil {
+			log.L.Errorf("Error getting system type for issue %v:%v", issue.RoomIssueID, err.Error())
+		}
+	}
+
 	issue.CalculateAggregateInfo()
 
 	err = alertcache.GetAlertCache("default").PutIssue(issue)

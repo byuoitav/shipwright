@@ -71,6 +71,8 @@ func ParseSeverityFromID(alertID string) string {
 // C) Maintenence Mode
 // D) Monitoring
 func AddRoomInformationToAlert(a structs.Alert) (structs.Alert, *nerr.E) {
+	log.L.Infof("Adding room info to alert %v", a.AlertID)
+	log.L.Infof("Adding room info to device %v", a.DeviceID)
 
 	if a.RoomID == "" {
 		//set the room ID based on the device ID
@@ -84,10 +86,12 @@ func AddRoomInformationToAlert(a structs.Alert) (structs.Alert, *nerr.E) {
 	//get the room from the Cache
 	rm, err := cache.GetCache("default").GetRoomRecord(a.RoomID)
 	if err != nil {
+		log.L.Errorf("Couldn't get room record for room %v", a.RoomID)
 		return a, err.Addf("Couldn't add room info to alert")
 	}
 
 	a.SystemType = getSystemType(a.DeviceID, rm)
+	log.L.Infof("Adding system type %v to alert %v for device %v", a.SystemType, a.AlertID, a.DeviceID)
 
 	if a.SystemType == sd.DMPS {
 		log.L.Debugf(color.HiRedString("ADDING DMPS TYPE"))
@@ -104,6 +108,49 @@ func AddRoomInformationToAlert(a structs.Alert) (structs.Alert, *nerr.E) {
 	}
 
 	return a, nil
+}
+
+//will check the system_type
+func AddSystemTypeToIssue(issue structs.RoomIssue) (structs.RoomIssue, *nerr.E) {
+
+	systemTypeCount := map[string]int{}
+	//check to see if any of the alerts have an alert type
+	for i := range issue.Alerts {
+		if issue.Alerts[i].SystemType != "unkown" {
+			systemTypeCount[issue.Alerts[i].SystemType] = systemTypeCount[issue.Alerts[i].SystemType] + 1
+		}
+	}
+
+	curleader := "unkown"
+	curleaderscore := 0
+
+	for k, v := range systemTypeCount {
+		if v > curleaderscore {
+			curleader = k
+		}
+	}
+	issue.SystemType = curleader
+
+	if curleader == "unkown" {
+		//we check for the issue's room
+		rm, err := cache.GetCache("default").GetRoomRecord(issue.RoomID)
+		if err != nil {
+			log.L.Errorf("Couldn't get room record for room %v", issue.RoomID)
+			return issue, err.Addf("Couldn't add room info to issue")
+		}
+		if len(rm.SystemType) == 0 {
+			return issue, nil
+		}
+
+		for i := range rm.SystemType {
+			if sd.IsDefaultSystemType(rm.SystemType[i]) {
+				issue.SystemType = rm.SystemType[i]
+				break
+			}
+		}
+	}
+
+	return issue, nil
 }
 
 func getSystemType(d string, rm sd.StaticRoom) string {

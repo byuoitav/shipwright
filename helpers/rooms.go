@@ -171,7 +171,7 @@ func compiledRooms() ([]structs.Room, *nerr.E) {
 		}
 
 		if !found {
-			log.L.Infof("\nhere's a straggler: %s\n", dmpsR.ID)
+			log.L.Debugf("\nhere's a straggler: %s\n", dmpsR.ID)
 			piRooms = append(piRooms, dmpsR)
 		}
 	}
