@@ -4,7 +4,7 @@ import {
   WebSocketConfig
 } from "angular2-websocket/angular2-websocket";
 import { JsonConvert } from "json2typescript";
-import { RoomIssue } from '../objects/alerts';
+import { RoomIssue } from "../objects/alerts";
 
 export const OPEN = "open";
 export const CLOSE = "close";
@@ -25,7 +25,14 @@ export class SocketService {
   };
 
   constructor() {
-    this.url = "ws://" + location.hostname + ":9999/ws";
+    if (location.protocol === "https:") {
+      console.log("using secure websocket");
+      this.url = "wss://" + location.hostname + ":9999/ws";
+    } else {
+      console.log("using unsecure websocket");
+      this.url = "ws://" + location.hostname + ":9999/ws";
+    }
+
     this.socket = new $WebSocket(this.url, null, this.webSocketConfig);
     this.listener = new EventEmitter();
 
