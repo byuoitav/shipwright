@@ -3,6 +3,7 @@ package alertcache
 import (
 	"bytes"
 	"encoding/gob"
+	"time"
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
@@ -31,9 +32,11 @@ func getRedisAlertCache(c aconfig.CacheConfig) AlertCache {
 	toReturn := &RedisAlertCache{
 		config: c,
 		c: redis.NewClient(&redis.Options{
-			Addr:     addr,
-			Password: pass,
-			DB:       c.Redis.Database,
+			Addr:        addr,
+			PoolSize:    500,
+			PoolTimeout: 10 * time.Second,
+			Password:    pass,
+			DB:          c.Redis.Database,
 		}),
 	}
 	_, err := toReturn.c.Ping().Result()

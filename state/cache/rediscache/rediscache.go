@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"sync"
+	"time"
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
@@ -53,9 +54,11 @@ func MakeRedisCache(devices []sd.StaticDevice, rooms []sd.StaticRoom, pushCron s
 	}
 
 	toReturn.devclient = redis.NewClient(&redis.Options{
-		Addr:     addr,
-		Password: pass,
-		DB:       configuration.RedisInfo.DevDatabase,
+		PoolSize:    500,
+		PoolTimeout: 10 * time.Second,
+		Addr:        addr,
+		Password:    pass,
+		DB:          configuration.RedisInfo.DevDatabase,
 	})
 
 	_, err := toReturn.devclient.Ping().Result()
