@@ -43,7 +43,7 @@ func DefaultActionManager() *ActionManager {
 	defaultOnce.Do(func() {
 		defaultAM = &ActionManager{
 			Config:      DefaultConfig(),
-			Workers:     500,
+			Workers:     1000,
 			EventStream: make(chan events.Event, 10000),
 		}
 	})
@@ -74,8 +74,9 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 		a.ManageAction(a.Config.Actions[i])
 	}
 
-	a.wg.Add(a.Workers)
-	for i := 0; i < a.Workers; i++ {
+	for i := 0; i < a.Workers/2; i++ {
+		a.wg.Add(1)
+
 		go func(index int) {
 			defer a.wg.Done()
 			defer log.L.Infof("Closed action manager worker %d", index)
@@ -86,6 +87,22 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 					return
 				case req := <-a.reqs:
 					req.Action.Run(req.Context)
+				}
+			}
+		}(i)
+	}
+
+	for i := a.Workers / 2; i < a.Workers; i++ {
+		a.wg.Add(1)
+
+		go func(index int) {
+			defer a.wg.Done()
+			defer log.L.Infof("Closed action manager worker %d", index)
+
+			for {
+				select {
+				case <-ctx.Done():
+					return
 				case event, ok := <-a.EventStream:
 					if !ok {
 						log.L.Warnf("action manager event stream closed")
