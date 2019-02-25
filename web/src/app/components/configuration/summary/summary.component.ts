@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { ActivatedRoute } from '@angular/router';
-import { MonitoringService } from 'src/app/services/monitoring.service';
 import { DataService } from 'src/app/services/data.service';
 import { ModalService } from 'src/app/services/modal.service';
 import { RoomIssue, Alert } from 'src/app/objects/alerts';
@@ -15,7 +14,7 @@ import { APIService } from 'src/app/services/api.service';
   styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent implements OnInit {
-  roomIssue: RoomIssue;
+  roomIssues: RoomIssue[];
   deviceList: Device[] = [];
   filteredDevices: Device[];
   deviceSearch: string;
@@ -35,22 +34,36 @@ export class SummaryComponent implements OnInit {
       
 
       if(this.data.finished) {
-        this.roomIssue = this.data.GetRoomIssue(this.roomID)
+        this.roomIssues = this.data.GetRoomIssues(this.roomID)
         this.deviceList = this.data.roomToDevicesMap.get(this.roomID)
         this.filteredDevices = this.deviceList;
-        if(this.roomIssue.responders != null) {
-          this.responders = this.roomIssue.responders.toString()
+
+        for(let issue of this.roomIssues) {
+          if(issue.responders != null) {
+            for(let r of issue.responders) {
+              if(!this.responders.includes(r)) {
+                this.responders.concat(r);
+              }
+            }
+          }
         }
+        
         this.SetTimes();
         
       } else {
         this.data.loaded.subscribe(() => {
-          this.roomIssue = this.data.GetRoomIssue(this.roomID)
+          this.roomIssues = this.data.GetRoomIssues(this.roomID)
           this.deviceList = this.data.roomToDevicesMap.get(this.roomID)
           this.filteredDevices = this.deviceList;
 
-          if(this.roomIssue.responders != null) {
-            this.responders = this.roomIssue.responders.toString()
+          for(let issue of this.roomIssues) {
+            if(issue.responders != null) {
+              for(let r of issue.responders) {
+                if(!this.responders.includes(r)) {
+                  this.responders.concat(r);
+                }
+              }
+            }
           }
           
           this.SetTimes();
@@ -106,59 +119,56 @@ export class SummaryComponent implements OnInit {
   }
 
   GetRoomAlerts() {
-    if(this.roomIssue == null) {
+    if(this.roomIssues == null) {
       return null
     }
 
-    return this.roomIssue
+    return this.roomIssues
   }
 
   SetTimes() {
-    if(this.roomIssue != null) {
-      if(!this.roomIssue.SentIsZero()) {
-        let time = this.roomIssue.helpSentAt.toTimeString();
-        this.sentTime = time.substring(0, time.lastIndexOf(":"));
-      } else {
-        let time = new Date().toTimeString();
-        this.sentTime = time.substring(0, time.lastIndexOf(":"));
+    if(this.roomIssues != null) {
+      for(let issue of this.roomIssues) {
+        if(!issue.SentIsZero()) {
+          let time = issue.helpSentAt.toTimeString();
+          this.sentTime = time.substring(0, time.lastIndexOf(":"));
+        } else {
+          let time = new Date().toTimeString();
+          this.sentTime = time.substring(0, time.lastIndexOf(":"));
+        }
+        if(!issue.ArrivedIsZero()) {
+          let time = issue.helpArrivedAt.toTimeString();
+          this.arrivedTime = time.substring(0, time.lastIndexOf(":"));
+        }
+        else {
+          let time = new Date().toTimeString();
+          this.arrivedTime = time.substring(0, time.lastIndexOf(":"));
+        }
       }
-      if(!this.roomIssue.ArrivedIsZero()) {
-        let time = this.roomIssue.helpArrivedAt.toTimeString();
-        this.arrivedTime = time.substring(0, time.lastIndexOf(":"));
-      }
-      else {
-        let time = new Date().toTimeString();
-        this.arrivedTime = time.substring(0, time.lastIndexOf(":"));
-      }
+      
     }
   }
 
   HelpWasSent() {
-    console.log(this.sentTime)
-    let d = new Date()
-    console.log(d.toLocaleString())
-
     let fullDate = new Date().toLocaleString()
     let today = fullDate.substr(0, fullDate.indexOf(","))
 
     let time = this.to24Hour(this.sentTime)
     let timestamp = today + ", " + time
-    this.roomIssue.helpSentAt = new Date(timestamp)
-    console.log(this.roomIssue.helpSentAt.toLocaleString())
+    for(let issue of this.roomIssues) {
+      issue.helpSentAt = new Date(timestamp);
+    }
   }
 
   HelpHasArrived() {
-    console.log(this.arrivedTime)
-    let d = new Date()
-    console.log(d.toLocaleString())
-
     let fullDate = new Date().toLocaleString()
     let today = fullDate.substr(0, fullDate.indexOf(","))
 
     let time = this.to24Hour(this.arrivedTime)
     let timestamp = today + ", " + time
-    this.roomIssue.helpArrivedAt = new Date(timestamp)
-    console.log(this.roomIssue.helpArrivedAt.toLocaleString())
+    for(let issue of this.roomIssues) {
+      issue.helpArrivedAt = new Date(timestamp);
+    }
   }
 
   private to24Hour(time: string): string {
@@ -196,20 +206,19 @@ export class SummaryComponent implements OnInit {
   //   }
   // }
 
-  UpdateIssue() {
-    if(this.roomIssue.ResolvedAtIsZero()) {
-      console.log("derek")
-      this.roomIssue.resolutionInfo.resolvedAt = new Date("1970-01-01T00:00:00.000Z")
+  UpdateIssue(issue: RoomIssue) {
+    if(issue.ResolvedAtIsZero()) {
+      issue.resolutionInfo.resolvedAt = new Date("1970-01-01T00:00:00.000Z")
     }
-    for(let alert of this.roomIssue.alerts) {
+    for(let alert of issue.alerts) {
       alert.endTime = new Date("1970-01-01T00:00:00.000Z")
     }
-    this.roomIssue.responders = [];
+    issue.responders = [];
     let commaSep = this.responders.split(",")
     for(let s of commaSep) {
-      this.roomIssue.responders.push(s.trim())
+      issue.responders.push(s.trim())
     }
-    console.log(this.roomIssue);
-    this.api.UpdateIssue(this.roomIssue);
+    console.log(issue);
+    this.api.UpdateIssue(issue);
   }
 }
