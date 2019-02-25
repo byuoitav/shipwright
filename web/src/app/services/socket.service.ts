@@ -27,10 +27,10 @@ export class SocketService {
   constructor() {
     if (location.protocol === "https:") {
       console.log("using secure websocket");
-      this.url = "wss://" + location.hostname + ":9999/ws";
+      this.url = "wss://" + location.hostname + ":" + location.port + "/ws";
     } else {
       console.log("using unsecure websocket");
-      this.url = "ws://" + location.hostname + ":9999/ws";
+      this.url = "ws://" + location.hostname + ":" + location.port + "/ws";
     }
 
     this.socket = new $WebSocket(this.url, null, this.webSocketConfig);

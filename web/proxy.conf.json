@@ -1,61 +1,61 @@
 {
     "/buildings": {
-        "target": "http://localhost:9999",
+        "target": "https://smee-stg.avs.byu.edu",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true
     },
     "/rooms": {
-        "target": "http://localhost:9999",
+        "target": "https://smee-stg.avs.byu.edu",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true
     },
     "/devices": {
-        "target": "http://localhost:9999",
+        "target": "https://smee-stg.avs.byu.edu",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true
     },
     "/uiconfigs": {
-        "target": "http://localhost:9999",
+        "target": "https://smee-stg.avs.byu.edu",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true
     },
     "/options": {
-        "target": "http://localhost:9999",
+        "target": "https://smee-stg.avs.byu.edu",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true
     },
     "/alerts": {
-        "target": "http://localhost:9999",
+        "target": "https://smee-stg.avs.byu.edu",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true
     },
     "/issues": {
-        "target": "http://localhost:9999",
+        "target": "https://smee-stg.avs.byu.edu",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true
     },
     "/static": {
-        "target": "http://localhost:9999",
+        "target": "https://smee-stg.avs.byu.edu",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true
     },
     "/users": {
-        "target": "http://localhost:9999",
+        "target": "https://smee-stg.avs.byu.edu",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true
     },
     "/ws": {
-        "target": "http://localhost:9999",
-        "secure": false,
+        "target": "wss://smee-stg.avs.byu.edu",
+        "secure": true,
         "logLevel": "debug",
         "changeOrigin": true,
         "ws": true
