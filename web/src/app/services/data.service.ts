@@ -294,7 +294,6 @@ export class DataService {
       for(let rs of this.roomStatusList) {
         if(rs.roomID == roomID) {
           rs.deviceStates.push(sd)
-          rs.Update()
           added = true
         }
       }
@@ -303,7 +302,6 @@ export class DataService {
         let roomState = new RoomStatus()
         roomState.roomID = roomID
         roomState.deviceStates = [sd]
-        roomState.Update()
         this.roomStatusList.push(roomState)
       }
     }
@@ -319,7 +317,6 @@ export class DataService {
       for(let bs of this.buildingStatusList) {
         if(bs.buildingID == buildingID) {
           bs.roomStates.push(rs)
-          bs.Update()
           added = true;
         }
       }
@@ -327,7 +324,6 @@ export class DataService {
         let buildingState = new BuildingStatus()
         buildingState.buildingID = buildingID
         buildingState.roomStates = [rs]
-        buildingState.Update()
         this.buildingStatusList.push(buildingState)
       }
     }
