@@ -69,9 +69,9 @@ export class AlertTableComponent implements OnInit, IDashPanel {
       this.route.params.subscribe(par => {
         this.roomID = par["roomID"];
       })
-      this.issueData = new MatTableDataSource([this.data.GetRoomIssue(this.roomID)]);
+      this.issueData = new MatTableDataSource(this.data.GetRoomIssues(this.roomID));
     } else {
-      this.issueData = new MatTableDataSource(this.data.GetRoomIssues(this.chosenSeverity));
+      this.issueData = new MatTableDataSource(this.data.GetRoomIssuesBySeverity(this.chosenSeverity));
     }
 
     this.data.issueEmitter.subscribe(() => {
