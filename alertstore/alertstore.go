@@ -65,6 +65,7 @@ func InitializeAlertStore(a *actions.ActionManager) {
 		log.L.Errorf("Couldn't get all active alerts: %v", err.Error())
 	}
 
+	log.L.Infof("Initializing alert store with %v alerts", len(issues))
 	for i := range issues {
 
 		for _, v := range issues[i].Alerts {
@@ -74,6 +75,7 @@ func InitializeAlertStore(a *actions.ActionManager) {
 			if err != nil {
 				log.L.Warnf("Problem adding room info to alert %v", err.Error())
 			}
+			log.L.Debugf("Storing alert %v", v)
 			store.inChannel <- v
 		}
 
@@ -406,6 +408,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		}
 
 	} else if err.Type == alertcache.NotFound {
+		//issue didn't exist at all.
 
 		//generate the new roomIssue.
 		alert.AlertLastUpdateTime = time.Now()

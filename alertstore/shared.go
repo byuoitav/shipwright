@@ -71,8 +71,6 @@ func ParseSeverityFromID(alertID string) string {
 // C) Maintenence Mode
 // D) Monitoring
 func AddRoomInformationToAlert(a structs.Alert) (structs.Alert, *nerr.E) {
-	log.L.Infof("Adding room info to alert %v", a.AlertID)
-	log.L.Infof("Adding room info to device %v", a.DeviceID)
 
 	if a.RoomID == "" {
 		//set the room ID based on the device ID
@@ -91,7 +89,6 @@ func AddRoomInformationToAlert(a structs.Alert) (structs.Alert, *nerr.E) {
 	}
 
 	a.SystemType = getSystemType(a.DeviceID, rm)
-	log.L.Infof("Adding system type %v to alert %v for device %v", a.SystemType, a.AlertID, a.DeviceID)
 
 	if a.SystemType == sd.DMPS {
 		log.L.Debugf(color.HiRedString("ADDING DMPS TYPE"))

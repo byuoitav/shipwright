@@ -7,6 +7,7 @@ import (
 
 	"github.com/awalterschulze/gographviz"
 	"github.com/byuoitav/common/log"
+	sd "github.com/byuoitav/common/state/statedefinition"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -34,7 +35,7 @@ func TestNodeGeneration(t *testing.T) {
 		t.Error(err.Error())
 		t.FailNow()
 	}
-	log.L.Debugf("%+v", vals.rootNode)
+	log.L.Debugf("%+v", vals)
 
 	//build our .dot format for the file
 	g := gographviz.NewGraph()
@@ -42,13 +43,13 @@ func TestNodeGeneration(t *testing.T) {
 		panic(err)
 	}
 
-	cur := vals.rootNode
+	cur := vals
 	for cur != nil {
 		fmt.Printf("%v\n", cur.ID)
 		cur = cur.RightChild
 	}
 
-	BuildGraph(vals.rootNode, g)
+	BuildGraph(vals, g)
 
 	fmt.Println(g.String())
 
@@ -147,7 +148,7 @@ func TestCompareQueryStructs(t *testing.T) {
 		t.FailNow()
 	}
 
-	v, er := val.rootNode.Evaluate(a)
+	v, er := val.Evaluate(a)
 	if er != nil {
 		t.Error(er.Error())
 		t.FailNow()
@@ -161,7 +162,7 @@ func TestCompareQueryStructs(t *testing.T) {
 		t.FailNow()
 	}
 
-	v, er = val.rootNode.Evaluate(a)
+	v, er = val.Evaluate(a)
 	if er != nil {
 		t.Error(er.Error())
 		t.FailNow()
@@ -175,7 +176,7 @@ func TestCompareQueryStructs(t *testing.T) {
 		t.FailNow()
 	}
 
-	v, er = val.rootNode.Evaluate(a)
+	v, er = val.Evaluate(a)
 	if er != nil {
 		t.Error(er.Error())
 		t.FailNow()
@@ -189,7 +190,7 @@ func TestCompareQueryStructs(t *testing.T) {
 		t.FailNow()
 	}
 
-	v, er = val.rootNode.Evaluate(a)
+	v, er = val.Evaluate(a)
 	if er != nil {
 		t.Error(er.Error())
 		t.FailNow()
@@ -203,7 +204,7 @@ func TestCompareQueryStructs(t *testing.T) {
 		t.FailNow()
 	}
 
-	v, er = val.rootNode.Evaluate(a)
+	v, er = val.Evaluate(a)
 	if er != nil {
 		t.Error(er.Error())
 		t.FailNow()
@@ -217,7 +218,7 @@ func TestCompareQueryStructs(t *testing.T) {
 		t.FailNow()
 	}
 
-	v, er = val.rootNode.Evaluate(a)
+	v, er = val.Evaluate(a)
 	if er != nil {
 		t.Error(er.Error())
 		t.FailNow()
@@ -231,7 +232,7 @@ func TestCompareQueryStructs(t *testing.T) {
 		t.FailNow()
 	}
 
-	v, er = val.rootNode.Evaluate(a)
+	v, er = val.Evaluate(a)
 	if er != nil {
 		t.Error(er.Error())
 		t.FailNow()
@@ -245,7 +246,7 @@ func TestCompareQueryStructs(t *testing.T) {
 		t.FailNow()
 	}
 
-	v, er = val.rootNode.Evaluate(a)
+	v, er = val.Evaluate(a)
 	if er != nil {
 		t.Error(er.Error())
 		t.FailNow()
@@ -259,7 +260,7 @@ func TestCompareQueryStructs(t *testing.T) {
 		t.FailNow()
 	}
 
-	v, er = val.rootNode.Evaluate(a)
+	v, er = val.Evaluate(a)
 	if er != nil {
 		t.Error(er.Error())
 		t.FailNow()
@@ -273,7 +274,7 @@ func TestCompareQueryStructs(t *testing.T) {
 		t.FailNow()
 	}
 
-	v, er = val.rootNode.Evaluate(a)
+	v, er = val.Evaluate(a)
 	if er != nil {
 		t.Error(er.Error())
 		t.FailNow()
@@ -287,7 +288,7 @@ func TestCompareQueryStructs(t *testing.T) {
 		t.FailNow()
 	}
 
-	v, er = val.rootNode.Evaluate(a)
+	v, er = val.Evaluate(a)
 	if er != nil {
 		t.Error(er.Error())
 		t.FailNow()
@@ -301,7 +302,7 @@ func TestCompareQueryStructs(t *testing.T) {
 		t.FailNow()
 	}
 
-	v, er = val.rootNode.Evaluate(a)
+	v, er = val.Evaluate(a)
 	if er != nil {
 		t.Error(er.Error())
 		t.FailNow()
@@ -315,7 +316,7 @@ func TestCompareQueryStructs(t *testing.T) {
 		t.FailNow()
 	}
 
-	v, er = val.rootNode.Evaluate(a)
+	v, er = val.Evaluate(a)
 	if er != nil {
 		t.Error(er.Error())
 		t.FailNow()
@@ -329,7 +330,7 @@ func TestCompareQueryStructs(t *testing.T) {
 		t.FailNow()
 	}
 
-	v, er = val.rootNode.Evaluate(a)
+	v, er = val.Evaluate(a)
 	if er != nil {
 		t.Error(er.Error())
 		t.FailNow()
@@ -343,7 +344,7 @@ func TestCompareQueryStructs(t *testing.T) {
 		t.FailNow()
 	}
 
-	v, er = val.rootNode.Evaluate(a)
+	v, er = val.Evaluate(a)
 	if er != nil {
 		t.Error(er.Error())
 		t.FailNow()
@@ -357,7 +358,7 @@ func TestCompareQueryStructs(t *testing.T) {
 		t.FailNow()
 	}
 
-	v, er = val.rootNode.Evaluate(a)
+	v, er = val.Evaluate(a)
 	if er != nil {
 		t.Error(er.Error())
 		t.FailNow()
@@ -371,7 +372,7 @@ func TestCompareQueryStructs(t *testing.T) {
 		t.FailNow()
 	}
 
-	v, er = val.rootNode.Evaluate(a)
+	v, er = val.Evaluate(a)
 	if er != nil {
 		t.Error(er.Error())
 		t.FailNow()
@@ -384,7 +385,7 @@ func TestCompareQueryStructs(t *testing.T) {
 		t.FailNow()
 	}
 
-	v, er = val.rootNode.Evaluate(a)
+	v, er = val.Evaluate(a)
 	if er != nil {
 		t.Error(er.Error())
 		t.FailNow()
@@ -392,4 +393,61 @@ func TestCompareQueryStructs(t *testing.T) {
 	fmt.Printf("Answer %v\n", v)
 	as.True(v)
 
+}
+
+func TestTimeQuery(t *testing.T) {
+
+	as := assert.New(t)
+
+	val, err := ParseQuery(`'DeviceID' == 'JOE-TEST-CP1' && 'Interference' == '' && 'UpdateTimes.interference' < '-3m'`)
+	if err != nil {
+		t.Error(err.Error())
+		t.FailNow()
+	}
+
+	TestDevice := sd.StaticDevice{
+		DeviceID: "JOE-TEST-CP1",
+		UpdateTimes: map[string]time.Time{
+			"interference": time.Now().Add(-3*time.Minute - 30*time.Second),
+		},
+	}
+
+	v, er := val.Evaluate(TestDevice)
+	if er != nil {
+		t.Error(er.Error())
+		t.FailNow()
+	}
+	fmt.Printf("Answer %v\n", v)
+	as.True(v)
+
+	TestDevice1 := sd.StaticDevice{
+		DeviceID: "JOE-TEST-CP1",
+		UpdateTimes: map[string]time.Time{
+			"interference": time.Now().Add(-1 * time.Minute),
+		},
+	}
+
+	v, er = val.Evaluate(TestDevice1)
+	if er != nil {
+		t.Error(er.Error())
+		t.FailNow()
+	}
+	fmt.Printf("Answer %v\n", v)
+	as.False(v)
+
+	TestDevice2 := sd.StaticDevice{
+		DeviceID: "JOE-TEST-CP1",
+		UpdateTimes: map[string]time.Time{
+			"interference": time.Now().Add(-5 * time.Minute),
+		},
+		Interference: "blah",
+	}
+
+	v, er = val.Evaluate(TestDevice2)
+	if er != nil {
+		t.Error(er.Error())
+		t.FailNow()
+	}
+	fmt.Printf("Answer %v\n", v)
+	as.False(v)
 }

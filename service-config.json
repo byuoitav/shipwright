@@ -5,14 +5,14 @@
       "storage-type": "elk",
       "cache-type": "redis",
       "elk-cache": {
-        "device-index": "oit-static-av-devices-test-1",
-        "room-index": "oit-static-av-rooms",
-        "url": "http://north.byu.edu:9200"
+        "device-index": "oit-static-av-devices-test",
+        "room-index": "oit-static-av-rooms-test",
+        "url": "http://10.208.7.36:9200"
       },
       "redis-cache": {
         "device-database": 0,
         "room-database": 1,
-        "url": "localhost:6379"
+        "url": "shipwright-dev.xorre5.ng.0001.usw2.cache.amazonaws.com:6379"
       }
     }
   ],
@@ -25,7 +25,7 @@
       "data-type": "device",
       "cache-name": "default",
       "elk": {
-        "url": "http://north.byu.edu:9200",
+        "url": "http://10.208.7.36:9200",
         "index-pattern": "oit-static-av-devices-test-1",
         "index-rotation-interval": "norotate",
         "upsert": true
@@ -39,8 +39,8 @@
       "data-type": "room",
       "cache-name": "default",
       "elk": {
-        "url": "http://north.byu.edu:9200",
-        "index-pattern": "oit-static-av-rooms",
+        "url": "http://10.208.7.36:9200",
+        "index-pattern": "oit-static-av-rooms-test-1",
         "index-rotation-interval": "norotate",
         "upsert": true
       }
