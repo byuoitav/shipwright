@@ -10,8 +10,8 @@ import { DataService } from 'src/app/services/data.service';
 export class DashboardComponent implements OnInit {
   panelCount;
 
-  constructor(public text: StringsService, public data: DataService) {
-    this.panelCount = Array(this.data.panelCount).fill(1);
+  constructor(public text: StringsService, public data: DataService) {    
+    this.panelCount = Array(this.data.panelCount).fill(1);    
     this.data.settingsChanged.subscribe((value) => {
       this.panelCount = Array(value).fill(1);
     })

@@ -44,9 +44,9 @@ export class DataService {
 
   issueEmitter: EventEmitter<any>;
 
-  private notifier: NotifierService;
+  notifier: NotifierService;
 
-  constructor(public api: APIService, private socket: SocketService, private text: StringsService, private notify: NotifierService) {
+  constructor(public api: APIService, private socket: SocketService, private text: StringsService, notify: NotifierService) {
     this.loaded = new EventEmitter<boolean>();
     this.settingsChanged = new EventEmitter<number>();
     this.issueEmitter = new EventEmitter<any>();
@@ -396,7 +396,7 @@ export class DataService {
     return false;
   }
 
-  GetRoomIssues(roomID): RoomIssue[] {
+  GetRoomIssues(roomID): RoomIssue[] {    
     return this.roomIssuesMap.get(roomID);
   }
 

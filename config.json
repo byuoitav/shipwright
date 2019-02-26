@@ -1,0 +1,31 @@
+{
+    "name": "shipwright",
+    "port": ":9999",
+    "env-vars": [
+        "ACTION_CONFIG_DIR",
+        "ALERT_STORE_CONFIG",
+        "BYPASS_AUTH",
+        "COUCH_ADDRESS",
+        "COUCH_PASSWORD",
+        "COUCH_USERNAME",
+        "DB_ADDRESS",
+        "DB_PASSWORD",
+        "DB_USERNAME",
+        "ELK_DIRECT_ADDRESS",
+        "ELK_SA_PASSWORD",
+        "ELK_SA_USERNAME",
+        "ENDPOINT_ACCESS_KEY",
+        "ENDPOINT_AUTHORIZATION_URL",
+        "ENDPOINT_USERNAME",
+        "HUB_ADDRESS",
+        "LOG_LEVEL",
+        "NO_PULL",
+        "PROXY_ADDR",
+        "ROOM_SYSTEM",
+        "SERVICENOW_WSO2_TOKEN",
+        "SERVICE_CONFIG_LOCATION",
+        "SLACK_CHANNEL",
+        "STOP_REPLICATION",
+        "SYSTEM_ID"
+    ]
+}
