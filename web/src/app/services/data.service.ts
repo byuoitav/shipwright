@@ -5,6 +5,7 @@ import { RoomIssue, AllAlerts } from '../objects/alerts';
 import { SocketService } from './socket.service';
 import { StaticDevice, RoomStatus, BuildingStatus } from '../objects/static';
 import { StringsService } from './strings.service';
+import { NotifierService } from 'angular-notifier';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +29,7 @@ export class DataService {
   roomToUIConfigMap: Map<string, UIConfig> = new Map();
 
   roomIssueList: RoomIssue[] = [];
+  roomIssuesMap: Map<string, RoomIssue[]> = new Map();
   closureCodes: string[] = [];
 
   staticDeviceList: StaticDevice[] = [];
@@ -42,10 +44,13 @@ export class DataService {
 
   issueEmitter: EventEmitter<any>;
 
-  constructor(public api: APIService, private socket: SocketService, private text: StringsService) {
+  notifier: NotifierService;
+
+  constructor(public api: APIService, private socket: SocketService, private text: StringsService, notify: NotifierService) {
     this.loaded = new EventEmitter<boolean>();
     this.settingsChanged = new EventEmitter<number>();
     this.issueEmitter = new EventEmitter<any>();
+    this.notifier = notify;
     this.LoadData();
     this.ListenForIssues();
   }
@@ -225,25 +230,57 @@ export class DataService {
     await this.api.GetAllIssues().then((issues) => {
       this.roomIssueList = issues
       console.log(issues);
+      this.SetRoomIssuesMap();
     })
+  }
+
+  private SetRoomIssuesMap() {
+    this.roomIssuesMap.clear();
+
+    for(let issue of this.roomIssueList) {
+      if(this.roomIssuesMap.get(issue.roomID) == null) {
+        this.roomIssuesMap.set(issue.roomID, [issue]);
+      } else {
+        this.roomIssuesMap.get(issue.roomID).push(issue);
+      }
+    }
   }
 
   private ListenForIssues() {
     this.socket.listener.subscribe(issue => {
+      console.log(issue, issue.resolved)
+
       if(this.roomIssueList == null) {
-        this.roomIssueList = [issue]
+        if (!issue.resolved) {
+          this.roomIssueList = [issue]
+        }
       } else {
         let found = false;
-        for(let i of this.roomIssueList) {
-          if(i.issueID == issue.issueID) {
-            i = issue;
-            found = true;
+
+        let matchingIssue = 
+          this.roomIssueList.find(one => one.issueID === issue.issueID)
+
+        if(matchingIssue == null) {
+          if (issue.resolved) {
+            this.notifier.notify( "warning", "New Room Issue received for " + issue.roomID + " but already resolved" );
+          } else {
+            this.notifier.notify( "error", "New Room Issue received for " + issue.roomID );
+            this.roomIssueList.push(issue);
+            //this.roomIssueList = this.roomIssueList.sort(this.RoomIssueSorter)
+          } 
+        } else {
+
+          matchingIssue = issue;
+
+          if (issue.resolved) {            
+            this.notifier.notify( "success", "Room Issue for " + issue.roomID + " resolved.");
+            const index = this.roomIssueList.indexOf(matchingIssue, 0);
+            if (index > -1) {
+              this.roomIssueList.splice(index, 1);
+            }
           }
         }
-        if(!found) {
-          this.roomIssueList.push(issue);
-          this.roomIssueList = this.roomIssueList.sort(this.RoomIssueSorter)
-        }
+        
         this.issueEmitter.emit();
       }
     })
@@ -280,7 +317,6 @@ export class DataService {
       for(let rs of this.roomStatusList) {
         if(rs.roomID == roomID) {
           rs.deviceStates.push(sd)
-          rs.Update()
           added = true
         }
       }
@@ -289,7 +325,6 @@ export class DataService {
         let roomState = new RoomStatus()
         roomState.roomID = roomID
         roomState.deviceStates = [sd]
-        roomState.Update()
         this.roomStatusList.push(roomState)
       }
     }
@@ -305,7 +340,6 @@ export class DataService {
       for(let bs of this.buildingStatusList) {
         if(bs.buildingID == buildingID) {
           bs.roomStates.push(rs)
-          bs.Update()
           added = true;
         }
       }
@@ -313,7 +347,6 @@ export class DataService {
         let buildingState = new BuildingStatus()
         buildingState.buildingID = buildingID
         buildingState.roomStates = [rs]
-        buildingState.Update()
         this.buildingStatusList.push(buildingState)
       }
     }
@@ -363,13 +396,8 @@ export class DataService {
     return false;
   }
 
-  GetRoomIssue(roomID): RoomIssue {
-    for(let issue of this.roomIssueList) {
-      if(issue.roomID == roomID) {
-        return issue;
-      }
-    }
-    return new RoomIssue();
+  GetRoomIssues(roomID): RoomIssue[] {    
+    return this.roomIssuesMap.get(roomID);
   }
 
   GetStaticDevice(deviceID: string): StaticDevice {
@@ -399,7 +427,7 @@ export class DataService {
     return new BuildingStatus();
   }
 
-  GetRoomIssues(severity?: string): RoomIssue[] {
+  GetRoomIssuesBySeverity(severity?: string): RoomIssue[] {
     let temp: RoomIssue[] = [];
 
     if(severity == null || severity == AllAlerts || severity == undefined) {

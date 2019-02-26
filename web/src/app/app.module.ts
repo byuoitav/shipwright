@@ -73,6 +73,8 @@ import { DashPanelDirective } from './components/dashboard/dashpanel/dashpanel.d
 import { CampusStateComponent } from './components/state/campus/campus-state.component';
 import { RoomStateComponent } from './components/state/room/room-state.component';
 
+import {NotifierModule} from 'angular-notifier'
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -134,6 +136,7 @@ import { RoomStateComponent } from './components/state/room/room-state.component
     MatChipsModule,
     MatSlideToggleModule,
     DndModule.forRoot(),
+    NotifierModule
   ],
   entryComponents: [
     SettingsModalComponent,

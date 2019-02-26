@@ -23,13 +23,11 @@ export class DashPanelComponent implements OnInit {
   }
 
   ngOnInit() {
-    if(this.data.finished) {
-      console.log("derek 1")
+    if(this.data.finished) {      
       this.ChoosePanel(this.panelType);
     }
     else {
-      this.data.loaded.subscribe(() => {
-        console.log("derek 2")
+      this.data.loaded.subscribe(() => {        
         this.ChoosePanel(this.panelType);
       })
     }

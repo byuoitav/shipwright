@@ -35,7 +35,7 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   issueData: MatTableDataSource<RoomIssue>;
   selection = new SelectionModel<Alert>(true, []);
 
-  issueColumns: string[] = ["icon", "roomID", "severity", "count", "types", "incident", "help-sent", "help-arrived", "responders"];
+  issueColumns: string[] = ["icon", "roomID", "severity", "count", "types", "incident"];//, "help-sent", "help-arrived", "responders"];
   alertColumns: string[] = ["select", "name", "type", "category", "message", "start-time", "end-time"];
 
   private serviceNowURL: string = "https://ittest.byu.edu/incident.do?sysparm_query=number="
@@ -60,14 +60,18 @@ export class AlertTableComponent implements OnInit, IDashPanel {
     }
   }
 
+  ngAfterViewInit(): void {
+    this.issueData.sort = this.sort;
+  }
+
   Setup() {
     if(this.singleRoom) {
       this.route.params.subscribe(par => {
         this.roomID = par["roomID"];
       })
-      this.issueData = new MatTableDataSource([this.data.GetRoomIssue(this.roomID)]);
+      this.issueData = new MatTableDataSource(this.data.GetRoomIssues(this.roomID));
     } else {
-      this.issueData = new MatTableDataSource(this.data.GetRoomIssues(this.chosenSeverity));
+      this.issueData = new MatTableDataSource(this.data.GetRoomIssuesBySeverity(this.chosenSeverity));
     }
 
     this.data.issueEmitter.subscribe(() => {
@@ -75,6 +79,14 @@ export class AlertTableComponent implements OnInit, IDashPanel {
         this.changes.detectChanges();
       }
     })
+
+    this.issueData.sortingDataAccessor = (item, property) => {
+      //console.log(item, property);
+      switch (property) {
+          case 'types': return this.ArrayToString(item["activeAlertTypes"]);
+          default: return item[property];
+      }
+     }
   }
 
   ngOnChanges() {
