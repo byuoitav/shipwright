@@ -1,5 +1,5 @@
 <div class="mat-elevation-z3 container">
-    <table mat-table [dataSource]="issueData" matSort multiTemplateDataRows class="mat-elevation-z0" matSortActive="roomID">
+    <table mat-table [dataSource]="issueData" matSort multiTemplateDataRows class="mat-elevation-z0">
         <ng-container matColumnDef="icon">
             <th mat-header-cell *matHeaderCellDef mat-sort-header="systemType"> System Type </th>
             <td mat-cell *matCellDef="let issue" (click)="ExpandRow(issue)">
@@ -141,5 +141,5 @@
         <tr mat-row *matRowDef="let issue; columns: issueColumns;" [class.example-expanded-row]="expIssue === issue"></tr>
         <tr mat-row *matRowDef="let issue; columns: ['expandedDetail']" class="alert-detail-row"></tr>
     </table>
-    <mat-paginator [pageSizeOptions]="pageOptions" [pageSize]="pageSize"></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 50, 100]" [pageSize]="pageSize"></mat-paginator>
 </div>

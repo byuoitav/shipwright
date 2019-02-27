@@ -65,13 +65,6 @@ export class AlertTableComponent implements OnInit, IDashPanel {
 
   ngAfterViewInit(): void {
     this.issueData.sort = this.sort;
-
-    if (this.sort.active == '') {
-      this.sort.active = 'roomID'; 
-      this.sort.direction = 'asc' as SortDirection;
-      this.sort.sortChange.emit();
-    }
-
     this.issueData.paginator = this.paginator;
   }
 
@@ -84,6 +77,12 @@ export class AlertTableComponent implements OnInit, IDashPanel {
     } else {
       this.issueData = new MatTableDataSource(this.data.GetRoomIssuesBySeverity(this.chosenSeverity));
     }
+
+    if (this.sort.active == undefined || this.sort.active == '') {          
+      this.sort.active = 'roomID'; 
+      this.sort.direction = 'asc' as SortDirection;
+      this.sort.sortChange.emit();
+    }
  
     this.data.issueEmitter.subscribe((changedIssue) => {
       if(!this.changes['destroyed']) {        
@@ -92,6 +91,12 @@ export class AlertTableComponent implements OnInit, IDashPanel {
           this.issueData.data = this.data.GetRoomIssues(this.roomID);
         } else {
           this.issueData.data = this.data.GetRoomIssuesBySeverity(this.chosenSeverity);
+        }
+        
+        if (this.sort.active == undefined || this.sort.active == '') {          
+          this.sort.active = 'roomID'; 
+          this.sort.direction = 'asc' as SortDirection;
+          this.sort.sortChange.emit();
         }
         
         this.changes.detectChanges();
