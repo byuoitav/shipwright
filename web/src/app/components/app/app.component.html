@@ -4,7 +4,9 @@
 
         <span class="fill-remaining-space"></span>
 
-        <button mat-icon-button style="padding: 0" [matMenuTriggerFor]="options">
+        <button mat-button class="hr" (click)="modal.OpenHelpModal()"><mat-icon>add</mat-icon> Help Request</button>
+
+        <button mat-icon-button [matMenuTriggerFor]="options">
             <mat-icon class="menu-title">menu</mat-icon>
         </button>
 

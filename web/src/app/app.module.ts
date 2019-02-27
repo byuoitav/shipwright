@@ -29,7 +29,8 @@ import {
   MatSelectModule,
   MatChipsModule,
   MAT_DIALOG_DATA,
-  MatSlideToggleModule
+  MatSlideToggleModule,
+  MatAutocompleteModule
 } from "@angular/material";
 
 import { AppRoutingModule } from './app-routing.module';
@@ -73,7 +74,8 @@ import { DashPanelDirective } from './components/dashboard/dashpanel/dashpanel.d
 import { CampusStateComponent } from './components/state/campus/campus-state.component';
 import { RoomStateComponent } from './components/state/room/room-state.component';
 
-import {NotifierModule} from 'angular-notifier'
+import {NotifierModule} from 'angular-notifier';
+import { HelpModalComponent } from './modals/helpmodal/helpmodal.component'
 
 @NgModule({
   declarations: [
@@ -103,7 +105,8 @@ import {NotifierModule} from 'angular-notifier'
     PresetModalComponent,
     IconModalComponent,
     CampusStateComponent,
-    RoomStateComponent
+    RoomStateComponent,
+    HelpModalComponent
   ],
   imports: [
     BrowserModule,
@@ -135,6 +138,7 @@ import {NotifierModule} from 'angular-notifier'
     MatSelectModule,
     MatChipsModule,
     MatSlideToggleModule,
+    MatAutocompleteModule,
     DndModule.forRoot(),
     NotifierModule
   ],
@@ -148,7 +152,8 @@ import {NotifierModule} from 'angular-notifier'
     BatteryReportComponent,
     NotifyModalComponent,
     PresetModalComponent,
-    IconModalComponent
+    IconModalComponent,
+    HelpModalComponent
   ],
   providers: [
     APIService,

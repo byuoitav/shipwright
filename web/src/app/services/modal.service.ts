@@ -1,4 +1,4 @@
-import { Component, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { SettingsModalComponent } from '../modals/settings/settings.component';
 import { RespondModalComponent } from '../modals/respond/respond.component';
@@ -11,6 +11,7 @@ import { IconModalComponent } from '../modals/iconmodal/iconmodal.component';
 import { RoomIssue, Alert } from '../objects/alerts';
 import { Building, Room, Device, DBResponse, Preset, Panel, UIConfig } from '../objects/database';
 import { APIService } from './api.service';
+import { HelpModalComponent } from '../modals/helpmodal/helpmodal.component';
 
 @Injectable({
   providedIn: 'root'
@@ -65,5 +66,9 @@ export class ModalService {
         caller.icon = result;
       }
     });
+  }
+
+  OpenHelpModal() {
+    this.dialog.open(HelpModalComponent);
   }
 }

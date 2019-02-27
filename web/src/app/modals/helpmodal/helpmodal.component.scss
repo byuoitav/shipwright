@@ -1,0 +1,30 @@
+.row {
+    display: flex;
+    flex-flow: row nowrap;
+    // max-width: 350px;
+    justify-content: space-between;
+    &.buttons {
+        justify-content: space-evenly;
+    }
+}
+
+.icon {
+    margin: 5px;
+}
+
+.space {
+    // margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.header {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.notes {
+    width: 100%;
+    min-width: 400px;
+}

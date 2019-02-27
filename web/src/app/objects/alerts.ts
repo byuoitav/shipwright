@@ -76,7 +76,7 @@ export class Alert {
     @JsonProperty("data", Any, true)
     data: any = undefined;
 
-    @JsonProperty("system-type", String)
+    @JsonProperty("system-type", String, true)
     systemType: string = undefined;
     
     @JsonProperty("start-time", DateConverter, true)
