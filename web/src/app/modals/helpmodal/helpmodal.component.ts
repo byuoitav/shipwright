@@ -37,7 +37,7 @@ export class HelpModalComponent implements OnInit {
     }
   }
 
-  private filterRooms() {
+  filterRooms() {
     this.filteredRooms = [];
 
     if(this.roomID == null || this.roomID.length == 0) {
