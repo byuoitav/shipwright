@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { IDashPanel } from '../dashpanel/idashpanel';
-import { MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
+import { MatTableDataSource, MatPaginator, MatSort, SortDirection } from '@angular/material';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/services/data.service';
@@ -30,7 +30,7 @@ export class AlertTableComponent implements OnInit, IDashPanel {
 
   @Input() expIssue: RoomIssue | null;
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort) sort: MatSort = new MatSort();
 
   issueData: MatTableDataSource<RoomIssue>;
   selection = new SelectionModel<Alert>(true, []);
@@ -62,6 +62,12 @@ export class AlertTableComponent implements OnInit, IDashPanel {
 
   ngAfterViewInit(): void {
     this.issueData.sort = this.sort;
+
+    if (this.sort.active == '') {
+      this.sort.active = 'roomID'; 
+      this.sort.direction = 'asc' as SortDirection;
+      this.sort.sortChange.emit();
+    }
   }
 
   Setup() {
@@ -73,7 +79,7 @@ export class AlertTableComponent implements OnInit, IDashPanel {
     } else {
       this.issueData = new MatTableDataSource(this.data.GetRoomIssuesBySeverity(this.chosenSeverity));
     }
-
+ 
     this.data.issueEmitter.subscribe((changedIssue) => {
       if(!this.changes['destroyed']) {        
 
@@ -82,7 +88,7 @@ export class AlertTableComponent implements OnInit, IDashPanel {
         } else {
           this.issueData.data = this.data.GetRoomIssuesBySeverity(this.chosenSeverity);
         }
-
+        
         this.changes.detectChanges();
       }
     });
@@ -99,13 +105,9 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   }
 
   ngOnChanges() {    
-    if(this.chosenSeverity != null) {      
-      this.issueData.data = this.data.GetRoomIssues(this.chosenSeverity);
-      
       if(!this.changes['destroyed']) {
         this.changes.detectChanges();
-      }
-    }
+      }    
   }
 
   ExpandRow(issue: RoomIssue) {
