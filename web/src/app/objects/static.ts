@@ -1,4 +1,5 @@
 import { JsonObject, JsonProperty, JsonConverter, JsonCustomConvert } from "json2typescript";
+import { RoomIssue } from "./alerts";
 
 @JsonConverter
 class DateConverter implements JsonCustomConvert<Date> {
@@ -228,56 +229,75 @@ export class RoomStatus {
 
   @JsonProperty("device-states", [StaticDevice], true)
   deviceStates: StaticDevice[] = Array<StaticDevice>();
+  roomIssues: RoomIssue[] = [];
 
-  Update() {
+  UpdateAlerts() {
     this.deviceCount = 0;
     this.alertingCount = 0;
     this.goodCount = 0;
+    let alertingDevices : string[] = [];
 
     for(let sd of this.deviceStates) {
       this.deviceCount++
-      if(sd.alerting) {
-        this.alertingCount++
-      } else {
-        this.goodCount++
+      for (let ri of this.roomIssues) {
+        let alerting = false;
+        for (let ad of ri.alertDevices){
+          if(sd.deviceID == ad) {
+            let exists = false;
+            for (let already of alertingDevices){
+              if (already == ad){
+                exists = true;
+                break
+              }
+            }
+            if (!exists){
+              this.alertingCount++;
+              alertingDevices.push(ad);
+              alerting = true;
+            }
+          }
+        }
+        if (!alerting){
+          this.goodCount++;
+        }
       }
     }
   }
 }
 
-@JsonObject("BuildingStatus")
-export class BuildingStatus {
-  @JsonProperty("building-id", String, true)
-  buildingID: string = undefined;
+  @JsonObject("BuildingStatus")
+  export class BuildingStatus {
+    @JsonProperty("building-id", String, true)
+    buildingID: string = undefined;
 
-  @JsonProperty("room-count", Number, true)
-  roomCount: number = undefined;
+    @JsonProperty("room-count", Number, true)
+    roomCount: number = undefined;
 
-  @JsonProperty("alerting-room-count", Number, true)
-  alertingCount: number = undefined;
+    @JsonProperty("alerting-room-count", Number, true)
+    alertingCount: number = undefined;
 
-  @JsonProperty("good-room-count", Number, true)
-  goodCount: number = undefined;
+    @JsonProperty("good-room-count", Number, true)
+    goodCount: number = undefined;
 
-  @JsonProperty("room-states", [RoomStatus], true)
-  roomStates: RoomStatus[] = Array<RoomStatus>();
+    @JsonProperty("room-states", [RoomStatus], true)
+    roomStates: RoomStatus[] = Array<RoomStatus>();
 
-  constructor() {
-    
-  }
+    constructor() {
 
-  Update() {
-    this.roomCount = 0;
-    this.alertingCount = 0;
-    this.goodCount = 0;
+    }
 
-    for(let rs of this.roomStates) {
-      this.roomCount++;
-      if(rs.alertingCount > 0) {
-        this.alertingCount++
-      } else {
-        this.goodCount++
+    Update() {
+      this.roomCount = 0;
+      this.alertingCount = 0;
+      this.goodCount = 0;
+
+      for(let rs of this.roomStates) {
+        this.roomCount++;
+        if(rs.alertingCount > 0) {
+          this.alertingCount++
+        } else {
+          this.goodCount++
+        }
       }
     }
   }
-}
