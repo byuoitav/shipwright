@@ -65,6 +65,7 @@ func InitializeAlertStore(a *actions.ActionManager) {
 		log.L.Errorf("Couldn't get all active alerts: %v", err.Error())
 	}
 
+	log.L.Infof("Initializing alert store with %v alerts", len(issues))
 	for i := range issues {
 
 		for _, v := range issues[i].Alerts {
@@ -74,6 +75,7 @@ func InitializeAlertStore(a *actions.ActionManager) {
 			if err != nil {
 				log.L.Warnf("Problem adding room info to alert %v", err.Error())
 			}
+			log.L.Debugf("Storing alert %v", v)
 			store.inChannel <- v
 		}
 
@@ -324,7 +326,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		//we need to check to see if this alert exists on the issuecheck to see if this alert exists on the issue
 		var v structs.Alert
 		var ok bool
-		
+
 		var indx int
 		for i := range issue.Alerts {
 			if issue.Alerts[i].AlertID == alert.AlertID {
@@ -347,7 +349,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 				}
 				return
 			}
-			
+
 			if len(alert.Message) > 0 &&
 				(len(v.MessageLog) == 0 || v.MessageLog[len(v.MessageLog)-1] != alert.Message) {
 
@@ -414,6 +416,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		}
 
 	} else if err.Type == alertcache.NotFound {
+		//issue didn't exist at all.
 		roomAggregateChange = true
 
 		//generate the new roomIssue.
@@ -459,8 +462,8 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 	}
 
 	issue.CalculateAggregateInfo()
-	if roomAggregateChange{
-		CalculateAggregateInfo(issue.RoomID)	
+	if roomAggregateChange {
+		CalculateAggregateInfo(issue.RoomID)
 	}
 
 	err = alertcache.GetAlertCache("default").PutIssue(issue)

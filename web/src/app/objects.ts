@@ -39,7 +39,7 @@ class DateConverter implements JsonCustomConvert<Date> {
 }
 
 export const PI_ICON = "video_label";
-export const DMPS_ICON = "accessible_forward";
+export const DMPS_ICON = "local_atm";
 export const SCHEDULING_ICON = "today";
 export const TIMECLOCK_ICON = "schedule";
 
