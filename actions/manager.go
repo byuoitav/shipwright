@@ -22,6 +22,9 @@ type ActionManager struct {
 	matchActionsMu sync.RWMutex
 	matchActions   []*Action
 
+	managedActionsMu sync.RWMutex
+	managedActions   []*Action
+
 	wg   *sync.WaitGroup
 	ctx  context.Context // the context passed in when Start() was called
 	reqs chan *ActionRequest
@@ -162,6 +165,25 @@ func (a *ActionManager) pruneMatchActions(ctx context.Context) {
 					keep = append(keep, a.matchActions[i])
 				} else {
 					log.L.Infof("Removing action %s from action manager", a.matchActions[i].Name)
+
+					// remove it from managed actions
+					a.managedActionsMu.RLock()
+					idx := -1
+					for j := range a.managedActions {
+						if a.managedActions[j] == a.matchActions[i] {
+							idx = j
+							break
+						}
+					}
+					a.managedActionsMu.RUnlock()
+
+					if idx > 0 {
+						a.managedActionsMu.Lock()
+						a.managedActions[idx] = a.managedActions[len(a.managedActions)-1]
+						a.managedActions[len(a.managedActions)-1] = nil
+						a.managedActions = a.managedActions[:len(a.managedActions)-1]
+						a.managedActionsMu.Unlock()
+					}
 				}
 			}
 
@@ -229,5 +251,9 @@ func (a *ActionManager) ManageAction(action *Action) *nerr.E {
 	}
 
 	log.L.Infof("Added '%s' action to action manager with trigger '%s'", action.Name, action.Trigger)
+
+	a.managedActionsMu.Lock()
+	a.managedActions = append(a.managedActions, action)
+	a.managedActionsMu.Unlock()
 	return nil
 }
