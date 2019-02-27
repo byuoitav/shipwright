@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { IDashPanel } from '../dashpanel/idashpanel';
-import { MatTableDataSource, MatPaginator, MatSort, SortDirection } from '@angular/material';
+import { MatTableDataSource, MatPaginator, MatSort, SortDirection, PageEvent } from '@angular/material';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/services/data.service';
@@ -31,6 +31,9 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   @Input() expIssue: RoomIssue | null;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort = new MatSort();
+
+  pageOptions: number[] = [5, 10, 15, 20, 25, 30, 50, 100];
+  pageSize: number = 20;
 
   issueData: MatTableDataSource<RoomIssue>;
   selection = new SelectionModel<Alert>(true, []);
@@ -68,6 +71,8 @@ export class AlertTableComponent implements OnInit, IDashPanel {
       this.sort.direction = 'asc' as SortDirection;
       this.sort.sortChange.emit();
     }
+
+    this.issueData.paginator = this.paginator;
   }
 
   Setup() {
@@ -99,9 +104,7 @@ export class AlertTableComponent implements OnInit, IDashPanel {
           case 'types': return this.ArrayToString(item["activeAlertTypes"]);
           default: return item[property];
       }
-     }
-
-     this.issueData.paginator = this.paginator;
+     }     
   }
 
   ngOnChanges() {    
@@ -175,6 +178,12 @@ export class AlertTableComponent implements OnInit, IDashPanel {
     let urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has("theme")) {
       return urlParams.get("theme") == "default"
+    }
+  }
+
+  UpdatePage(pageEvent: PageEvent) {
+    if(pageEvent.pageSize != null) {
+      this.pageSize = pageEvent.pageSize;
     }
   }
 }

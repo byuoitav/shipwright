@@ -141,5 +141,5 @@
         <tr mat-row *matRowDef="let issue; columns: issueColumns;" [class.example-expanded-row]="expIssue === issue"></tr>
         <tr mat-row *matRowDef="let issue; columns: ['expandedDetail']" class="alert-detail-row"></tr>
     </table>
-    <mat-paginator [pageSizeOptions]="[5, 10, 25, 50, 100]" [pageSize]="25"></mat-paginator>
+    <mat-paginator [pageSizeOptions]="pageOptions" [pageSize]="pageSize"></mat-paginator>
 </div>
