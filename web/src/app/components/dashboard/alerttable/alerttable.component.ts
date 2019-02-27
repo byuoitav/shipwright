@@ -78,11 +78,11 @@ export class AlertTableComponent implements OnInit, IDashPanel {
       this.issueData = new MatTableDataSource(this.data.GetRoomIssuesBySeverity(this.chosenSeverity));
     }
 
-    if (this.sort.active == undefined || this.sort.active == '') {          
-      this.sort.active = 'roomID'; 
-      this.sort.direction = 'asc' as SortDirection;
-      this.sort.sortChange.emit();
-    }
+    // if (this.sort.active == undefined || this.sort.active == '') {          
+    //   this.sort.active = 'roomID'; 
+    //   this.sort.direction = 'asc' as SortDirection;
+    //   this.sort.sortChange.emit();
+    // }
  
     this.data.issueEmitter.subscribe((changedIssue) => {
       if(!this.changes['destroyed']) {        
