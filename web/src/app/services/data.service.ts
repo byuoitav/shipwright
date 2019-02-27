@@ -5,6 +5,7 @@ import { RoomIssue, AllAlerts } from '../objects/alerts';
 import { SocketService } from './socket.service';
 import { StaticDevice, RoomStatus, BuildingStatus } from '../objects/static';
 import { StringsService } from './strings.service';
+import { NotifierService } from 'angular-notifier';
 
 @Injectable({
   providedIn: 'root'
@@ -43,10 +44,13 @@ export class DataService {
 
   issueEmitter: EventEmitter<any>;
 
-  constructor(public api: APIService, private socket: SocketService, private text: StringsService) {
+  notifier: NotifierService;
+
+  constructor(public api: APIService, private socket: SocketService, private text: StringsService, notify: NotifierService) {
     this.loaded = new EventEmitter<boolean>();
     this.settingsChanged = new EventEmitter<number>();
     this.issueEmitter = new EventEmitter<any>();
+    this.notifier = notify;
     this.LoadData();
     this.ListenForIssues();
   }
@@ -244,20 +248,39 @@ export class DataService {
 
   private ListenForIssues() {
     this.socket.listener.subscribe(issue => {
+      console.log(issue, issue.resolved)
+
       if(this.roomIssueList == null) {
-        this.roomIssueList = [issue]
+        if (!issue.resolved) {
+          this.roomIssueList = [issue]
+        }
       } else {
         let found = false;
-        for(let i of this.roomIssueList) {
-          if(i.issueID == issue.issueID) {
-            i = issue;
-            found = true;
+
+        let matchingIssue = 
+          this.roomIssueList.find(one => one.issueID === issue.issueID)
+
+        if(matchingIssue == null) {
+          if (issue.resolved) {
+            this.notifier.notify( "warning", "New Room Issue received for " + issue.roomID + " but already resolved" );
+          } else {
+            this.notifier.notify( "error", "New Room Issue received for " + issue.roomID );
+            this.roomIssueList.push(issue);
+            //this.roomIssueList = this.roomIssueList.sort(this.RoomIssueSorter)
+          } 
+        } else {
+
+          matchingIssue = issue;
+
+          if (issue.resolved) {            
+            this.notifier.notify( "success", "Room Issue for " + issue.roomID + " resolved.");
+            const index = this.roomIssueList.indexOf(matchingIssue, 0);
+            if (index > -1) {
+              this.roomIssueList.splice(index, 1);
+            }
           }
         }
-        if(!found) {
-          this.roomIssueList.push(issue);
-          this.roomIssueList = this.roomIssueList.sort(this.RoomIssueSorter)
-        }
+        
         this.issueEmitter.emit();
       }
     })
@@ -375,7 +398,7 @@ export class DataService {
     return false;
   }
 
-  GetRoomIssues(roomID): RoomIssue[] {
+  GetRoomIssues(roomID): RoomIssue[] {    
     return this.roomIssuesMap.get(roomID);
   }
 

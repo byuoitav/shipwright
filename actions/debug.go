@@ -22,6 +22,11 @@ func (a *ActionManager) Info(ctx echo.Context) error {
 	reqsInfo["cap"] = cap(a.reqs)
 	info["action-reqs"] = reqsInfo
 
+	a.managedActionsMu.RLock()
+	defer a.managedActionsMu.RUnlock()
+
+	info["managed"] = a.managedActions
+
 	return ctx.JSON(http.StatusOK, info)
 }
 

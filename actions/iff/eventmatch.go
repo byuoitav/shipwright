@@ -31,7 +31,7 @@ type EventMatch struct {
 		DeviceID   string `json:"deviceID,omitempty"`
 	} `json:"target-device"`
 
-	Regex struct {
+	regex struct {
 		GeneratingSystem *regexp.Regexp
 		Timestamp        *regexp.Regexp
 		EventTags        []*regexp.Regexp
@@ -53,7 +53,7 @@ type EventMatch struct {
 
 //DoesEventMatch .
 func (m *EventMatch) DoesEventMatch(ctx context.Context) bool {
-	m.init.Do(m.buildRegex)
+	m.init.Do(m.buildregex)
 
 	if m.Count == 0 {
 		return true
@@ -64,24 +64,24 @@ func (m *EventMatch) DoesEventMatch(ctx context.Context) bool {
 		return false
 	}
 
-	if m.Regex.GeneratingSystem != nil {
-		reg := m.Regex.GeneratingSystem.Copy()
+	if m.regex.GeneratingSystem != nil {
+		reg := m.regex.GeneratingSystem.Copy()
 		if !reg.MatchString(event.GeneratingSystem) {
 			return false
 		}
 	}
 
-	if m.Regex.Timestamp != nil {
-		reg := m.Regex.Timestamp.Copy()
+	if m.regex.Timestamp != nil {
+		reg := m.regex.Timestamp.Copy()
 		if !reg.MatchString(event.Timestamp.String()) {
 			return false
 		}
 	}
 
-	if len(m.Regex.EventTags) > 0 {
+	if len(m.regex.EventTags) > 0 {
 		matched := 0
 
-		for _, regex := range m.Regex.EventTags {
+		for _, regex := range m.regex.EventTags {
 			reg := regex.Copy()
 
 			for _, tag := range event.EventTags {
@@ -92,34 +92,34 @@ func (m *EventMatch) DoesEventMatch(ctx context.Context) bool {
 			}
 		}
 
-		if matched != len(m.Regex.EventTags) {
+		if matched != len(m.regex.EventTags) {
 			return false
 		}
 	}
 
-	if m.Regex.Key != nil {
-		reg := m.Regex.Key.Copy()
+	if m.regex.Key != nil {
+		reg := m.regex.Key.Copy()
 		if !reg.MatchString(event.Key) {
 			return false
 		}
 	}
 
-	if m.Regex.Value != nil {
-		reg := m.Regex.Value.Copy()
+	if m.regex.Value != nil {
+		reg := m.regex.Value.Copy()
 		if !reg.MatchString(event.Value) {
 			return false
 		}
 	}
 
-	if m.Regex.User != nil {
-		reg := m.Regex.User.Copy()
+	if m.regex.User != nil {
+		reg := m.regex.User.Copy()
 		if !reg.MatchString(event.User) {
 			return false
 		}
 	}
 
-	if m.Regex.Data != nil {
-		reg := m.Regex.Data.Copy()
+	if m.regex.Data != nil {
+		reg := m.regex.Data.Copy()
 		// convert event.Data to a json string
 		bytes, err := json.Marshal(event.Data)
 		if err != nil {
@@ -132,36 +132,36 @@ func (m *EventMatch) DoesEventMatch(ctx context.Context) bool {
 		}
 	}
 
-	if m.Regex.TargetDevice.BuildingID != nil {
-		reg := m.Regex.TargetDevice.BuildingID.Copy()
+	if m.regex.TargetDevice.BuildingID != nil {
+		reg := m.regex.TargetDevice.BuildingID.Copy()
 		if !reg.MatchString(event.TargetDevice.BuildingID) {
 			return false
 		}
 	}
 
-	if m.Regex.TargetDevice.RoomID != nil {
-		reg := m.Regex.TargetDevice.RoomID.Copy()
+	if m.regex.TargetDevice.RoomID != nil {
+		reg := m.regex.TargetDevice.RoomID.Copy()
 		if !reg.MatchString(event.TargetDevice.RoomID) {
 			return false
 		}
 	}
 
-	if m.Regex.TargetDevice.DeviceID != nil {
-		reg := m.Regex.TargetDevice.DeviceID.Copy()
+	if m.regex.TargetDevice.DeviceID != nil {
+		reg := m.regex.TargetDevice.DeviceID.Copy()
 		if !reg.MatchString(event.TargetDevice.DeviceID) {
 			return false
 		}
 	}
 
-	if m.Regex.AffectedRoom.BuildingID != nil {
-		reg := m.Regex.AffectedRoom.BuildingID.Copy()
+	if m.regex.AffectedRoom.BuildingID != nil {
+		reg := m.regex.AffectedRoom.BuildingID.Copy()
 		if !reg.MatchString(event.AffectedRoom.BuildingID) {
 			return false
 		}
 	}
 
-	if m.Regex.AffectedRoom.RoomID != nil {
-		reg := m.Regex.AffectedRoom.RoomID.Copy()
+	if m.regex.AffectedRoom.RoomID != nil {
+		reg := m.regex.AffectedRoom.RoomID.Copy()
 		if !reg.MatchString(event.AffectedRoom.RoomID) {
 			return false
 		}
@@ -170,67 +170,67 @@ func (m *EventMatch) DoesEventMatch(ctx context.Context) bool {
 	return true
 }
 
-func (m *EventMatch) buildRegex() {
+func (m *EventMatch) buildregex() {
 	m.Count = 0
 
 	// build the regex for each field
 	if len(m.GeneratingSystem) > 0 {
-		m.Regex.GeneratingSystem = regexp.MustCompile(m.GeneratingSystem)
+		m.regex.GeneratingSystem = regexp.MustCompile(m.GeneratingSystem)
 		m.Count++
 	}
 
 	if len(m.Timestamp) > 0 {
-		m.Regex.Timestamp = regexp.MustCompile(m.Timestamp)
+		m.regex.Timestamp = regexp.MustCompile(m.Timestamp)
 		m.Count++
 	}
 
 	if len(m.Key) > 0 {
-		m.Regex.Key = regexp.MustCompile(m.Key)
+		m.regex.Key = regexp.MustCompile(m.Key)
 		m.Count++
 	}
 
 	if len(m.Value) > 0 {
-		m.Regex.Value = regexp.MustCompile(m.Value)
+		m.regex.Value = regexp.MustCompile(m.Value)
 		m.Count++
 	}
 
 	if len(m.User) > 0 {
-		m.Regex.User = regexp.MustCompile(m.User)
+		m.regex.User = regexp.MustCompile(m.User)
 		m.Count++
 	}
 
 	if len(m.Data) > 0 {
-		m.Regex.Data = regexp.MustCompile(m.Data)
+		m.regex.Data = regexp.MustCompile(m.Data)
 		m.Count++
 	}
 
 	if len(m.TargetDevice.BuildingID) > 0 {
-		m.Regex.TargetDevice.BuildingID = regexp.MustCompile(m.TargetDevice.BuildingID)
+		m.regex.TargetDevice.BuildingID = regexp.MustCompile(m.TargetDevice.BuildingID)
 		m.Count++
 	}
 
 	if len(m.TargetDevice.RoomID) > 0 {
-		m.Regex.TargetDevice.RoomID = regexp.MustCompile(m.TargetDevice.RoomID)
+		m.regex.TargetDevice.RoomID = regexp.MustCompile(m.TargetDevice.RoomID)
 		m.Count++
 	}
 
 	if len(m.TargetDevice.DeviceID) > 0 {
-		m.Regex.TargetDevice.DeviceID = regexp.MustCompile(m.TargetDevice.DeviceID)
+		m.regex.TargetDevice.DeviceID = regexp.MustCompile(m.TargetDevice.DeviceID)
 		m.Count++
 	}
 
 	if len(m.AffectedRoom.BuildingID) > 0 {
-		m.Regex.AffectedRoom.BuildingID = regexp.MustCompile(m.AffectedRoom.BuildingID)
+		m.regex.AffectedRoom.BuildingID = regexp.MustCompile(m.AffectedRoom.BuildingID)
 		m.Count++
 	}
 
 	if len(m.AffectedRoom.RoomID) > 0 {
-		m.Regex.AffectedRoom.RoomID = regexp.MustCompile(m.AffectedRoom.RoomID)
+		m.regex.AffectedRoom.RoomID = regexp.MustCompile(m.AffectedRoom.RoomID)
 		m.Count++
 	}
 
 	for _, tag := range m.EventTags {
-		m.Regex.EventTags = append(m.Regex.EventTags, regexp.MustCompile(tag))
+		m.regex.EventTags = append(m.regex.EventTags, regexp.MustCompile(tag))
 		m.Count++
 	}
 }
