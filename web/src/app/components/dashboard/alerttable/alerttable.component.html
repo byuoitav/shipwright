@@ -1,5 +1,5 @@
 <div class="mat-elevation-z3 container">
-    <table mat-table [dataSource]="issueData" matSort multiTemplateDataRows class="mat-elevation-z0">
+    <table mat-table [dataSource]="issueData" matSort multiTemplateDataRows class="mat-elevation-z0" matSortActive="roomID">
         <ng-container matColumnDef="icon">
             <th mat-header-cell *matHeaderCellDef mat-sort-header="systemType"> System Type </th>
             <td mat-cell *matCellDef="let issue" (click)="ExpandRow(issue)">
@@ -8,7 +8,7 @@
         </ng-container>
 
         <ng-container matColumnDef="roomID">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Room ID </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="roomID"> Room ID </th>
             <td mat-cell *matCellDef="let issue" (click)="ExpandRow(issue)">
                 <div routerLink="/configuration/{{issue.roomID}}/roompage" class="fake-hyperlink">
                     {{issue.roomID}}
@@ -68,7 +68,6 @@
         <ng-container matColumnDef="expandedDetail">
             <td mat-cell *matCellDef="let issue" [attr.colspan]="issueColumns.length">
                 <div class="alert-detail" [@detailExpand]="expIssue === issue ? 'expanded' : 'collapsed'">
-                    <!-- {{issue | json}} -->
                     <table mat-table [dataSource]="issue.alerts" class="mat-elevation-z0">
 
                         <ng-container matColumnDef="select">

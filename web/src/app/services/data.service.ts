@@ -43,7 +43,7 @@ export class DataService {
   increment: number = Math.ceil(this.totalCompletion / 17);
 
   settingsChanged: EventEmitter<any>;
-  panelCount: number = 1;
+  panelCount: number = 2;
 
   issueEmitter: EventEmitter<any>;
 
@@ -94,8 +94,7 @@ export class DataService {
     await this.GetClosureCodes(); //         17
     this.completedOperations += this.increment;
      this.finished = true;
-     this.loaded.emit(true);
-     console.log("done");
+     this.loaded.emit(true);     
   }
 
   private async GetAllBuildings() {
@@ -224,8 +223,7 @@ export class DataService {
 
   private async GetStoredRoomIssues() {    
     await this.api.GetAllIssues().then((issues) => {
-      this.roomIssueList = issues
-      console.log(issues);
+      this.roomIssueList = issues      
       this.SetRoomIssuesMap();
     })
   }
@@ -244,7 +242,7 @@ export class DataService {
 
   private ListenForIssues() {
     this.socket.listener.subscribe(issue => {
-      console.log(issue, issue.resolved)
+      console.log(issue)
 
       if(this.roomIssueList == null) {
         if (!issue.resolved) {
@@ -265,19 +263,21 @@ export class DataService {
             //this.roomIssueList = this.roomIssueList.sort(this.RoomIssueSorter)
           } 
         } else {
+          //matchingIssue = issue;
+          const index = this.roomIssueList.indexOf(matchingIssue, 0);          
 
-          matchingIssue = issue;
-
-          if (issue.resolved) {            
-            this.notifier.notify( "success", "Room Issue for " + issue.roomID + " resolved.");
-            const index = this.roomIssueList.indexOf(matchingIssue, 0);
-            if (index > -1) {
+          if (index > -1) {
+            if (issue.resolved) {            
+              this.notifier.notify( "success", "Room Issue for " + issue.roomID + " resolved.");            
               this.roomIssueList.splice(index, 1);
+            }            
+            else {
+              this.roomIssueList.splice(index, 1, issue);
             }
-          }
+          }          
         }
         
-        this.issueEmitter.emit();
+        this.issueEmitter.emit(issue);
       }
     })
   }

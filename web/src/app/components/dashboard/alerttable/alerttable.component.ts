@@ -53,7 +53,7 @@ export class AlertTableComponent implements OnInit, IDashPanel {
     }
   }
 
-  ngOnInit() {
+  ngOnInit() {    
     if(this.data.finished) {
       this.Setup();
     } else {
@@ -78,11 +78,18 @@ export class AlertTableComponent implements OnInit, IDashPanel {
       this.issueData = new MatTableDataSource(this.data.GetRoomIssuesBySeverity(this.chosenSeverity));
     }
 
-    this.data.issueEmitter.subscribe(() => {
-      if(!this.changes['destroyed']) {
+    this.data.issueEmitter.subscribe((changedIssue) => {
+      if(!this.changes['destroyed']) {        
+
+        if(this.singleRoom && changedIssue.roomID == this.roomID) {
+          this.issueData.data = this.data.GetRoomIssues(this.roomID);
+        } else {
+          this.issueData.data = this.data.GetRoomIssuesBySeverity(this.chosenSeverity);
+        }
+
         this.changes.detectChanges();
       }
-    })
+    });
 
     this.issueData.sortingDataAccessor = (item, property) => {
       //console.log(item, property);
@@ -91,12 +98,14 @@ export class AlertTableComponent implements OnInit, IDashPanel {
           default: return item[property];
       }
      }
+
+     this.issueData.paginator = this.paginator;
   }
 
-  ngOnChanges() {
-    if(this.chosenSeverity != null) {
+  ngOnChanges() {    
+    if(this.chosenSeverity != null) {      
       this.issueData.data = this.data.GetRoomIssues(this.chosenSeverity);
-
+      
       if(!this.changes['destroyed']) {
         this.changes.detectChanges();
       }
