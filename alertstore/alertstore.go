@@ -314,6 +314,9 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 	//get the issue associated with the alert
 	issueID := GetIssueIDFromAlertID(alert.AlertID)
 
+	//Do we need to change the roomaggregate info?
+	roomAggregateChange := false
+
 	//we should check to see if the room already has an issue associated with it.
 	issue, err := alertcache.GetAlertCache("default").GetIssue(issueID)
 	if err == nil {
@@ -321,6 +324,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		//we need to check to see if this alert exists on the issuecheck to see if this alert exists on the issue
 		var v structs.Alert
 		var ok bool
+		
 		var indx int
 		for i := range issue.Alerts {
 			if issue.Alerts[i].AlertID == alert.AlertID {
@@ -351,7 +355,9 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 				v.Message = alert.Message
 			}
 
-			v.Active = alert.Active
+			if v.Active != alert.Active {
+				roomAggregateChange = true
+			}
 			if !alert.Active && v.Active {
 				if alert.AlertEndTime.IsZero() {
 					v.AlertEndTime = time.Now()
@@ -359,6 +365,8 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 					v.AlertEndTime = alert.AlertEndTime
 				}
 			}
+
+			v.Active = alert.Active
 
 			v.AlertLastUpdateTime = time.Now()
 
@@ -383,10 +391,9 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 			issue.Alerts[indx] = v
 
-			roomaggregation.UpdateAlerts(v)
 			alert = v
 		} else {
-
+			roomAggregateChange = true
 			//we store it.
 			alert.AlertLastUpdateTime = time.Now()
 
@@ -407,6 +414,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		}
 
 	} else if err.Type == alertcache.NotFound {
+		roomAggregateChange = true
 
 		//generate the new roomIssue.
 		alert.AlertLastUpdateTime = time.Now()
@@ -451,6 +459,9 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 	}
 
 	issue.CalculateAggregateInfo()
+	if roomAggregateChange{
+		CalculateAggregateInfo(issue.RoomID)	
+	}
 
 	err = alertcache.GetAlertCache("default").PutIssue(issue)
 	if err != nil {
