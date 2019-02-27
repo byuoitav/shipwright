@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ComponentFactoryResolver, forwardRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ComponentFactoryResolver, forwardRef, Input } from '@angular/core';
 
 import { DashPanelDirective } from './dashpanel.directive';
 import { DashPanelService } from 'src/app/services/dashpanel.service';
@@ -16,7 +16,7 @@ export class DashPanelComponent implements OnInit {
   @ViewChild(forwardRef(()=>DashPanelDirective)) direct: DashPanelDirective;
 
   totalAlertsNum: number = 0;
-  panelType: string = AllAlerts;
+  @Input()panelType: string = AllAlerts;
 
   constructor(private resolver: ComponentFactoryResolver, private dashServe: DashPanelService, public data: DataService) {
     

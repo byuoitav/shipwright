@@ -38,6 +38,9 @@ export class DataService {
 
   loaded: EventEmitter<boolean>;
   finished: boolean = false;
+  completedOperations: number = 0;
+  totalCompletion: number = 100;
+  increment: number = Math.ceil(this.totalCompletion / 17);
 
   settingsChanged: EventEmitter<any>;
   panelCount: number = 2;
@@ -56,47 +59,40 @@ export class DataService {
   }
 
   private async LoadData() {
-    /*Promise.all([
-      await this.GetStaticDevices(),
-      await this.GetAllBuildings(),
-    await this.GetAllRooms(),
-    await this.GetAllDevices(),
-    await this.GetAllUIConfigs(),
-    await this.GetAllDeviceTypes(),
-    await this.GetAllDeviceRoles(),
-    await this.GetAllTemplates(),
-    await this.GetAllRoomConfigurations(),
-    await this.GetAllRoomDesignations(),
-    await this.SetBuildingToRoomsMap(),
-    await this.SetRoomToDevicesMap(),
-    await this.GetIconList(),
-    await this.GetStoredRoomIssues(),
-    await this.GetRoomStatusList(),
-    await this.GetBuildingStatusList(),
-    await this.GetClosureCodes()
-    ]).finally(() => {
-      this.finished = true;
-      this.loaded.emit(true);
-      console.log("done");
-    })
-     */
     await this.GetAllBuildings(); //          1
+    this.completedOperations += this.increment;
     await this.GetAllRooms(); //              2
+    this.completedOperations += this.increment;
     await this.GetAllDevices(); //            3
+    this.completedOperations += this.increment;
     await this.GetAllUIConfigs(); //          4
+    this.completedOperations += this.increment;
     await this.GetAllDeviceTypes(); //        5
+    this.completedOperations += this.increment;
     await this.GetAllDeviceRoles(); //        6
+    this.completedOperations += this.increment;
     await this.GetAllTemplates(); //          7
+    this.completedOperations += this.increment;
     await this.GetAllRoomConfigurations(); // 8
+    this.completedOperations += this.increment;
     await this.GetAllRoomDesignations(); //   9
+    this.completedOperations += this.increment;
     await this.SetBuildingToRoomsMap(); //   10
+    this.completedOperations += this.increment;
     await this.SetRoomToDevicesMap(); //     11
+    this.completedOperations += this.increment;
     await this.GetIconList(); //             12
+    this.completedOperations += this.increment;
     await this.GetStoredRoomIssues(); //     13
+    this.completedOperations += this.increment;
     await this.GetStaticDevices(); //        14
+    this.completedOperations += this.increment;
     await this.GetRoomStatusList(); //       15
+    this.completedOperations += this.increment;
     await this.GetBuildingStatusList(); //   16
+    this.completedOperations += this.increment;
     await this.GetClosureCodes(); //         17
+    this.completedOperations += this.increment;
      this.finished = true;
      this.loaded.emit(true);     
   }
@@ -317,6 +313,7 @@ export class DataService {
       for(let rs of this.roomStatusList) {
         if(rs.roomID == roomID) {
           rs.deviceStates.push(sd)
+          rs.roomIssues = this.GetRoomIssues(rs.roomID)
           added = true
         }
       }
@@ -325,6 +322,7 @@ export class DataService {
         let roomState = new RoomStatus()
         roomState.roomID = roomID
         roomState.deviceStates = [sd]
+        roomState.roomIssues = this.GetRoomIssues(roomState.roomID)
         this.roomStatusList.push(roomState)
       }
     }

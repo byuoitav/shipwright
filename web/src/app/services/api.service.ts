@@ -3,7 +3,7 @@ import { JsonConvert, Any } from "json2typescript";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Building, DBResponse, Room, RoomConfiguration, Device, DeviceType, Role, UIConfig, Template } from '../objects/database';
 import { StaticDevice } from '../objects/static';
-import { RoomIssue } from '../objects/alerts';
+import { RoomIssue, Alert } from '../objects/alerts';
 
 @Injectable({
   providedIn: "root"
@@ -716,6 +716,18 @@ export class APIService {
       return data;
     } catch (e) {
       throw new Error("error trying to resolve an issue: " + e);
+    }
+  }
+
+  public async AddAlert(alert: Alert) {
+    try {
+      const data: any = await this.http
+        .put("alerts/add", this.converter.serialize(alert), { headers: this.headers })
+        .toPromise();
+
+      return data
+    } catch (e) {
+      throw new Error("error trying to add an alert: " + e);
     }
   }
 }
