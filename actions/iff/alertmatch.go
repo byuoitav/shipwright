@@ -40,7 +40,7 @@ type AlertMatch struct {
 	RoomTags   []string `json:"room-tags"`
 	DeviceTags []string `json:"device-tags"`
 
-	Regex struct {
+	regex struct {
 		AlertID    *regexp.Regexp
 		BuildingID *regexp.Regexp
 		RoomID     *regexp.Regexp
@@ -68,7 +68,7 @@ type AlertMatch struct {
 
 // DoesAlertMatch .
 func (m *AlertMatch) DoesAlertMatch(ctx context.Context) bool {
-	m.init.Do(m.buildRegex)
+	m.init.Do(m.buildregex)
 
 	if m.count == 0 {
 		return true
@@ -87,66 +87,66 @@ func (m *AlertMatch) DoesAlertMatch(ctx context.Context) bool {
 	}
 
 	// then the rest of the stuff
-	if m.Regex.AlertID != nil {
-		reg := m.Regex.AlertID.Copy()
+	if m.regex.AlertID != nil {
+		reg := m.regex.AlertID.Copy()
 		if !reg.MatchString(alert.AlertID) {
 			return false
 		}
 	}
 
-	if m.Regex.DeviceID != nil {
-		reg := m.Regex.DeviceID.Copy()
+	if m.regex.DeviceID != nil {
+		reg := m.regex.DeviceID.Copy()
 		if !reg.MatchString(alert.DeviceID) {
 			return false
 		}
 	}
 
-	if m.Regex.RoomID != nil {
-		reg := m.Regex.RoomID.Copy()
+	if m.regex.RoomID != nil {
+		reg := m.regex.RoomID.Copy()
 		if !reg.MatchString(alert.RoomID) {
 			return false
 		}
 	}
 
-	if m.Regex.BuildingID != nil {
-		reg := m.Regex.BuildingID.Copy()
+	if m.regex.BuildingID != nil {
+		reg := m.regex.BuildingID.Copy()
 		if !reg.MatchString(alert.BuildingID) {
 			return false
 		}
 	}
 
-	if m.Regex.Type != nil {
-		reg := m.Regex.Type.Copy()
+	if m.regex.Type != nil {
+		reg := m.regex.Type.Copy()
 		if !reg.MatchString(string(alert.Type)) {
 			return false
 		}
 	}
 
-	if m.Regex.Category != nil {
-		reg := m.Regex.Category.Copy()
+	if m.regex.Category != nil {
+		reg := m.regex.Category.Copy()
 		if !reg.MatchString(string(alert.Category)) {
 			return false
 		}
 	}
 
-	if m.Regex.Severity != nil {
-		reg := m.Regex.Severity.Copy()
+	if m.regex.Severity != nil {
+		reg := m.regex.Severity.Copy()
 		if !reg.MatchString(fmt.Sprintf("%v", alert.Severity)) {
 			return false
 		}
 	}
 
-	if m.Regex.Message != nil {
-		reg := m.Regex.Message.Copy()
+	if m.regex.Message != nil {
+		reg := m.regex.Message.Copy()
 		if !reg.MatchString(alert.Message) {
 			return false
 		}
 	}
 
-	if len(m.Regex.MessageLog) > 0 {
+	if len(m.regex.MessageLog) > 0 {
 		matched := 0
 
-		for _, regex := range m.Regex.MessageLog {
+		for _, regex := range m.regex.MessageLog {
 			reg := regex.Copy()
 
 			for _, msg := range alert.MessageLog {
@@ -157,13 +157,13 @@ func (m *AlertMatch) DoesAlertMatch(ctx context.Context) bool {
 			}
 		}
 
-		if matched != len(m.Regex.MessageLog) {
+		if matched != len(m.regex.MessageLog) {
 			return false
 		}
 	}
 
-	if m.Regex.Data != nil {
-		reg := m.Regex.Data.Copy()
+	if m.regex.Data != nil {
+		reg := m.regex.Data.Copy()
 		// convert event.Data to a json string
 		bytes, err := json.Marshal(alert.Data)
 		if err != nil {
@@ -176,45 +176,45 @@ func (m *AlertMatch) DoesAlertMatch(ctx context.Context) bool {
 		}
 	}
 
-	if m.Regex.SystemType != nil {
-		reg := m.Regex.SystemType.Copy()
+	if m.regex.SystemType != nil {
+		reg := m.regex.SystemType.Copy()
 		if !reg.MatchString(alert.SystemType) {
 			return false
 		}
 	}
 
-	if m.Regex.Requester != nil {
-		reg := m.Regex.Requester.Copy()
+	if m.regex.Requester != nil {
+		reg := m.regex.Requester.Copy()
 		if !reg.MatchString(alert.Requester) {
 			return false
 		}
 	}
 
-	if m.Regex.AlertStartTime != nil {
-		reg := m.Regex.AlertStartTime.Copy()
+	if m.regex.AlertStartTime != nil {
+		reg := m.regex.AlertStartTime.Copy()
 		if !reg.MatchString(alert.AlertStartTime.String()) {
 			return false
 		}
 	}
 
-	if m.Regex.AlertEndTime != nil {
-		reg := m.Regex.AlertEndTime.Copy()
+	if m.regex.AlertEndTime != nil {
+		reg := m.regex.AlertEndTime.Copy()
 		if !reg.MatchString(alert.AlertEndTime.String()) {
 			return false
 		}
 	}
 
-	if m.Regex.AlertLastUpdateTime != nil {
-		reg := m.Regex.AlertLastUpdateTime.Copy()
+	if m.regex.AlertLastUpdateTime != nil {
+		reg := m.regex.AlertLastUpdateTime.Copy()
 		if !reg.MatchString(alert.AlertLastUpdateTime.String()) {
 			return false
 		}
 	}
 
-	if len(m.Regex.AlertTags) > 0 {
+	if len(m.regex.AlertTags) > 0 {
 		matched := 0
 
-		for _, regex := range m.Regex.AlertTags {
+		for _, regex := range m.regex.AlertTags {
 			reg := regex.Copy()
 
 			for _, tag := range alert.AlertTags {
@@ -225,15 +225,15 @@ func (m *AlertMatch) DoesAlertMatch(ctx context.Context) bool {
 			}
 		}
 
-		if matched != len(m.Regex.AlertTags) {
+		if matched != len(m.regex.AlertTags) {
 			return false
 		}
 	}
 
-	if len(m.Regex.RoomTags) > 0 {
+	if len(m.regex.RoomTags) > 0 {
 		matched := 0
 
-		for _, regex := range m.Regex.RoomTags {
+		for _, regex := range m.regex.RoomTags {
 			reg := regex.Copy()
 
 			for _, tag := range alert.RoomTags {
@@ -244,15 +244,15 @@ func (m *AlertMatch) DoesAlertMatch(ctx context.Context) bool {
 			}
 		}
 
-		if matched != len(m.Regex.RoomTags) {
+		if matched != len(m.regex.RoomTags) {
 			return false
 		}
 	}
 
-	if len(m.Regex.DeviceTags) > 0 {
+	if len(m.regex.DeviceTags) > 0 {
 		matched := 0
 
-		for _, regex := range m.Regex.DeviceTags {
+		for _, regex := range m.regex.DeviceTags {
 			reg := regex.Copy()
 
 			for _, tag := range alert.DeviceTags {
@@ -263,7 +263,7 @@ func (m *AlertMatch) DoesAlertMatch(ctx context.Context) bool {
 			}
 		}
 
-		if matched != len(m.Regex.DeviceTags) {
+		if matched != len(m.regex.DeviceTags) {
 			return false
 		}
 	}
@@ -271,96 +271,96 @@ func (m *AlertMatch) DoesAlertMatch(ctx context.Context) bool {
 	return true
 }
 
-func (m *AlertMatch) buildRegex() {
+func (m *AlertMatch) buildregex() {
 	m.count = 0
 
 	if len(m.AlertID) > 0 {
-		m.Regex.AlertID = regexp.MustCompile(m.AlertID)
+		m.regex.AlertID = regexp.MustCompile(m.AlertID)
 		m.count++
 	}
 
 	if len(m.BuildingID) > 0 {
-		m.Regex.BuildingID = regexp.MustCompile(m.BuildingID)
+		m.regex.BuildingID = regexp.MustCompile(m.BuildingID)
 		m.count++
 	}
 
 	if len(m.RoomID) > 0 {
-		m.Regex.RoomID = regexp.MustCompile(m.RoomID)
+		m.regex.RoomID = regexp.MustCompile(m.RoomID)
 		m.count++
 	}
 
 	if len(m.DeviceID) > 0 {
-		m.Regex.DeviceID = regexp.MustCompile(m.DeviceID)
+		m.regex.DeviceID = regexp.MustCompile(m.DeviceID)
 		m.count++
 	}
 
 	if len(m.Type) > 0 {
-		m.Regex.Type = regexp.MustCompile(m.Type)
+		m.regex.Type = regexp.MustCompile(m.Type)
 		m.count++
 	}
 
 	if len(m.Category) > 0 {
-		m.Regex.Category = regexp.MustCompile(m.Category)
+		m.regex.Category = regexp.MustCompile(m.Category)
 		m.count++
 	}
 
 	if len(m.Severity) > 0 {
-		m.Regex.Severity = regexp.MustCompile(m.Severity)
+		m.regex.Severity = regexp.MustCompile(m.Severity)
 		m.count++
 	}
 
 	if len(m.Message) > 0 {
-		m.Regex.Message = regexp.MustCompile(m.Message)
+		m.regex.Message = regexp.MustCompile(m.Message)
 		m.count++
 	}
 
 	for _, msg := range m.MessageLog {
-		m.Regex.MessageLog = append(m.Regex.MessageLog, regexp.MustCompile(msg))
+		m.regex.MessageLog = append(m.regex.MessageLog, regexp.MustCompile(msg))
 		m.count++
 	}
 
 	if len(m.Data) > 0 {
-		m.Regex.Data = regexp.MustCompile(m.Data)
+		m.regex.Data = regexp.MustCompile(m.Data)
 		m.count++
 	}
 
 	if len(m.SystemType) > 0 {
-		m.Regex.SystemType = regexp.MustCompile(m.SystemType)
+		m.regex.SystemType = regexp.MustCompile(m.SystemType)
 		m.count++
 	}
 
 	if len(m.Requester) > 0 {
-		m.Regex.Requester = regexp.MustCompile(m.Requester)
+		m.regex.Requester = regexp.MustCompile(m.Requester)
 		m.count++
 	}
 
 	if len(m.AlertStartTime) > 0 {
-		m.Regex.AlertStartTime = regexp.MustCompile(m.AlertStartTime)
+		m.regex.AlertStartTime = regexp.MustCompile(m.AlertStartTime)
 		m.count++
 	}
 
 	if len(m.AlertEndTime) > 0 {
-		m.Regex.AlertEndTime = regexp.MustCompile(m.AlertEndTime)
+		m.regex.AlertEndTime = regexp.MustCompile(m.AlertEndTime)
 		m.count++
 	}
 
 	if len(m.AlertLastUpdateTime) > 0 {
-		m.Regex.AlertLastUpdateTime = regexp.MustCompile(m.AlertLastUpdateTime)
+		m.regex.AlertLastUpdateTime = regexp.MustCompile(m.AlertLastUpdateTime)
 		m.count++
 	}
 
 	for _, tag := range m.AlertTags {
-		m.Regex.AlertTags = append(m.Regex.AlertTags, regexp.MustCompile(tag))
+		m.regex.AlertTags = append(m.regex.AlertTags, regexp.MustCompile(tag))
 		m.count++
 	}
 
 	for _, tag := range m.RoomTags {
-		m.Regex.RoomTags = append(m.Regex.RoomTags, regexp.MustCompile(tag))
+		m.regex.RoomTags = append(m.regex.RoomTags, regexp.MustCompile(tag))
 		m.count++
 	}
 
 	for _, tag := range m.DeviceTags {
-		m.Regex.DeviceTags = append(m.Regex.DeviceTags, regexp.MustCompile(tag))
+		m.regex.DeviceTags = append(m.regex.DeviceTags, regexp.MustCompile(tag))
 		m.count++
 	}
 }
