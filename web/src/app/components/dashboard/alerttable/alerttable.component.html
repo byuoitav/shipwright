@@ -8,7 +8,7 @@
         </ng-container>
 
         <ng-container matColumnDef="roomID">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Room ID </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="roomID"> Room ID </th>
             <td mat-cell *matCellDef="let issue" (click)="ExpandRow(issue)">
                 <div routerLink="/configuration/{{issue.roomID}}/roompage" class="fake-hyperlink">
                     {{issue.roomID}}
