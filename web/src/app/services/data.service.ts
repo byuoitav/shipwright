@@ -294,6 +294,7 @@ export class DataService {
       for(let rs of this.roomStatusList) {
         if(rs.roomID == roomID) {
           rs.deviceStates.push(sd)
+          rs.roomIssues = this.GetRoomIssues(rs.roomID)
           added = true
         }
       }
@@ -302,6 +303,7 @@ export class DataService {
         let roomState = new RoomStatus()
         roomState.roomID = roomID
         roomState.deviceStates = [sd]
+        roomState.roomIssues = this.GetRoomIssues(roomState.roomID)
         this.roomStatusList.push(roomState)
       }
     }

@@ -343,7 +343,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 				}
 				return
 			}
-
+			
 			if len(alert.Message) > 0 &&
 				(len(v.MessageLog) == 0 || v.MessageLog[len(v.MessageLog)-1] != alert.Message) {
 
@@ -383,6 +383,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 			issue.Alerts[indx] = v
 
+			roomaggregation.UpdateAlerts(v)
 			alert = v
 		} else {
 
@@ -442,7 +443,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		return
 	}
 
-	if issue.SystemType == "unkown" {
+	if issue.SystemType == "unknown" {
 		issue, err = AddSystemTypeToIssue(issue)
 		if err != nil {
 			log.L.Errorf("Error getting system type for issue %v:%v", issue.RoomIssueID, err.Error())

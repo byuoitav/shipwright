@@ -22,10 +22,12 @@ export class RoomComponent implements OnInit {
   ngOnInit() {
     if(this.data.finished) {
       this.GetRoomState();
+      this.state.UpdateAlerts();
       this.deviceList = this.data.roomToDevicesMap.get(this.room.id);
     } else {
       this.data.loaded.subscribe(() => {
         this.GetRoomState();
+        this.state.UpdateAlerts();
         this.deviceList = this.data.roomToDevicesMap.get(this.room.id);
       })
     }
