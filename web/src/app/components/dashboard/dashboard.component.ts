@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { DataService } from 'src/app/services/data.service';
+import { CritAlerts, WarnAlerts, AllAlerts } from 'src/app/objects/alerts';
 
 @Component({
   selector: 'dashboard',
@@ -18,5 +19,15 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  GetDefaultPanels(index: number): string {
+    if(index == 0) {
+      return CritAlerts
+    } else if(index == 1) {
+      return WarnAlerts
+    } else {
+      return AllAlerts
+    }
   }
 }

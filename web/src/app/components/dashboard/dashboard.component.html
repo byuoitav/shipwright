@@ -1,4 +1,4 @@
 <mat-progress-bar *ngIf="!data.finished" color="warn" mode="determinate" [value]="data.completedOperations"></mat-progress-bar>
 <div class="container">
-    <dashpanel [ngClass]="panelCount.length > 1 ? 'panel multi':'panel'" *ngFor="let i of panelCount"></dashpanel>
+    <dashpanel [ngClass]="panelCount.length > 1 ? 'panel multi':'panel'" *ngFor="let p of panelCount; let i = index;" [panelType]="GetDefaultPanels(i)"></dashpanel>
 </div>
