@@ -38,9 +38,12 @@ export class DataService {
 
   loaded: EventEmitter<boolean>;
   finished: boolean = false;
+  completedOperations: number = 0;
+  totalCompletion: number = 100;
+  increment: number = Math.ceil(this.totalCompletion / 17);
 
   settingsChanged: EventEmitter<any>;
-  panelCount: number = 1;
+  panelCount: number = 2;
 
   issueEmitter: EventEmitter<any>;
 
@@ -56,50 +59,42 @@ export class DataService {
   }
 
   private async LoadData() {
-    /*Promise.all([
-      await this.GetStaticDevices(),
-      await this.GetAllBuildings(),
-    await this.GetAllRooms(),
-    await this.GetAllDevices(),
-    await this.GetAllUIConfigs(),
-    await this.GetAllDeviceTypes(),
-    await this.GetAllDeviceRoles(),
-    await this.GetAllTemplates(),
-    await this.GetAllRoomConfigurations(),
-    await this.GetAllRoomDesignations(),
-    await this.SetBuildingToRoomsMap(),
-    await this.SetRoomToDevicesMap(),
-    await this.GetIconList(),
-    await this.GetStoredRoomIssues(),
-    await this.GetRoomStatusList(),
-    await this.GetBuildingStatusList(),
-    await this.GetClosureCodes()
-    ]).finally(() => {
-      this.finished = true;
-      this.loaded.emit(true);
-      console.log("done");
-    })
-     */
     await this.GetAllBuildings(); //          1
+    this.completedOperations += this.increment;
     await this.GetAllRooms(); //              2
+    this.completedOperations += this.increment;
     await this.GetAllDevices(); //            3
+    this.completedOperations += this.increment;
     await this.GetAllUIConfigs(); //          4
+    this.completedOperations += this.increment;
     await this.GetAllDeviceTypes(); //        5
+    this.completedOperations += this.increment;
     await this.GetAllDeviceRoles(); //        6
+    this.completedOperations += this.increment;
     await this.GetAllTemplates(); //          7
+    this.completedOperations += this.increment;
     await this.GetAllRoomConfigurations(); // 8
+    this.completedOperations += this.increment;
     await this.GetAllRoomDesignations(); //   9
+    this.completedOperations += this.increment;
     await this.SetBuildingToRoomsMap(); //   10
+    this.completedOperations += this.increment;
     await this.SetRoomToDevicesMap(); //     11
+    this.completedOperations += this.increment;
     await this.GetIconList(); //             12
+    this.completedOperations += this.increment;
     await this.GetStoredRoomIssues(); //     13
+    this.completedOperations += this.increment;
     await this.GetStaticDevices(); //        14
+    this.completedOperations += this.increment;
     await this.GetRoomStatusList(); //       15
+    this.completedOperations += this.increment;
     await this.GetBuildingStatusList(); //   16
+    this.completedOperations += this.increment;
     await this.GetClosureCodes(); //         17
+    this.completedOperations += this.increment;
      this.finished = true;
-     this.loaded.emit(true);
-     console.log("done");
+     this.loaded.emit(true);     
   }
 
   private async GetAllBuildings() {
@@ -228,8 +223,7 @@ export class DataService {
 
   private async GetStoredRoomIssues() {    
     await this.api.GetAllIssues().then((issues) => {
-      this.roomIssueList = issues
-      console.log(issues);
+      this.roomIssueList = issues      
       this.SetRoomIssuesMap();
     })
   }
@@ -248,7 +242,7 @@ export class DataService {
 
   private ListenForIssues() {
     this.socket.listener.subscribe(issue => {
-      console.log(issue, issue.resolved)
+      console.log(issue)
 
       if(this.roomIssueList == null) {
         if (!issue.resolved) {
@@ -269,19 +263,21 @@ export class DataService {
             //this.roomIssueList = this.roomIssueList.sort(this.RoomIssueSorter)
           } 
         } else {
+          //matchingIssue = issue;
+          const index = this.roomIssueList.indexOf(matchingIssue, 0);          
 
-          matchingIssue = issue;
-
-          if (issue.resolved) {            
-            this.notifier.notify( "success", "Room Issue for " + issue.roomID + " resolved.");
-            const index = this.roomIssueList.indexOf(matchingIssue, 0);
-            if (index > -1) {
+          if (index > -1) {
+            if (issue.resolved) {            
+              this.notifier.notify( "success", "Room Issue for " + issue.roomID + " resolved.");            
               this.roomIssueList.splice(index, 1);
+            }            
+            else {
+              this.roomIssueList.splice(index, 1, issue);
             }
-          }
+          }          
         }
         
-        this.issueEmitter.emit();
+        this.issueEmitter.emit(issue);
       }
     })
   }
