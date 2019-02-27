@@ -326,7 +326,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		//we need to check to see if this alert exists on the issuecheck to see if this alert exists on the issue
 		var v structs.Alert
 		var ok bool
-		
+
 		var indx int
 		for i := range issue.Alerts {
 			if issue.Alerts[i].AlertID == alert.AlertID {
@@ -349,7 +349,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 				}
 				return
 			}
-			
+
 			if len(alert.Message) > 0 &&
 				(len(v.MessageLog) == 0 || v.MessageLog[len(v.MessageLog)-1] != alert.Message) {
 
@@ -416,11 +416,8 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		}
 
 	} else if err.Type == alertcache.NotFound {
-<<<<<<< HEAD
 		//issue didn't exist at all.
-=======
 		roomAggregateChange = true
->>>>>>> master
 
 		//generate the new roomIssue.
 		alert.AlertLastUpdateTime = time.Now()
@@ -465,8 +462,8 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 	}
 
 	issue.CalculateAggregateInfo()
-	if roomAggregateChange{
-		CalculateAggregateInfo(issue.RoomID)	
+	if roomAggregateChange {
+		CalculateAggregateInfo(issue.RoomID)
 	}
 
 	err = alertcache.GetAlertCache("default").PutIssue(issue)
