@@ -400,6 +400,11 @@ export class DataService {
     return this.roomIssuesMap.get(roomID);
   }
 
+  GetRoomIssue(roomID): RoomIssue[] {    
+    //i added this to get it to complie
+    return null;
+  }
+
   GetStaticDevice(deviceID: string): StaticDevice {
     for(let record of this.staticDeviceList) {
       if(record.deviceID == deviceID) {

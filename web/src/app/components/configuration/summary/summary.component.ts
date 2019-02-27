@@ -14,6 +14,7 @@ import { APIService } from 'src/app/services/api.service';
   styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent implements OnInit {
+  roomIssue: RoomIssue;
   roomIssues: RoomIssue[];
   deviceList: Device[] = [];
   filteredDevices: Device[];
@@ -129,6 +130,7 @@ export class SummaryComponent implements OnInit {
   SetTimes() {
     if(this.roomIssues != null) {
       for(let issue of this.roomIssues) {
+        this.roomIssue = issue;
         if(!issue.SentIsZero()) {
           let time = issue.helpSentAt.toTimeString();
           this.sentTime = time.substring(0, time.lastIndexOf(":"));
