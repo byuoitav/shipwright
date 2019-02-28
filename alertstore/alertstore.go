@@ -495,7 +495,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 	issue.CalculateAggregateInfo()
 	if roomAggregateChange {
-		CalculateAggregateInfo(issue.RoomID)
+		calculateAggregateInfo(issue.RoomID)
 	}
 
 	err = alertcache.GetAlertCache("default").PutIssue(issue)

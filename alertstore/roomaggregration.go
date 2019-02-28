@@ -6,17 +6,19 @@ import (
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/state/statedefinition"
 	"github.com/byuoitav/common/structs"
+	"github.com/byuoitav/shipwright/alertstore/alertcache"
 	"github.com/byuoitav/shipwright/state/cache"
 )
 
-func CalculateAggregateInfo(roomID string) {
+//not safe for concurrent use
+func calculateAggregateInfo(roomID string) {
 
 	var aggregateRoom statedefinition.StaticRoom
 	aggregateRoom.AlertingDeviceCount = new(int)
 	*aggregateRoom.AlertingDeviceCount = 0
 	//For each severity option
 	for _, severity := range structs.AlertSeverities {
-		roomIssue, err := GetRoomIssue(roomID + "-" + severity)
+		roomIssue, err := alertcache.GetAlertCache("default").GetIssue(roomID + "-" + severity)
 		if err != nil {
 			log.L.Errorf("Couldn't get the other room issue: %v", err)
 			return
