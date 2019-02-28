@@ -30,6 +30,8 @@ type RedisCache struct {
 
 func init() {
 	gob.Register(sd.StaticDevice{})
+	gob.Register(time.Now())
+	gob.Register(map[string]time.Time{})
 	gob.Register(sd.StaticRoom{})
 }
 
@@ -77,18 +79,6 @@ func MakeRedisCache(devices []sd.StaticDevice, rooms []sd.StaticRoom, pushCron s
 		return toReturn, nerr.Translate(err).Addf("Couldn't communicate with redis server at %v", addr)
 	}
 
-	//for each device check to see if it's there, if it is we don't do anything, otherwise we add it from storage.
-	keys, er := GetAllKeys(toReturn.devclient)
-	if err != nil {
-		return toReturn, er.Addf("Couldn't intialize redis cache")
-	}
-
-	keyMap := map[string]bool{}
-	for _, k := range keys {
-		//create our map
-		keyMap[k] = true
-	}
-	log.L.Infof("Cache pre-initialized with %v records.", len(keyMap))
 	log.L.Infof("Persistent storage has %v records.", len(devices))
 
 	for _, d := range devices {
@@ -98,7 +88,6 @@ func MakeRedisCache(devices []sd.StaticDevice, rooms []sd.StaticRoom, pushCron s
 			log.L.Errorf("Problem syncing device %v with the persistent enginge")
 		}
 
-		delete(keyMap, d.DeviceID)
 	}
 
 	//if there's anything left in keymap we're gonna push everything up
@@ -119,17 +108,17 @@ func (rc *RedisCache) CheckAndStoreDevice(device sd.StaticDevice) (bool, sd.Stat
 	if err != nil {
 		return false, dev, err.Addf("Couldn't check and store device")
 	}
+	log.L.Debugf("Device: %+v", device)
 
-	_, merged, changes, err := sd.CompareDevices(dev, device)
+	_, merged, changes, err := sd.CompareDevices(device, dev)
 	if err != nil {
 		return false, dev, err.Addf("Couldn't check and store device")
 	}
+	log.L.Debugf("Merged: %+v", merged)
 
-	if changes {
-		err := rc.putDevice(merged)
-		if err != nil {
-			return false, device, err.Addf("Couldn't check and store device")
-		}
+	err = rc.putDevice(merged)
+	if err != nil {
+		return false, device, err.Addf("Couldn't check and store device")
 	}
 
 	err = shared.ForwardDevice(merged, changes, rc)
