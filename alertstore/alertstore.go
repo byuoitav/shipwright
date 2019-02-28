@@ -85,6 +85,38 @@ func InitializeAlertStore(a *actions.ActionManager) {
 	log.L.Infof("Alert store initialized with %v issues", len(issues))
 }
 
+type Status struct {
+	QueueStatus map[string]ChannelStatus
+}
+
+type ChannelStatus struct {
+	Cap int `json:"cap"`
+	Len int `json:"len"`
+}
+
+func (a *alertStore) getQueueStatus() Status {
+	return Status{
+		QueueStatus: map[string]ChannelStatus{
+			"in-queue": ChannelStatus{
+				Cap: cap(a.inChannel),
+				Len: len(a.inChannel),
+			},
+			"request-queue": ChannelStatus{
+				Cap: cap(a.requestChannel),
+				Len: len(a.requestChannel),
+			},
+			"issue-queue": ChannelStatus{
+				Cap: cap(a.issueEditChannel),
+				Len: len(a.issueEditChannel),
+			},
+			"resolution-queue": ChannelStatus{
+				Cap: cap(a.resolutionChannel),
+				Len: len(a.resolutionChannel),
+			},
+		},
+	}
+}
+
 func (a *alertStore) setRoomIssueInfo(issue structs.RoomIssue) *nerr.E {
 
 	//we must have a room issue ID

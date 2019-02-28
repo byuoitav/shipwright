@@ -13,6 +13,29 @@ import (
 	"github.com/labstack/echo"
 )
 
+// GetRoomIssue gets an individual room issue
+func GetRoomIssue(context echo.Context) error {
+	issueID := context.Param("issueID")
+	if issueID == "" {
+		return context.JSON(http.StatusBadRequest, "Invalid issue id")
+	}
+
+	alerts, err := alertstore.GetRoomIssue(issueID)
+	if err != nil {
+		return context.JSON(http.StatusInternalServerError, err)
+	}
+
+	return context.JSON(http.StatusOK, alerts)
+}
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
 // GetAllRoomIssues returns all alerts from the alert store
 func GetAllRoomIssues(context echo.Context) error {
 	alerts, err := alertstore.GetAllIssues()
@@ -103,11 +126,9 @@ func GetClosureCodes(context echo.Context) error {
 	return context.JSON(http.StatusOK, actualCodes)
 }
 
-func contains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
+// GetAlertStoreQueueStatus gets the queue status for the alert store
+func GetAlertStoreQueueStatus(context echo.Context) error {
+	status := alertstore.GetQueueStatus()
+
+	return context.JSON(http.StatusOK, status)
 }
