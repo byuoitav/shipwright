@@ -60,6 +60,7 @@ func GetAllRoomCombinedStateRecords() ([]RoomCombinedState, *nerr.E) {
 		if !ok {
 			roomCombinedState = RoomCombinedState{}
 			roomCombinedState.RoomID = sRoom.RoomID
+			correlation[sRoom.RoomID] = roomCombinedState
 		}
 
 		roomCombinedState.StaticRoom = sRoom
