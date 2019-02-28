@@ -60,10 +60,10 @@ func GetAllRoomCombinedStateRecords() ([]RoomCombinedState, *nerr.E) {
 		if !ok {
 			roomCombinedState = RoomCombinedState{}
 			roomCombinedState.RoomID = sRoom.RoomID
-			correlation[sRoom.RoomID] = roomCombinedState
 		}
 
 		roomCombinedState.StaticRoom = sRoom
+		correlation[sRoom.RoomID] = roomCombinedState
 	}
 
 	//static devices
@@ -74,10 +74,10 @@ func GetAllRoomCombinedStateRecords() ([]RoomCombinedState, *nerr.E) {
 		if !ok {
 			roomCombinedState = RoomCombinedState{}
 			roomCombinedState.RoomID = sDevice.Room
-			correlation[sDevice.Room] = roomCombinedState
 		}
 
 		roomCombinedState.StaticDevices = append(roomCombinedState.StaticDevices, sDevice)
+		correlation[sDevice.Room] = roomCombinedState
 	}
 
 	//room issues
@@ -87,7 +87,6 @@ func GetAllRoomCombinedStateRecords() ([]RoomCombinedState, *nerr.E) {
 		if !ok {
 			roomCombinedState = RoomCombinedState{}
 			roomCombinedState.RoomID = roomIssue.RoomID
-			correlation[roomIssue.RoomID] = roomCombinedState
 		}
 
 		roomCombinedState.RoomIssues = append(roomCombinedState.RoomIssues, roomIssue)
@@ -95,6 +94,8 @@ func GetAllRoomCombinedStateRecords() ([]RoomCombinedState, *nerr.E) {
 		//add to the count
 		roomCombinedState.ActiveAlertCount += roomIssue.AlertActiveCount
 		roomCombinedState.TotalAlertCount += roomIssue.AlertCount
+
+		correlation[roomIssue.RoomID] = roomCombinedState
 	}
 
 	//convert to array
