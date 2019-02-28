@@ -1,12 +1,13 @@
 import { Component, OnInit, Input, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
-import { IDashPanel } from '../dashpanel/idashpanel';
+import { IDashPanel, DashPanel } from '../dashpanel/idashpanel';
 import { MatTableDataSource, MatPaginator, MatSort, SortDirection, PageEvent } from '@angular/material';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/services/data.service';
 import { RoomIssue, Alert } from 'src/app/objects/alerts';
 import { SelectionModel } from '@angular/cdk/collections';
+import { DashPanelTypes } from 'src/app/services/dashpanel.service';
 
 @Component({
   selector: 'alert-table',
@@ -23,7 +24,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 
 export class AlertTableComponent implements OnInit, IDashPanel {
   @Input() info: RoomIssue[] = [];
-  @Input() chosenSeverity: string;
+  @Input() chosenSeverity: DashPanelTypes;
   @Input() singleRoom: boolean = false;
   roomID: string;
   charCount = 40;
@@ -68,6 +69,19 @@ export class AlertTableComponent implements OnInit, IDashPanel {
     this.issueData.paginator = this.paginator;
   }
 
+  convertDashPanelTypeToSeverity(dashPanelType: DashPanelTypes): string {
+    if (dashPanelType == DashPanelTypes.AllAlerts)
+      return "all";
+    else if (dashPanelType == DashPanelTypes.CriticalAlerts)
+      return "critical";
+    else if (dashPanelType == DashPanelTypes.WarningAlerts)
+      return "warning";
+    else if (dashPanelType == DashPanelTypes.LowSeverityAlerts)
+      return "low";
+    
+    return "";
+  }
+
   Setup() {
     if(this.singleRoom) {
       this.route.params.subscribe(par => {
@@ -75,7 +89,7 @@ export class AlertTableComponent implements OnInit, IDashPanel {
       })
       this.issueData = new MatTableDataSource(this.data.GetRoomIssues(this.roomID));
     } else {
-      this.issueData = new MatTableDataSource(this.data.GetRoomIssuesBySeverity(this.chosenSeverity));
+      this.issueData = new MatTableDataSource(this.data.GetRoomIssuesBySeverity(this.convertDashPanelTypeToSeverity(this.chosenSeverity)));
     }
 
     // if (this.sort.active == undefined || this.sort.active == '') {          
@@ -90,7 +104,7 @@ export class AlertTableComponent implements OnInit, IDashPanel {
         if(this.singleRoom && changedIssue.roomID == this.roomID) {
           this.issueData.data = this.data.GetRoomIssues(this.roomID);
         } else {
-          this.issueData.data = this.data.GetRoomIssuesBySeverity(this.chosenSeverity);
+          this.issueData.data = this.data.GetRoomIssuesBySeverity(this.convertDashPanelTypeToSeverity(this.chosenSeverity));
         }
         
         if (this.sort.active == undefined || this.sort.active == '') {          

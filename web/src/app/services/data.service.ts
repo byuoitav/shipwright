@@ -1,7 +1,7 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { APIService } from './api.service';
 import { Building, Room, Device, UIConfig, DeviceType, Role, RoomConfiguration, Template } from '../objects/database';
-import { RoomIssue, AllAlerts } from '../objects/alerts';
+import { RoomIssue } from '../objects/alerts';
 import { SocketService } from './socket.service';
 import { StaticDevice, RoomStatus, BuildingStatus } from '../objects/static';
 import { StringsService } from './strings.service';
@@ -256,9 +256,9 @@ export class DataService {
 
         if(matchingIssue == null) {
           if (issue.resolved) {
-            this.notifier.notify( "warning", "New Room Issue received for " + issue.roomID + " but already resolved" );
+            //this.notifier.notify( "warning", "New Room Issue received for " + issue.roomID + " but already resolved" );
           } else {
-            this.notifier.notify( "error", "New Room Issue received for " + issue.roomID );
+            this.notifier.notify( "error", "New Room Issue [" + issue.activeAlertTypes[0] + "] for " + issue.roomID );
             this.roomIssueList.push(issue);
             //this.roomIssueList = this.roomIssueList.sort(this.RoomIssueSorter)
           } 
@@ -433,7 +433,7 @@ export class DataService {
   GetRoomIssuesBySeverity(severity?: string): RoomIssue[] {
     let temp: RoomIssue[] = [];
 
-    if(severity == null || severity == AllAlerts || severity == undefined) {
+    if(severity == null || severity == "all" || severity == undefined) {
       return this.roomIssueList;
     }
     else {

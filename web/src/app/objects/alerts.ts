@@ -203,9 +203,3 @@ export class RoomIssue {
     return this.resolutionInfo.resolvedAt.toISOString() === zero;
   }
 }
-
-export const AllAlerts = "all-alerts";
-export const CritAlerts = "critical"
-export const WarnAlerts = "warning"
-export const Battery = "battery"
-

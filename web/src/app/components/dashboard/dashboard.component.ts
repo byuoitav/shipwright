@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { DataService } from 'src/app/services/data.service';
-import { CritAlerts, WarnAlerts, AllAlerts } from 'src/app/objects/alerts';
+import { DashPanelTypes } from 'src/app/services/dashpanel.service';
 
 @Component({
   selector: 'dashboard',
@@ -21,13 +21,13 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
   }
 
-  GetDefaultPanels(index: number): string {
+  GetDefaultPanels(index: number): DashPanelTypes {
     if(index == 0) {
-      return CritAlerts
+      return DashPanelTypes.CriticalAlerts
     } else if(index == 1) {
-      return WarnAlerts
+      return DashPanelTypes.WarningAlerts
     } else {
-      return AllAlerts
+      return DashPanelTypes.AllAlerts
     }
   }
 }

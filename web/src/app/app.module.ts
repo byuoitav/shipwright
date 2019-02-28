@@ -75,7 +75,8 @@ import { CampusStateComponent } from './components/state/campus/campus-state.com
 import { RoomStateComponent } from './components/state/room/room-state.component';
 
 import {NotifierModule} from 'angular-notifier';
-import { HelpModalComponent } from './modals/helpmodal/helpmodal.component'
+import { HelpModalComponent } from './modals/helpmodal/helpmodal.component';
+import { DeviceStateComponent } from './components/state/device-state/device-state.component'
 
 @NgModule({
   declarations: [
@@ -106,7 +107,8 @@ import { HelpModalComponent } from './modals/helpmodal/helpmodal.component'
     IconModalComponent,
     CampusStateComponent,
     RoomStateComponent,
-    HelpModalComponent
+    HelpModalComponent,
+    DeviceStateComponent
   ],
   imports: [
     BrowserModule,

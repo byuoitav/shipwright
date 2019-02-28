@@ -32,14 +32,19 @@
                 <ng-container *ngIf="wideSidenav()">Dashboard</ng-container>
             </button>
 
-            <button mat-flat-button color="" routerLink="/configuration" routerLinkActive="mat-accent" queryParamsHandling="merge">
-                <mat-icon>build</mat-icon>
-                <ng-container *ngIf="wideSidenav()">Config</ng-container>
+            <button mat-flat-button color="" routerLink="/campus" routerLinkActive="mat-accent" queryParamsHandling="merge">
+                <mat-icon>map</mat-icon>
+                <ng-container *ngIf="wideSidenav()">Campus</ng-container>
             </button>
 
-            <button mat-flat-button color="" routerLink="/state" routerLinkActive="mat-accent" queryParamsHandling="merge">
-                <mat-icon>view_list</mat-icon>
-                <ng-container *ngIf="wideSidenav()">State</ng-container>
+            <button mat-flat-button color="" routerLink="/roomStatus" routerLinkActive="mat-accent" queryParamsHandling="merge">
+                <mat-icon>meeting_room</mat-icon>
+                <ng-container *ngIf="wideSidenav()">Room Status</ng-container>
+            </button>
+
+            <button mat-flat-button color="" routerLink="/deviceStatus" routerLinkActive="mat-accent" queryParamsHandling="merge">
+                <mat-icon>devices_other</mat-icon>
+                <ng-container *ngIf="wideSidenav()">Device Status</ng-container>
             </button>
 
             <button mat-flat-button color="" class="bottom" (click)="setWideSidenav(!wideSidenav())">

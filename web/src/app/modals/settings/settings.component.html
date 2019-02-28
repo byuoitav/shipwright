@@ -3,8 +3,14 @@
 </section>
 
 <mat-form-field>
-    <mat-label># of Dashboard Panels</mat-label>
+    <!-- <mat-label># of Dashboard Panels</mat-label>
     <mat-select matInput (selectionChange)="SetPanelCount($event.value)" color="accent" [(ngModel)]="data.panelCount">
         <mat-option *ngFor="let num of panelMax" [value]="num">{{num}}</mat-option>
     </mat-select>
+
+    <mat-select [value]="GetValue('AllAlerts')" [(ngModel)]="panelType" (ngModelChange)="ChoosePanel(panelType)" color="accent" #pType>
+        <mat-option [value]="GetValue('AllAlerts')">All Alerts</mat-option>
+        <mat-option [value]="GetValue('CriticalAlerts')">Critical Alerts</mat-option>
+        <mat-option [value]="GetValue('WarnAlerts')">Warning Alerts</mat-option>        
+    </mat-select> -->
 </mat-form-field>

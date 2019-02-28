@@ -9,6 +9,21 @@ import (
 	"github.com/labstack/echo"
 )
 
+// GetAllRoomCombinedStateRecords returns a list of combined room state records
+func GetAllRoomCombinedStateRecords(context echo.Context) error {
+	log.L.Debugf("%s Starting GetAllRoomCombinedStateRecords...", helpers.StaticTag)
+
+	sDevices, err := helpers.GetAllRoomCombinedStateRecords()
+	if err != nil {
+		msg := fmt.Sprintf("failed to GetAllRoomCombinedStateRecords : %s", err.Error())
+		log.L.Errorf("%s %s", helpers.StaticTag, msg)
+		return context.JSON(http.StatusInternalServerError, err)
+	}
+
+	log.L.Debugf("%s Successfully GetAllRoomCombinedStateRecords!", helpers.StaticTag)
+	return context.JSON(http.StatusOK, sDevices)
+}
+
 // GetAllStaticDeviceRecords returns a list of all the static device records
 func GetAllStaticDeviceRecords(context echo.Context) error {
 	log.L.Debugf("%s Starting GetAllStaticDeviceRecords...", helpers.StaticTag)

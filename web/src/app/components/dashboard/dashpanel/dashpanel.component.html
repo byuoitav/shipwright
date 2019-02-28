@@ -1,25 +1,11 @@
-<div class="row">
-    <h3 class="mat-h3">
-        <!--Total Issues: {{data.GetRoomIssues(panelType).length}}-->
-    </h3>
-
-    <h3 class="mat-h3">
-        <!--Total Alerts: {{TotalAlerts()}}-->
-    </h3>
-
-    <h3 class="mat-h3">
-        <!--Active Alerts: {{TotalActiveAlerts()}}-->
-    </h3>
-
-    <mat-form-field>
-        <mat-select [value]="GetValue('AllAlerts')" [(ngModel)]="panelType" (ngModelChange)="ChoosePanel(panelType)" color="accent" #pType>
-            <mat-option [value]="GetValue('AllAlerts')">All Alerts</mat-option>
-            <mat-option [value]="GetValue('CritAlerts')">Critical Alerts</mat-option>
-            <mat-option [value]="GetValue('WarnAlerts')">Warning Alerts</mat-option>
-            <!-- <mat-option [value]="'battery'">Battery Report</mat-option> -->
-        </mat-select>
-    </mat-form-field>
-</div>
+<h3>{{title}}</h3>
+<!-- <mat-form-field>
+    <mat-select [(ngModel)]="panelType" (ngModelChange)="ChoosePanel(panelType)" color="accent" #pType>
+        <mat-option [value]="GetValue('AllAlerts')">All Alerts</mat-option>
+        <mat-option [value]="GetValue('CriticalAlerts')">Critical Alerts</mat-option>
+        <mat-option [value]="GetValue('WarnAlerts')">Warning Alerts</mat-option>            
+    </mat-select>
+</mat-form-field> -->
 
 
 <div>
