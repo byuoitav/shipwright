@@ -64,6 +64,7 @@ export class HelpModalComponent implements OnInit {
     alert.category = "Help Request"
     alert.deviceID = this.roomID+"-HR1"
     alert.severity = "Critical"
+    alert.manualResolve = true;
 
     this.api.AddAlert(alert);
     this.dialogRef.close();

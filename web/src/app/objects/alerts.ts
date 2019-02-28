@@ -99,6 +99,9 @@ export class Alert {
 
     @JsonProperty("requester", String, true)
     requester: string = undefined;
+
+    @JsonProperty("manual-resolve", Boolean, true)
+    manualResolve: boolean = undefined;
 }
 
 @JsonObject("RoomIssue")
