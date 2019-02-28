@@ -25,7 +25,7 @@ export class DashboardComponent implements OnInit {
     if(index == 0) {
       return DashPanelTypes.CriticalAlerts
     } else if(index == 1) {
-      return DashPanelTypes.WarningAlerts
+      return DashPanelTypes.LowSeverityAlerts
     } else {
       return DashPanelTypes.AllAlerts
     }

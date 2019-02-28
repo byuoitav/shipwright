@@ -139,6 +139,7 @@ func main() {
 	read.GET("/static/devices", handlers.GetAllStaticDeviceRecords)
 	read.GET("/static/rooms", handlers.GetAllStaticRoomRecords)
 	read.GET("/static/rooms/state", handlers.GetAllRoomCombinedStateRecords)
+	read.GET("/static/rooms/:roomID/state", handlers.GetRoomCombinedStateRecord)
 
 	// Alert Endpoints
 	read.GET("/issues", handlers.GetAllRoomIssues)

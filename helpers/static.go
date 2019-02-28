@@ -17,9 +17,27 @@ type RoomCombinedState struct {
 	RoomID           string              `json:"roomID"`
 	StaticRoom       sd.StaticRoom       `json:"static-room"`
 	RoomIssues       []structs.RoomIssue `json:"room-issues"`
+	AllAlerts        []structs.Alert     `json:"all-alerts"`
 	ActiveAlertCount int                 `json:"active-alert-count"`
 	TotalAlertCount  int                 `json:"total-alert-count"`
 	StaticDevices    []sd.StaticDevice   `json:"static-devices"`
+}
+
+// GetRoomCombinedStateRecord returns a a single toom state record
+func GetRoomCombinedStateRecord(roomID string) (RoomCombinedState, *nerr.E) {
+	allRooms, err := GetAllRoomCombinedStateRecords()
+	var retValue RoomCombinedState
+	if err != nil {
+		return retValue, err
+	}
+
+	for _, room := range allRooms {
+		if room.RoomID == roomID {
+			return room, nil
+		}
+	}
+
+	return retValue, nerr.Create("No Room record found for "+roomID, "error")
 }
 
 // GetAllRoomCombinedStateRecords returns a list of combined room state records

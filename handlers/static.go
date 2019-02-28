@@ -24,6 +24,23 @@ func GetAllRoomCombinedStateRecords(context echo.Context) error {
 	return context.JSON(http.StatusOK, sDevices)
 }
 
+// GetRoomCombinedStateRecord returns a list of combined room state records
+func GetRoomCombinedStateRecord(context echo.Context) error {
+	log.L.Debugf("%s Starting GetRoomCombinedStateRecord...", helpers.StaticTag)
+
+	roomID := context.Param("room")
+
+	sDevices, err := helpers.GetRoomCombinedStateRecord(roomID)
+	if err != nil {
+		msg := fmt.Sprintf("failed to GetRoomCombinedStateRecord : %s", err.Error())
+		log.L.Errorf("%s %s", helpers.StaticTag, msg)
+		return context.JSON(http.StatusInternalServerError, err)
+	}
+
+	log.L.Debugf("%s Successfully GetRoomCombinedStateRecord!", helpers.StaticTag)
+	return context.JSON(http.StatusOK, sDevices)
+}
+
 // GetAllStaticDeviceRecords returns a list of all the static device records
 func GetAllStaticDeviceRecords(context echo.Context) error {
 	log.L.Debugf("%s Starting GetAllStaticDeviceRecords...", helpers.StaticTag)
