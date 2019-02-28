@@ -406,7 +406,8 @@ func TestTimeQuery(t *testing.T) {
 	}
 
 	TestDevice := sd.StaticDevice{
-		DeviceID: "JOE-TEST-CP1",
+		DeviceID:     "JOE-TEST-CP1",
+		Interference: "",
 		UpdateTimes: map[string]time.Time{
 			"interference": time.Now().Add(-3*time.Minute - 30*time.Second),
 		},
@@ -421,7 +422,8 @@ func TestTimeQuery(t *testing.T) {
 	as.True(v)
 
 	TestDevice1 := sd.StaticDevice{
-		DeviceID: "JOE-TEST-CP1",
+		DeviceID:     "JOE-TEST-CP1",
+		Interference: "",
 		UpdateTimes: map[string]time.Time{
 			"interference": time.Now().Add(-1 * time.Minute),
 		},

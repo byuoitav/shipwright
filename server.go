@@ -142,8 +142,13 @@ func main() {
 	// Alert Endpoints
 	read.GET("/issues", handlers.GetAllRoomIssues)
 	read.PUT("/issues", handlers.UpdateRoomIssue)
+
 	read.PUT("/issues/:issueID/resolve", handlers.ResolveIssue)
+	read.GET("/issues/:issueID", handlers.GetRoomIssue)
+
 	read.GET("/issues/resolutions", handlers.GetClosureCodes)
+
+	read.GET("/issues/queue", handlers.GetAlertStoreQueueStatus)
 
 	write.PUT("/alerts/add", handlers.AddAlert)
 

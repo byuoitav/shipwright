@@ -43,3 +43,7 @@ func ResolveIssue(resInfo structs.ResolutionInfo, id string) *nerr.E {
 func ResolvePartialIssue(resInfo structs.ResolutionInfo, id string, alertIDs []string) *nerr.E {
 	return store.resolvePartialRoomIssue(resInfo, id, alertIDs)
 }
+
+func GetQueueStatus() Status {
+	return store.getQueueStatus()
+}
