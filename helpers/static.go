@@ -67,12 +67,14 @@ func GetAllRoomCombinedStateRecords() ([]RoomCombinedState, *nerr.E) {
 	}
 
 	//static devices
+
 	for _, sDevice := range sDevices {
 		roomCombinedState, ok := correlation[sDevice.Room]
 
 		if !ok {
 			roomCombinedState = RoomCombinedState{}
 			roomCombinedState.RoomID = sDevice.Room
+			correlation[sDevice.Room] = roomCombinedState
 		}
 
 		roomCombinedState.StaticDevices = append(roomCombinedState.StaticDevices, sDevice)
@@ -85,6 +87,7 @@ func GetAllRoomCombinedStateRecords() ([]RoomCombinedState, *nerr.E) {
 		if !ok {
 			roomCombinedState = RoomCombinedState{}
 			roomCombinedState.RoomID = roomIssue.RoomID
+			correlation[roomIssue.RoomID] = roomCombinedState
 		}
 
 		roomCombinedState.RoomIssues = append(roomCombinedState.RoomIssues, roomIssue)
