@@ -5,6 +5,8 @@ import { ConfigurationComponent } from './components/configuration/configuration
 import { CampusStateComponent } from './components/state/campus/campus-state.component';
 import { RoomListComponent } from './components/configuration/roomlist/roomlist.component';
 import { RoomPageComponent } from './components/configuration/roompage/roompage.component';
+import { RoomStateComponent } from './components/state/room/room-state.component';
+import { DeviceStateComponent } from './components/state/device-state/device-state.component';
 
 const routes: Routes = [
   {
@@ -21,8 +23,16 @@ const routes: Routes = [
     component: ConfigurationComponent
   },
   {
-    path: "state",
-    component: CampusStateComponent
+    path: "campus",
+    component: ConfigurationComponent
+  },
+  {
+    path: "roomStatus",
+    component: RoomStateComponent
+  },
+  {
+    path: "deviceStatus",
+    component: DeviceStateComponent
   },
   {
     path: "configuration/:buildingID/roomlist",

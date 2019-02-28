@@ -7,6 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/services/data.service';
 import { RoomIssue, Alert } from 'src/app/objects/alerts';
 import { SelectionModel } from '@angular/cdk/collections';
+import { DashPanelTypes } from 'src/app/services/dashpanel.service';
 
 @Component({
   selector: 'alert-table',
@@ -23,7 +24,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 
 export class AlertTableComponent implements OnInit, IDashPanel {
   @Input() info: RoomIssue[] = [];
-  @Input() chosenSeverity: string;
+  @Input() chosenSeverity: DashPanelTypes;
   @Input() singleRoom: boolean = false;
   roomID: string;
   charCount = 40;

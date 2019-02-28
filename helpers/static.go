@@ -1,10 +1,106 @@
 package helpers
 
 import (
+	"fmt"
+
+	"github.com/byuoitav/shipwright/alertstore"
+
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	sd "github.com/byuoitav/common/state/statedefinition"
+	"github.com/byuoitav/common/structs"
 	cache "github.com/byuoitav/shipwright/state/cache"
 )
+
+// RoomCombinedState -
+type RoomCombinedState struct {
+	RoomID           string              `json:"roomID"`
+	StaticRoom       sd.StaticRoom       `json:"static-room"`
+	RoomIssues       []structs.RoomIssue `json:"room-issues"`
+	ActiveAlertCount int                 `json:"active-alert-count"`
+	TotalAlertCount  int                 `json:"total-alert-count"`
+	StaticDevices    []sd.StaticDevice   `json:"static-devices"`
+}
+
+// GetAllRoomCombinedStateRecords returns a list of combined room state records
+func GetAllRoomCombinedStateRecords() ([]RoomCombinedState, *nerr.E) {
+	var retValue []RoomCombinedState
+
+	//first, get all the static rooms
+	sRooms, err := GetAllStaticRoomRecords()
+	if err != nil {
+		msg := fmt.Sprintf("failed to get all static room records : %s", err.Error())
+		log.L.Errorf("%s %s", "GetAllRoomCombinedStateRecords", msg)
+		return retValue, err
+	}
+
+	//second, get all the static device records
+	sDevices, err := GetAllStaticDeviceRecords()
+	if err != nil {
+		msg := fmt.Sprintf("failed to get all static device records : %s", err.Error())
+		log.L.Errorf("%s %s", "GetAllRoomCombinedStateRecords", msg)
+		return retValue, err
+	}
+
+	//third, get all of the room issues
+	roomIssues, err := alertstore.GetAllIssues()
+	if err != nil {
+		msg := fmt.Sprintf("failed to get all room issues : %s", err.Error())
+		log.L.Errorf("%s %s", "GetAllRoomCombinedStateRecords", msg)
+		return retValue, err
+	}
+
+	//now do the correlation and the counting
+	correlation := make(map[string]RoomCombinedState)
+
+	//static rooms
+	for _, sRoom := range sRooms {
+		roomCombinedState, ok := correlation[sRoom.RoomID]
+
+		if !ok {
+			roomCombinedState = RoomCombinedState{}
+			roomCombinedState.RoomID = sRoom.RoomID
+		}
+
+		roomCombinedState.StaticRoom = sRoom
+	}
+
+	//static devices
+	for _, sDevice := range sDevices {
+		roomCombinedState, ok := correlation[sDevice.Room]
+
+		if !ok {
+			roomCombinedState = RoomCombinedState{}
+			roomCombinedState.RoomID = sDevice.Room
+		}
+
+		roomCombinedState.StaticDevices = append(roomCombinedState.StaticDevices, sDevice)
+	}
+
+	//room issues
+	for _, roomIssue := range roomIssues {
+		roomCombinedState, ok := correlation[roomIssue.RoomID]
+
+		if !ok {
+			roomCombinedState = RoomCombinedState{}
+			roomCombinedState.RoomID = roomIssue.RoomID
+		}
+
+		roomCombinedState.RoomIssues = append(roomCombinedState.RoomIssues, roomIssue)
+
+		//add to the count
+		roomCombinedState.ActiveAlertCount += roomIssue.AlertActiveCount
+		roomCombinedState.TotalAlertCount += roomIssue.AlertCount
+	}
+
+	//convert to array
+	for _, value := range correlation {
+		retValue = append(retValue, value)
+	}
+
+	//return
+	return retValue, nil
+}
 
 // GetAllStaticDeviceRecords returns a list of all the static device records
 func GetAllStaticDeviceRecords() ([]sd.StaticDevice, *nerr.E) {
