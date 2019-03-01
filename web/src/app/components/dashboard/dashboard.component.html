@@ -1,4 +1,18 @@
 <mat-progress-bar *ngIf="!data.finished" color="warn" mode="determinate" [value]="data.completedOperations"></mat-progress-bar>
-<div class="container">
-    <dashpanel [ngClass]="panelCount.length > 1 ? 'panel multi':'panel'" *ngFor="let p of panelCount; let i = index;" [panelType]="GetDefaultPanels(i)"></dashpanel>
-</div>
+<mat-grid-list         
+    cols="2" 
+    rowHeight="100%"> 
+    <mat-grid-tile class="alignTop">
+        <dashpanel class="dashpanelClass" [panelType]="GetDefaultPanels(0)"></dashpanel>
+    </mat-grid-tile>
+    <mat-grid-tile class="alignTop" *ngIf="panelCount.length >= 2">
+        <dashpanel class="dashpanelClass" [panelType]="GetDefaultPanels(1)"></dashpanel>
+    </mat-grid-tile>
+    <mat-grid-tile class="alignTop" *ngIf="panelCount.length >= 3"
+        [colspan]="panelCount.length == 3 ? 2 : 1">
+        <dashpanel class="dashpanelClass" [panelType]="GetDefaultPanels(2)"></dashpanel>
+    </mat-grid-tile>
+    <mat-grid-tile class="alignTop" *ngIf="panelCount.length >= 4">
+        <dashpanel class="dashpanelClass" [panelType]="GetDefaultPanels(3)"></dashpanel>
+    </mat-grid-tile>
+</mat-grid-list>    

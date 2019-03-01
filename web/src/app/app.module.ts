@@ -30,7 +30,8 @@ import {
   MatChipsModule,
   MAT_DIALOG_DATA,
   MatSlideToggleModule,
-  MatAutocompleteModule
+  MatAutocompleteModule,
+  MatGridListModule
 } from "@angular/material";
 
 import { AppRoutingModule } from './app-routing.module';
@@ -142,7 +143,8 @@ import { DeviceStateComponent } from './components/state/device-state/device-sta
     MatSlideToggleModule,
     MatAutocompleteModule,
     DndModule.forRoot(),
-    NotifierModule
+    NotifierModule,
+    MatGridListModule
   ],
   entryComponents: [
     SettingsModalComponent,

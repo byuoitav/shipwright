@@ -105,11 +105,35 @@ button {
 }
 
 .container {
-    width: 97%;
-    margin: auto;
-    &.small {
-        width: 50%;
-    }
+    // width: 97%;
+    // margin: auto;
+    // &.small {
+    //     width: 50%;
+    // }
+    max-height: 100%;
+    overflow-y:scroll;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 4px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 1px grey; 
+    border-radius: 2px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: black; 
+    border-radius: 2px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: darkgray; 
 }
 
 

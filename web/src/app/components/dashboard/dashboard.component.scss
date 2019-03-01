@@ -1,15 +1,23 @@
-.container {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-evenly;
-}
+// .container {
+//     // display: flex;
+//     // flex-flow: row wrap;
+//     // justify-content: space-evenly;
+// }
 
-.panel {
-    min-width: 30%;
-    // max-width: 49%;
-    flex: 1 1 auto;
-    &.multi {
-        max-width: 45%;
+// .panel {
+//     min-width: 30%;
+//     // max-width: 49%;
+//     flex: 1 1 auto;
+//     &.multi {
+//         max-width: 45%;
+//     }
+// }
+
+.alignTop {    
+    ::ng-deep {
+        .mat-figure {
+            align-items: flex-start !important;
+        }
     }
 }
 
@@ -22,4 +30,8 @@
 
 .settings {
     margin: 5px;
+}
+
+.dashpanelClass {
+    height: calc(100% - 60px)
 }
