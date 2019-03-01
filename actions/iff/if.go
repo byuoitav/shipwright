@@ -8,10 +8,10 @@ import (
 
 // If represents the set of conditions to running an action
 type If struct {
-	EventMatch     *EventMatch     `json:"event-match"`
-	AlertMatch     *AlertMatch     `json:"alert-match"`
-	RoomIssueMatch *RoomIssueMatch `json:"room-issue-match"`
-	StateQuery     *StateQuery     `json:"state-query"`
+	EventMatch     *EventMatch     `json:"event-match,omitempty"`
+	AlertMatch     *AlertMatch     `json:"alert-match,omitempty"`
+	RoomIssueMatch *RoomIssueMatch `json:"room-issue-match,omitempty"`
+	StateQuery     *StateQuery     `json:"state-query,omitempty"`
 }
 
 // Check returns whether or not the if check passes
