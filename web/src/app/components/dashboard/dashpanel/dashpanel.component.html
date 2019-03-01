@@ -1,12 +1,10 @@
-<h3>{{title}}</h3>
-<!-- <mat-form-field>
-    <mat-select [(ngModel)]="panelType" (ngModelChange)="ChoosePanel(panelType)" color="accent" #pType>
-        <mat-option [value]="GetValue('AllAlerts')">All Alerts</mat-option>
-        <mat-option [value]="GetValue('CriticalAlerts')">Critical Alerts</mat-option>
-        <mat-option [value]="GetValue('WarnAlerts')">Warning Alerts</mat-option>            
-    </mat-select>
-</mat-form-field> -->
-
+<h3 style="width:100%">
+    <mat-form-field>
+        <mat-select [(ngModel)]="selectedPanel" (ngModelChange)="ChoosePanel()">
+            <mat-option *ngFor="let panel of possiblePanels" [value]="panel">{{panel.title}}</mat-option>        
+        </mat-select>
+    </mat-form-field>
+</h3>
 
 <div class="tableContainer">
     <ng-template dashDirect></ng-template>

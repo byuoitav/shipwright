@@ -17,6 +17,7 @@
     ::ng-deep {
         .mat-figure {
             align-items: flex-start !important;
+            justify-content: left;
         }
     }
 }
@@ -33,5 +34,6 @@
 }
 
 .dashpanelClass {
-    height: calc(100% - 60px)
+    height: calc(100% - 60px);
+    margin: 0px 5px;
 }

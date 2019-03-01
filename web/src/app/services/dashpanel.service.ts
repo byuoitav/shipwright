@@ -16,6 +16,7 @@ export const enum DashPanelTypes {
 }
 
 export class DashPanelConfig {
+  dashPanelType: DashPanelTypes;
   component: any;
   title: string;
 }
@@ -24,44 +25,44 @@ export class DashPanelConfig {
   providedIn: 'root'
 })
 export class DashPanelService {
-   getPanel(panelType: DashPanelTypes) : DashPanelConfig {
-    
-    if (panelType == DashPanelTypes.AllAlerts)
-    return {
+   configs: DashPanelConfig[] = [
+    {
+      dashPanelType: DashPanelTypes.AllAlerts,
       component: AlertTableComponent,
       title: "All Alerts"
-    };
-
-    if (panelType == DashPanelTypes.CriticalAlerts)
-    return {
+    },
+    {
+      dashPanelType: DashPanelTypes.CriticalAlerts,
       component: AlertTableComponent,
       title: "Critical Alerts"
-    };
-
-    if (panelType == DashPanelTypes.WarningAlerts)
-    return {
+    },
+    {
+      dashPanelType: DashPanelTypes.WarningAlerts,
       component: AlertTableComponent,
       title: "Warning Alerts"
-    };
-
-    if (panelType == DashPanelTypes.LowSeverityAlerts)
-    return {
+    },
+    {
+      dashPanelType: DashPanelTypes.LowSeverityAlerts,
       component: AlertTableComponent,
       title: "Low Severity Alerts"
-    };
-
-    if (panelType == DashPanelTypes.RecentlyResolvedAlerts)
-    return {
+    },
+    {
+      dashPanelType: DashPanelTypes.RecentlyResolvedAlerts,
       component: AlertTableComponent,
       title: "Recently Resolved Alerts"
-    };
-
-    if (panelType == DashPanelTypes.MaintenanceRoomAlerts)
-    return {
+    },
+    {
+      dashPanelType: DashPanelTypes.MaintenanceRoomAlerts,
       component: AlertTableComponent,
       title: "Maintenance Room Alerts"
-    };
-    
-    return null;
-  }
+    },
+   ];
+  
+   getPanel(panelType: DashPanelTypes) : DashPanelConfig {
+    return this.configs.find(one => one.dashPanelType == panelType);    
+   }
+
+   getAllPanelConfigs() : DashPanelConfig[] {
+     return this.configs;
+   }
 }
