@@ -13,42 +13,42 @@ type RoomIssueMatch struct {
 	count int
 	init  sync.Once
 
-	RoomIssueID string `json:"id"`
-	BuildingID  string `json:"buildingID"`
-	RoomID      string `json:"roomID"`
+	RoomIssueID string `json:"id,omitempty"`
+	BuildingID  string `json:"buildingID,omitempty"`
+	RoomID      string `json:"roomID,omitempty"`
 
-	Severity string `json:"severity"`
+	Severity string `json:"severity,omitempty"`
 
-	RoomTags []string `json:"room-tags"`
+	RoomTags []string `json:"room-tags,omitempty"`
 
-	AlertTypes      []string `json:"alert-types"`
-	AlertDevices    []string `json:"alert-devices"`
-	AlertCategories []string `json:"alert-categories"`
-	AlertCount      *int     `json:"alert-count"`
+	AlertTypes      []string `json:"alert-types,omitempty"`
+	AlertDevices    []string `json:"alert-devices,omitempty"`
+	AlertCategories []string `json:"alert-categories,omitempty"`
+	AlertCount      *int     `json:"alert-count,omitempty"`
 
-	ActiveAlertTypes      []string `json:"active-alert-types"`
-	ActiveAlertDevices    []string `json:"active-alert-devices"`
-	ActiveAlertCategories []string `json:"active-alert-categories"`
-	AlertActiveCount      *int     `json:"active-alert-count"`
+	ActiveAlertTypes      []string `json:"active-alert-types,omitempty"`
+	ActiveAlertDevices    []string `json:"active-alert-devices,omitempty"`
+	ActiveAlertCategories []string `json:"active-alert-categories,omitempty"`
+	AlertActiveCount      *int     `json:"active-alert-count,omitempty"`
 
-	SystemType string `json:"system-type"`
+	SystemType string `json:"system-type,omitempty"`
 
-	IssueTags  []string `json:"issue-tags"`
-	IncidentID string   `json:"incident-id"`
-	Notes      string   `json:"notes"`
+	IssueTags  []string `json:"issue-tags,omitempty"`
+	IncidentID string   `json:"incident-id,omitempty"`
+	Notes      string   `json:"notes,omitempty"`
 
-	Responders    []string `json:"responders"`
-	HelpSentAt    string   `json:"help-sent-at"`
-	HelpArrivedAt string   `json:"help-arrived-at"`
+	Responders    []string `json:"responders,omitempty"`
+	HelpSentAt    string   `json:"help-sent-at,omitempty"`
+	HelpArrivedAt string   `json:"help-arrived-at,omitempty"`
 
-	Resolved       *bool `json:"resolved"`
+	Resolved       *bool `json:"resolved,omitempty"`
 	ResolutionInfo struct {
-		Code       string `json:"resolution-code"`
-		Notes      string `json:"notes"`
-		ResolvedAt string `json:"resolved-at"`
-	} `json:"resolution-info"`
+		Code       string `json:"resolution-code,omitempty"`
+		Notes      string `json:"notes,omitempty"`
+		ResolvedAt string `json:"resolved-at,omitempty"`
+	} `json:"resolution-info,omitempty"`
 
-	NotesLog []string `json:"notes-log"`
+	NotesLog []string `json:"notes-log,omitempty"`
 
 	regex struct {
 		RoomIssueID *regexp.Regexp

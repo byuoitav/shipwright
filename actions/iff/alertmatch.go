@@ -15,30 +15,30 @@ type AlertMatch struct {
 	count int
 	init  sync.Once
 
-	AlertID    string `json:"id"`
-	BuildingID string `json:"buildingID"`
-	RoomID     string `json:"roomID"`
-	DeviceID   string `json:"deviceID"`
+	AlertID    string `json:"id,omitempty"`
+	BuildingID string `json:"buildingID,omitempty"`
+	RoomID     string `json:"roomID,omitempty"`
+	DeviceID   string `json:"deviceID,omitempty"`
 
-	Type     string `json:"type"`
-	Category string `json:"category"`
-	Severity string `json:"severity"`
+	Type     string `json:"type,omitempty"`
+	Category string `json:"category,omitempty"`
+	Severity string `json:"severity,omitempty"`
 
-	Message    string   `json:"message"`
-	MessageLog []string `json:"message-log"`
-	Data       string   `json:"data,omitempty"`
-	SystemType string   `json:"system-type"`
-	Requester  string   `json:"requester"`
+	Message    string   `json:"message,omitempty"`
+	MessageLog []string `json:"message-log,omitempty"`
+	Data       string   `json:"data,omitempty,omitempty"`
+	SystemType string   `json:"system-type,omitempty"`
+	Requester  string   `json:"requester,omitempty"`
 
-	AlertStartTime      string `json:"start-time"`
-	AlertEndTime        string `json:"end-time"`
-	AlertLastUpdateTime string `json:"update-time"`
+	AlertStartTime      string `json:"start-time,omitempty"`
+	AlertEndTime        string `json:"end-time,omitempty"`
+	AlertLastUpdateTime string `json:"update-time,omitempty"`
 
 	Active *bool `json:"active"`
 
-	AlertTags  []string `json:"alert-tags"`
-	RoomTags   []string `json:"room-tags"`
-	DeviceTags []string `json:"device-tags"`
+	AlertTags  []string `json:"alert-tags,omitempty"`
+	RoomTags   []string `json:"room-tags,omitempty"`
+	DeviceTags []string `json:"device-tags,omitempty"`
 
 	regex struct {
 		AlertID    *regexp.Regexp

@@ -14,22 +14,22 @@ type EventMatch struct {
 	Count int
 	init  sync.Once
 
-	GeneratingSystem string   `json:"generating-system"`
-	Timestamp        string   `json:"timestamp"`
-	EventTags        []string `json:"event-tags"`
-	Key              string   `json:"key"`
-	Value            string   `json:"value"`
-	User             string   `json:"user"`
+	GeneratingSystem string   `json:"generating-system,omitempty"`
+	Timestamp        string   `json:"timestamp,omitempty"`
+	EventTags        []string `json:"event-tags,omitempty"`
+	Key              string   `json:"key,omitempty"`
+	Value            string   `json:"value,omitempty"`
+	User             string   `json:"user,omitempty"`
 	Data             string   `json:"data,omitempty"`
 	AffectedRoom     struct {
 		BuildingID string `json:"buildingID,omitempty"`
 		RoomID     string `json:"roomID,omitempty"`
-	} `json:"affected-room"`
+	} `json:"affected-room,omitempty"`
 	TargetDevice struct {
 		BuildingID string `json:"buildingID,omitempty"`
 		RoomID     string `json:"roomID,omitempty"`
 		DeviceID   string `json:"deviceID,omitempty"`
-	} `json:"target-device"`
+	} `json:"target-device,omitempty"`
 
 	regex struct {
 		GeneratingSystem *regexp.Regexp

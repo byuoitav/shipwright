@@ -18,7 +18,7 @@ type Action struct {
 	If      iff.If      `json:"if"`
 	Then    []then.Then `json:"then"`
 
-	Log *zap.SugaredLogger
+	Log *zap.SugaredLogger `json:"-"`
 	atomicFields
 }
 
