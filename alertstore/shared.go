@@ -24,23 +24,12 @@ func GenerateAlertID(a structs.Alert) string {
 }
 
 func GenerateIssueID(a structs.Alert) string {
-	return fmt.Sprintf("%v^%v^%v^%v", a.RoomID, a.Severity)
+	return fmt.Sprintf("%v", a.RoomID)
 }
 
+//for now it's the same as the roomID
 func GetIssueIDFromAlertID(alertID string) string {
-	parts := strings.Split(alertID, "^")
-	if len(parts) < 4 {
-		log.L.Errorf("Unkown id format %v", alertID)
-		return ""
-	}
-	devparts := strings.Split(parts[0], "-")
-	if len(devparts) < 3 {
-		log.L.Errorf("Unkown id format %v", alertID)
-		return ""
-	}
-
-	return fmt.Sprintf("%v-%v^%v", devparts[0], devparts[1], parts[3])
-
+	return ParseRoomFromAlertID(alertID)
 }
 
 //ParseRoomFromID .
@@ -51,6 +40,10 @@ func ParseRoomFromAlertID(alertID string) string {
 		return ""
 	}
 	devparts := strings.Split("-", parts[0])
+	if len(devparts) < 3 {
+		log.L.Errorf("Unkown id format %v", alertID)
+		return ""
+	}
 
 	return fmt.Sprintf("%v-%v", devparts[0], devparts[1])
 }
