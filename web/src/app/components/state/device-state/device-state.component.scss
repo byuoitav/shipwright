@@ -1,0 +1,61 @@
+.container {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.device-list {
+  width: 90%;
+
+  .mat-form-field {
+    font-size: 1em;
+    width: 100%;
+  }
+
+  ::ng-deep.mat-sort-header-position-before {
+    justify-content: flex-end;
+  }
+
+  .table {
+    width: 100%;
+
+    .header-text {
+      font-size: 1.2em;
+    }
+
+    .mat-icon-button {
+      width: 1.8em;
+
+      .material-icons {
+        font-size: 1.6em;
+      }
+    }
+  }
+}
+
+.col-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 10%;
+
+  .col {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+
+    .mat-button {
+      padding: 0;
+    }
+
+    .text {
+      text-align: left;
+      margin-left: 10%;
+    }
+  }
+}
+
+.space {
+  flex: 1 1 auto;
+}

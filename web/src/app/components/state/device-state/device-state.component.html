@@ -1,3 +1,52 @@
-<p>
-  device-state works!
-</p>
+<div class="container">
+  <div class="col-list">
+    <div class="col" *ngFor="let col of allColumns">
+      <ng-container *ngIf="displayedColumns?.indexOf(col) < 0">
+        <button mat-button class="text" disabled>{{ col }}</button>
+        <span class="space"></span>
+        <button mat-icon-button (click)="addColumn(col)">
+          <mat-icon>add</mat-icon>
+        </button>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="device-list">
+    <mat-form-field>
+      <input
+        matInput
+        (keyup)="applyFilter($event.target.value)"
+        placeholder="Filter"
+      />
+    </mat-form-field>
+
+    <table mat-table [dataSource]="dataSource" class="table" matSort>
+      <ng-container [matColumnDef]="column" *ngFor="let column of allColumns">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          arrowPosition="before"
+        >
+          <span class="header-text">{{ column }}</span>
+          <button
+            *ngIf="displayedColumns?.indexOf(column) !== 0"
+            mat-icon-button
+            (click)="shiftLeft(column)"
+          >
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <button mat-icon-button (click)="removeColumn(column)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </th>
+        <td mat-cell *matCellDef="let element">{{ element[column] }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[64, 128, 256]"></mat-paginator>
+  </div>
+</div>
