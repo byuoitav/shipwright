@@ -665,6 +665,26 @@ export class APIService {
     }
   }
 
+  public async GetAllStaticRooms() {
+    try {
+      const data: any = await this.http
+        .get("static/rooms/state", { headers: this.headers })
+        .toPromise();
+      let records: StaticDevice[] = [];
+      for (let sd of data) {
+        let rec = this.converter.deserializeObject(sd, StaticDevice);
+
+        rec.updateTimes = sd["field-state-received"];
+
+        records.push(rec);
+      }
+
+      return records;
+    } catch (e) {
+      throw new Error("error getting the static device records: " + e);
+    }
+  }
+
   // Alert Functions
   public async GetAllIssues() {
     try {

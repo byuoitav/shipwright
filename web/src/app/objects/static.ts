@@ -236,34 +236,38 @@ export class RoomStatus {
     this.alertingCount = 0;
     this.goodCount = 0;
     let alertingDevices : string[] = [];
-
-    for(let sd of this.deviceStates) {
-      this.deviceCount++
-      for (let ri of this.roomIssues) {
-        let alerting = false;
-        for (let ad of ri.alertDevices){
-          if(sd.deviceID == ad) {
-            let exists = false;
-            for (let already of alertingDevices){
-              if (already == ad){
-                exists = true;
-                break
+      for(let sd of this.deviceStates) {
+        this.deviceCount++
+        for (let ri of this.roomIssues) {
+          let alerting = false;
+          for (let ad of ri.alertDevices){
+            if(sd.deviceID == ad) {
+              let exists = false;
+              for (let already of alertingDevices){
+                if (already == ad){
+                  exists = true;
+                  break
+                }
+              }
+              if (!exists){
+                this.alertingCount++;
+                alertingDevices.push(ad);
+                alerting = true;
               }
             }
-            if (!exists){
-              this.alertingCount++;
-              alertingDevices.push(ad);
-              alerting = true;
-            }
           }
-        }
-        if (!alerting){
-          this.goodCount++;
+          if (!alerting){
+            this.goodCount++;
+          }
         }
       }
     }
   }
-}
+
+  export class StaticRoom{
+    
+  }
+
 
   @JsonObject("BuildingStatus")
   export class BuildingStatus {
