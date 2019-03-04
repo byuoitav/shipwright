@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from "@angular/core";
 import { MatPaginator, MatSort, MatTableDataSource } from "@angular/material";
 
 import { DataService } from "../../../services/data.service";
-import { StaticDevice } from "../../../objects/state";
+import { StaticDevice } from "../../../objects/static";
 
 @Component({
   selector: "app-device-state",
@@ -13,7 +13,7 @@ export class DeviceStateComponent implements OnInit {
   allColumns: string[] = ["deviceID", "input", "room", "modelName", "power"];
   displayedColumns: string[] = ["deviceID", "power", "input"];
 
-  dataSource: MatTableDataSource<StaticDevice[]>;
+  dataSource: MatTableDataSource<StaticDevice>;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
