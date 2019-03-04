@@ -3,6 +3,7 @@
   "rules": {
     "directive-selector": [true, "attribute", "app", "camelCase"],
     "component-selector": [true, "element", "app", "kebab-case"],
-    "quotemark": [true, "double"]
+    "quotemark": [true, "double"],
+    "semicolon": [true, "always", "ignore-bound-class-methods"]
   }
 }

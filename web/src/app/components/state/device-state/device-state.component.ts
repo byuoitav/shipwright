@@ -10,8 +10,8 @@ import { StaticDevice } from "../../../objects/static";
   styleUrls: ["./device-state.component.scss"]
 })
 export class DeviceStateComponent implements OnInit {
-  allColumns: string[] = ["deviceID", "input", "room", "modelName", "power"];
-  displayedColumns: string[] = ["deviceID", "power", "input"];
+  allColumns: string[] = [];
+  displayedColumns: string[] = [];
 
   dataSource: MatTableDataSource<StaticDevice>;
 
@@ -25,10 +25,45 @@ export class DeviceStateComponent implements OnInit {
       this.dataSource = new MatTableDataSource(this.data.staticDeviceList);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.filterPredicate = this.filterPred;
+
+      if (
+        this.data.staticDeviceList != null &&
+        this.data.staticDeviceList.length > 0
+      ) {
+        this.allColumns = Object.keys(this.data.staticDeviceList[0]).sort();
+        this.displayedColumns.push(...["deviceID", "power", "input"]);
+      }
 
       console.log("deviceList", this.data.staticDeviceList);
     });
   }
+
+  filterPred = (data: StaticDevice, filter: string) => {
+    const datastr = Object.keys(data)
+      .reduce((currentTerm: string, key: string) => {
+        if (data[key] == null || data[key] === undefined) {
+          return currentTerm;
+        }
+
+        return currentTerm + (data as { [key: string]: any })[key] + "◬";
+      }, "")
+      .toLowerCase();
+
+    // trim ending whitespace and turn filter into lowercase
+    filter = filter.trim().toLowerCase();
+
+    // assume filter string is a space delimated set of AND's
+    const split = filter.split(" ");
+
+    for (const term of split) {
+      if (datastr.indexOf(term) < 0) {
+        return false;
+      }
+    }
+
+    return true;
+  };
 
   public removeColumn(col: string) {
     const idx = this.displayedColumns.indexOf(col, 0);
@@ -59,11 +94,5 @@ export class DeviceStateComponent implements OnInit {
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
-  }
-
-  public diff<T>(a1: T[], a2: T[]): T[] {
-    return a1.filter(i => {
-      return a2.indexOf(i) < 0;
-    });
   }
 }
