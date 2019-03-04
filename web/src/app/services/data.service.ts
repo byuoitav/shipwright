@@ -6,6 +6,7 @@ import { SocketService } from './socket.service';
 import { StaticDevice, RoomStatus, BuildingStatus } from '../objects/static';
 import { StringsService } from './strings.service';
 import { NotifierService } from 'angular-notifier';
+import { RSA_NO_PADDING } from 'constants';
 
 @Injectable({
   providedIn: 'root'
@@ -315,6 +316,7 @@ export class DataService {
           rs.deviceStates.push(sd)
           rs.roomIssues = this.GetRoomIssues(rs.roomID)
           added = true
+          rs.UpdateAlerts()
         }
       }
       if(!added) {
@@ -323,6 +325,7 @@ export class DataService {
         roomState.roomID = roomID
         roomState.deviceStates = [sd]
         roomState.roomIssues = this.GetRoomIssues(roomState.roomID)
+        roomState.UpdateAlerts()
         this.roomStatusList.push(roomState)
       }
     }
