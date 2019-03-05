@@ -3,7 +3,7 @@ import { APIService } from './api.service';
 import { Building, Room, Device, UIConfig, DeviceType, Role, RoomConfiguration, Template } from '../objects/database';
 import { RoomIssue } from '../objects/alerts';
 import { SocketService } from './socket.service';
-import { StaticDevice, RoomStatus, BuildingStatus } from '../objects/static';
+import { StaticDevice, RoomStatus, BuildingStatus, CombinedRoomState } from '../objects/static';
 import { StringsService } from './strings.service';
 import { NotifierService } from 'angular-notifier';
 import { RSA_NO_PADDING } from 'constants';
@@ -36,6 +36,7 @@ export class DataService {
   staticDeviceList: StaticDevice[] = [];
   roomStatusList: RoomStatus[] = [];
   buildingStatusList: BuildingStatus[] = [];
+  combinedRoomStateList: CombinedRoomState[] = [];
 
   loaded: EventEmitter<boolean>;
   finished: boolean = false;
@@ -93,6 +94,8 @@ export class DataService {
     await this.GetBuildingStatusList(); //   16
     this.completedOperations += this.increment;
     await this.GetClosureCodes(); //         17
+    this.completedOperations += this.increment;
+    await this.GetCombinedRoomState();//     18
     this.completedOperations += this.increment;
      this.finished = true;
      this.loaded.emit(true);     
@@ -329,6 +332,14 @@ export class DataService {
         this.roomStatusList.push(roomState)
       }
     }
+  }
+
+  private async GetCombinedRoomState(){
+    await this.api.GetAllCombinedRoomStates().then((records) => {
+      console.log("record: ",records)
+      this.combinedRoomStateList = records;
+      // this.GetRoomStatusList();
+    })
   }
 
   private async GetBuildingStatusList() {

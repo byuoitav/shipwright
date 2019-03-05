@@ -2,7 +2,7 @@ import { Injectable, EventEmitter } from "@angular/core";
 import { JsonConvert, Any } from "json2typescript";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Building, DBResponse, Room, RoomConfiguration, Device, DeviceType, Role, UIConfig, Template } from '../objects/database';
-import { StaticDevice } from '../objects/static';
+import { StaticDevice, CombinedRoomState } from '../objects/static';
 import { RoomIssue, Alert } from '../objects/alerts';
 
 @Injectable({
@@ -664,6 +664,25 @@ export class APIService {
       throw new Error("error getting the static device records: " + e);
     }
   }
+
+  // Combined room Functions
+  public async GetAllCombinedRoomStates() {
+    try {
+      const data: any = await this.http
+        .get("static/rooms/state", { headers: this.headers })
+        .toPromise();
+      let records: CombinedRoomState[]=[];
+      for (let sd of data) {
+        let rec = this.converter.deserializeObject(sd, CombinedRoomState);
+        records.push(rec);
+      }
+      console.log("is this even running?")
+      return records;
+    } catch (e) {
+      throw new Error("error getting the Combined Room State records: " + e);
+    }
+  }
+
 
   public async GetAllStaticRooms() {
     try {
