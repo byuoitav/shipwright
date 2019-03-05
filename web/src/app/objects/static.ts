@@ -1,5 +1,11 @@
-import { JsonObject, JsonProperty, JsonConverter, JsonCustomConvert } from "json2typescript";
-import { RoomIssue } from "./alerts";
+import {
+  JsonObject,
+  JsonProperty,
+  JsonConverter,
+  JsonCustomConvert
+} from "json2typescript";
+import { RoomIssue, Alert } from "./alerts";
+import { Room } from './database';
 
 @JsonConverter
 class DateConverter implements JsonCustomConvert<Date> {
@@ -232,32 +238,36 @@ export class RoomStatus {
   roomIssues: RoomIssue[] = [];
 
   UpdateAlerts() {
+    if (!this.roomIssues) {
+      return;
+    }
+
     this.deviceCount = 0;
     this.alertingCount = 0;
     this.goodCount = 0;
-    let alertingDevices : string[] = [];
+    const alertingDevices: string[] = [];
+    for (const sd of this.deviceStates) {
+      this.deviceCount++;
 
-    for(let sd of this.deviceStates) {
-      this.deviceCount++
-      for (let ri of this.roomIssues) {
+      for (const ri of this.roomIssues) {
         let alerting = false;
-        for (let ad of ri.alertDevices){
-          if(sd.deviceID == ad) {
+        for (const ad of ri.alertDevices) {
+          if (sd.deviceID === ad) {
             let exists = false;
-            for (let already of alertingDevices){
-              if (already == ad){
+            for (const already of alertingDevices) {
+              if (already === ad) {
                 exists = true;
-                break
+                break;
               }
             }
-            if (!exists){
+            if (!exists) {
               this.alertingCount++;
               alertingDevices.push(ad);
               alerting = true;
             }
           }
         }
-        if (!alerting){
+        if (!alerting) {
           this.goodCount++;
         }
       }
@@ -265,39 +275,85 @@ export class RoomStatus {
   }
 }
 
-  @JsonObject("BuildingStatus")
-  export class BuildingStatus {
-    @JsonProperty("building-id", String, true)
-    buildingID: string = undefined;
+@JsonObject("StaticRoom")
+export class StaticRoom {
+  @JsonProperty("buildingID", String, true)
+  buildingID: string = undefined;
 
-    @JsonProperty("room-count", Number, true)
-    roomCount: number = undefined;
+  @JsonProperty("roomID", String, true)
+  roomID: string = undefined;
 
-    @JsonProperty("alerting-room-count", Number, true)
-    alertingCount: number = undefined;
+  //Not sure shy I can't put time in JsonProperty
+  // @JsonProperty("maintenence-mode-until", true)
+  // maintenence: Time = undefined;
 
-    @JsonProperty("good-room-count", Number, true)
-    goodCount: number = undefined;
+  @JsonProperty("designation", String, true)
+  designation: string = undefined;
 
-    @JsonProperty("room-states", [RoomStatus], true)
-    roomStates: RoomStatus[] = Array<RoomStatus>();
+  @JsonProperty("system-type", [String], true)
+  systemType: string[] = Array<string>();
 
-    constructor() {
+  //Not sure what how to label this type Go: map[string]time.Time
+  // @JsonProperty("update-times", true)
+  // updateTimes: [string] = undefined;
+}
 
-    }
+@JsonObject("BuildingStatus")
+export class BuildingStatus {
+  @JsonProperty("building-id", String, true)
+  buildingID: string = undefined;
 
-    Update() {
-      this.roomCount = 0;
-      this.alertingCount = 0;
-      this.goodCount = 0;
+  @JsonProperty("room-count", Number, true)
+  roomCount: number = undefined;
 
-      for(let rs of this.roomStates) {
-        this.roomCount++;
-        if(rs.alertingCount > 0) {
-          this.alertingCount++
-        } else {
-          this.goodCount++
-        }
+  @JsonProperty("alerting-room-count", Number, true)
+  alertingCount: number = undefined;
+
+  @JsonProperty("good-room-count", Number, true)
+  goodCount: number = undefined;
+
+  @JsonProperty("room-states", [RoomStatus], true)
+  roomStates: RoomStatus[] = Array<RoomStatus>();
+
+  constructor() { }
+
+  Update() {
+    this.roomCount = 0;
+    this.alertingCount = 0;
+    this.goodCount = 0;
+
+    for (let rs of this.roomStates) {
+      this.roomCount++;
+      if (rs.alertingCount > 0) {
+        this.alertingCount++;
+      } else {
+        this.goodCount++;
       }
     }
   }
+}
+
+
+@JsonObject("CombinedRoomState")
+export class CombinedRoomState {
+  @JsonProperty("roomID", String, true)
+  roomID: string = undefined;
+
+  @JsonProperty("static-room", StaticRoom, true)
+  staticRoom: StaticRoom = undefined;
+
+  @JsonProperty("room-issues", [RoomIssue], true)
+  roomIssue: RoomIssue[] = Array<RoomIssue>();
+
+  @JsonProperty("all-alerts", [Alert], true)
+  alerts: Alert[] = Array<Alert>();
+
+  @JsonProperty("active-alert-count", Number, true)
+  activeAlertCount: number = undefined;
+
+  @JsonProperty("total-alert-count", Number, true)
+  totalAlertCount: number = undefined;
+
+  @JsonProperty("static-devices", [StaticDevice], true)
+  deviceStates: StaticDevice[] = Array<StaticDevice>();
+}
