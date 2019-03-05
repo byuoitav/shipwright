@@ -4,7 +4,8 @@ import {
   JsonConverter,
   JsonCustomConvert
 } from "json2typescript";
-import { RoomIssue } from "./alerts";
+import { RoomIssue, Alert } from "./alerts";
+import { Room } from './database';
 
 @JsonConverter
 class DateConverter implements JsonCustomConvert<Date> {
@@ -274,7 +275,28 @@ export class RoomStatus {
   }
 }
 
-export class StaticRoom {}
+@JsonObject("StaticRoom")
+export class StaticRoom {
+  @JsonProperty("buildingID", String, true)
+  buildingID: string = undefined;
+
+  @JsonProperty("roomID", String, true)
+  roomID: string = undefined;
+
+  //Not sure shy I can't put time in JsonProperty
+  // @JsonProperty("maintenence-mode-until", true)
+  // maintenence: Time = undefined;
+
+  @JsonProperty("designation", String, true)
+  designation: string = undefined;
+
+  @JsonProperty("system-type", [String], true)
+  systemType: string[] = Array<string>();
+
+  //Not sure what how to label this type Go: map[string]time.Time
+  // @JsonProperty("update-times", true)
+  // updateTimes: [string] = undefined;
+}
 
 @JsonObject("BuildingStatus")
 export class BuildingStatus {
@@ -293,7 +315,7 @@ export class BuildingStatus {
   @JsonProperty("room-states", [RoomStatus], true)
   roomStates: RoomStatus[] = Array<RoomStatus>();
 
-  constructor() {}
+  constructor() { }
 
   Update() {
     this.roomCount = 0;
@@ -309,4 +331,29 @@ export class BuildingStatus {
       }
     }
   }
+}
+
+
+@JsonObject("CombinedRoomState")
+export class CombinedRoomState {
+  @JsonProperty("roomID", String, true)
+  roomID: string = undefined;
+
+  @JsonProperty("static-room", StaticRoom, true)
+  staticRoom: StaticRoom = undefined;
+
+  @JsonProperty("room-issues", [RoomIssue], true)
+  roomIssue: RoomIssue[] = Array<RoomIssue>();
+
+  @JsonProperty("all-alerts", [Alert], true)
+  alerts: Alert[] = Array<Alert>();
+
+  @JsonProperty("active-alert-count", Number, true)
+  activeAlertCount: number = undefined;
+
+  @JsonProperty("total-alert-count", Number, true)
+  totalAlertCount: number = undefined;
+
+  @JsonProperty("static-devices", [StaticDevice], true)
+  deviceStates: StaticDevice[] = Array<StaticDevice>();
 }
