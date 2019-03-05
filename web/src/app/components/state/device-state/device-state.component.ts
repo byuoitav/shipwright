@@ -15,6 +15,12 @@ export class DeviceStateComponent implements OnInit {
 
   dataSource: MatTableDataSource<StaticDevice>;
 
+  // all of the applied filters
+  filters: Map<
+    string,
+    (data: StaticDevice, filter?: string) => boolean
+  > = new Map();
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -27,6 +33,11 @@ export class DeviceStateComponent implements OnInit {
       this.dataSource.sort = this.sort;
       this.dataSource.filterPredicate = this.filterPred;
 
+      // add generalFilter
+      this.filters.set("◬", this.generalFilter);
+
+      console.log("filters", this.filters);
+
       if (
         this.data.staticDeviceList != null &&
         this.data.staticDeviceList.length > 0
@@ -34,12 +45,21 @@ export class DeviceStateComponent implements OnInit {
         this.allColumns = Object.keys(this.data.staticDeviceList[0]).sort();
         this.displayedColumns.push(...["deviceID", "power", "input"]);
       }
-
-      console.log("deviceList", this.data.staticDeviceList);
     });
   }
 
-  filterPred = (data: StaticDevice, filter: string) => {
+  filterPred = (data: StaticDevice, filter: string): boolean => {
+    // loop through all the filters, if one of them fails, return false
+    for (const [k, v] of this.filters) {
+      if (!v(data, filter)) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  generalFilter = (data: StaticDevice, filter: string): boolean => {
     const datastr = Object.keys(data)
       .reduce((currentTerm: string, key: string) => {
         if (data[key] == null || data[key] === undefined) {
@@ -65,9 +85,63 @@ export class DeviceStateComponent implements OnInit {
     return true;
   };
 
+  applyColumnFilter(col: string, filter: string) {
+    const func = (data: StaticDevice): boolean => {
+      if (data[col] == null || data[col] === undefined) {
+        return false;
+      }
+
+      // convert column to string
+      const datastr = (data as { [key: string]: any })[col].toLowerCase();
+
+      // trim ending whitespace and turn filter into lowercase
+      filter = filter.trim().toLowerCase();
+
+      return datastr.indexOf(filter) !== -1;
+    };
+
+    if (filter == null || filter === undefined || filter.length === 0) {
+      this.filters.delete(col);
+    } else {
+      this.filters.set(col, func);
+    }
+
+    // console.log("filters", this.filters);
+    this.forceFilter();
+  }
+
+  public forceFilter() {
+    if (!this.dataSource.filter && this.filters.size > 1) {
+      this.dataSource.filter = "◬";
+    }
+
+    this.dataSource._filterData(this.dataSource.data);
+    this.dataSource._updateChangeSubscription();
+    console.log("filtered", this.dataSource.filteredData);
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  public applyFilter(f: string) {
+    this.dataSource.filter = f;
+
+    if (!this.dataSource.filter && this.filters.size > 1) {
+      f = "◬";
+    }
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
   public removeColumn(col: string) {
     const idx = this.displayedColumns.indexOf(col, 0);
     if (idx > -1) {
+      this.filters.delete(col);
+      this.forceFilter();
+
       this.displayedColumns.splice(idx, 1);
     }
   }
@@ -86,13 +160,5 @@ export class DeviceStateComponent implements OnInit {
     const swap = this.displayedColumns[idx];
     this.displayedColumns[idx] = this.displayedColumns[idx - 1];
     this.displayedColumns[idx - 1] = swap;
-  }
-
-  public applyFilter(f: string) {
-    this.dataSource.filter = f.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
   }
 }
