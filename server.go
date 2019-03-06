@@ -75,94 +75,120 @@ func main() {
 		return ctx.String(http.StatusOK, "processing event")
 	})
 
-	write := router.Group("", auth.AuthorizeRequest("write-state", "room", auth.LookupResourceFromAddress))
-	read := router.Group("", auth.AuthorizeRequest("read-state", "room", auth.LookupResourceFromAddress))
+	writeconfig := router.Group(
+		"",
+		echo.WrapMiddleware(auth.AuthenticateCASUser),
+		auth.AuthorizeRequest("write-config", "configuration", func() string { return "all" }),
+		auth.LookupResourceFromAddress,
+	)
+	readconfig := router.Group(
+		"",
+		echo.WrapMiddleware(auth.AuthenticateCASUser),
+		auth.AuthorizeRequest("read-config", "configuration", func() string { return "all" }),
+		auth.LookupResourceFromAddress,
+	)
+	writestate := router.Group(
+		"",
+		echo.WrapMiddleware(auth.AuthenticateCASUser),
+		auth.AuthorizeRequest("write-state", "configuration", func() string { return "all" }),
+		auth.LookupResourceFromAddress,
+	)
+	readstate := router.Group(
+		"",
+		echo.WrapMiddleware(auth.AuthenticateCASUser),
+		auth.AuthorizeRequest("read-state", "configuration", func() string { return "all" }),
+		auth.LookupResourceFromAddress,
+	)
 
 	router.POST("/test", handlers.Test)
 	router.GET("/actions", actions.DefaultActionManager().Info)
 	router.GET("/actions/trigger/:trigger", actions.DefaultActionManager().Config.ActionsByTrigger)
 
 	// Building Endpoints
-	write.POST("/buildings/:building", handlers.AddBuilding)
-	write.POST("/buildings", handlers.AddMultipleBuildings)
-	read.GET("/buildings/:building", handlers.GetBuilding)
-	read.GET("/buildings", handlers.GetAllBuildings)
-	write.PUT("/buildings/:building/update", handlers.UpdateBuilding)
-	write.PUT("/buildings/update", handlers.UpdateMultipleBuildings)
-	write.GET("/buildings/:building/delete", handlers.DeleteBuilding)
+	writeconfig.POST("/buildings/:building", handlers.AddBuilding)
+	writeconfig.POST("/buildings", handlers.AddMultipleBuildings)
+	readconfig.GET("/buildings/:building", handlers.GetBuilding)
+	readconfig.GET("/buildings", handlers.GetAllBuildings)
+	writeconfig.PUT("/buildings/:building/update", handlers.UpdateBuilding)
+	writeconfig.PUT("/buildings/update", handlers.UpdateMultipleBuildings)
+	writeconfig.GET("/buildings/:building/delete", handlers.DeleteBuilding)
 
 	// Room Endpoints
-	write.POST("/rooms/:room", handlers.AddRoom)
-	write.POST("/rooms", handlers.AddMultipleRooms)
-	read.GET("/rooms/:room", handlers.GetRoom)
-	read.GET("/rooms", handlers.GetAllRooms)
-	read.GET("/buildings/:building/rooms", handlers.GetRoomsByBuilding)
-	write.PUT("/rooms/:room/update", handlers.UpdateRoom)
-	write.PUT("/rooms/update", handlers.UpdateMultipleRooms)
-	write.GET("/rooms/:room/delete", handlers.DeleteRoom)
-	read.GET("/rooms/configurations", handlers.GetRoomConfigurations)
-	read.GET("/rooms/designations", handlers.GetRoomDesignations)
+	writeconfig.POST("/rooms/:room", handlers.AddRoom)
+	writeconfig.POST("/rooms", handlers.AddMultipleRooms)
+	readconfig.GET("/rooms/:room", handlers.GetRoom)
+	readconfig.GET("/rooms", handlers.GetAllRooms)
+	readconfig.GET("/buildings/:building/rooms", handlers.GetRoomsByBuilding)
+	writeconfig.PUT("/rooms/:room/update", handlers.UpdateRoom)
+	writeconfig.PUT("/rooms/update", handlers.UpdateMultipleRooms)
+	writeconfig.GET("/rooms/:room/delete", handlers.DeleteRoom)
+	readconfig.GET("/rooms/configurations", handlers.GetRoomConfigurations)
+	readconfig.GET("/rooms/designations", handlers.GetRoomDesignations)
 
 	// Device Endpoints
-	write.POST("/devices/:device", handlers.AddDevice)
-	write.POST("/devices", handlers.AddMultipleDevices)
-	read.GET("/devices/:device", handlers.GetDevice)
-	read.GET("/devices", handlers.GetAllDevices)
-	read.GET("/rooms/:room/devices", handlers.GetDevicesByRoom)
-	read.GET("/rooms/:room/devices/roles/:role", handlers.GetDevicesByRoomAndRole)
-	read.GET("/devices/types/:type/roles/:role", handlers.GetDevicesByTypeAndRole)
-	write.PUT("/devices/:device/update", handlers.UpdateDevice)
-	write.PUT("/devices/update", handlers.UpdateMultipleDevices)
-	write.GET("/devices/:device/delete", handlers.DeleteDevice)
-	read.GET("/devices/types", handlers.GetDeviceTypes)
-	read.GET("/devices/roles", handlers.GetDeviceRoles)
-	read.GET("/devices/:hostname/address", handlers.GetDeviceRawIPAddress)
+	writeconfig.POST("/devices/:device", handlers.AddDevice)
+	writeconfig.POST("/devices", handlers.AddMultipleDevices)
+	readconfig.GET("/devices/:device", handlers.GetDevice)
+	readconfig.GET("/devices", handlers.GetAllDevices)
+	readconfig.GET("/rooms/:room/devices", handlers.GetDevicesByRoom)
+	readconfig.GET("/rooms/:room/devices/roles/:role", handlers.GetDevicesByRoomAndRole)
+	readconfig.GET("/devices/types/:type/roles/:role", handlers.GetDevicesByTypeAndRole)
+	writeconfig.PUT("/devices/:device/update", handlers.UpdateDevice)
+	writeconfig.PUT("/devices/update", handlers.UpdateMultipleDevices)
+	writeconfig.GET("/devices/:device/delete", handlers.DeleteDevice)
+	readconfig.GET("/devices/types", handlers.GetDeviceTypes)
+	readconfig.GET("/devices/roles", handlers.GetDeviceRoles)
+	readconfig.GET("/devices/:hostname/address", handlers.GetDeviceRawIPAddress)
 
 	// UIConfig Endpoints
-	write.POST("/uiconfigs/:config", handlers.AddUIConfig)
-	write.POST("/uiconfigs", handlers.AddMultipleUIConfigs)
-	read.GET("/uiconfigs/:config", handlers.GetUIConfig)
-	read.GET("/uiconfigs", handlers.GetAllUIConfigs)
-	write.PUT("/uiconfigs/:config/update", handlers.UpdateUIConfig)
-	write.PUT("/uiconfigs/update", handlers.UpdateMultipleUIConfigs)
-	write.GET("/uiconfigs/:config/delete", handlers.DeleteUIConfig)
+	writeconfig.POST("/uiconfigs/:config", handlers.AddUIConfig)
+	writeconfig.POST("/uiconfigs", handlers.AddMultipleUIConfigs)
+	readconfig.GET("/uiconfigs/:config", handlers.GetUIConfig)
+	readconfig.GET("/uiconfigs", handlers.GetAllUIConfigs)
+	writeconfig.PUT("/uiconfigs/:config/update", handlers.UpdateUIConfig)
+	writeconfig.PUT("/uiconfigs/update", handlers.UpdateMultipleUIConfigs)
+	writeconfig.GET("/uiconfigs/:config/delete", handlers.DeleteUIConfig)
 
 	// Options Endpoints
-	read.GET("/options/icons", handlers.GetIcons)
-	read.GET("/options/templates", handlers.GetTemplates)
+	readconfig.GET("/options/icons", handlers.GetIcons)
+	readconfig.GET("/options/templates", handlers.GetTemplates)
 
 	// Auth Endpoints
-	read.GET("/users/current/username", handlers.GetUsername)
-	read.GET("/users/current/permissions", handlers.GetUserPermissions)
+	readconfig.GET("/users/current/username", handlers.GetUsername)
+	readconfig.GET("/users/current/permissions", handlers.GetUserPermissions)
 
 	// Static Record Endpoints
-	read.GET("/static/devices", handlers.GetAllStaticDeviceRecords)
-	read.GET("/static/rooms", handlers.GetAllStaticRoomRecords)
-	read.GET("/static/rooms/state", handlers.GetAllRoomCombinedStateRecords)
-	read.GET("/static/rooms/:roomID/state", handlers.GetRoomCombinedStateRecord)
+	readconfig.GET("/static/devices", handlers.GetAllStaticDeviceRecords)
+	readconfig.GET("/static/rooms", handlers.GetAllStaticRoomRecords)
+	readconfig.GET("/static/rooms/state", handlers.GetAllRoomCombinedStateRecords)
+	readconfig.GET("/static/rooms/:roomID/state", handlers.GetRoomCombinedStateRecord)
 
 	// Alert Endpoints
-	read.GET("/issues", handlers.GetAllRoomIssues)
-	read.PUT("/issues", handlers.UpdateRoomIssue)
+	readconfig.GET("/issues", handlers.GetAllRoomIssues)
+	readconfig.PUT("/issues", handlers.UpdateRoomIssue)
 
-	read.PUT("/issues/:issueID/resolve", handlers.ResolveIssue)
-	read.GET("/issues/:issueID", handlers.GetRoomIssue)
+	readconfig.PUT("/issues/:issueID/resolve", handlers.ResolveIssue)
+	readconfig.GET("/issues/:issueID", handlers.GetRoomIssue)
 
-	read.GET("/issues/resolutions", handlers.GetClosureCodes)
+	readconfig.GET("/issues/resolutions", handlers.GetClosureCodes)
 
-	read.GET("/issues/queue", handlers.GetAlertStoreQueueStatus)
+	readconfig.GET("/issues/queue", handlers.GetAlertStoreQueueStatus)
 
-	write.PUT("/alerts/add", handlers.AddAlert)
+	writeconfig.PUT("/alerts/add", handlers.AddAlert)
 
 	// Websocket Endpoints
-	router.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))
+	readconfig.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))
 
-	router.Group("/", middleware.StaticWithConfig(middleware.StaticConfig{
-		Root:   "web-dist",
-		Index:  "index.html",
-		HTML5:  true,
-		Browse: true,
-	}))
+	router.Group("/", auth.CheckHeaderBasedAuth,
+		echo.WrapMiddleware(auth.AuthenticateCASUser),
+		auth.AuthorizeRequest("read-config", "configuration", func() string { return "all" }),
+		auth.LookupResourceFromAddress,
+		middleware.StaticWithConfig(middleware.StaticConfig{
+			Root:   "web-dist",
+			Index:  "index.html",
+			HTML5:  true,
+			Browse: true,
+		}))
 
 	server := http.Server{
 		Addr:           port,
