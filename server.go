@@ -181,7 +181,7 @@ func main() {
 	readconfig.GET("/alerts/responders", handlers.GetResponders)
 
 	// Websocket Endpoints
-	readconfig.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))
+	router.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))
 
 	router.Group("/", auth.CheckHeaderBasedAuth,
 		auth.CheckHeaderBasedAuth,
