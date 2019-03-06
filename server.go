@@ -77,28 +77,30 @@ func main() {
 
 	writeconfig := router.Group(
 		"",
+		auth.CheckHeaderBasedAuth,
 		echo.WrapMiddleware(auth.AuthenticateCASUser),
-		auth.AuthorizeRequest("write-config", "configuration", func() string { return "all" }),
-		auth.LookupResourceFromAddress,
+		auth.AuthorizeRequest("write-config", "configuration", func(c echo.Context) string { return "all" }),
 	)
 	readconfig := router.Group(
 		"",
+		auth.CheckHeaderBasedAuth,
 		echo.WrapMiddleware(auth.AuthenticateCASUser),
-		auth.AuthorizeRequest("read-config", "configuration", func() string { return "all" }),
-		auth.LookupResourceFromAddress,
+		auth.AuthorizeRequest("read-config", "configuration", func(c echo.Context) string { return "all" }),
 	)
-	writestate := router.Group(
-		"",
-		echo.WrapMiddleware(auth.AuthenticateCASUser),
-		auth.AuthorizeRequest("write-state", "configuration", func() string { return "all" }),
-		auth.LookupResourceFromAddress,
-	)
-	readstate := router.Group(
-		"",
-		echo.WrapMiddleware(auth.AuthenticateCASUser),
-		auth.AuthorizeRequest("read-state", "configuration", func() string { return "all" }),
-		auth.LookupResourceFromAddress,
-	)
+	/*
+		writestate := router.Group(
+			"",
+			auth.CheckHeaderBasedAuth,
+			echo.WrapMiddleware(auth.AuthenticateCASUser),
+			auth.AuthorizeRequest("write-state", "configuration", func(c echo.Context) string { return "all" }),
+		)
+		readstate := router.Group(
+			"",
+			auth.CheckHeaderBasedAuth,
+			echo.WrapMiddleware(auth.AuthenticateCASUser),
+			auth.AuthorizeRequest("read-state", "configuration", func(c echo.Context) string { return "all" }),
+		)
+	*/
 
 	router.POST("/test", handlers.Test)
 	router.GET("/actions", actions.DefaultActionManager().Info)
@@ -180,9 +182,9 @@ func main() {
 	readconfig.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))
 
 	router.Group("/", auth.CheckHeaderBasedAuth,
+		auth.CheckHeaderBasedAuth,
 		echo.WrapMiddleware(auth.AuthenticateCASUser),
-		auth.AuthorizeRequest("read-config", "configuration", func() string { return "all" }),
-		auth.LookupResourceFromAddress,
+		auth.AuthorizeRequest("read-config", "configuration", func(c echo.Context) string { return "all" }),
 		middleware.StaticWithConfig(middleware.StaticConfig{
 			Root:   "web-dist",
 			Index:  "index.html",

@@ -18,6 +18,7 @@
         "ENDPOINT_AUTHORIZATION_URL",
         "ENDPOINT_USERNAME",
         "HUB_ADDRESS",
+        "JWT_SIGNING_TOKEN",
         "LOG_LEVEL",
         "NO_PULL",
         "PROXY_ADDR",
