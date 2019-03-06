@@ -16,8 +16,8 @@ var (
 
 func calculateAggregateInfo(roomIssue structs.RoomIssue) {
 	initonce.Do(func() {
-		roomAggsInChannel := make(chan structs.RoomIssue, 200)
-		runStaticRoomAggregator(roomAggsInChannel)
+		roomAggsInChannel = make(chan structs.RoomIssue, 200)
+		go runStaticRoomAggregator(roomAggsInChannel)
 	})
 
 	roomAggsInChannel <- roomIssue
