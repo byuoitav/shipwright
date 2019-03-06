@@ -1,35 +1,49 @@
 <div class="base">
-    <div class="container" *ngIf="roomIssue != null">
-        <alert-table *ngIf="GetRoomAlerts() != null" [singleRoom]="true" [expIssue]="roomIssue"></alert-table>
-        <section class="row help">
-            <button mat-raised-button color="primary" class="button" (click)="HelpWasSent()">Help Sent!</button>
+    <div *ngIf="roomIssues == null">
+        We are A-Okay!
+    </div>
+    <div class="container" *ngIf="roomIssues != null">
+        <app-alert-table *ngIf="GetRoomAlerts() != null" [singleRoom]="true" [expIssue]="roomIssue"></app-alert-table>
+        <!-- Action Card -->
+        <mat-card class="actioncard">
+            <mat-card-title>Actions</mat-card-title>
+            <mat-card-content>
+                <div>
+                    <button mat-raised-button color="primary" class="button" (click)="HelpWasSent()">Help Sent!</button>
 
-            <mat-label>@</mat-label>
-            <mat-form-field class="time">
-                <input type="time" matInput [(ngModel)]="sentTime">
-            </mat-form-field>
+                    <mat-label>@</mat-label>
+                    <mat-form-field class="time">
+                        <input type="time" matInput [(ngModel)]="sentTime">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <button mat-raised-button color="warn" class="button" (click)="HelpHasArrived()">Help Arrived!</button>
 
-            <button mat-raised-button color="warn" class="button" (click)="HelpHasArrived()">Help Arrived!</button>
+                    <mat-label>@</mat-label>
+                    <mat-form-field class="time">
+                        <input type="time" matInput [(ngModel)]="arrivedTime">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <button mat-raised-button class="button resolve" color="accent" (click)="UpdateIssue()">Update Issue</button>
+                </div>
+                <div>
+                    <button mat-raised-button class="button resolve" (click)="modal.OpenRespondModal(roomIssue, table.selection.selected)" [disabled]="roomIssue?.SentIsZero() || roomIssue?.ArrivedIsZero()">Resolve Alerts</button>
+                </div>
+            </mat-card-content>
+        </mat-card>
 
-            <mat-label>@</mat-label>
-            <mat-form-field class="time">
-                <input type="time" matInput [(ngModel)]="arrivedTime">
-            </mat-form-field>
-
-            <button mat-raised-button class="button resolve" color="accent" (click)="UpdateIssue()">Update Issue</button>
-
-            <button mat-raised-button class="button resolve" (click)="modal.OpenRespondModal(roomIssue, table.selection.selected)" [disabled]="roomIssue?.SentIsZero() || roomIssue?.ArrivedIsZero()">Resolve Alerts</button>
-        </section>
-
-        <section class="row help">
-            <mat-form-field *ngIf="roomIssue != null" class="notes mat-elevation-z2">
-                <textarea matInput placeholder="Responders" [matTextareaAutosize]=true [(ngModel)]="responders"></textarea>
-            </mat-form-field>
-
-            <mat-form-field class="notes mat-elevation-z2">
-                <textarea matInput placeholder="Notes" [matTextareaAutosize]=true [(ngModel)]="roomIssue.notes"></textarea>
-            </mat-form-field>
-        </section>
+        <!-- Notes Card -->
+        <mat-card class="notescard">
+            <mat-card-title>Notes</mat-card-title>
+            <mat-card-content>
+                <div>
+                    <mat-form-field class="notes mat-elevation-z2">
+                        <textarea matInput placeholder="Notes" [matTextareaAutosize]=true [(ngModel)]="roomIssue.notes"></textarea>
+                    </mat-form-field>
+                </div>
+            </mat-card-content>
+        </mat-card>
     </div>
 
     <div class="column mat-elevation-z3" *ngIf="filteredDevices != null">

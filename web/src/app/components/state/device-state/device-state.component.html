@@ -28,17 +28,30 @@
           mat-sort-header
           arrowPosition="before"
         >
-          <span class="header-text">{{ column }}</span>
-          <button
-            *ngIf="displayedColumns?.indexOf(column) !== 0"
-            mat-icon-button
-            (click)="shiftLeft(column)"
-          >
-            <mat-icon>chevron_left</mat-icon>
-          </button>
-          <button mat-icon-button (click)="removeColumn(column)">
-            <mat-icon>close</mat-icon>
-          </button>
+          <div class="header">
+            <div>
+              <span class="header-text">{{ column }}</span>
+              <button
+                *ngIf="displayedColumns?.indexOf(column) !== 0"
+                mat-icon-button
+                (click)="shiftLeft(column)"
+              >
+                <mat-icon>chevron_left</mat-icon>
+              </button>
+              <button mat-icon-button (click)="removeColumn(column)">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+            <div>
+              <input
+                matInput
+                (click)="$event.stopPropagation()"
+                (keyup)="applyColumnFilter(column, $event.target.value)"
+                placeholder="{{ column }} filter"
+              />
+              <!-- here-->
+            </div>
+          </div>
         </th>
         <td mat-cell *matCellDef="let element">{{ element[column] }}</td>
       </ng-container>

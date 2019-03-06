@@ -77,7 +77,7 @@ export const TIMECLOCK_ICON = "schedule";
 //         }
 //         if (a.systemType == "dmps") {
 //           this.systemTypeIcon = DMPS_ICON;
-//         } 
+//         }
 //         if(a.systemType == "pi") {
 //           this.systemTypeIcon = PI_ICON;
 //         }

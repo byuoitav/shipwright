@@ -5,7 +5,7 @@ import {
   JsonCustomConvert
 } from "json2typescript";
 import { RoomIssue, Alert } from "./alerts";
-import { Room } from './database';
+import { Room } from "./database";
 
 @JsonConverter
 class DateConverter implements JsonCustomConvert<Date> {
@@ -246,9 +246,14 @@ export class RoomStatus {
     this.alertingCount = 0;
     this.goodCount = 0;
     const alertingDevices: string[] = [];
+    if (this.deviceStates == null) {
+      return;
+    }
     for (const sd of this.deviceStates) {
       this.deviceCount++;
-
+      if (this.roomIssues == null) {
+        return;
+      }
       for (const ri of this.roomIssues) {
         let alerting = false;
         for (const ad of ri.alertDevices) {
@@ -283,7 +288,7 @@ export class StaticRoom {
   @JsonProperty("roomID", String, true)
   roomID: string = undefined;
 
-  //Not sure shy I can't put time in JsonProperty
+  // Not sure shy I can't put time in JsonProperty
   // @JsonProperty("maintenence-mode-until", true)
   // maintenence: Time = undefined;
 
@@ -293,7 +298,7 @@ export class StaticRoom {
   @JsonProperty("system-type", [String], true)
   systemType: string[] = Array<string>();
 
-  //Not sure what how to label this type Go: map[string]time.Time
+  // Not sure what how to label this type Go: map[string]time.Time
   // @JsonProperty("update-times", true)
   // updateTimes: [string] = undefined;
 }
@@ -322,7 +327,7 @@ export class BuildingStatus {
     this.alertingCount = 0;
     this.goodCount = 0;
 
-    for (let rs of this.roomStates) {
+    for (const rs of this.roomStates) {
       this.roomCount++;
       if (rs.alertingCount > 0) {
         this.alertingCount++;

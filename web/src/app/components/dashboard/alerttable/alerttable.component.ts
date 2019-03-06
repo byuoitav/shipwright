@@ -1,31 +1,31 @@
-import { Component, OnInit, Input, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { StringsService } from 'src/app/services/strings.service';
-import { IDashPanel, DashPanel } from '../dashpanel/idashpanel';
-import { MatTableDataSource, MatPaginator, MatSort, SortDirection, PageEvent } from '@angular/material';
-import { animate, state, style, transition, trigger } from '@angular/animations';
-import { ActivatedRoute } from '@angular/router';
-import { DataService } from 'src/app/services/data.service';
-import { RoomIssue, Alert } from 'src/app/objects/alerts';
-import { SelectionModel } from '@angular/cdk/collections';
-import { DashPanelTypes } from 'src/app/services/dashpanel.service';
+import { Component, OnInit, Input, ViewChild, ChangeDetectorRef, AfterViewInit, OnChanges } from "@angular/core";
+import { StringsService } from "src/app/services/strings.service";
+import { IDashPanel, DashPanel } from "../dashpanel/idashpanel";
+import { MatTableDataSource, MatPaginator, MatSort, SortDirection, PageEvent } from "@angular/material";
+import { animate, state, style, transition, trigger } from "@angular/animations";
+import { ActivatedRoute } from "@angular/router";
+import { DataService } from "src/app/services/data.service";
+import { RoomIssue, Alert } from "src/app/objects/alerts";
+import { SelectionModel } from "@angular/cdk/collections";
+import { DashPanelTypes } from "src/app/services/dashpanel.service";
 
 @Component({
-  selector: 'alert-table',
-  templateUrl: './alerttable.component.html',
-  styleUrls: ['./alerttable.component.scss'],
+  selector: "app-alert-table",
+  templateUrl: "./alerttable.component.html",
+  styleUrls: ["./alerttable.component.scss"],
   animations: [
-    trigger('detailExpand', [
-      state('collapsed', style({ height: '0px', minHeight: '0', display: 'none' })),
-      state('expanded', style({ height: '*' })),
-      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    trigger("detailExpand", [
+      state("collapsed", style({ height: "0px", minHeight: "0", display: "none" })),
+      state("expanded", style({ height: "*" })),
+      transition("expanded <=> collapsed", animate("225ms cubic-bezier(0.4, 0.0, 0.2, 1)")),
     ]),
   ],
 })
 
-export class AlertTableComponent implements OnInit, IDashPanel {
+export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit, OnChanges {
   @Input() info: RoomIssue[] = [];
   @Input() chosenSeverity: DashPanelTypes;
-  @Input() singleRoom: boolean = false;
+  @Input() singleRoom = false;
   roomID: string;
   charCount = 40;
 
@@ -34,33 +34,34 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   @ViewChild(MatSort) sort: MatSort = new MatSort();
 
   pageOptions: number[] = [5, 10, 15, 20, 25, 30, 50, 100];
-  pageSize: number = 20;
+  pageSize = 20;
 
+  // Alert Table's Data
   issueData: MatTableDataSource<RoomIssue>;
   selection = new SelectionModel<Alert>(true, []);
 
-  issueColumns: string[] = ["icon", "roomID", "severity", "count", "types", "incident"];//, "help-sent", "help-arrived", "responders"];
-  alertColumns: string[] = ["select", "name", "type", "category", "message", "start-time", "end-time"];
+  issueColumns: string[] = ["icon", "roomID", "severity", "count", "types", "incident"]; // , "help-sent", "help-arrived", "responders"];
+  alertColumns: string[] = ["name", "type", "category", "message", "start-time", "end-time"];
 
-  private serviceNowURL: string = "https://ittest.byu.edu/incident.do?sysparm_query=number="
+  private serviceNowURL = "https://ittest.byu.edu/incident.do?sysparm_query=number=";
 
   constructor(public text: StringsService, public data: DataService, private route: ActivatedRoute, private changes: ChangeDetectorRef) {
-    if(this.data.finished) {
+        if (this.data.finished) {
       this.Setup();
     } else {
       this.data.loaded.subscribe(() => {
         this.Setup();
-      })
+      });
     }
   }
 
-  ngOnInit() {    
-    if(this.data.finished) {
+  ngOnInit() {
+    if (this.data.finished) {
       this.Setup();
     } else {
       this.data.loaded.subscribe(() => {
         this.Setup();
-      })
+      });
     }
   }
 
@@ -70,74 +71,78 @@ export class AlertTableComponent implements OnInit, IDashPanel {
   }
 
   convertDashPanelTypeToSeverity(dashPanelType: DashPanelTypes): string {
-    if (dashPanelType == DashPanelTypes.AllAlerts)
+    if (dashPanelType === DashPanelTypes.AllAlerts) {
       return "all";
-    else if (dashPanelType == DashPanelTypes.CriticalAlerts)
+  } else if (dashPanelType === DashPanelTypes.CriticalAlerts) {
       return "critical";
-    else if (dashPanelType == DashPanelTypes.WarningAlerts)
+    } else if (dashPanelType === DashPanelTypes.WarningAlerts) {
       return "warning";
-    else if (dashPanelType == DashPanelTypes.LowSeverityAlerts)
+    } else if (dashPanelType === DashPanelTypes.LowSeverityAlerts) {
       return "low";
-    
+    }
+
     return "";
   }
 
   Setup() {
-    if(this.singleRoom) {
+    // If the table is for a single room, get the room issues for that room
+    if (this.singleRoom) {
       this.route.params.subscribe(par => {
         this.roomID = par["roomID"];
-      })
+      });
       this.issueData = new MatTableDataSource(this.data.GetRoomIssues(this.roomID));
-    } else {
+    } else { // Otherwise, get the issues by severity
       this.issueData = new MatTableDataSource(this.data.GetRoomIssuesBySeverity(this.convertDashPanelTypeToSeverity(this.chosenSeverity)));
     }
 
-    // if (this.sort.active == undefined || this.sort.active == '') {          
-    //   this.sort.active = 'roomID'; 
-    //   this.sort.direction = 'asc' as SortDirection;
+    // if (this.sort.active == undefined || this.sort.active == "') {
+    //   this.sort.active = "roomID';
+    //   this.sort.direction = "asc' as SortDirection;
     //   this.sort.sortChange.emit();
     // }
- 
-    this.data.issueEmitter.subscribe((changedIssue) => {
-      if(!this.changes['destroyed']) {        
 
-        if(this.singleRoom && changedIssue.roomID == this.roomID) {
-          this.issueData.data = this.data.GetRoomIssues(this.roomID);
+    this.data.issueEmitter.subscribe((changedIssue) => {
+      if (!this.changes["destroyed"]) {
+
+        if (this.singleRoom) {
+          if (changedIssue.roomID === this.roomID) {
+            this.issueData.data = this.data.GetRoomIssues(this.roomID);
+          }
         } else {
           this.issueData.data = this.data.GetRoomIssuesBySeverity(this.convertDashPanelTypeToSeverity(this.chosenSeverity));
         }
-        
-        if (this.sort.active == undefined || this.sort.active == '') {          
-          this.sort.active = 'roomID'; 
-          this.sort.direction = 'asc' as SortDirection;
+
+        if (this.sort.active === undefined || this.sort.active === "") {
+          this.sort.active = "roomID";
+          this.sort.direction = "asc" as SortDirection;
           this.sort.sortChange.emit();
         }
-        
+
         this.changes.detectChanges();
       }
     });
 
     this.issueData.sortingDataAccessor = (item, property) => {
-      //console.log(item, property);
+      // console.log(item, property);
       switch (property) {
-          case 'types': return this.ArrayToString(item["activeAlertTypes"]);
-          default: return item[property];
+        case "types": return this.ArrayToString(item["activeAlertTypes"]);
+        default: return item[property];
       }
-     }     
+    };
   }
 
-  ngOnChanges() {    
-      if(!this.changes['destroyed']) {
-        this.changes.detectChanges();
-      }    
+  ngOnChanges() {
+    if (!this.changes["destroyed"]) {
+      this.changes.detectChanges();
+    }
   }
 
   ExpandRow(issue: RoomIssue) {
     if (!this.singleRoom) {
       if (this.expIssue === issue) {
-        this.expIssue = null
+        this.expIssue = null;
       } else {
-        this.expIssue = issue
+        this.expIssue = issue;
       }
     }
   }
@@ -164,45 +169,54 @@ export class AlertTableComponent implements OnInit, IDashPanel {
 
   ArrayToString(array: any[]): string {
     if (array == null) {
-      return ""
+      return "";
     } else {
       return array.toString();
     }
   }
 
   TimeIsZero(time: Date): boolean  {
-    if (time == undefined){
+    if (time === undefined) {
       return true;
     }
-    let zero = "0001-01-01T00:00:00.000Z";
+    const zero = "0001-01-01T00:00:00.000Z";
 
     return time.toISOString() === zero;
   }
 
   GetReadableTimestamp(time: Date): string {
-    let diff = time.valueOf() - new Date().valueOf();
-    let duration = Math.abs(Math.trunc((diff / (1000*60*60)) % 24));
+    const diff = time.valueOf() - new Date().valueOf();
+    const duration = Math.abs(Math.trunc((diff / (1000 * 60 * 60)) % 24));
     let answer;
-    
-    if(duration >= 1 && duration < 2) {
-      answer = duration + " hour ago (" + time.toLocaleTimeString() + ")"
+
+    if (duration >= 1 && duration < 2) {
+      answer = duration + " hour ago (" + time.toLocaleTimeString() + ")";
     } else {
-      answer = duration + " hours ago (" + time.toLocaleTimeString() + ")"
+      answer = duration + " hours ago (" + time.toLocaleTimeString() + ")";
     }
-    
-    return answer
+
+    return answer;
   }
 
   OnDefaultTheme(): boolean {
-    let urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has("theme")) {
-      return urlParams.get("theme") == "default"
+      return urlParams.get("theme") === "default";
     }
   }
 
   UpdatePage(pageEvent: PageEvent) {
-    if(pageEvent.pageSize != null) {
+    if (pageEvent.pageSize != null) {
       this.pageSize = pageEvent.pageSize;
     }
   }
+
+  ShouldIExpand(issue: RoomIssue): boolean {
+    if (this.expIssue === issue) {
+      return true;
+    } else {
+      return this.singleRoom;
+    }
+  }
+
 }

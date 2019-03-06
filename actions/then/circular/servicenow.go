@@ -28,8 +28,8 @@ func SyncRoomIssueWithServiceNow(ctx context.Context, with []byte, log *zap.Suga
 		return nerr.Translate(syncError)
 	}
 
-	if len(roomIssue.IncidentID) == 0 {
-		roomIssue.IncidentID = incidentID
+	if len(roomIssue.IncidentID) == 0 && len(incidentID) > 0 {
+		roomIssue.IncidentID = append(roomIssue.IncidentID, incidentID)
 		roomIssueError := alertstore.UpdateRoomIssue(roomIssue)
 
 		if roomIssueError != nil {

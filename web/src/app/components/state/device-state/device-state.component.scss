@@ -18,6 +18,13 @@
   .table {
     width: 100%;
 
+    .header {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      align-content: center;
+    }
+
     .header-text {
       font-size: 1.2em;
     }

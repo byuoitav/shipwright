@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Injectable, EventEmitter } from '@angular/core';
 import { APIService } from './api.service';
 import { Building, Room, Device, UIConfig, DeviceType, Role, RoomConfiguration, Template } from '../objects/database';
@@ -7,9 +8,19 @@ import { StaticDevice, RoomStatus, BuildingStatus, CombinedRoomState } from '../
 import { StringsService } from './strings.service';
 import { NotifierService } from 'angular-notifier';
 //import { RSA_NO_PADDING } from 'constants';
+=======
+import { Injectable, EventEmitter } from "@angular/core";
+import { APIService } from "./api.service";
+import { Building, Room, Device, UIConfig, DeviceType, Person, Role, RoomConfiguration, Template } from "../objects/database";
+import { RoomIssue } from "../objects/alerts";
+import { SocketService } from "./socket.service";
+import { StaticDevice, RoomStatus, BuildingStatus, CombinedRoomState } from "../objects/static";
+import { StringsService } from "./strings.service";
+import { NotifierService } from "angular-notifier";
+>>>>>>> e8c3df88385dfd14cc1174790c9de04fb36d46fd
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class DataService {
   allBuildings: Building[] = [];
@@ -32,6 +43,7 @@ export class DataService {
   roomIssueList: RoomIssue[] = [];
   roomIssuesMap: Map<string, RoomIssue[]> = new Map();
   closureCodes: string[] = [];
+  possibleResponders: Person[] = [];
 
   staticDeviceList: StaticDevice[] = [];
   roomStatusList: RoomStatus[] = [];
@@ -39,13 +51,13 @@ export class DataService {
   combinedRoomStateList: CombinedRoomState[] = [];
 
   loaded: EventEmitter<boolean>;
-  finished: boolean = false;
-  completedOperations: number = 0;
-  totalCompletion: number = 100;
-  increment: number = Math.ceil(this.totalCompletion / 17);
+  finished = false;
+  completedOperations = 0;
+  totalCompletion = 100;
+  increment: number = Math.ceil(this.totalCompletion / 19);
 
   settingsChanged: EventEmitter<any>;
-  panelCount: number = 2;
+  panelCount = 2;
 
   issueEmitter: EventEmitter<any>;
 
@@ -95,10 +107,12 @@ export class DataService {
     this.completedOperations += this.increment;
     await this.GetClosureCodes(); //         17
     this.completedOperations += this.increment;
-    await this.GetCombinedRoomState();//     18
+    await this.GetCombinedRoomState(); //    18
+    this.completedOperations += this.increment;
+    await this.SetPossibleResponders(); //   19
     this.completedOperations += this.increment;
      this.finished = true;
-     this.loaded.emit(true);     
+     this.loaded.emit(true);
   }
 
   private async GetAllBuildings() {
@@ -106,7 +120,7 @@ export class DataService {
 
     await this.api.GetAllBuildings().then((buildings) => {
       this.allBuildings = buildings;
-    })
+    });
   }
 
   private async GetAllRooms() {
@@ -134,7 +148,7 @@ export class DataService {
     await this.api.GetDeviceTypes().then((types) => {
       this.deviceTypeList = types;
 
-      for(let type of this.deviceTypeList) {
+      for (const type of this.deviceTypeList) {
         this.deviceTypeMap.set(type.id, type);
       }
     });
@@ -163,7 +177,7 @@ export class DataService {
     await this.api.GetAllUIConfigs().then((configs) => {
       this.allUIConfigs = configs;
 
-      for(let config of this.allUIConfigs) {
+      for (const config of this.allUIConfigs) {
         this.roomToUIConfigMap.set(config.id, config);
       }
     });
@@ -182,61 +196,61 @@ export class DataService {
 
     this.api.GetTemplates().then((list) => {
       this.templateList = list;
-    })
+    });
   }
 
   private async GetIconList() {
     this.iconList = [];
 
     this.api.GetIcons().then((icons) => {
-      this.iconList = icons as string[]
-    })
+      this.iconList = icons as string[];
+    });
   }
 
   private async SetBuildingToRoomsMap() {
-    for(let room of this.allRooms) {
-      for(let building of this.allBuildings) {
-        let buildingPart = room.id.split("-")[0]
-        if(buildingPart === building.id) {
-          if(this.buildingToRoomsMap.get(building.id) == null) {
+    for (const room of this.allRooms) {
+      for (const building of this.allBuildings) {
+        const buildingPart = room.id.split("-")[0];
+        if (buildingPart === building.id) {
+          if (this.buildingToRoomsMap.get(building.id) == null) {
             this.buildingToRoomsMap.set(building.id, [room]);
           } else {
             this.buildingToRoomsMap.get(building.id).push(room);
           }
-          break
+          break;
         }
       }
     }
   }
 
   private async SetRoomToDevicesMap() {
-    for(let device of this.allDevices) {
-      for(let room of this.allRooms) {
-        let roomPart = device.id.substring(0, device.id.lastIndexOf("-"))
-        if(roomPart === room.id) {
-          if(this.roomToDevicesMap.get(room.id) == null) {
+    for (const device of this.allDevices) {
+      for (const room of this.allRooms) {
+        const roomPart = device.id.substring(0, device.id.lastIndexOf("-"));
+        if (roomPart === room.id) {
+          if (this.roomToDevicesMap.get(room.id) == null) {
             this.roomToDevicesMap.set(room.id, [device]);
           } else {
             this.roomToDevicesMap.get(room.id).push(device);
           }
-          break
+          break;
         }
       }
     }
   }
 
-  private async GetStoredRoomIssues() {    
+  private async GetStoredRoomIssues() {
     await this.api.GetAllIssues().then((issues) => {
-      this.roomIssueList = issues      
+      this.roomIssueList = issues;
       this.SetRoomIssuesMap();
-    })
+    });
   }
 
   private SetRoomIssuesMap() {
     this.roomIssuesMap.clear();
 
-    for(let issue of this.roomIssueList) {
-      if(this.roomIssuesMap.get(issue.roomID) == null) {
+    for (const issue of this.roomIssueList) {
+      if (this.roomIssuesMap.get(issue.roomID) == null) {
         this.roomIssuesMap.set(issue.roomID, [issue]);
       } else {
         this.roomIssuesMap.get(issue.roomID).push(issue);
@@ -246,139 +260,133 @@ export class DataService {
 
   private ListenForIssues() {
     this.socket.listener.subscribe(issue => {
-      console.log(issue)
 
-      if(this.roomIssueList == null) {
+      if (this.roomIssueList == null) {
         if (!issue.resolved) {
-          this.roomIssueList = [issue]
+          this.roomIssueList = [issue];
         }
       } else {
-        let found = false;
+        const found = false;
 
-        let matchingIssue = 
-          this.roomIssueList.find(one => one.issueID === issue.issueID)
+        const matchingIssue = this.roomIssueList.find(one => one.issueID === issue.issueID);
 
-        if(matchingIssue == null) {
+        if (matchingIssue == null) {
           if (issue.resolved) {
-            //this.notifier.notify( "warning", "New Room Issue received for " + issue.roomID + " but already resolved" );
+            // this.notifier.notify( "warning", "New Room Issue received for " + issue.roomID + " but already resolved" );
           } else {
             this.notifier.notify( "error", "New Room Issue [" + issue.activeAlertTypes[0] + "] for " + issue.roomID );
             this.roomIssueList.push(issue);
-            //this.roomIssueList = this.roomIssueList.sort(this.RoomIssueSorter)
-          } 
+            // this.roomIssueList = this.roomIssueList.sort(this.RoomIssueSorter)
+          }
         } else {
-          //matchingIssue = issue;
-          const index = this.roomIssueList.indexOf(matchingIssue, 0);          
+          // matchingIssue = issue;
+          const index = this.roomIssueList.indexOf(matchingIssue);
 
           if (index > -1) {
-            if (issue.resolved) {            
-              this.notifier.notify( "success", "Room Issue for " + issue.roomID + " resolved.");            
+            if (issue.resolved) {
+              this.notifier.notify( "success", "Room Issue for " + issue.roomID + " resolved.");
               this.roomIssueList.splice(index, 1);
-            }            
-            else {
+            } else {
               this.roomIssueList.splice(index, 1, issue);
             }
-          }          
+          }
         }
-        
+
         this.issueEmitter.emit(issue);
       }
-    })
+    });
   }
 
   private RoomIssueSorter(a, b): number {
-    if(a.roomID == null && b.roomID != null) {return 1}
-    if(b.roomID == null && a.roomID != null) {return -1}
-    return a!.roomID!.localeCompare(b.roomID);
+    if (a.roomID == null && b.roomID != null) {return 1; }
+    if (b.roomID == null && a.roomID != null) {return -1; }
+    return a.roomID.localeCompare(b.roomID);
   }
 
   private async GetClosureCodes() {
     this.closureCodes = [];
 
     this.api.GetClosureCodes().then((codes) => {
-      this.closureCodes = codes as string[]
-    })
+      this.closureCodes = codes as string[];
+    });
   }
 
-  private async GetStaticDevices() { 
+  private async GetStaticDevices() {
     await this.api.GetAllStaticDeviceRecords().then((records) => {
       this.staticDeviceList = records;
       // this.GetRoomStatusList();
-    })
+    });
   }
 
   private async GetRoomStatusList() {
     this.roomStatusList = [];
 
-    for(let sd of this.staticDeviceList) {
-      let roomID = sd.deviceID.substring(0, sd.deviceID.lastIndexOf("-"))
+    for (const sd of this.staticDeviceList) {
+      const roomID = sd.deviceID.substring(0, sd.deviceID.lastIndexOf("-"));
       let added = false;
 
-      for(let rs of this.roomStatusList) {
-        if(rs.roomID == roomID) {
-          rs.deviceStates.push(sd)
-          rs.roomIssues = this.GetRoomIssues(rs.roomID)
-          added = true
-          rs.UpdateAlerts()
+      for (const rs of this.roomStatusList) {
+        if (rs.roomID === roomID) {
+          rs.deviceStates.push(sd);
+          rs.roomIssues = this.GetRoomIssues(rs.roomID);
+          added = true;
+          rs.UpdateAlerts();
         }
       }
-      if(!added) {
-
-        let roomState = new RoomStatus()
-        roomState.roomID = roomID
-        roomState.deviceStates = [sd]
-        roomState.roomIssues = this.GetRoomIssues(roomState.roomID)
-        roomState.UpdateAlerts()
-        this.roomStatusList.push(roomState)
+      if (!added) {
+        const roomState = new RoomStatus();
+        roomState.roomID = roomID;
+        roomState.deviceStates = [sd];
+        roomState.roomIssues = this.GetRoomIssues(roomState.roomID);
+        this.roomStatusList.push(roomState);
       }
     }
   }
 
-  private async GetCombinedRoomState(){
+  private async GetCombinedRoomState() {
     await this.api.GetAllCombinedRoomStates().then((records) => {
-      console.log("record: ",records)
       this.combinedRoomStateList = records;
       // this.GetRoomStatusList();
-    })
+    });
   }
 
   private async GetBuildingStatusList() {
     this.buildingStatusList = [];
 
-    for(let rs of this.roomStatusList) {
-      let buildingID = rs.roomID.substring(0, rs.roomID.lastIndexOf("-"))
+    for (const rs of this.roomStatusList) {
+      const buildingID = rs.roomID.substring(0, rs.roomID.lastIndexOf("-"));
       let added = false;
 
-      for(let bs of this.buildingStatusList) {
-        if(bs.buildingID == buildingID) {
-          bs.roomStates.push(rs)
+      for (const bs of this.buildingStatusList) {
+        if (bs.buildingID === buildingID) {
+          bs.roomStates.push(rs);
           added = true;
         }
       }
-      if(!added) {
-        let buildingState = new BuildingStatus()
-        buildingState.buildingID = buildingID
-        buildingState.roomStates = [rs]
-        this.buildingStatusList.push(buildingState)
+      if (!added) {
+        const buildingState = new BuildingStatus();
+        buildingState.buildingID = buildingID;
+        buildingState.roomStates = [rs];
+        this.buildingStatusList.push(buildingState);
       }
     }
 
   }
 
   GetBuilding(buildingID: string): Building {
-    for(let building of this.allBuildings) {
-      if(buildingID == building.id) {
+    for (const building of this.allBuildings) {
+      if (buildingID === building.id) {
         return building;
       }
     }
   }
 
   GetRoom(roomID: string): Room {
-    let buildingID = roomID.split("-")[0]
+    const buildingID = roomID.split("-")[0];
 
-    if(this.buildingToRoomsMap.get(buildingID) != null) {
-      for(let room of this.buildingToRoomsMap.get(buildingID)) {
-        if(roomID == room.id) {
+    if (this.buildingToRoomsMap.get(buildingID) != null) {
+      for (const room of this.buildingToRoomsMap.get(buildingID)) {
+        if (roomID === room.id) {
           return room;
         }
       }
@@ -386,21 +394,21 @@ export class DataService {
   }
 
   GetDevice(deviceID: string): Device {
-    let deviceSplit = deviceID.split("-")
-    let roomID = deviceSplit[0] + "-" + deviceSplit[1]
+    const deviceSplit = deviceID.split("-");
+    const roomID = deviceSplit[0] + "-" + deviceSplit[1];
 
-    if(this.roomToDevicesMap.get(roomID) != null) {
-      for(let device of this.roomToDevicesMap.get(roomID)) {
-        if(deviceID == device.id) {
-          return device
+    if (this.roomToDevicesMap.get(roomID) != null) {
+      for (const device of this.roomToDevicesMap.get(roomID)) {
+        if (deviceID === device.id) {
+          return device;
         }
       }
     }
   }
 
   DeviceHasRole(device: Device, role: string): boolean {
-    for(let r of device.roles) {
-      if(r.id === role) {
+    for (const r of device.roles) {
+      if (r.id === role) {
         return true;
       }
     }
@@ -408,18 +416,18 @@ export class DataService {
     return false;
   }
 
-  GetRoomIssues(roomID): RoomIssue[] {    
+  GetRoomIssues(roomID): RoomIssue[] {
     return this.roomIssuesMap.get(roomID);
   }
 
-  GetRoomIssue(roomID): RoomIssue[] {    
-    //i added this to get it to complie
+  GetRoomIssue(roomID): RoomIssue[] {
+    // I added this to get it to complie
     return null;
   }
 
   GetStaticDevice(deviceID: string): StaticDevice {
-    for(let record of this.staticDeviceList) {
-      if(record.deviceID == deviceID) {
+    for (const record of this.staticDeviceList) {
+      if (record.deviceID === deviceID) {
         return record;
       }
     }
@@ -427,8 +435,8 @@ export class DataService {
   }
 
   GetRoomState(roomID: string): RoomStatus {
-    for(let record of this.roomStatusList) {
-      if(record.roomID == roomID) {
+    for (const record of this.roomStatusList) {
+      if (record.roomID === roomID) {
         return record;
       }
     }
@@ -436,27 +444,34 @@ export class DataService {
   }
 
   GetBuildingState(buildingID: string): BuildingStatus {
-    for(let record of this.buildingStatusList) {
-      if(record.buildingID == buildingID) {
-        return record
+    for (const record of this.buildingStatusList) {
+      if (record.buildingID === buildingID) {
+        return record;
       }
     }
     return new BuildingStatus();
   }
 
   GetRoomIssuesBySeverity(severity?: string): RoomIssue[] {
-    let temp: RoomIssue[] = [];
+    const temp: RoomIssue[] = [];
 
-    if(severity == null || severity == "all" || severity == undefined) {
+    if (severity == null || severity === "all" || severity === undefined) {
       return this.roomIssueList;
-    }
-    else {
-      for(let issue of this.roomIssueList) {
-        if(issue.severity.toLowerCase() == severity.toLowerCase()) {
-          temp.push(issue)
+    } else {
+      for (const issue of this.roomIssueList) {
+        if (issue.severity.toLowerCase() === severity.toLowerCase()) {
+          temp.push(issue);
         }
       }
     }
     return temp;
   }
+
+  async SetPossibleResponders() {
+    await this.api.GetPossibleResponders().then((response) => {
+      this.possibleResponders = response;
+      console.log(this.possibleResponders);
+    });
+  }
+
 }
