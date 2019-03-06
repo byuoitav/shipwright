@@ -174,7 +174,7 @@ func main() {
 
 	readconfig.GET("/issues/resolutions", handlers.GetClosureCodes)
 
-	router.GET("/issues/queue", handlers.GetAlertStoreQueueStatus)
+	readconfig.GET("/issues/queue", handlers.GetAlertStoreQueueStatus)
 
 	writeconfig.PUT("/alerts/add", handlers.AddAlert)
 
