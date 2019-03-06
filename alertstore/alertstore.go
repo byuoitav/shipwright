@@ -281,7 +281,7 @@ func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue stri
 			copy(newRoomIssue.ActiveAlertTypes, v.ActiveAlertTypes)
 			copy(newRoomIssue.ActiveAlertCategories, v.ActiveAlertCategories)
 			newRoomIssue.Alerts = []structs.Alert{}
-			copy(newRoomIssue.Responders, v.Responders)
+			copy(newRoomIssue.RoomIssueResponses, v.RoomIssueResponses)
 			copy(newRoomIssue.NotesLog, v.NotesLog)
 
 			keepAlerts := []structs.Alert{}
@@ -627,7 +627,7 @@ func combineIssues(n, o structs.RoomIssue) (structs.RoomIssue, bool) {
 		changes = true
 	}
 
-	if len(n.IncidentID) > 0 && (len(n.IncidentID) != len(o.IncidentID) || structs.ContainsAllTags(o.IncidentID, n.IncidentID...)) {
+	if len(n.IncidentID) > 0 && (len(n.IncidentID) != len(o.IncidentID) || !structs.ContainsAllTags(o.IncidentID, n.IncidentID...)) {
 		o.IncidentID = n.IncidentID
 		changes = true
 	}
@@ -638,18 +638,27 @@ func combineIssues(n, o structs.RoomIssue) (structs.RoomIssue, bool) {
 		changes = true
 	}
 
-	if len(n.Responders) > 0 && (len(n.Responders) != len(o.Responders) || structs.ContainsAllTags(o.Responders, n.Responders...)) {
-		o.Responders = n.Responders
-		changes = true
+	for _, newResponse := range n.RoomIssueResponses {
+		foundMatch := false
+
+		for _, oldResponse := range o.RoomIssueResponses {
+			if len(newResponse.Responders) == len(oldResponse.Responders) && structs.ContainsAllTags(newResponse.Responders, oldResponse.Responders...) {
+				if newResponse.HelpSentAt == oldResponse.HelpSentAt {
+					if newResponse.HelpArrivedAt == oldResponse.HelpArrivedAt {
+						foundMatch = true
+						break
+					}
+				}
+			}
+		}
+
+		if !foundMatch {
+			o.RoomIssueResponses = append(o.RoomIssueResponses, newResponse)
+		}
 	}
 
-	if !n.HelpSentAt.IsZero() && !n.HelpSentAt.Equal(o.HelpSentAt) {
-		o.HelpSentAt = n.HelpSentAt
-		changes = true
-	}
-
-	if !n.HelpArrivedAt.IsZero() && !n.HelpArrivedAt.Equal(o.HelpArrivedAt) {
-		o.HelpArrivedAt = n.HelpArrivedAt
+	if len(n.RoomIssueResponses) > 0 && (len(n.RoomIssueResponses) != len(o.RoomIssueResponses)) {
+		o.RoomIssueResponses = n.RoomIssueResponses
 		changes = true
 	}
 
