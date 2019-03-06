@@ -1,6 +1,6 @@
 import { Injectable, EventEmitter } from "@angular/core";
 import { APIService } from "./api.service";
-import { Building, Room, Device, UIConfig, DeviceType, Role, RoomConfiguration, Template } from "../objects/database";
+import { Building, Room, Device, UIConfig, DeviceType, Person, Role, RoomConfiguration, Template } from "../objects/database";
 import { RoomIssue } from "../objects/alerts";
 import { SocketService } from "./socket.service";
 import { StaticDevice, RoomStatus, BuildingStatus, CombinedRoomState } from "../objects/static";
@@ -31,6 +31,7 @@ export class DataService {
   roomIssueList: RoomIssue[] = [];
   roomIssuesMap: Map<string, RoomIssue[]> = new Map();
   closureCodes: string[] = [];
+  possibleResponders: Person[] = [];
 
   staticDeviceList: StaticDevice[] = [];
   roomStatusList: RoomStatus[] = [];
@@ -41,7 +42,7 @@ export class DataService {
   finished = false;
   completedOperations = 0;
   totalCompletion = 100;
-  increment: number = Math.ceil(this.totalCompletion / 17);
+  increment: number = Math.ceil(this.totalCompletion / 19);
 
   settingsChanged: EventEmitter<any>;
   panelCount = 2;
@@ -95,6 +96,8 @@ export class DataService {
     await this.GetClosureCodes(); //         17
     this.completedOperations += this.increment;
     await this.GetCombinedRoomState(); //    18
+    this.completedOperations += this.increment;
+    await this.SetPossibleResponders(); //   19
     this.completedOperations += this.increment;
      this.finished = true;
      this.loaded.emit(true);
@@ -450,4 +453,13 @@ export class DataService {
       }
     }
     return temp;
-  } }
+  }
+
+  async SetPossibleResponders() {
+    await this.api.GetPossibleResponders().then((response) => {
+      this.possibleResponders = response;
+      console.log(this.possibleResponders);
+    });
+  }
+
+}

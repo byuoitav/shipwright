@@ -154,6 +154,8 @@ func main() {
 
 	write.PUT("/alerts/add", handlers.AddAlert)
 
+	read.GET("/alerts/responders", handlers.GetResponders)
+
 	// Websocket Endpoints
 	router.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))
 
