@@ -39,9 +39,11 @@ type RoomIssueMatch struct {
 	IncidentID []string `json:"incident-id,omitempty"`
 	Notes      string   `json:"notes,omitempty"`
 
-	Responders    []string `json:"responders,omitempty"`
-	HelpSentAt    string   `json:"help-sent-at,omitempty"`
-	HelpArrivedAt string   `json:"help-arrived-at,omitempty"`
+	RoomIssueResponses []struct {
+		Responders    []string `json:"responders,omitempty"`
+		HelpSentAt    string   `json:"help-sent-at,omitempty"`
+		HelpArrivedAt string   `json:"help-arrived-at,omitempty"`
+	} `json:"responses,omitempty`
 
 	Resolved       *bool `json:"resolved,omitempty"`
 	ResolutionInfo struct {
@@ -75,9 +77,7 @@ type RoomIssueMatch struct {
 		IncidentID []*regexp.Regexp
 		Notes      *regexp.Regexp
 
-		Responders    []*regexp.Regexp
-		HelpSentAt    *regexp.Regexp
-		HelpArrivedAt *regexp.Regexp
+		RoomIssueResponses []RoomIssueResponseMatchRegex
 
 		ResolutionInfo struct {
 			Code       *regexp.Regexp
@@ -87,6 +87,12 @@ type RoomIssueMatch struct {
 
 		NotesLog []*regexp.Regexp
 	}
+}
+
+type RoomIssueResponseMatchRegex struct {
+	Responders    []*regexp.Regexp
+	HelpSentAt    *regexp.Regexp
+	HelpArrivedAt *regexp.Regexp
 }
 
 // DoesRoomIssueMatch .
@@ -366,35 +372,56 @@ func (m *RoomIssueMatch) DoesRoomIssueMatch(ctx context.Context) bool {
 		}
 	}
 
-	if len(m.regex.Responders) > 0 {
-		matched := 0
+	if len(m.regex.RoomIssueResponses) > 0 {
+		roomIssueMatches := 0
 
-		for _, regex := range m.regex.Responders {
-			reg := regex.Copy()
+		for _, parentRegex := range m.regex.RoomIssueResponses {
 
-			for _, s := range issue.Responders {
-				if reg.MatchString(s) {
-					matched++
-					break
+			thisRoomIssueMatch := true
+
+			for _, issueResponseToCheck := range issue.RoomIssueResponses {
+				if len(parentRegex.Responders) > 0 {
+					matched := 0
+
+					for _, regex := range parentRegex.Responders {
+						reg := regex.Copy()
+
+						for _, s := range issueResponseToCheck.Responders {
+							if reg.MatchString(s) {
+								matched++
+								break
+							}
+						}
+					}
+
+					if matched != len(parentRegex.Responders) {
+						thisRoomIssueMatch = false
+					}
+				}
+
+				if parentRegex.HelpSentAt != nil {
+					reg := parentRegex.HelpSentAt.Copy()
+					if !reg.MatchString(issueResponseToCheck.HelpSentAt.String()) {
+						thisRoomIssueMatch = false
+					}
+				}
+
+				if parentRegex.HelpArrivedAt != nil {
+					reg := parentRegex.HelpArrivedAt.Copy()
+					if !reg.MatchString(issueResponseToCheck.HelpArrivedAt.String()) {
+						thisRoomIssueMatch = false
+					}
 				}
 			}
+
+			if !thisRoomIssueMatch {
+				return false
+			}
+
+			roomIssueMatches++
 		}
 
-		if matched != len(m.regex.Responders) {
-			return false
-		}
-	}
-
-	if m.regex.HelpSentAt != nil {
-		reg := m.regex.HelpSentAt.Copy()
-		if !reg.MatchString(issue.HelpSentAt.String()) {
-			return false
-		}
-	}
-
-	if m.regex.HelpArrivedAt != nil {
-		reg := m.regex.HelpArrivedAt.Copy()
-		if !reg.MatchString(issue.HelpArrivedAt.String()) {
+		if roomIssueMatches != len(m.regex.RoomIssueResponses) {
 			return false
 		}
 	}
@@ -505,19 +532,26 @@ func (m *RoomIssueMatch) buildRegex() {
 		m.count++
 	}
 
-	for _, s := range m.Responders {
-		m.regex.Responders = append(m.regex.Responders, regexp.MustCompile(s))
-		m.count++
-	}
+	for _, p := range m.RoomIssueResponses {
 
-	if len(m.HelpSentAt) > 0 {
-		m.regex.HelpSentAt = regexp.MustCompile(m.HelpSentAt)
-		m.count++
-	}
+		var newRegex RoomIssueResponseMatchRegex
 
-	if len(m.HelpArrivedAt) > 0 {
-		m.regex.HelpArrivedAt = regexp.MustCompile(m.HelpArrivedAt)
-		m.count++
+		m.regex.RoomIssueResponses = append(m.regex.RoomIssueResponses, newRegex)
+
+		for _, s := range p.Responders {
+			newRegex.Responders = append(newRegex.Responders, regexp.MustCompile(s))
+			m.count++
+		}
+
+		if len(p.HelpSentAt) > 0 {
+			newRegex.HelpSentAt = regexp.MustCompile(p.HelpSentAt)
+			m.count++
+		}
+
+		if len(p.HelpArrivedAt) > 0 {
+			newRegex.HelpArrivedAt = regexp.MustCompile(p.HelpArrivedAt)
+			m.count++
+		}
 	}
 
 	if len(m.ResolutionInfo.Code) > 0 {
