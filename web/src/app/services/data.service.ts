@@ -6,7 +6,7 @@ import { SocketService } from './socket.service';
 import { StaticDevice, RoomStatus, BuildingStatus, CombinedRoomState } from '../objects/static';
 import { StringsService } from './strings.service';
 import { NotifierService } from 'angular-notifier';
-import { RSA_NO_PADDING } from 'constants';
+//import { RSA_NO_PADDING } from 'constants';
 
 @Injectable({
   providedIn: 'root'
