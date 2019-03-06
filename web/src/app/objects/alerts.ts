@@ -1,4 +1,5 @@
 import { JsonObject, JsonProperty, JsonConverter, JsonCustomConvert, Any } from "json2typescript";
+import { Person } from "src/app/objects/database";
 
 @JsonConverter
 class DateConverter implements JsonCustomConvert<Date> {
@@ -6,7 +7,7 @@ class DateConverter implements JsonCustomConvert<Date> {
         function pad(n) {
         return n < 10 ? "0" + n : n;
         }
-    
+
         return (
         date.getUTCFullYear() +
         "-" +
@@ -22,12 +23,12 @@ class DateConverter implements JsonCustomConvert<Date> {
         "Z"
         );
     }
-    
+
     deserialize(date: any): Date {
         if (date == null) {
         return undefined;
         }
-    
+
         return new Date(date);
     }
 }
@@ -36,10 +37,10 @@ class DateConverter implements JsonCustomConvert<Date> {
 export class ResolutionInfo {
     @JsonProperty("resolution-code", String, true)
     code: string = undefined;
-    
+
     @JsonProperty("notes", String, true)
     notes: string = undefined;
-    
+
     @JsonProperty("resolved-at", DateConverter, true)
     resolvedAt: Date = new Date("1970-01-01T00:00:00.000Z");
 }
@@ -48,52 +49,52 @@ export class ResolutionInfo {
 export class Alert {
     @JsonProperty("id", String, true)
     alertID: string = undefined;
-    
+
     @JsonProperty("buildingID", String, true)
     buildingID: string = undefined;
-    
+
     @JsonProperty("roomID", String, true)
     roomID: string = undefined;
-    
+
     @JsonProperty("deviceID", String, true)
     deviceID: string = undefined;
-    
+
     @JsonProperty("type", String, true)
     type: string = undefined;
-    
+
     @JsonProperty("category", String, true)
     category: string = undefined;
 
     @JsonProperty("severity", String, true)
     severity: string = undefined;
-    
+
     @JsonProperty("message", String, true)
     message: string = undefined;
-    
+
     @JsonProperty("message-log", [String], true)
     messageLog: string[] = Array<string>();
-    
+
     @JsonProperty("data", Any, true)
     data: any = undefined;
 
     @JsonProperty("system-type", String, true)
     systemType: string = undefined;
-    
+
     @JsonProperty("start-time", DateConverter, true)
     startTime: Date = undefined;
-    
+
     @JsonProperty("end-time", DateConverter, true)
     endTime: Date = undefined;
-    
+
     @JsonProperty("update-time", DateConverter, true)
     updateTime: Date = undefined;
-    
+
     @JsonProperty("active", Boolean, true)
     active: boolean = undefined;
-    
+
     @JsonProperty("alert-tags", [String], true)
     alertTags: string[] = Array<string>();
-    
+
     @JsonProperty("device-tags", [String], true)
     deviceTags: string[] = Array<string>();
 
@@ -108,10 +109,10 @@ export class Alert {
 export class RoomIssue {
     @JsonProperty("id", String, true)
     issueID: string = undefined;
-    
+
     @JsonProperty("buildingID", String, true)
     buildingID: string = undefined;
-    
+
     @JsonProperty("roomID", String, true)
     roomID: string = undefined;
 
@@ -156,22 +157,22 @@ export class RoomIssue {
 
     @JsonProperty("notes", String, true)
     notes: string = undefined;
-    
+
     @JsonProperty("notes-log", [String], true)
     notesLog: string[] = Array<string>();
 
     @JsonProperty("responders", [String], true)
-    responders: string[] = Array<string>();
-    
+    responders: Person[] = Array<Person>();
+
     @JsonProperty("help-sent-at", DateConverter, true)
     helpSentAt: Date = undefined;
-    
+
     @JsonProperty("help-arrived-at", DateConverter, true)
     helpArrivedAt: Date = undefined;
 
     @JsonProperty("resolved", Boolean, true)
     resolved: boolean = undefined;
-    
+
     @JsonProperty("resolution-info", ResolutionInfo, true)
     resolutionInfo: ResolutionInfo = new ResolutionInfo();
 
@@ -179,29 +180,29 @@ export class RoomIssue {
     alerts: Alert[] = Array<Alert>();
 
   SentIsZero(): boolean {
-    if (this.helpSentAt == undefined){
+    if (this.helpSentAt === undefined) {
       return true;
     }
 
-    let zero = "0001-01-01T00:00:00.000Z";
+    const zero = "0001-01-01T00:00:00.000Z";
 
     return this.helpSentAt.toISOString() === zero;
   }
 
   ArrivedIsZero(): boolean {
-    if (this.helpArrivedAt == undefined){
+    if (this.helpArrivedAt === undefined) {
       return true;
     }
-    let zero = "0001-01-01T00:00:00.000Z";
+    const zero = "0001-01-01T00:00:00.000Z";
 
     return this.helpArrivedAt.toISOString() === zero;
   }
 
   ResolvedAtIsZero(): boolean {
-    if (this.resolutionInfo.resolvedAt == undefined){
+    if (this.resolutionInfo.resolvedAt === undefined) {
       return true;
     }
-    let zero = "0001-01-01T00:00:00.000Z";
+    const zero = "0001-01-01T00:00:00.000Z";
 
     return this.resolutionInfo.resolvedAt.toISOString() === zero;
   }
