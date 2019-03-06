@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-import { Injectable, EventEmitter } from '@angular/core';
-import { APIService } from './api.service';
-import { Building, Room, Device, UIConfig, DeviceType, Role, RoomConfiguration, Template } from '../objects/database';
-import { RoomIssue } from '../objects/alerts';
-import { SocketService } from './socket.service';
-import { StaticDevice, RoomStatus, BuildingStatus, CombinedRoomState } from '../objects/static';
-import { StringsService } from './strings.service';
-import { NotifierService } from 'angular-notifier';
-//import { RSA_NO_PADDING } from 'constants';
-=======
 import { Injectable, EventEmitter } from "@angular/core";
 import { APIService } from "./api.service";
 import { Building, Room, Device, UIConfig, DeviceType, Person, Role, RoomConfiguration, Template } from "../objects/database";
@@ -17,7 +6,6 @@ import { SocketService } from "./socket.service";
 import { StaticDevice, RoomStatus, BuildingStatus, CombinedRoomState } from "../objects/static";
 import { StringsService } from "./strings.service";
 import { NotifierService } from "angular-notifier";
->>>>>>> e8c3df88385dfd14cc1174790c9de04fb36d46fd
 
 @Injectable({
   providedIn: "root"
