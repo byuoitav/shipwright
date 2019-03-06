@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from 'src/app/services/data.service';
 import { MatTableDataSource } from '@angular/material';
-import { CombinedRoomState } from 'src/app/objects/static';
+import { CombinedRoomState, StaticDevice } from 'src/app/objects/static';
 import { DataSource } from '@angular/cdk/table';
 import { StringsService } from 'src/app/services/strings.service';
 
@@ -29,4 +29,60 @@ export class RoomStateComponent implements OnInit {
   ngOnInit() {
   }
 
+  GetDeviceName(deviceID: string): string {
+    const IDParts = deviceID.split("-");
+    if (IDParts.length === 3) {
+      return IDParts[2];
+    }
+    return deviceID;
+  }
+
+  GetDeviceTypes(rs: CombinedRoomState): string[] {
+    let deviceTypes: string[] = [];
+    if (rs != null && rs.deviceStates != null) {
+      for (const ds of rs.deviceStates) {
+        if (!deviceTypes.includes(ds.deviceType)) {
+          deviceTypes.push(ds.deviceType);
+        }
+      }
+      deviceTypes = deviceTypes.sort();
+
+    }
+    return deviceTypes;
+  }
+
+  GetStyle(ds: StaticDevice): string {
+    let style = "";
+    if (ds.deviceType === "display" || ds.deviceType === "dmps") {
+      if (ds.power === "on") {
+        style = "display-on";
+        return style;
+      }
+      // style = "display-standby";
+      return style;
+    }
+    if (ds.deviceType === "via") {
+      if (ds.currentUserCount > 0) {
+        style = "display-on";
+        return style;
+      }
+      // style = "display-standby";
+      return style;
+    }
+
+    if (ds.deviceType === "microphone") {
+      if (ds.batteryChargeMinutes >= 300) {
+        style = "mic-good";
+        return style;
+      }
+      if (300 > ds.batteryChargeMinutes && ds.batteryChargeMinutes >= 90) {
+        style = "mic-okay";
+        return style;
+      }
+      if (90 > ds.batteryChargeMinutes && ds.batteryChargeMinutes >= 0) {
+        style = "mic-bad";
+        return style;
+      }
+    }
+  }
 }
