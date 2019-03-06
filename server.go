@@ -178,6 +178,8 @@ func main() {
 
 	writeconfig.PUT("/alerts/add", handlers.AddAlert)
 
+	read.GET("/alerts/responders", handlers.GetResponders)
+
 	// Websocket Endpoints
 	readconfig.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))
 

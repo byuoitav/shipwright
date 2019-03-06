@@ -67,7 +67,7 @@ export class SummaryComponent implements OnInit {
               if (issue.responders != null) {
                 for (const r of issue.responders) {
                   if (!this.responders.includes(r)) {
-                    this.responders.concat(r);
+                    this.responders.push(r);
                   }
                 }
               }

@@ -135,11 +135,11 @@ export class Device {
 
 @JsonObject("Person")
 export class Person {
-  @JsonProperty("_name", String)
+  @JsonProperty("name", String)
   name: string = undefined;
 
-  @JsonProperty("_netID", String, true)
-  netID: string = undefined;
+  @JsonProperty("id", String, true)
+  id: string = undefined;
   }
 
 
