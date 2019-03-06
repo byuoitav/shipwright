@@ -105,6 +105,37 @@ export class Alert {
     manualResolve: boolean = undefined;
 }
 
+@JsonObject("RoomIssueResponse")
+export class RoomIssueResponse {
+  @JsonProperty("responders", [String], true)
+  responders: Person[] = Array<Person>();
+
+  @JsonProperty("help-sent-at", DateConverter, true)
+  helpSentAt: Date = undefined;
+
+  @JsonProperty("help-arrived-at", DateConverter, true)
+  helpArrivedAt: Date = undefined;
+
+  SentIsZero(): boolean {
+    if (this.helpSentAt === undefined) {
+      return true;
+    }
+
+    const zero = "0001-01-01T00:00:00.000Z";
+
+    return this.helpSentAt.toISOString() === zero;
+  }
+
+  ArrivedIsZero(): boolean {
+    if (this.helpArrivedAt === undefined) {
+      return true;
+    }
+    const zero = "0001-01-01T00:00:00.000Z";
+
+    return this.helpArrivedAt.toISOString() === zero;
+  }
+}
+
 @JsonObject("RoomIssue")
 export class RoomIssue {
     @JsonProperty("id", String, true)
@@ -117,7 +148,7 @@ export class RoomIssue {
     roomID: string = undefined;
 
     @JsonProperty("severity", String, true)
-    severity: string = undefined;
+    severity: string[] = undefined;
 
     @JsonProperty("room-tags", [String], true)
     roomTags: string[] = Array<string>();
@@ -161,14 +192,8 @@ export class RoomIssue {
     @JsonProperty("notes-log", [String], true)
     notesLog: string[] = Array<string>();
 
-    @JsonProperty("responders", [String], true)
-    responders: Person[] = Array<Person>();
-
-    @JsonProperty("help-sent-at", DateConverter, true)
-    helpSentAt: Date = undefined;
-
-    @JsonProperty("help-arrived-at", DateConverter, true)
-    helpArrivedAt: Date = undefined;
+    @JsonProperty("responses", [RoomIssueResponse], true)
+    roomIssueResponses: RoomIssueResponse[] = Array<RoomIssueResponse>();
 
     @JsonProperty("resolved", Boolean, true)
     resolved: boolean = undefined;
@@ -178,32 +203,13 @@ export class RoomIssue {
 
     @JsonProperty("alerts", [Alert], true)
     alerts: Alert[] = Array<Alert>();
-
-  SentIsZero(): boolean {
-    if (this.helpSentAt === undefined) {
-      return true;
+  
+    ResolvedAtIsZero(): boolean {
+      if (this.resolutionInfo.resolvedAt === undefined) {
+        return true;
+      }
+      const zero = "0001-01-01T00:00:00.000Z";
+  
+      return this.resolutionInfo.resolvedAt.toISOString() === zero;
     }
-
-    const zero = "0001-01-01T00:00:00.000Z";
-
-    return this.helpSentAt.toISOString() === zero;
-  }
-
-  ArrivedIsZero(): boolean {
-    if (this.helpArrivedAt === undefined) {
-      return true;
-    }
-    const zero = "0001-01-01T00:00:00.000Z";
-
-    return this.helpArrivedAt.toISOString() === zero;
-  }
-
-  ResolvedAtIsZero(): boolean {
-    if (this.resolutionInfo.resolvedAt === undefined) {
-      return true;
-    }
-    const zero = "0001-01-01T00:00:00.000Z";
-
-    return this.resolutionInfo.resolvedAt.toISOString() === zero;
-  }
 }

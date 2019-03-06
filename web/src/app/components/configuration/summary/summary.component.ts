@@ -45,13 +45,13 @@ export class SummaryComponent implements OnInit {
 
         if (this.roomIssues != null) {
           for (const issue of this.roomIssues) {
-            if (issue.responders != null) {
-              for (const r of issue.responders) {
-                if (!this.responders.includes(r)) {
-                  this.responders.push(r);
-                }
-              }
-            }
+            // if (issue.responders != null) {
+            //   for (const r of issue.responders) {
+            //     if (!this.responders.includes(r)) {
+            //       this.responders.push(r);
+            //     }
+            //   }
+            // }
           }
         }
 
@@ -64,13 +64,13 @@ export class SummaryComponent implements OnInit {
           this.filteredDevices = this.deviceList;
           if (this.roomIssues != null) {
             for (const issue of this.roomIssues) {
-              if (issue.responders != null) {
-                for (const r of issue.responders) {
-                  if (!this.responders.includes(r)) {
-                    this.responders.push(r);
-                  }
-                }
-              }
+              // if (issue.responders != null) {
+              //   for (const r of issue.responders) {
+              //     if (!this.responders.includes(r)) {
+              //       this.responders.push(r);
+              //     }
+              //   }
+              // }
             }
           }
 
@@ -137,20 +137,20 @@ export class SummaryComponent implements OnInit {
     if (this.roomIssues != null) {
       for (const issue of this.roomIssues) {
         this.roomIssue = issue;
-        if (!issue.SentIsZero()) {
-          const time = issue.helpSentAt.toTimeString();
-          this.sentTime = time.substring(0, time.lastIndexOf(":"));
-        } else {
-          const time = new Date().toTimeString();
-          this.sentTime = time.substring(0, time.lastIndexOf(":"));
-        }
-        if (!issue.ArrivedIsZero()) {
-          const time = issue.helpArrivedAt.toTimeString();
-          this.arrivedTime = time.substring(0, time.lastIndexOf(":"));
-        } else {
-          const time = new Date().toTimeString();
-          this.arrivedTime = time.substring(0, time.lastIndexOf(":"));
-        }
+        // if (!issue.SentIsZero()) {
+        //   const time = issue.helpSentAt.toTimeString();
+        //   this.sentTime = time.substring(0, time.lastIndexOf(":"));
+        // } else {
+        //   const time = new Date().toTimeString();
+        //   this.sentTime = time.substring(0, time.lastIndexOf(":"));
+        // }
+        // if (!issue.ArrivedIsZero()) {
+        //   const time = issue.helpArrivedAt.toTimeString();
+        //   this.arrivedTime = time.substring(0, time.lastIndexOf(":"));
+        // } else {
+        //   const time = new Date().toTimeString();
+        //   this.arrivedTime = time.substring(0, time.lastIndexOf(":"));
+        // }
       }
 
     }
@@ -162,9 +162,9 @@ export class SummaryComponent implements OnInit {
 
     const time = this.to24Hour(this.sentTime);
     const timestamp = today + ", " + time;
-    for (const issue of this.roomIssues) {
-      issue.helpSentAt = new Date(timestamp);
-    }
+    // for (const issue of this.roomIssues) {
+    //   issue.helpSentAt = new Date(timestamp);
+    // }
   }
 
   HelpHasArrived() {
@@ -173,9 +173,9 @@ export class SummaryComponent implements OnInit {
 
     const time = this.to24Hour(this.arrivedTime);
     const timestamp = today + ", " + time;
-    for (const issue of this.roomIssues) {
-      issue.helpArrivedAt = new Date(timestamp);
-    }
+    // for (const issue of this.roomIssues) {
+    //   issue.helpArrivedAt = new Date(timestamp);
+    // }
   }
 
   private to24Hour(time: string): string {
@@ -219,10 +219,10 @@ export class SummaryComponent implements OnInit {
     for (const alert of issue.alerts) {
       alert.endTime = new Date("1970-01-01T00:00:00.000Z");
     }
-    issue.responders = [];
-    for (const r of this.responders) {
-      issue.responders.push(r);
-    }
+    // issue.responders = [];
+    // for (const r of this.responders) {
+    //   issue.responders.push(r);
+    // }
     console.log(issue);
     this.api.UpdateIssue(issue);
   }
