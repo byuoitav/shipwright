@@ -447,9 +447,11 @@ export class DataService {
       return this.roomIssueList;
     } else {
       for (const issue of this.roomIssueList) {
-        if (issue.severity.toLowerCase() === severity.toLowerCase()) {
-          temp.push(issue);
-        }
+        for (const issueSev of issue.severity) {
+          if (issueSev.toLowerCase() === severity.toLowerCase()) {
+            temp.push(issue);
+          }
+        }        
       }
     }
     return temp;
