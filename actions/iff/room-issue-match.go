@@ -17,29 +17,33 @@ type RoomIssueMatch struct {
 	BuildingID  string `json:"buildingID,omitempty"`
 	RoomID      string `json:"roomID,omitempty"`
 
-	Severity string `json:"severity,omitempty"`
+	Severities []string `json:"severity,omitempty"`
 
 	RoomTags []string `json:"room-tags,omitempty"`
 
 	AlertTypes      []string `json:"alert-types,omitempty"`
 	AlertDevices    []string `json:"alert-devices,omitempty"`
 	AlertCategories []string `json:"alert-categories,omitempty"`
+	AlertSeverities []string `json:"alert-severities,omitempty"`
 	AlertCount      *int     `json:"alert-count,omitempty"`
 
 	ActiveAlertTypes      []string `json:"active-alert-types,omitempty"`
 	ActiveAlertDevices    []string `json:"active-alert-devices,omitempty"`
 	ActiveAlertCategories []string `json:"active-alert-categories,omitempty"`
+	ActiveAlertSeverities []string `json:"active-alert-severities,omitempty"`
 	AlertActiveCount      *int     `json:"active-alert-count,omitempty"`
 
 	SystemType string `json:"system-type,omitempty"`
 
 	IssueTags  []string `json:"issue-tags,omitempty"`
-	IncidentID string   `json:"incident-id,omitempty"`
+	IncidentID []string `json:"incident-id,omitempty"`
 	Notes      string   `json:"notes,omitempty"`
 
-	Responders    []string `json:"responders,omitempty"`
-	HelpSentAt    string   `json:"help-sent-at,omitempty"`
-	HelpArrivedAt string   `json:"help-arrived-at,omitempty"`
+	RoomIssueResponses []struct {
+		Responders    []string `json:"responders,omitempty"`
+		HelpSentAt    string   `json:"help-sent-at,omitempty"`
+		HelpArrivedAt string   `json:"help-arrived-at,omitempty"`
+	} `json:"responses,omitempty`
 
 	Resolved       *bool `json:"resolved,omitempty"`
 	ResolutionInfo struct {
@@ -55,27 +59,25 @@ type RoomIssueMatch struct {
 		BuildingID  *regexp.Regexp
 		RoomID      *regexp.Regexp
 
-		Severity *regexp.Regexp
-
 		RoomTags []*regexp.Regexp
 
 		AlertTypes      []*regexp.Regexp
 		AlertDevices    []*regexp.Regexp
 		AlertCategories []*regexp.Regexp
+		AlertSeverities []*regexp.Regexp
 
 		ActiveAlertTypes      []*regexp.Regexp
 		ActiveAlertDevices    []*regexp.Regexp
 		ActiveAlertCategories []*regexp.Regexp
+		ActiveAlertSeverities []*regexp.Regexp
 
 		SystemType *regexp.Regexp
 
 		IssueTags  []*regexp.Regexp
-		IncidentID *regexp.Regexp
+		IncidentID []*regexp.Regexp
 		Notes      *regexp.Regexp
 
-		Responders    []*regexp.Regexp
-		HelpSentAt    *regexp.Regexp
-		HelpArrivedAt *regexp.Regexp
+		RoomIssueResponses []RoomIssueResponseMatchRegex
 
 		ResolutionInfo struct {
 			Code       *regexp.Regexp
@@ -85,6 +87,12 @@ type RoomIssueMatch struct {
 
 		NotesLog []*regexp.Regexp
 	}
+}
+
+type RoomIssueResponseMatchRegex struct {
+	Responders    []*regexp.Regexp
+	HelpSentAt    *regexp.Regexp
+	HelpArrivedAt *regexp.Regexp
 }
 
 // DoesRoomIssueMatch .
@@ -142,13 +150,6 @@ func (m *RoomIssueMatch) DoesRoomIssueMatch(ctx context.Context) bool {
 		}
 	}
 
-	if m.regex.Severity != nil {
-		reg := m.regex.Severity.Copy()
-		if !reg.MatchString(string(issue.Severity)) {
-			return false
-		}
-	}
-
 	if len(m.regex.RoomTags) > 0 {
 		matched := 0
 
@@ -183,6 +184,25 @@ func (m *RoomIssueMatch) DoesRoomIssueMatch(ctx context.Context) bool {
 		}
 
 		if matched != len(m.regex.AlertTypes) {
+			return false
+		}
+	}
+
+	if len(m.regex.AlertSeverities) > 0 {
+		matched := 0
+
+		for _, regex := range m.regex.AlertSeverities {
+			reg := regex.Copy()
+
+			for _, s := range issue.AlertSeverities {
+				if reg.MatchString(string(s)) {
+					matched++
+					break
+				}
+			}
+		}
+
+		if matched != len(m.regex.AlertSeverities) {
 			return false
 		}
 	}
@@ -240,6 +260,24 @@ func (m *RoomIssueMatch) DoesRoomIssueMatch(ctx context.Context) bool {
 		}
 
 		if matched != len(m.regex.ActiveAlertTypes) {
+			return false
+		}
+	}
+	if len(m.regex.ActiveAlertSeverities) > 0 {
+		matched := 0
+
+		for _, regex := range m.regex.ActiveAlertSeverities {
+			reg := regex.Copy()
+
+			for _, s := range issue.ActiveAlertSeverities {
+				if reg.MatchString(string(s)) {
+					matched++
+					break
+				}
+			}
+		}
+
+		if matched != len(m.regex.ActiveAlertSeverities) {
 			return false
 		}
 	}
@@ -308,9 +346,21 @@ func (m *RoomIssueMatch) DoesRoomIssueMatch(ctx context.Context) bool {
 		}
 	}
 
-	if m.regex.IncidentID != nil {
-		reg := m.regex.IncidentID.Copy()
-		if !reg.MatchString(issue.IncidentID) {
+	if len(m.regex.IncidentID) > 0 {
+		matched := 0
+
+		for _, regex := range m.regex.IncidentID {
+			reg := regex.Copy()
+
+			for _, s := range issue.IncidentID {
+				if reg.MatchString(string(s)) {
+					matched++
+					break
+				}
+			}
+		}
+
+		if matched != len(m.regex.IncidentID) {
 			return false
 		}
 	}
@@ -322,35 +372,56 @@ func (m *RoomIssueMatch) DoesRoomIssueMatch(ctx context.Context) bool {
 		}
 	}
 
-	if len(m.regex.Responders) > 0 {
-		matched := 0
+	if len(m.regex.RoomIssueResponses) > 0 {
+		roomIssueMatches := 0
 
-		for _, regex := range m.regex.Responders {
-			reg := regex.Copy()
+		for _, parentRegex := range m.regex.RoomIssueResponses {
 
-			for _, s := range issue.Responders {
-				if reg.MatchString(s) {
-					matched++
-					break
+			thisRoomIssueMatch := true
+
+			for _, issueResponseToCheck := range issue.RoomIssueResponses {
+				if len(parentRegex.Responders) > 0 {
+					matched := 0
+
+					for _, regex := range parentRegex.Responders {
+						reg := regex.Copy()
+
+						for _, s := range issueResponseToCheck.Responders {
+							if reg.MatchString(s) {
+								matched++
+								break
+							}
+						}
+					}
+
+					if matched != len(parentRegex.Responders) {
+						thisRoomIssueMatch = false
+					}
+				}
+
+				if parentRegex.HelpSentAt != nil {
+					reg := parentRegex.HelpSentAt.Copy()
+					if !reg.MatchString(issueResponseToCheck.HelpSentAt.String()) {
+						thisRoomIssueMatch = false
+					}
+				}
+
+				if parentRegex.HelpArrivedAt != nil {
+					reg := parentRegex.HelpArrivedAt.Copy()
+					if !reg.MatchString(issueResponseToCheck.HelpArrivedAt.String()) {
+						thisRoomIssueMatch = false
+					}
 				}
 			}
+
+			if !thisRoomIssueMatch {
+				return false
+			}
+
+			roomIssueMatches++
 		}
 
-		if matched != len(m.regex.Responders) {
-			return false
-		}
-	}
-
-	if m.regex.HelpSentAt != nil {
-		reg := m.regex.HelpSentAt.Copy()
-		if !reg.MatchString(issue.HelpSentAt.String()) {
-			return false
-		}
-	}
-
-	if m.regex.HelpArrivedAt != nil {
-		reg := m.regex.HelpArrivedAt.Copy()
-		if !reg.MatchString(issue.HelpArrivedAt.String()) {
+		if roomIssueMatches != len(m.regex.RoomIssueResponses) {
 			return false
 		}
 	}
@@ -397,11 +468,6 @@ func (m *RoomIssueMatch) buildRegex() {
 		m.count++
 	}
 
-	if len(m.Severity) > 0 {
-		m.regex.Severity = regexp.MustCompile(m.Severity)
-		m.count++
-	}
-
 	for _, s := range m.RoomTags {
 		m.regex.RoomTags = append(m.regex.RoomTags, regexp.MustCompile(s))
 		m.count++
@@ -422,6 +488,11 @@ func (m *RoomIssueMatch) buildRegex() {
 		m.count++
 	}
 
+	for _, s := range m.AlertSeverities {
+		m.regex.AlertCategories = append(m.regex.AlertCategories, regexp.MustCompile(s))
+		m.count++
+	}
+
 	for _, s := range m.ActiveAlertTypes {
 		m.regex.ActiveAlertTypes = append(m.regex.ActiveAlertTypes, regexp.MustCompile(s))
 		m.count++
@@ -436,6 +507,10 @@ func (m *RoomIssueMatch) buildRegex() {
 		m.regex.ActiveAlertCategories = append(m.regex.ActiveAlertCategories, regexp.MustCompile(s))
 		m.count++
 	}
+	for _, s := range m.ActiveAlertSeverities {
+		m.regex.ActiveAlertSeverities = append(m.regex.ActiveAlertSeverities, regexp.MustCompile(s))
+		m.count++
+	}
 
 	if len(m.SystemType) > 0 {
 		m.regex.SystemType = regexp.MustCompile(m.SystemType)
@@ -447,8 +522,8 @@ func (m *RoomIssueMatch) buildRegex() {
 		m.count++
 	}
 
-	if len(m.IncidentID) > 0 {
-		m.regex.IncidentID = regexp.MustCompile(m.IncidentID)
+	for _, s := range m.IncidentID {
+		m.regex.IncidentID = append(m.regex.IncidentID, regexp.MustCompile(s))
 		m.count++
 	}
 
@@ -457,19 +532,26 @@ func (m *RoomIssueMatch) buildRegex() {
 		m.count++
 	}
 
-	for _, s := range m.Responders {
-		m.regex.Responders = append(m.regex.Responders, regexp.MustCompile(s))
-		m.count++
-	}
+	for _, p := range m.RoomIssueResponses {
 
-	if len(m.HelpSentAt) > 0 {
-		m.regex.HelpSentAt = regexp.MustCompile(m.HelpSentAt)
-		m.count++
-	}
+		var newRegex RoomIssueResponseMatchRegex
 
-	if len(m.HelpArrivedAt) > 0 {
-		m.regex.HelpArrivedAt = regexp.MustCompile(m.HelpArrivedAt)
-		m.count++
+		m.regex.RoomIssueResponses = append(m.regex.RoomIssueResponses, newRegex)
+
+		for _, s := range p.Responders {
+			newRegex.Responders = append(newRegex.Responders, regexp.MustCompile(s))
+			m.count++
+		}
+
+		if len(p.HelpSentAt) > 0 {
+			newRegex.HelpSentAt = regexp.MustCompile(p.HelpSentAt)
+			m.count++
+		}
+
+		if len(p.HelpArrivedAt) > 0 {
+			newRegex.HelpArrivedAt = regexp.MustCompile(p.HelpArrivedAt)
+			m.count++
+		}
 	}
 
 	if len(m.ResolutionInfo.Code) > 0 {

@@ -57,7 +57,7 @@ func GetAllActiveIssuesFromPersist() ([]structs.RoomIssue, *nerr.E) {
 
 	er := json.Unmarshal(b, &resp)
 	if er != nil {
-		log.L.Fatalf("Couldn't get active alerts from persistence: %v", err.Error())
+		log.L.Fatalf("Couldn't get active alerts from persistence: %v", er.Error())
 	}
 
 	for _, i := range resp.Hits.Wrappers {

@@ -1,28 +1,35 @@
 package alertstore
 
 import (
+	"sync"
 	"time"
 
-	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/state/statedefinition"
 	"github.com/byuoitav/common/structs"
-	"github.com/byuoitav/shipwright/alertstore/alertcache"
 	"github.com/byuoitav/shipwright/state/cache"
 )
 
-//not safe for concurrent use
-func calculateAggregateInfo(roomID string) {
+var (
+	initonce          sync.Once
+	roomAggsInChannel chan structs.RoomIssue
+)
 
-	var aggregateRoom statedefinition.StaticRoom
-	aggregateRoom.AlertingDeviceCount = new(int)
-	*aggregateRoom.AlertingDeviceCount = 0
-	//For each severity option
-	for _, severity := range structs.AlertSeverities {
-		roomIssue, err := alertcache.GetAlertCache("default").GetIssue(roomID + "-" + severity)
-		if err != nil {
-			log.L.Errorf("Couldn't get the other room issue: %v", err)
-			return
-		}
+func calculateAggregateInfo(roomIssue structs.RoomIssue) {
+	initonce.Do(func() {
+		roomAggsInChannel := make(chan structs.RoomIssue, 200)
+		runStaticRoomAggregator(roomAggsInChannel)
+	})
+
+	roomAggsInChannel <- roomIssue
+}
+
+//thread to take a room issue off of a channel and process it
+func runStaticRoomAggregator(InChannel chan structs.RoomIssue) {
+	for {
+		roomIssue := <-InChannel
+		var aggregateRoom statedefinition.StaticRoom
+		aggregateRoom.AlertingDeviceCount = new(int)
+		*aggregateRoom.AlertingDeviceCount = 0
 
 		//For each device in the issue's device list
 		for _, issueDevice := range roomIssue.AlertDevices {
@@ -42,15 +49,15 @@ func calculateAggregateInfo(roomID string) {
 				(*aggregateRoom.AlertingDeviceCount)++
 			}
 		}
-	}
 
-	//Set the update times for the merge
-	aggregateRoom.UpdateTimes = map[string]time.Time{
-		"alerting-devices":      time.Now(),
-		"alerting-device-count": time.Now(),
-	}
+		//Set the update times for the merge
+		aggregateRoom.UpdateTimes = map[string]time.Time{
+			"alerting-devices":      time.Now(),
+			"alerting-device-count": time.Now(),
+		}
 
-	//Send that to the cache
-	cache.GetCache("default").CheckAndStoreRoom(aggregateRoom)
+		//Send that to the cache
+		go cache.GetCache("default").CheckAndStoreRoom(aggregateRoom)
+	}
 
 }

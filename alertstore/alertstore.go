@@ -113,6 +113,10 @@ func (a *alertStore) getQueueStatus() Status {
 				Cap: cap(a.resolutionChannel),
 				Len: len(a.resolutionChannel),
 			},
+			"room-aggregation-queue": ChannelStatus{
+				Cap: cap(roomAggsInChannel),
+				Len: len(roomAggsInChannel),
+			},
 		},
 	}
 }
@@ -277,7 +281,7 @@ func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue stri
 			copy(newRoomIssue.ActiveAlertTypes, v.ActiveAlertTypes)
 			copy(newRoomIssue.ActiveAlertCategories, v.ActiveAlertCategories)
 			newRoomIssue.Alerts = []structs.Alert{}
-			copy(newRoomIssue.Responders, v.Responders)
+			copy(newRoomIssue.RoomIssueResponses, v.RoomIssueResponses)
 			copy(newRoomIssue.NotesLog, v.NotesLog)
 
 			keepAlerts := []structs.Alert{}
@@ -471,8 +475,8 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		issue = structs.RoomIssue{
 			RoomIssueID:     GetIssueIDFromAlertID(alert.AlertID),
 			BasicRoomInfo:   alert.BasicDeviceInfo.BasicRoomInfo,
-			Severity:        alert.Severity,
 			RoomTags:        alert.RoomTags,
+			AlertSeverities: []structs.AlertSeverity{alert.Severity},
 			AlertTypes:      []structs.AlertType{alert.Type},
 			AlertCategories: []structs.AlertCategory{alert.Category},
 			SystemType:      alert.SystemType,
@@ -495,7 +499,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 	issue.CalculateAggregateInfo()
 	if roomAggregateChange {
-		calculateAggregateInfo(issue.RoomID)
+		calculateAggregateInfo(issue)
 	}
 
 	err = alertcache.GetAlertCache("default").PutIssue(issue)
@@ -531,7 +535,10 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 	}
 
 	persist.GetElkAlertPersist().StoreIssue(issue, false, false)
+
 	a.runIssueActions(issue)
+	a.runAlertActions(alert)
+
 	socket.GetManager().WriteToSockets(issue)
 }
 
@@ -544,6 +551,22 @@ func (a *alertStore) runIssueActions(issue structs.RoomIssue) {
 
 			// a new context for the run of this action
 			actx := actionctx.PutRoomIssue(context.Background(), issue)
+			for i := range acts {
+				a.actionManager.RunAction(actx, acts[i])
+			}
+		}()
+	}
+}
+
+func (a *alertStore) runAlertActions(alert structs.Alert) {
+	if a.actionManager != nil {
+		go func() {
+			acts := actions.DefaultConfig().GetActionsByTrigger("alert-change")
+
+			log.L.Debugf("Running %v alert change actions for alert %v", len(acts), alert.AlertID)
+
+			// a new context for the run of this action
+			actx := actionctx.PutAlert(context.Background(), alert)
 			for i := range acts {
 				a.actionManager.RunAction(actx, acts[i])
 			}
@@ -604,7 +627,7 @@ func combineIssues(n, o structs.RoomIssue) (structs.RoomIssue, bool) {
 		changes = true
 	}
 
-	if len(n.IncidentID) > 0 && n.IncidentID != o.IncidentID {
+	if len(n.IncidentID) > 0 && (len(n.IncidentID) != len(o.IncidentID) || !structs.ContainsAllTags(o.IncidentID, n.IncidentID...)) {
 		o.IncidentID = n.IncidentID
 		changes = true
 	}
@@ -615,18 +638,27 @@ func combineIssues(n, o structs.RoomIssue) (structs.RoomIssue, bool) {
 		changes = true
 	}
 
-	if len(n.Responders) > 0 && len(n.Responders) != len(o.Responders) && structs.ContainsAllTags(o.Responders, n.Responders...) {
-		o.Responders = n.Responders
-		changes = true
+	for _, newResponse := range n.RoomIssueResponses {
+		foundMatch := false
+
+		for _, oldResponse := range o.RoomIssueResponses {
+			if len(newResponse.Responders) == len(oldResponse.Responders) && structs.ContainsAllTags(newResponse.Responders, oldResponse.Responders...) {
+				if newResponse.HelpSentAt == oldResponse.HelpSentAt {
+					if newResponse.HelpArrivedAt == oldResponse.HelpArrivedAt {
+						foundMatch = true
+						break
+					}
+				}
+			}
+		}
+
+		if !foundMatch {
+			o.RoomIssueResponses = append(o.RoomIssueResponses, newResponse)
+		}
 	}
 
-	if !n.HelpSentAt.IsZero() && !n.HelpSentAt.Equal(o.HelpSentAt) {
-		o.HelpSentAt = n.HelpSentAt
-		changes = true
-	}
-
-	if !n.HelpArrivedAt.IsZero() && !n.HelpArrivedAt.Equal(o.HelpArrivedAt) {
-		o.HelpArrivedAt = n.HelpArrivedAt
+	if len(n.RoomIssueResponses) > 0 && (len(n.RoomIssueResponses) != len(o.RoomIssueResponses)) {
+		o.RoomIssueResponses = n.RoomIssueResponses
 		changes = true
 	}
 

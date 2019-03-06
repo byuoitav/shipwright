@@ -1,9 +1,9 @@
 import { Injectable, EventEmitter } from "@angular/core";
 import { JsonConvert, Any } from "json2typescript";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Building, DBResponse, Room, RoomConfiguration, Device, DeviceType, Role, UIConfig, Template } from '../objects/database';
-import { StaticDevice } from '../objects/static';
-import { RoomIssue, Alert } from '../objects/alerts';
+import { Building, DBResponse, Room, RoomConfiguration, Device, DeviceType, Person, Role, UIConfig, Template } from "../objects/database";
+import { StaticDevice, CombinedRoomState } from "../objects/static";
+import { RoomIssue, Alert } from "../objects/alerts";
 
 @Injectable({
   providedIn: "root"
@@ -38,8 +38,8 @@ export class APIService {
   }
 
   public switchTheme(name: string) {
-    let oldTheme = this.theme + "-theme";
-    let newTheme = name + "-theme";
+    const oldTheme = this.theme + "-theme";
+    const newTheme = name + "-theme";
 
     console.log("switching theme to ", name);
 
@@ -650,9 +650,48 @@ export class APIService {
       const data: any = await this.http
         .get("static/devices", { headers: this.headers })
         .toPromise();
-      let records: StaticDevice[] = [];
-      for (let sd of data) {
-        let rec = this.converter.deserializeObject(sd, StaticDevice);
+      const records: StaticDevice[] = [];
+      for (const sd of data) {
+        const rec = this.converter.deserializeObject(sd, StaticDevice);
+
+        rec.updateTimes = sd["field-state-received"];
+
+        records.push(rec);
+      }
+
+      return records;
+    } catch (e) {
+      throw new Error("error getting the static device records: " + e);
+    }
+  }
+
+  // Combined room Functions
+  public async GetAllCombinedRoomStates() {
+    try {
+      const data: any = await this.http
+        .get("static/rooms/state", { headers: this.headers })
+        .toPromise();
+      const records: CombinedRoomState[] = [];
+      for (const sd of data) {
+        const rec = this.converter.deserializeObject(sd, CombinedRoomState);
+        records.push(rec);
+      }
+      console.log("is this even running?");
+      return records;
+    } catch (e) {
+      throw new Error("error getting the Combined Room State records: " + e);
+    }
+  }
+
+
+  public async GetAllStaticRooms() {
+    try {
+      const data: any = await this.http
+        .get("static/rooms/state", { headers: this.headers })
+        .toPromise();
+      const records: StaticDevice[] = [];
+      for (const sd of data) {
+        const rec = this.converter.deserializeObject(sd, StaticDevice);
 
         rec.updateTimes = sd["field-state-received"];
 
@@ -682,7 +721,7 @@ export class APIService {
   public async ResolveIssue(issue: RoomIssue) {
     try {
       const data: any = await this.http
-        .put("issues/"+issue.issueID+"/resolve", this.converter.serialize(issue), { headers: this.headers })
+        .put("issues/" + issue.issueID + "/resolve", this.converter.serialize(issue), { headers: this.headers })
         .toPromise();
 
       const response = this.converter.deserializeObject(data, DBResponse);
@@ -725,9 +764,36 @@ export class APIService {
         .put("alerts/add", this.converter.serialize(alert), { headers: this.headers })
         .toPromise();
 
-      return data
+      return data;
     } catch (e) {
       throw new Error("error trying to add an alert: " + e);
     }
   }
+
+  public async GetPossibleResponders() {
+    try {
+     /* const data: any = await this.http
+        .get("alerts/responders", { headers: this.headers })
+        .toPromise();
+
+      const responders = this.converter.deserializeArray(data, Person);
+      */
+      const responders: Person[] = [];
+      const peopleNames = ["Caleb", "Baeleb", "Shmaeleb", "Kaleb", "Taylub"];
+      const peopleIDs = ["calebrulez4", "TheBest!", "Disrespected15", "DumbName6", "WhoAmI2"];
+      for (let i = 0; i < peopleNames.length; i++) {
+        const newPerson: Person = {
+          name: peopleNames[i],
+          id : peopleIDs[i]
+        };
+        newPerson.name = peopleNames[i];
+        newPerson.id = peopleIDs[i];
+        responders.push(newPerson);
+      }
+      return responders;
+    } catch (e) {
+      throw new Error("error trying to get possible responders: " + e);
+    }
+  }
+
 }
