@@ -39,9 +39,9 @@ func ParseRoomFromAlertID(alertID string) string {
 		log.L.Errorf("Unkown id format %v", alertID)
 		return ""
 	}
-	devparts := strings.Split("-", parts[0])
+	devparts := strings.Split(parts[0], "-")
 	if len(devparts) < 3 {
-		log.L.Errorf("Unkown id format %v", alertID)
+		log.L.Errorf("Unkown id format %v. ID %v must be valid device ID", alertID, devparts)
 		return ""
 	}
 

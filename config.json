@@ -5,6 +5,7 @@
         "ACTION_CONFIG_DIR",
         "ALERT_STORE_CONFIG",
         "BYPASS_AUTH",
+        "COOKIE_DOMAIN",
         "COUCH_ADDRESS",
         "COUCH_PASSWORD",
         "COUCH_USERNAME",
