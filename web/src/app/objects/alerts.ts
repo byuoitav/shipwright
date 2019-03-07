@@ -147,8 +147,8 @@ export class RoomIssue {
     @JsonProperty("roomID", String, true)
     roomID: string = undefined;
 
-    @JsonProperty("severity", String, true)
-    severity: string[] = undefined;
+    @JsonProperty("alert-severities", [String], true)
+    alertSeverities: string[] = undefined;
 
     @JsonProperty("room-tags", [String], true)
     roomTags: string[] = Array<string>();
@@ -176,6 +176,9 @@ export class RoomIssue {
 
     @JsonProperty("active-alert-devices", [String], true)
     activeAlertDevices: string[] = Array<string>();
+
+    @JsonProperty("active-alert-severities", [String], true)
+    activeAlertSeverities: string[] = Array<string>();
 
     @JsonProperty("active-alert-count", Number, true)
     activeAlertCount: number = undefined;

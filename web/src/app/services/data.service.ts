@@ -447,7 +447,8 @@ export class DataService {
       return this.roomIssueList;
     } else {
       for (const issue of this.roomIssueList) {
-        for (const issueSev of issue.severity) {
+        console.log("Issue: ", issue)
+        for (const issueSev of issue.activeAlertSeverities) {
           if (issueSev.toLowerCase() === severity.toLowerCase()) {
             temp.push(issue);
           }
