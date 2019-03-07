@@ -1,22 +1,18 @@
-<mat-progress-bar *ngIf="!data.finished" color="warn" mode="determinate" [value]="data.completedOperations"></mat-progress-bar>
-<mat-grid-list         
-    [cols]="panelCount > 1 ? 2 : 1" 
-    [rowHeight]="panelCount > 2 ? '50%' : '100%'"> 
+<!-- <mat-progress-bar *ngIf="!data.finished" color="warn" mode="determinate" [value]="data.completedOperations"></mat-progress-bar> -->
+<mat-grid-list [cols]="panelCount > 1 ? 2 : 1" [rowHeight]="panelCount > 2 ? '50%' : '100%'">
     <mat-grid-tile class="alignTop">
         <dashpanel class="dashpanelClass" [panelType]="GetDefaultPanels(0)"></dashpanel>
     </mat-grid-tile>
     <mat-grid-tile class="alignTop" *ngIf="panelCount >= 2">
         <dashpanel class="dashpanelClass" [panelType]="GetDefaultPanels(1)"></dashpanel>
     </mat-grid-tile>
-    <mat-grid-tile class="alignTop" *ngIf="panelCount >= 3"
-        [colspan]="panelCount == 3 ? 2 : 1">
+    <mat-grid-tile class="alignTop" *ngIf="panelCount >= 3" [colspan]="panelCount == 3 ? 2 : 1">
         <dashpanel class="dashpanelClass" [panelType]="GetDefaultPanels(2)"></dashpanel>
     </mat-grid-tile>
     <mat-grid-tile class="alignTop" *ngIf="panelCount >= 4">
         <dashpanel class="dashpanelClass" [panelType]="GetDefaultPanels(3)"></dashpanel>
     </mat-grid-tile>
-</mat-grid-list>    
-<button mat-flat-button (click)="modal.OpenSettingsModal()" 
-    style="position:absolute;top:0;right:0;background-color:transparent;">    
+</mat-grid-list>
+<button mat-flat-button (click)="modal.OpenSettingsModal()" style="position:absolute;top:0;right:0;background-color:transparent;">    
     <mat-icon>settings</mat-icon>
 </button>
