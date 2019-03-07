@@ -4,3 +4,5 @@ actions/config/
 shipwright-bin
 dist
 web-dist
+
+alert-store-config.json
