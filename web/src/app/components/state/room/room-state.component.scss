@@ -2,6 +2,13 @@ $status-good: #00c853;
 $status-bad:#e53935;
 $status-warning:#ffd600;
 $chip-width: 80px;
+.placeholder {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
 .flexContainer {
     height: 100%;
 }

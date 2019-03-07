@@ -1,4 +1,7 @@
-<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+<div *ngIf="!data.finished" class="placeholder">
+    <h3 class="mat-h3">Getting room states...</h3>
+</div>
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8" *ngIf="data.finished">
     <ng-container matColumnDef="type">
         <th mat-header-cell *matHeaderCellDef>System Type</th>
         <td mat-cell *matCellDef="let rs">
@@ -25,7 +28,7 @@
             <mat-chip-list *ngFor="let type of GetDeviceTypes(rs)" class="chipList">
                 <ng-container *ngFor="let ds of rs.deviceStates">
                     <mat-chip *ngIf="ds.deviceType == type" [ngClass]="GetStyle(ds)">
-                        {{GetDeviceName(ds.deviceID)}}                    
+                        {{GetDeviceName(ds.deviceID)}}
                     </mat-chip>
                 </ng-container>
             </mat-chip-list>
