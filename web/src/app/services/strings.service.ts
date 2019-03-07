@@ -92,6 +92,6 @@ export class StringsService {
 }
 
 export const PI_ICON = "video_label";
-export const DMPS_ICON = "nfc";
+export const DMPS_ICON = "dns";
 export const SCHEDULING_ICON = "today";
 export const TIMECLOCK_ICON = "schedule";
