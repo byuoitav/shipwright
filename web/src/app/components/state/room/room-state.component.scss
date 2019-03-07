@@ -6,6 +6,10 @@ $status-warning:#ffd600;
     height: 100%;
 }
 
+table {
+    width:100%;
+}
+
 .display-on {
     background-color: $status-good;
 }
