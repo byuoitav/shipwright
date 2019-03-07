@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"sync"
 
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/shipwright/actions/actionctx"
 )
 
@@ -34,7 +35,7 @@ type AlertMatch struct {
 	AlertEndTime        string `json:"end-time,omitempty"`
 	AlertLastUpdateTime string `json:"update-time,omitempty"`
 
-	Active *bool `json:"active"`
+	Active *bool `json:"active,omitempty"`
 
 	AlertTags  []string `json:"alert-tags,omitempty"`
 	RoomTags   []string `json:"room-tags,omitempty"`
@@ -84,6 +85,9 @@ func (m *AlertMatch) DoesAlertMatch(ctx context.Context) bool {
 		if alert.Active != *m.Active {
 			return false
 		}
+
+		log.SetLevel("info")
+		log.L.Infof("UNIQUE Passed: *m.Active = '%v'. alert.Active = '%v'", *m.Active, alert.Active)
 	}
 
 	// then the rest of the stuff
