@@ -7,7 +7,8 @@
         <button mat-button class="hr" (click)="modal.OpenHelpModal()"><mat-icon>add</mat-icon> Help Request</button>
 
         <button mat-icon-button [matMenuTriggerFor]="options">
-            <mat-icon class="menu-title">menu</mat-icon>
+            <!-- <mat-icon class="menu-title">menu</mat-icon> -->
+            {{currentUsername}}
         </button>
 
         <mat-menu #options>
@@ -55,6 +56,7 @@
             </button>
         </mat-sidenav>
         <mat-sidenav-content class="content-container" [class.wide-nav]="wideSidenav()">
+            <mat-progress-bar *ngIf="!data.finished" color="warn" mode="determinate" [value]="data.completedOperations"></mat-progress-bar>
             <router-outlet></router-outlet>
         </mat-sidenav-content>
     </mat-sidenav-container>

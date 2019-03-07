@@ -1,34 +1,85 @@
 $status-good: #00c853;
 $status-bad:#e53935;
 $status-warning:#ffd600;
+$chip-width: 80px;
+.placeholder {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
 
 .flexContainer {
     height: 100%;
 }
 
+table {
+    width:100%;
+}
+
 .display-on {
     background-color: $status-good;
+    width: $chip-width;
+    // margin-right: 1em;
 }
 
 .display-standby {
     background-color: lightslategray;
+    width: $chip-width;
+    // margin-right: 1em;
 }
 
 .mic-good {
     background-color: $status-good;
+    width: $chip-width;
+    // margin-right: 1em;
 }
 
 .mic-okay {
     background-color: $status-warning;
+    width: $chip-width;
+    // margin-right: 1em;
 }
 
 .mic-bad {
     background-color: $status-bad;
+    width: $chip-width;
+    // margin-right: 1em;
 }
 
-.chipList{
-    display: inline-block;
-    margin-left: 1em;
+.default-chip {
+    width: $chip-width;
+    // margin-right: 1em;
+}
+
+.chipList {
+    display: inline-flex;
+    justify-content: space-evenly;
+    // margin-left: 1em;
     margin-right: 1em;
-    min-width: 100px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    // min-width: 100px;
+}
+
+.mat-column-type {
+    max-width: 80px;
+    width: 80px;
+    text-align: center;
+}
+
+.mat-column-roomID {
+    max-width: 100px;
+    width: 100px;
+    padding-left: 20px;
+}
+
+.mat-column-alerts {
+    max-width: 100px;
+    width: 100px;
+    text-align: center;
+}
+
+.mat-column-devices {
+    padding-left: 20px;
 }

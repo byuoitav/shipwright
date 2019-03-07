@@ -61,11 +61,22 @@ button {
     cursor: default;
 }
 
-.low-severity {
+.Low-severity {
     color: #ffd600;
-    // color: #9e9e9e;
     width: 80px;
     cursor: default;
+}
+
+.Critical-indicator {
+    background-color: #f44336;
+}
+
+.Warning-indicator {
+    background-color: #fb8c00;
+}
+
+.Low-indicator {
+    background-color: #ffd600;
 }
 
 .fill-remaining-space {
@@ -111,29 +122,37 @@ button {
     //     width: 50%;
     // }
     max-height: 100%;
-    overflow-y:scroll;
+    overflow-y: scroll;
 }
 
+
 /* width */
+
 ::-webkit-scrollbar {
     width: 4px;
 }
 
+
 /* Track */
+
 ::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 1px grey; 
+    box-shadow: inset 0 0 1px grey;
     border-radius: 2px;
 }
+
 
 /* Handle */
+
 ::-webkit-scrollbar-thumb {
-    background: black; 
+    background: black;
     border-radius: 2px;
 }
 
+
 /* Handle on hover */
+
 ::-webkit-scrollbar-thumb:hover {
-    background: darkgray; 
+    background: darkgray;
 }
 
 
@@ -221,24 +240,26 @@ button {
 //     padding-left: 10px;
 //     padding-right: 10px;
 // }
-// .mat-column-deviceName {
-//     max-width: 60px;
-//     width: 60px;
-//     padding-left: 10px;
-//     padding-right: 10px;
-// }
+.mat-column-name {
+    // max-width: 60px;
+    // width: 60px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 // .mat-column-alertType {
 //     max-width: 150px;
 //     width: 150px;
 //     padding-left: 10px;
 //     padding-right: 10px;
 // }
-// .mat-column-severity {
-//     max-width: 80px;
-//     width: 80px;
-//     padding-left: 10px;
-//     padding-right: 10px;
-// }
+.mat-column-severity-color {
+    max-width: 2px;
+    width: 2px;
+    // padding-left: 5px;
+    // padding-right: 5px;
+}
+
 // .mat-column-responders {
 //     max-width: 120px;
 //     width: 120px;
