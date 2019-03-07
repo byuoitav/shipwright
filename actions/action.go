@@ -43,7 +43,7 @@ func (a *Action) Run(ctx context.Context) {
 		a.Log = log.L.Named(a.Name)
 	}
 
-	a.Log.Debugf("Runnig if checks")
+	a.Log.Debugf("Running if checks")
 
 	if ctx, passed := a.If.Check(ctx, a.Log); passed {
 		count := atomic.AddUint64(&a.runCount, 1)
@@ -60,7 +60,7 @@ func (a *Action) Run(ctx context.Context) {
 			a.Log.Debugf("Passed if checks, running thens")
 		}
 
-		a.Log.Infof("If checks passed; Running %d thens", len(a.Then))
+		a.Log.Infof("Action [%s] if checks passed; Running %d thens", a.Name, len(a.Then))
 		exec := func(c context.Context) {
 			for i := range a.Then {
 				err := a.Then[i].Execute(c, a.Log)
