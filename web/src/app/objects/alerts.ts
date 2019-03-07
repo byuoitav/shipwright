@@ -183,8 +183,8 @@ export class RoomIssue {
     @JsonProperty("active-alert-count", Number, true)
     activeAlertCount: number = undefined;
 
-    @JsonProperty("incident-id", String, true)
-    incidentID: string = undefined;
+    @JsonProperty("incident-id", [String], true)
+    incidentID: string[] = Array<string>();
 
     @JsonProperty("system-type", String)
     systemType: string = undefined;

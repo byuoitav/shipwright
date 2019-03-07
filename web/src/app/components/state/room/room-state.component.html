@@ -1,3 +1,6 @@
+<div *ngIf="!data.finished" class="placeholder">
+    <h3 class="mat-h3">Getting room states...</h3>
+</div>
 <div  class="mat-elevation-z8">
     <table mat-table [dataSource]="dataSource">
         <ng-container matColumnDef="type">
@@ -30,8 +33,6 @@
                 </mat-chip-list>
             </td>
         </ng-container>
-
-
 
         <tr mat-header-row *matHeaderRowDef="columns"></tr>
         <tr mat-row *matRowDef="let row; columns: columns;"></tr>

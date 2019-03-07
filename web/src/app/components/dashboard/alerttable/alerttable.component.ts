@@ -41,7 +41,7 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit, O
   selection = new SelectionModel<Alert>(true, []);
 
   issueColumns: string[] = ["icon", "roomID", "severity", "count", "types", "incident"]; // , "help-sent", "help-arrived", "responders"];
-  alertColumns: string[] = ["name", "type", "category", "message", "start-time", "end-time"];
+  alertColumns: string[] = ["severity-color", "name", "type", "category", "message", "start-time", "end-time"];
 
   private serviceNowURL = "https://ittest.byu.edu/incident.do?sysparm_query=number=";
 
@@ -218,5 +218,4 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit, O
       return this.singleRoom;
     }
   }
-
 }

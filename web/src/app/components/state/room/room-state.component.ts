@@ -59,7 +59,7 @@ export class RoomStateComponent implements OnInit {
   }
 
   GetStyle(ds: StaticDevice): string {
-    let style = "";
+    let style = "default-chip";
     if (ds.deviceType === "display" || ds.deviceType === "dmps") {
       if (ds.power === "on") {
         style = "display-on";
@@ -91,5 +91,7 @@ export class RoomStateComponent implements OnInit {
         return style;
       }
     }
+
+    return style;
   }
 }
