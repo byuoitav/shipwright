@@ -7,7 +7,6 @@ import (
 	"regexp"
 	"sync"
 
-	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/shipwright/actions/actionctx"
 )
 
@@ -85,9 +84,6 @@ func (m *AlertMatch) DoesAlertMatch(ctx context.Context) bool {
 		if alert.Active != *m.Active {
 			return false
 		}
-
-		log.SetLevel("info")
-		log.L.Infof("UNIQUE Passed: *m.Active = '%v'. alert.Active = '%v'", *m.Active, alert.Active)
 	}
 
 	// then the rest of the stuff
@@ -277,6 +273,10 @@ func (m *AlertMatch) DoesAlertMatch(ctx context.Context) bool {
 
 func (m *AlertMatch) buildregex() {
 	m.count = 0
+
+	if m.Active != nil {
+		m.count++
+	}
 
 	if len(m.AlertID) > 0 {
 		m.regex.AlertID = regexp.MustCompile(m.AlertID)
