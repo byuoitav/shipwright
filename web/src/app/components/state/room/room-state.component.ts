@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { DataService } from 'src/app/services/data.service';
-import { MatTableDataSource } from '@angular/material';
+import { MatTableDataSource, MatPaginator } from '@angular/material';
 import { CombinedRoomState, StaticDevice } from 'src/app/objects/static';
 import { DataSource } from '@angular/cdk/table';
 import { StringsService } from 'src/app/services/strings.service';
@@ -11,8 +11,11 @@ import { StringsService } from 'src/app/services/strings.service';
   styleUrls: ['./room-state.component.scss']
 })
 export class RoomStateComponent implements OnInit {
-  dataSource: MatTableDataSource<CombinedRoomState>
-  columns = ["type","roomID","alerts","devices"]
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  dataSource: MatTableDataSource<CombinedRoomState>;
+  columns = ["type","roomID","alerts","devices"];
+  
+
   constructor(public data: DataService, public text: StringsService) {
    if (this.data.finished){
     console.log("Got the data")
@@ -27,6 +30,10 @@ export class RoomStateComponent implements OnInit {
    }
    
   ngOnInit() {
+    if (this.dataSource == null)
+      this.dataSource = new MatTableDataSource();
+      
+    this.dataSource.paginator = this.paginator;
   }
 
   GetDeviceName(deviceID: string): string {

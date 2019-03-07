@@ -13,6 +13,10 @@ $chip-width: 80px;
     height: 100%;
 }
 
+table {
+    width:100%;
+}
+
 .display-on {
     background-color: $status-good;
     width: $chip-width;
