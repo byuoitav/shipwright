@@ -43,7 +43,7 @@ type RoomIssueMatch struct {
 		Responders    []string `json:"responders,omitempty"`
 		HelpSentAt    string   `json:"help-sent-at,omitempty"`
 		HelpArrivedAt string   `json:"help-arrived-at,omitempty"`
-	} `json:"responses,omitempty`
+	} `json:"responses,omitempty"`
 
 	Resolved       *bool `json:"resolved,omitempty"`
 	ResolutionInfo struct {
