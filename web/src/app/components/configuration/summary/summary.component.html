@@ -1,6 +1,9 @@
 <div class="base">
-    <div *ngIf="roomIssues == null">
-        We are A-Okay!
+    <div *ngIf="!data.finished && roomIssues == null">
+        <h3 class="mat-h3">Currently updating room issues...</h3>
+    </div>
+    <div *ngIf="data.finished && roomIssues == null">
+        <h3 class="mat-h3">There are no issues with this room at the moment!</h3>
     </div>
     <div class="container" *ngIf="roomIssues != null">
         <app-alert-table *ngIf="GetRoomAlerts() != null" [singleRoom]="true" [expIssue]="roomIssue"></app-alert-table>
@@ -36,12 +39,24 @@
         <!-- Notes Card -->
         <mat-card class="notescard">
             <mat-card-title>Notes</mat-card-title>
+            <mat-divider></mat-divider>
             <mat-card-content>
-                <div>
-                    <mat-form-field class="notes mat-elevation-z2">
-                        <textarea matInput placeholder="Notes" [matTextareaAutosize]=true [(ngModel)]="roomIssue.notes"></textarea>
-                    </mat-form-field>
-                </div>
+                <section class="notes-row">
+                    <aside class="notes-column">
+                        <h4 class="mat-subheading-2">Add Notes</h4>
+                        <mat-form-field class="notes" appearance="outline">
+                            <textarea matInput placeholder="Add New Note" [matTextareaAutosize]=true [(ngModel)]="roomIssue.notes" (keyup)="$event.keyCode == 13 ? AddNote() : null"></textarea>
+                        </mat-form-field>
+                    </aside>
+                    <aside class="notes-column">
+                        <h4 class="mat-subheading-2">Notes Log</h4>
+                        <mat-list class="notes-log">
+                            <mat-list-item *ngFor="let note of roomIssue.notesLog">
+                                <p mat-line>{{note}}</p>
+                            </mat-list-item>
+                        </mat-list>
+                    </aside>
+                </section>
             </mat-card-content>
         </mat-card>
     </div>

@@ -226,4 +226,13 @@ export class SummaryComponent implements OnInit {
     console.log(issue);
     this.api.UpdateIssue(issue);
   }
+
+  AddNote() {
+    if (this.roomIssue.notesLog == null) {
+      this.roomIssue.notesLog = [];
+    }
+
+    this.roomIssue.notesLog.push(this.roomIssue.notes);
+    this.roomIssue.notes = null;
+  }
 }

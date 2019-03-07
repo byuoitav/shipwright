@@ -143,7 +143,9 @@ import { DeviceStateComponent } from './components/state/device-state/device-sta
     MatSlideToggleModule,
     MatAutocompleteModule,
     DndModule.forRoot(),
-    NotifierModule,
+    NotifierModule.withConfig({
+      theme: 'material'
+    }),
     MatGridListModule
   ],
   entryComponents: [
