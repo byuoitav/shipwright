@@ -13,27 +13,28 @@
 //     }
 // }
 
-.alignTop {    
-    ::ng-deep {
-        .mat-figure {
-            align-items: flex-start !important;
-            justify-content: left;
-        }
+.alignTop {
+  ::ng-deep {
+    .mat-figure {
+      align-items: flex-start !important;
+      justify-content: left;
     }
+  }
 }
 
 .row {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: flex-end;
-    padding: 5px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
+  padding: 5px;
 }
 
 .settings {
-    margin: 5px;
+  margin: 5px;
 }
 
 .dashpanelClass {
-    height: calc(100% - 60px);
-    margin: 0px 5px;
+  height: calc(100% - 60px);
+  margin: 0px 5px;
+  width: 100%;
 }
