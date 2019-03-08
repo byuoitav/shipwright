@@ -222,9 +222,8 @@ func (rc *RedisCache) GetAllRoomRecords() ([]sd.StaticRoom, *nerr.E) {
 
 	var toReturn []sd.StaticRoom
 
-	var tmp sd.StaticRoom
-
 	for i := range result {
+		var tmp sd.StaticRoom
 
 		buf := bytes.NewBuffer([]byte(result[i].(string)))
 		dec := gob.NewDecoder(buf)
