@@ -175,6 +175,8 @@ $save:#0046c8;
     overflow: hidden;
     padding: 10px;
     width: 100%;
+    border-radius: 1px;
+    border: 1px gray;
     /* width */
     &::-webkit-scrollbar {
         width: 5px;
