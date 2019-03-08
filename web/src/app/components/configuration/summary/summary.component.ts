@@ -70,31 +70,34 @@ export class SummaryComponent implements OnInit {
     }
 
     this.deviceList.forEach(device => {
-      if (device.name.toLowerCase().includes(this.deviceSearch.toLowerCase()) && !this.filteredDevices.includes(device)) {
-        this.filteredDevices.push(device);
-      }
-
-      if (device.displayName.toLowerCase().includes(this.deviceSearch.toLowerCase()) && !this.filteredDevices.includes(device)) {
-        this.filteredDevices.push(device);
-      }
-
-      if (device.type.id.toLowerCase().includes(this.deviceSearch.toLowerCase()) && !this.filteredDevices.includes(device)) {
-        this.filteredDevices.push(device);
-      }
-
-      device.roles.forEach(role => {
-        if (role.id.toLowerCase().includes(this.deviceSearch.toLowerCase()) && !this.filteredDevices.includes(device)) {
+      if(!this.filteredDevices.includes(device)) {
+        if (device.name.toLowerCase().includes(this.deviceSearch.toLowerCase())) {
           this.filteredDevices.push(device);
         }
-      });
-
-      if (device.tags != null) {
-        device.tags.forEach(tag => {
-          if (tag.toLowerCase().includes(this.deviceSearch.toLowerCase()) && !this.filteredDevices.includes(device)) {
+  
+        if (device.displayName.toLowerCase().includes(this.deviceSearch.toLowerCase())) {
+          this.filteredDevices.push(device);
+        }
+  
+        if (device.type.id.toLowerCase().includes(this.deviceSearch.toLowerCase())) {
+          this.filteredDevices.push(device);
+        }
+  
+        device.roles.forEach(role => {
+          if (role.id.toLowerCase().includes(this.deviceSearch.toLowerCase())) {
             this.filteredDevices.push(device);
           }
         });
+  
+        if (device.tags != null) {
+          device.tags.forEach(tag => {
+            if (tag.toLowerCase().includes(this.deviceSearch.toLowerCase())) {
+              this.filteredDevices.push(device);
+            }
+          });
+        }
       }
+      
     });
   }
 
