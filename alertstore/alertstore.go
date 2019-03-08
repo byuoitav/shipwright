@@ -518,6 +518,9 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		}
 	}
 
+	//run the alert active issue.
+	a.runAlertActions(alert)
+
 	//auto-resolution rule
 	if !active {
 
@@ -539,7 +542,6 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 	persist.GetElkAlertPersist().StoreIssue(issue, false, false)
 
 	a.runIssueActions(issue)
-	a.runAlertActions(alert)
 
 	socket.GetManager().WriteToSockets(issue)
 }

@@ -34,7 +34,7 @@ type AlertMatch struct {
 	AlertEndTime        string `json:"end-time,omitempty"`
 	AlertLastUpdateTime string `json:"update-time,omitempty"`
 
-	Active *bool `json:"active"`
+	Active *bool `json:"active,omitempty"`
 
 	AlertTags  []string `json:"alert-tags,omitempty"`
 	RoomTags   []string `json:"room-tags,omitempty"`
@@ -273,6 +273,10 @@ func (m *AlertMatch) DoesAlertMatch(ctx context.Context) bool {
 
 func (m *AlertMatch) buildregex() {
 	m.count = 0
+
+	if m.Active != nil {
+		m.count++
+	}
 
 	if len(m.AlertID) > 0 {
 		m.regex.AlertID = regexp.MustCompile(m.AlertID)
