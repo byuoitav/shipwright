@@ -1,5 +1,4 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
-import { MatChipInputEvent } from "@angular/material";
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from "@angular/core";
 import { StringsService } from "src/app/services/strings.service";
 import { ActivatedRoute } from "@angular/router";
 import { DataService } from "src/app/services/data.service";
@@ -24,6 +23,8 @@ export class SummaryComponent implements OnInit {
   responderSearch: string;
   roomID: string;
 
+  tempNotes: string;
+
   alertsToResolve: Alert[] = [];
 
   sentTime: string;
@@ -35,7 +36,7 @@ export class SummaryComponent implements OnInit {
     private route: ActivatedRoute,
     public data: DataService,
     public modal: ModalService,
-    private api: APIService) {
+    private api: APIService, private changes: ChangeDetectorRef) {
     this.route.params.subscribe(params => {
       this.roomID = params["roomID"];
 
@@ -59,6 +60,15 @@ export class SummaryComponent implements OnInit {
     this.deviceList = this.data.roomToDevicesMap.get(this.roomID);
     this.filteredDevices = this.deviceList;
     this.filteredResponders = this.data.possibleResponders;
+
+    this.data.issueEmitter.subscribe((changedIssue) => {
+      if (!this.changes["destroyed"]) {
+          if (changedIssue.roomID === this.roomID) {
+            this.roomIssue = this.data.GetRoomIssue(this.roomID);
+            this.changes.detectChanges();
+          }
+      }
+    });
   }
 
   SearchDevices() {
@@ -160,14 +170,15 @@ export class SummaryComponent implements OnInit {
     if (this.roomIssue.notesLog == null) {
       this.roomIssue.notesLog = [];
     }
-    if (this.roomIssue.notes.length < 1) {
+    if (!(/\S/.test(this.tempNotes))) {
+      console.log("there was nothing");
       return;
     } else {
       const now = new Date();
-      this.roomIssue.notes = this.data.currentUsername + " (" + now.toLocaleTimeString() + ") | " + this.roomIssue.notes;
+      this.roomIssue.notes = this.data.currentUsername + " (" + now.toLocaleTimeString() + ") | " + this.tempNotes;
       // this.roomIssue.notesLog.push(noteToAdd);
       this.UpdateIssue(this.roomIssue);
-      this.roomIssue.notes = "";
+      this.tempNotes = "";
     }
   }
 
