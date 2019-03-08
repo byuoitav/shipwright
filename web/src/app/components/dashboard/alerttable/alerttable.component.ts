@@ -218,4 +218,24 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit, O
       return this.singleRoom;
     }
   }
+
+  SortByActiveAlerts(a: Alert, b: Alert): number {
+    if (a.active && !b.active) {
+      return -1;
+    } else if (!a.active && b.active) {
+      return 1;
+    } else {
+      if (a.severity === "Critical" && b.severity != "Critical") {
+        return -1;
+      } else if (a.severity != "Critical" && b.severity === "Critical") {
+        return 1;
+      } else if (a.severity === "Warning" && b.severity === "Low") {
+        return -1
+      } else if (a.severity === "Low" && b.severity === "Warning") {
+        return 1;
+      } else {
+        return a.deviceID.localeCompare(b.deviceID);
+      }
+    }
+  }
 }
