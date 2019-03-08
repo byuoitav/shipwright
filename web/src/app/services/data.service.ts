@@ -418,9 +418,8 @@ export class DataService {
     return this.roomIssuesMap.get(roomID);
   }
 
-  GetRoomIssue(roomID): RoomIssue[] {
-    // I added this to get it to complie
-    return null;
+  GetRoomIssue(roomID): RoomIssue {
+    return this.roomIssuesMap.get(roomID)[0];
   }
 
   GetStaticDevice(deviceID: string): StaticDevice {
@@ -457,12 +456,11 @@ export class DataService {
       return this.roomIssueList;
     } else {
       for (const issue of this.roomIssueList) {
-        console.log("Issue: ", issue)
         for (const issueSev of issue.activeAlertSeverities) {
           if (issueSev.toLowerCase() === severity.toLowerCase()) {
             temp.push(issue);
           }
-        }        
+        }
       }
     }
     return temp;

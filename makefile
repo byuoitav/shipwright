@@ -41,6 +41,10 @@ NPM_INSTALL=$(NPM) install
 NG_BUILD=ng build --prod --aot --build-optimizer 
 NG1=web
 
+all: build docker
+
+ci: deps build docker
+
 build: build-x86  build-web
 
 build-x86:
@@ -93,7 +97,6 @@ endif
 ifeq "$(BRANCH)" "development"
 	$(eval BRANCH=master)
 endif
-
 
 ### deps
 $(NAME)-bin:

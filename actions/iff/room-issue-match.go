@@ -453,6 +453,18 @@ func (m *RoomIssueMatch) DoesRoomIssueMatch(ctx context.Context) bool {
 func (m *RoomIssueMatch) buildRegex() {
 	m.count = 0
 
+	if m.AlertActiveCount != nil {
+		m.count++
+	}
+
+	if m.AlertCount != nil {
+		m.count++
+	}
+
+	if m.Resolved != nil {
+		m.count++
+	}
+
 	if len(m.RoomIssueID) > 0 {
 		m.regex.RoomIssueID = regexp.MustCompile(m.RoomIssueID)
 		m.count++

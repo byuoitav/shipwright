@@ -113,10 +113,10 @@ func (a *alertStore) getQueueStatus() Status {
 				Cap: cap(a.resolutionChannel),
 				Len: len(a.resolutionChannel),
 			},
-			"room-aggregation-queue": ChannelStatus{
-				Cap: cap(roomAggsInChannel),
-				Len: len(roomAggsInChannel),
-			},
+			// "room-aggregation-queue": ChannelStatus{
+			// 	Cap: cap(roomAggsInChannel),
+			// 	Len: len(roomAggsInChannel),
+			// },
 		},
 	}
 }
@@ -352,8 +352,8 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 	//get the issue associated with the alert
 	issueID := GetIssueIDFromAlertID(alert.AlertID)
 
-	//Do we need to change the roomaggregate info?
-	roomAggregateChange := false
+	// //Do we need to change the roomaggregate info?
+	// roomAggregateChange := false
 
 	//we should check to see if the room already has an issue associated with it.
 	issue, err := alertcache.GetAlertCache("default").GetIssue(issueID)
@@ -393,9 +393,10 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 				v.Message = alert.Message
 			}
 
-			if v.Active != alert.Active {
-				roomAggregateChange = true
-			}
+			// if v.Active != alert.Active {
+			// 	roomAggregateChange = true
+			// }
+
 			if !alert.Active && v.Active {
 				if alert.AlertEndTime.IsZero() {
 					v.AlertEndTime = time.Now()
@@ -431,7 +432,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 			alert = v
 		} else {
-			roomAggregateChange = true
+			//roomAggregateChange = true
 			//we store it.
 			alert.AlertLastUpdateTime = time.Now()
 
@@ -453,7 +454,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 	} else if err.Type == alertcache.NotFound {
 		//issue didn't exist at all.
-		roomAggregateChange = true
+		//roomAggregateChange = true
 
 		//generate the new roomIssue.
 		alert.AlertLastUpdateTime = time.Now()
@@ -497,10 +498,11 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		}
 	}
 
-	issue.CalculateAggregateInfo()
-	if roomAggregateChange {
-		calculateAggregateInfo(issue)
-	}
+	// MB - replacing with the room state endpoint
+	// issue.CalculateAggregateInfo()
+	// if roomAggregateChange {
+	// 	calculateAggregateInfo(issue)
+	// }
 
 	err = alertcache.GetAlertCache("default").PutIssue(issue)
 	if err != nil {
@@ -515,6 +517,9 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 			break
 		}
 	}
+
+	//run the alert active issue.
+	a.runAlertActions(alert)
 
 	//auto-resolution rule
 	if !active {
@@ -537,7 +542,6 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 	persist.GetElkAlertPersist().StoreIssue(issue, false, false)
 
 	a.runIssueActions(issue)
-	a.runAlertActions(alert)
 
 	socket.GetManager().WriteToSockets(issue)
 }

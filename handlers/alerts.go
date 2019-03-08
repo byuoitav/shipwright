@@ -136,13 +136,13 @@ func GetAlertStoreQueueStatus(context echo.Context) error {
 // GetResponders returns the list of possible responders
 func GetResponders(context echo.Context) error {
 	var toReturn []structs.Person
-	peopleNames := [5]string{"Caleb", "Baeleb", "Shmaeleb", "Kaleb", "Taylub"}
-	peopleIDs := [5]string{"calebrulez4", "TheBest!", "Disrespected15", "DumbName6", "WhoAmI2"}
-	for i := range peopleNames {
-		var newPerson structs.Person
-		newPerson.Name = peopleNames[i]
-		newPerson.ID = peopleIDs[i]
-		toReturn = append(toReturn, newPerson)
-	}
+	// peopleNames := [5]string{"Caleb", "Baeleb", "Shmaeleb", "Kaleb", "Taylub"}
+	// peopleIDs := [5]string{"calebrulez4", "TheBest!", "Disrespected15", "DumbName6", "WhoAmI2"}
+	// for i := range peopleNames {
+	// var newPerson structs.Person
+	// newPerson.Name = peopleNames[i]
+	// newPerson.ID = peopleIDs[i]
+	// toReturn = append(toReturn, newPerson)
+	// }
 	return context.JSON(http.StatusOK, toReturn)
 }
