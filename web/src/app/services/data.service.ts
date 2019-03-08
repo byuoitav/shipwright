@@ -42,7 +42,7 @@ export class DataService {
   finished = false;
   completedOperations = 0;
   totalCompletion = 100;
-  increment: number = Math.ceil(this.totalCompletion / 19);
+  increment: number = Math.ceil(this.totalCompletion / 20);
 
   settingsChanged: EventEmitter<any>;
   panelCount = 2;
@@ -50,6 +50,8 @@ export class DataService {
   issueEmitter: EventEmitter<any>;
 
   notifier: NotifierService;
+
+  currentUsername: string;
 
   constructor(public api: APIService, private socket: SocketService, private text: StringsService, notify: NotifierService) {
     this.loaded = new EventEmitter<boolean>();
@@ -61,6 +63,8 @@ export class DataService {
   }
 
   private async LoadData() {
+    await this.GetCurrentUsername();
+    this.completedOperations += this.increment;
     await this.GetAllBuildings(); //          1
     this.completedOperations += this.increment;
     await this.GetAllRooms(); //              2
@@ -101,6 +105,12 @@ export class DataService {
     this.completedOperations += this.increment;
      this.finished = true;
      this.loaded.emit(true);
+  }
+
+  private async GetCurrentUsername() {
+    await this.api.GetCurrentUsername().then((username) => {
+      this.currentUsername = username as string;
+    });
   }
 
   private async GetAllBuildings() {

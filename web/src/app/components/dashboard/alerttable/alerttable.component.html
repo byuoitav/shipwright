@@ -18,7 +18,7 @@
 
         <ng-container matColumnDef="severity">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Severity </th>
-            <td mat-cell *matCellDef="let issue">
+            <td mat-cell *matCellDef="let issue" (click)="ExpandRow(issue)">
                 <span *ngFor="let sev of issue.activeAlertSeverities" [ngClass]="sev + '-severity'" (click)="ExpandRow(issue)">{{text.Title(sev)}}<br/></span>
             </td>
         </ng-container>
@@ -99,12 +99,18 @@
 
                         <ng-container matColumnDef="type">
                             <th mat-header-cell *matHeaderCellDef> Type </th>
-                            <td mat-cell *matCellDef="let alert">{{text.Title(alert.type)}}</td>
+                            <td mat-cell *matCellDef="let alert">
+                                {{text.Title(alert.type)}}
+                            </td>
                         </ng-container>
 
                         <ng-container matColumnDef="category">
                             <th mat-header-cell *matHeaderCellDef> Category </th>
-                            <td mat-cell *matCellDef="let alert">{{text.Title(alert.category)}}</td>
+                            <td mat-cell *matCellDef="let alert">
+                                <mat-chip-list>
+                                    <mat-chip color="warn">{{text.Title(alert.category)}}</mat-chip>
+                                </mat-chip-list>
+                            </td>
                         </ng-container>
 
                         <ng-container matColumnDef="message">

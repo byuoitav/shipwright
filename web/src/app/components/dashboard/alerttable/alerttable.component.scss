@@ -21,11 +21,6 @@ td.alert-detail-row {
     // background-color: #eeeeee;
 }
 
-.inactive-alert-dark td {
-    // color: #757575;
-    // background-color: #424242;
-}
-
 button {
     text-align: left;
     padding: 0px 0px;
@@ -144,7 +139,7 @@ button {
 /* Handle */
 
 ::-webkit-scrollbar-thumb {
-    background: black;
+    background: #757575;
     border-radius: 2px;
 }
 
@@ -160,18 +155,18 @@ button {
 
 .mat-column {
     padding-left: 10px;
-    padding-right: 10px;
+    // padding-right: 10px;
     &.icon {
-        max-width: 70px;
-        width: 70px;
+        max-width: 50px;
+        width: 50px;
     }
     &.roomID {
         max-width: 150px;
         width: 150px;
     }
     &.severity {
-        max-width: 100px;
-        width: 100px;
+        max-width: 120px;
+        width: 120px;
     }
     &.count {
         max-width: 100px;
@@ -180,6 +175,7 @@ button {
     &.types {
         max-width: 120px;
         width: 120px;
+        padding-left: 10px;
     }
     &.incident {
         max-width: 150px;
@@ -245,6 +241,14 @@ button {
     // width: 60px;
     padding-left: 10px;
     padding-right: 10px;
+}
+
+.mat-column-category {
+    padding-left: 10px;
+}
+
+.mat-column-message {
+    padding-left: 20px;
 }
 
 // .mat-column-alertType {
