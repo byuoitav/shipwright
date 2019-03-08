@@ -1,38 +1,64 @@
 <div class="base">
-    <div *ngIf="!data.finished && roomIssues == null">
+    <div *ngIf="!data.finished && roomIssue == null">
         <h3 class="mat-h3">Currently updating room issues...</h3>
     </div>
-    <div *ngIf="data.finished && roomIssues == null">
+    <div *ngIf="data.finished && roomIssue == null">
         <h3 class="mat-h3">There are no issues with this room at the moment!</h3>
     </div>
-    <div class="container" *ngIf="roomIssues != null">
-        <app-alert-table *ngIf="GetRoomAlerts() != null" [singleRoom]="true" [expIssue]="roomIssue"></app-alert-table>
+    <div class="container" *ngIf="roomIssue != null">
+        <app-alert-table [singleRoom]="true" [expIssue]="roomIssue"></app-alert-table>
+
         <!-- Action Card -->
         <mat-card class="actioncard">
             <mat-card-title>Actions</mat-card-title>
             <mat-card-content>
-                <div>
-                    <button mat-raised-button color="primary" class="button" (click)="HelpWasSent()">Help Sent!</button>
+                <section class="notes-row">
+                    <!-- Actions -->
+                    <aside>
+                        <div>
+                            <button mat-raised-button color="primary" class="button" (click)="HelpWasSent()">Help Sent!</button>
 
-                    <mat-label>@</mat-label>
-                    <mat-form-field class="time">
-                        <input type="time" matInput [(ngModel)]="sentTime">
-                    </mat-form-field>
-                </div>
-                <div>
-                    <button mat-raised-button color="warn" class="button" (click)="HelpHasArrived()">Help Arrived!</button>
+                            <mat-label>@</mat-label>
+                            <mat-form-field class="time">
+                                <input type="time" matInput [(ngModel)]="sentTime">
+                            </mat-form-field>
+                        </div>
+                        <div>
+                            <button mat-raised-button color="warn" class="button" (click)="HelpHasArrived()">Help Arrived!</button>
 
-                    <mat-label>@</mat-label>
-                    <mat-form-field class="time">
-                        <input type="time" matInput [(ngModel)]="arrivedTime">
-                    </mat-form-field>
-                </div>
-                <div>
-                    <button mat-raised-button class="button resolve" color="accent" (click)="UpdateIssue()">Update Issue</button>
-                </div>
-                <div>
-                    <button mat-raised-button class="button resolve" (click)="modal.OpenRespondModal(roomIssue, table.selection.selected)">Resolve Alerts</button>
-                </div>
+                            <mat-label>@</mat-label>
+                            <mat-form-field class="time">
+                                <input type="time" matInput [(ngModel)]="arrivedTime">
+                            </mat-form-field>
+                        </div>
+                        <div>
+                            <button mat-raised-button class="button resolve" color="accent" (click)="UpdateIssue()">Update Issue</button>
+                        </div>
+                        <div>
+                            <button mat-raised-button class="button resolve" (click)="modal.OpenRespondModal(roomIssue, table.selection.selected)">Resolve Alerts</button>
+                        </div>
+                    </aside>
+                    <!-- Responders -->
+                    <aside>
+                        <div>
+                            <mat-form-field>
+                                <mat-label>Responders</mat-label>
+                                <mat-chip-list #respChips>
+                                    <mat-chip *ngFor="let resp of responders" [selectable]="true" [removable]="true" (removed)="RemoveResponder(resp)">
+                                        {{resp.name}}
+                                        <mat-icon matChipRemove>cancel</mat-icon>
+                                    </mat-chip>
+                                    <input matInput type="text" [matChipInputFor]="respChips" [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="AddResponder($event.input.value, $event)" [matAutocomplete]="auto" [(ngModel)]="responderSearch" (ngModelChange)="FilterResponders()">
+                                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="AddResponder($event.option.value, $event)">
+                                        <mat-option *ngFor="let responder of filteredResponders" [value]="responder.name" (click)="AddResponder(responder.id, $event)">
+                                            {{responder.name}}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                </mat-chip-list>
+                            </mat-form-field>
+                        </div>
+                    </aside>
+                </section>
             </mat-card-content>
         </mat-card>
 
