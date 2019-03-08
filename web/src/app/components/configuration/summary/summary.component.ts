@@ -7,6 +7,7 @@ import { RoomIssue, Alert } from "src/app/objects/alerts";
 import { Device, Person } from "src/app/objects/database";
 import { AlertTableComponent } from "../../dashboard/alerttable/alerttable.component";
 import { APIService } from "src/app/services/api.service";
+import { not } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: "app-summary",
@@ -52,6 +53,9 @@ export class SummaryComponent implements OnInit {
             //     }
             //   }
             // }
+            if (issue.notes.length > 0) {
+              issue.notes = "";
+            }
           }
         }
 
@@ -71,6 +75,9 @@ export class SummaryComponent implements OnInit {
               //     }
               //   }
               // }
+              if (issue.notes.length > 0) {
+                issue.notes = "";
+              }
             }
           }
 
@@ -231,8 +238,23 @@ export class SummaryComponent implements OnInit {
     if (this.roomIssue.notesLog == null) {
       this.roomIssue.notesLog = [];
     }
+    if (this.roomIssue.notes.length < 1) {
+      return
+    } else {
+      const now = new Date();
+      this.roomIssue.notes = this.data.currentUsername + " (" + now.toLocaleTimeString() + ") | " + this.roomIssue.notes;  
+      // this.roomIssue.notesLog.push(noteToAdd);
+      this.UpdateIssue(this.roomIssue);
+      this.roomIssue.notes = "";
+    }
+  }
 
-    this.roomIssue.notesLog.push(this.roomIssue.notes);
-    this.roomIssue.notes = null;
+  ExtractNoteInfo(note: string, beginning: boolean): string {
+    if (beginning) {
+      const prefix = note.substring(0, note.indexOf("|"));
+      return prefix;
+    } else {
+      return note.substring(note.indexOf("|")+1);
+    }
   }
 }

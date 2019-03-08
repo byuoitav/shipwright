@@ -45,14 +45,16 @@
                     <aside class="notes-column">
                         <h4 class="mat-subheading-2">Add Notes</h4>
                         <mat-form-field class="notes" appearance="outline">
-                            <textarea matInput placeholder="Add New Note" [matTextareaAutosize]=true [(ngModel)]="roomIssue.notes" (keyup)="$event.keyCode == 13 ? AddNote() : null"></textarea>
+                            <textarea matInput placeholder="Add New Note" [matAutosizeMinRows]=4 [matTextareaAutosize]=true [(ngModel)]="roomIssue.notes" (keyup)="$event.keyCode == 13 ? AddNote() : null"></textarea>
                         </mat-form-field>
                     </aside>
                     <aside class="notes-column">
                         <h4 class="mat-subheading-2">Notes Log</h4>
                         <mat-list class="notes-log">
                             <mat-list-item *ngFor="let note of roomIssue.notesLog">
-                                <p mat-line>{{note}}</p>
+                                <mat-icon mat-list-icon>arrow_right</mat-icon>
+                                <h3 mat-line>{{ExtractNoteInfo(note, false)}}</h3>
+                                <p mat-line class="timestamp">{{ExtractNoteInfo(note, true)}}</p>
                             </mat-list-item>
                         </mat-list>
                     </aside>

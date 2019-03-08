@@ -1,8 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { DataService } from 'src/app/services/data.service';
 import { MatTableDataSource, MatPaginator } from '@angular/material';
 import { CombinedRoomState, StaticDevice } from 'src/app/objects/static';
-import { DataSource } from '@angular/cdk/table';
 import { StringsService } from 'src/app/services/strings.service';
 
 @Component({
@@ -10,7 +9,7 @@ import { StringsService } from 'src/app/services/strings.service';
   templateUrl: './room-state.component.html',
   styleUrls: ['./room-state.component.scss']
 })
-export class RoomStateComponent implements OnInit {
+export class RoomStateComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   dataSource: MatTableDataSource<CombinedRoomState>;
   columns = ["type","roomID","alerts","devices"];
@@ -19,13 +18,17 @@ export class RoomStateComponent implements OnInit {
   constructor(public data: DataService, public text: StringsService) {
    if (this.data.finished){
     console.log("Got the data")
-    this.dataSource=new MatTableDataSource(this.data.combinedRoomStateList)
+    this.dataSource = new MatTableDataSource(this.data.combinedRoomStateList)
+    // this.dataSource.paginator = this.paginator;
+
    }
    else{
      this.data.loaded.subscribe(() => {
      console.log("Subscribed to get the data")
-     this.dataSource=new MatTableDataSource(this.data.combinedRoomStateList)
+     this.dataSource = new MatTableDataSource(this.data.combinedRoomStateList)
      console.log("list in datasource:", this.dataSource)
+    //  this.dataSource.paginator = this.paginator;
+
       })}
    }
    
@@ -33,7 +36,10 @@ export class RoomStateComponent implements OnInit {
     if (this.dataSource == null)
       this.dataSource = new MatTableDataSource();
       
-    this.dataSource.paginator = this.paginator;
+      this.dataSource.paginator = this.paginator;
+  }
+
+  ngAfterViewInit() {
   }
 
   GetDeviceName(deviceID: string): string {
@@ -93,5 +99,9 @@ export class RoomStateComponent implements OnInit {
     }
 
     return style;
+  }
+
+  HasBatteryCharge(ds: StaticDevice): boolean {
+    return ds.batteryChargeMinutes != null
   }
 }
