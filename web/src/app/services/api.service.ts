@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Building, DBResponse, Room, RoomConfiguration, Device, DeviceType, Person, Role, UIConfig, Template } from "../objects/database";
 import { StaticDevice, CombinedRoomState } from "../objects/static";
 import { RoomIssue, Alert } from "../objects/alerts";
+import { WebsiteTitle } from "./strings.service"
 
 @Injectable({
   providedIn: "root"
@@ -50,7 +51,7 @@ export class APIService {
 
     window.history.replaceState(
       null,
-      "Shipwright",
+      WebsiteTitle,
       window.location.pathname + "?" + this.urlParams.toString()
     );
   }

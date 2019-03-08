@@ -5,10 +5,11 @@ import { COMMA, ENTER } from "@angular/cdk/keycodes";
 @Injectable({
   providedIn: "root"
 })
+
+export const WebsiteTitle = "BYU OIT AV Monitoring";
+
 export class StringsService {
   constructor() {}
-
-  public WebsiteTitle = "Shipwright";
 
   public Title(word: string): string {
     if (word === undefined || word == null) {
