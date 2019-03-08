@@ -133,7 +133,7 @@ func AddSystemTypeToIssue(issue structs.RoomIssue) (structs.RoomIssue, *nerr.E) 
 		}
 
 		for i := range rm.SystemType {
-			if sd.IsDefaultSystemType(rm.SystemType[i]) {
+			if isDefaultSystemType(rm.SystemType[i]) {
 				issue.SystemType = rm.SystemType[i]
 				break
 			}
@@ -154,15 +154,38 @@ func getSystemType(d string, rm sd.StaticRoom) string {
 
 	def := "unknown"
 	for i := range rm.SystemType {
-		if sd.IsDefaultSystemType(rm.SystemType[i]) {
+		if isDefaultSystemType(rm.SystemType[i]) {
 			def = rm.SystemType[i]
 		}
 
 		//check if the deviceID corresponds to the type provided
-		if sd.IsDeviceOfType(d, rm.SystemType[i]) {
+		if isDeviceOfType(d, rm.SystemType[i]) {
 			return rm.SystemType[i]
 		}
 	}
 
 	return def
+}
+
+func isDefaultSystemType(t string) bool {
+	return t == sd.DMPS || t == sd.Pi
+}
+
+func isDeviceOfType(d, t string) bool {
+	switch t {
+	case sd.DMPS:
+		return getSuffix(d) == "DMPS"
+	case sd.Pi:
+		return getSuffix(d) == "CP"
+	case sd.Scheduling:
+		return getSuffix(d) == "SP"
+	case sd.Timeclock:
+		return getSuffix(d) == "TC"
+	}
+	return false
+}
+
+func getSuffix(d string) string {
+	t := d[strings.LastIndex(d, "-")+1:]
+	return strings.TrimRight(t, "0123456789")
 }
