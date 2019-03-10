@@ -12,6 +12,10 @@ import { Room } from 'src/app/objects/database';
 export class RoomListComponent implements OnInit {
   buildingID: string;
   roomList: Room[] = [];
+  roomSearch: string;
+  filteredRooms: Room[] = [];
+  selectedDesignation: string = "";
+  filterQueries: string[] = [];
 
   constructor(public text: StringsService, private route: ActivatedRoute, public data: DataService) {
     this.route.params.subscribe(params => {
@@ -32,9 +36,49 @@ export class RoomListComponent implements OnInit {
 
   private GetRooms() {
     this.roomList = this.data.buildingToRoomsMap.get(this.buildingID);
+    this.filteredRooms = this.roomList;
   }
 
   GoBack() {
     window.history.back();
+  }
+
+  FilterRooms() {
+    this.filteredRooms = [];
+
+    if (this.filterQueries.length === 0) {
+      this.filteredRooms = this.roomList;
+      return;
+    }
+
+    for (const room of this.roomList) {
+        for (const query of this.filterQueries) {
+          if (room.id.toLowerCase().includes(query.toLowerCase()) && !this.filteredRooms.includes(room)) {
+            this.filteredRooms.push(room);
+          }
+          if (room.designation.toLowerCase().includes(query.toLowerCase()) && !this.filteredRooms.includes(room)) {
+            this.filteredRooms.push(room);
+          }
+          for (const tag of room.tags) {
+            if (tag.toLowerCase().includes(query.toLowerCase()) && !this.filteredRooms.includes(room)) {
+              this.filteredRooms.push(room);
+            }
+          }
+      }
+    }
+  }
+
+  GetBuildingDesignations() {
+    const designations: string[] = [];
+
+    if (this.filteredRooms != null) {
+      for (const room of this.filteredRooms) {
+        if (!designations.includes(room.designation)) {
+          designations.push(room.designation);
+        }
+      }
+    }
+
+    return designations;
   }
 }

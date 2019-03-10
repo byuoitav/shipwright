@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Building, DBResponse, Room, RoomConfiguration, Device, DeviceType, Person, Role, UIConfig, Template } from "../objects/database";
 import { StaticDevice, CombinedRoomState } from "../objects/static";
 import { RoomIssue, Alert } from "../objects/alerts";
-import { WebsiteTitle } from "./strings.service"
+import { StringsService } from './strings.service';
 
 @Injectable({
   providedIn: "root"
@@ -18,7 +18,7 @@ export class APIService {
 
   private headers: HttpHeaders;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private text: StringsService) {
     this.themeSwitched = new EventEmitter<string[]>();
     this.converter = new JsonConvert();
     this.converter.ignorePrimitiveChecks = false;
@@ -51,7 +51,7 @@ export class APIService {
 
     window.history.replaceState(
       null,
-      WebsiteTitle,
+      this.text.WebsiteTitle,
       window.location.pathname + "?" + this.urlParams.toString()
     );
   }

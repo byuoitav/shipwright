@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card *ngIf="state != null">
     <a routerLink="/configuration/{{building.id}}/roomlist">
         <mat-card-header>
             <mat-card-title>{{building.id}}</mat-card-title>
@@ -13,9 +13,9 @@
             <div class="row">
                 <a routerLink="/configuration/{{building.id}}/roomlist" class="row">
                     <mat-icon class="good">check_circle</mat-icon>
-                    <span class="count">{{state.goodCount}}</span>
+                    <span class="count">{{goodRoomCount}}</span>
                     <mat-icon class="bad">cancel</mat-icon>
-                    <span class="count">{{state.alertingCount}}</span>
+                    <span class="count">{{alertingRoomCount}}</span>
                 </a>
                 <span class="fill-remaining-space"></span>
                 <button mat-icon-button class="edit" (click)="modal.OpenBuildingModal(building)"><mat-icon>more_horiz</mat-icon></button>

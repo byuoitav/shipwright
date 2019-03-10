@@ -29,12 +29,12 @@ export class DeviceModalComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  FixMe(){
-    for (let port of this.data.ports){
-      if (port.tags == null || port.tags.length == 0){
-        for (let typePort of this.CurrentType.ports){
-          if (typePort.id == port.id){
-            for (let tag of typePort.tags){
+  FixMe() {
+    for (let port of this.data.ports) {
+      if (port.tags == null || port.tags.length === 0) {
+        for (let typePort of this.CurrentType.ports) {
+          if (typePort.id == port.id) {
+            for (let tag of typePort.tags) {
               port.tags.push(tag);
             }
           }
@@ -44,30 +44,30 @@ export class DeviceModalComponent implements OnInit {
   }
 
 
-  UpdateRoleLists(){
+  UpdateRoleLists() {
     this.UnappliedRoles = [];
     this.RoleList.forEach(role => {
       let PushToAddList : boolean = true;
 
       this.data.roles.forEach(dRole => {
-        if (role.id == dRole.id){
+        if (role.id === dRole.id){
           PushToAddList = false;
         }
       });
 
-      if (PushToAddList){
+      if (PushToAddList) {
         this.UnappliedRoles.push(role);
       }
     });
   }
 
-  GetDeviceRoleList(){
+  GetDeviceRoleList() {
     this.RoleList = this.dataService.deviceRoles;
     this.UpdateRoleLists();
   }
 
-  UpdateDeviceType(){
-    if (this.data != null && this.data.type != null){
+  UpdateDeviceType() {
+    if (this.data != null && this.data.type != null) {
       this.CurrentType = this.dataService.deviceTypeMap.get(this.data.type.id);
 
       if (this.CurrentType != null && this.CurrentType.roles != null) {

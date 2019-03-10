@@ -6,9 +6,9 @@ import { COMMA, ENTER } from "@angular/cdk/keycodes";
   providedIn: "root"
 })
 
-export const WebsiteTitle = "BYU OIT AV Monitoring";
-
 export class StringsService {
+  public WebsiteTitle = "BYU OIT AV Monitoring";
+
   constructor() {}
 
   public Title(word: string): string {
@@ -76,6 +76,29 @@ export class StringsService {
     const index = data.tags.indexOf(tag);
     if (index >= 0) {
       data.tags.splice(index, 1);
+    }
+  }
+
+  public AddChip(event: MatChipInputEvent, list: string[]) {
+    const input = event.input;
+    const value = event.value;
+
+    if ((value || "").trim()) {
+      if (!list.includes(value.trim())) {
+        list.push(value.trim());
+      }
+    }
+
+    if (input) {
+      input.value = "";
+    }
+  }
+
+  public RemoveChip(value: string, list: string[]) {
+    const index = list.indexOf(value);
+
+    if (index >= 0) {
+      list.splice(index, 1);
     }
   }
 

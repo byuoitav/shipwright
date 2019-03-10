@@ -21,15 +21,15 @@ export class PresetModalComponent implements OnInit {
   inputTypeMap: Map<string, IOConfiguration[]> = new Map();
 
   constructor(public dialogRef: MatDialogRef<PresetModalComponent>, @Inject(MAT_DIALOG_DATA) public data: UIInfo, public text: StringsService, public dataService: DataService, private dialog: MatDialog) {
-    if(this.data.currentPanels != null && this.data.currentPanels.length > 0) {
-      this.uipath = this.data.currentPanels[0].uiPath
+    if (this.data.currentPanels != null && this.data.currentPanels.length > 0) {
+      this.uipath = this.data.currentPanels[0].uiPath;
     }
-    if(this.dataService.finished) {
+    if (this.dataService.finished) {
       this.CreateInputTypeMap();
     } else {
       this.dataService.loaded.subscribe(() => {
         this.CreateInputTypeMap();
-      })
+      });
     }
   }
 
@@ -37,108 +37,108 @@ export class PresetModalComponent implements OnInit {
   }
 
   Close() {
-    this.dialogRef.close()
+    this.dialogRef.close();
   }
 
   UpdatePresetOnPanels() {
-    if(this.data.currentPanels != null) {
-      for(let p of this.data.currentPanels) {
-        p.preset = this.data.preset.name
+    if (this.data.currentPanels != null) {
+      for (const p of this.data.currentPanels) {
+        p.preset = this.data.preset.name;
       }
     }
   }
 
   UpdateUIPathOnPanels() {
-    if(this.data.currentPanels != null) {
-      for(let p of this.data.currentPanels) {
-        p.uiPath = this.uipath
+    if (this.data.currentPanels != null) {
+      for (const p of this.data.currentPanels) {
+        p.uiPath = this.uipath;
       }
     }
-    if(this.uipath === "/cherry") {
+    if (this.uipath === "/cherry") {
       this.ToggleSharing(false);
     }
   }
 
   UpdatePresetDisplays(displayName: string, checked: boolean) {
-    if(checked && !this.data.preset.displays.includes(displayName)) {
+    if (checked && !this.data.preset.displays.includes(displayName)) {
       this.data.preset.displays.push(displayName);
     }
 
-    if(!checked && this.data.preset.displays.includes(displayName)) {
-      this.data.preset.displays.splice(this.data.preset.displays.indexOf(displayName), 1)
+    if (!checked && this.data.preset.displays.includes(displayName)) {
+      this.data.preset.displays.splice(this.data.preset.displays.indexOf(displayName), 1);
     }
 
-    this.data.preset.displays.sort(this.SortAlphaNum)
+    this.data.preset.displays.sort(this.SortAlphaNum);
   }
 
   UpdatePresetAudioDevices(audioName: string, checked: boolean) {
-    if(checked && !this.data.preset.audioDevices.includes(audioName)) {
+    if (checked && !this.data.preset.audioDevices.includes(audioName)) {
       this.data.preset.audioDevices.push(audioName);
     }
 
-    if(!checked && this.data.preset.audioDevices.includes(audioName)) {
-      this.data.preset.audioDevices.splice(this.data.preset.audioDevices.indexOf(audioName), 1)
+    if (!checked && this.data.preset.audioDevices.includes(audioName)) {
+      this.data.preset.audioDevices.splice(this.data.preset.audioDevices.indexOf(audioName), 1);
     }
 
-    this.data.preset.audioDevices.sort(this.SortAlphaNum)
+    this.data.preset.audioDevices.sort(this.SortAlphaNum);
   }
 
   UpdatePresetShareableDisplays(displayName: string, checked: boolean) {
-    if(checked && !this.data.preset.shareableDisplays.includes(displayName)) {
+    if (checked && !this.data.preset.shareableDisplays.includes(displayName)) {
       this.data.preset.shareableDisplays.push(displayName);
     }
 
-    if(!checked && this.data.preset.shareableDisplays.includes(displayName)) {
-      this.data.preset.shareableDisplays.splice(this.data.preset.shareableDisplays.indexOf(displayName), 1)
+    if (!checked && this.data.preset.shareableDisplays.includes(displayName)) {
+      this.data.preset.shareableDisplays.splice(this.data.preset.shareableDisplays.indexOf(displayName), 1);
     }
 
-    this.data.preset.shareableDisplays.sort(this.SortAlphaNum)
+    this.data.preset.shareableDisplays.sort(this.SortAlphaNum);
   }
 
   UpdatePresetInputs(inputName: string, checked: boolean) {
-    if(checked && !this.data.preset.inputs.includes(inputName)) {
+    if (checked && !this.data.preset.inputs.includes(inputName)) {
       this.data.preset.inputs.push(inputName);
     }
 
-    if(!checked && this.data.preset.inputs.includes(inputName)) {
-      this.data.preset.inputs.splice(this.data.preset.inputs.indexOf(inputName), 1)
+    if (!checked && this.data.preset.inputs.includes(inputName)) {
+      this.data.preset.inputs.splice(this.data.preset.inputs.indexOf(inputName), 1);
     }
 
-    this.data.preset.inputs.sort(this.SortAlphaNum)
+    this.data.preset.inputs.sort(this.SortAlphaNum);
   } 
   
   UpdatePresetIndependents(audioName: string, checked: boolean) {
-    if(checked && !this.data.preset.independentAudioDevices.includes(audioName)) {
+    if (checked && !this.data.preset.independentAudioDevices.includes(audioName)) {
       this.data.preset.independentAudioDevices.push(audioName);
     }
 
-    if(!checked && this.data.preset.independentAudioDevices.includes(audioName)) {
-      this.data.preset.independentAudioDevices.splice(this.data.preset.independentAudioDevices.indexOf(audioName), 1)
+    if (!checked && this.data.preset.independentAudioDevices.includes(audioName)) {
+      this.data.preset.independentAudioDevices.splice(this.data.preset.independentAudioDevices.indexOf(audioName), 1);
     }
 
-    this.data.preset.independentAudioDevices.sort(this.SortAlphaNum)
+    this.data.preset.independentAudioDevices.sort(this.SortAlphaNum);
   }
 
   ToggleSharing(checked: boolean) {
-    if(this.data.currentPanels != null) {
-      for(let p of this.data.currentPanels) {
-        if(checked && !p.features.includes("share")) {
-          p.features.push("share")
+    if (this.data.currentPanels != null) {
+      for (const p of this.data.currentPanels) {
+        if (checked && !p.features.includes("share")) {
+          p.features.push("share");
         }
-        if(!checked && p.features.includes("share")) {
-          p.features.splice(p.features.indexOf("share"))
+        if (!checked && p.features.includes("share")) {
+          p.features.splice(p.features.indexOf("share"));
         }
 
-        p.features.sort(this.SortAlphaNum)
+        p.features.sort(this.SortAlphaNum);
       }
     }
   }
 
   HasSharing(): boolean {
-    if(this.data.currentPanels != null) {
-      for(let p of this.data.currentPanels) {
-        if(p.features.includes("share")) {
-          return true
+    if (this.data.currentPanels != null) {
+      for (const p of this.data.currentPanels) {
+        if (p.features.includes("share")) {
+          return true;
         }
       }
     }   
@@ -146,70 +146,70 @@ export class PresetModalComponent implements OnInit {
   }
 
   IsADisplay(displayName: string): boolean {
-    let device = this.dataService.GetDevice(this.data.config.id+"-"+displayName)
+    const device = this.dataService.GetDevice(this.data.config.id+"-"+displayName);
 
-    let dType = this.dataService.deviceTypeMap.get(device.type.id)
+    const dType = this.dataService.deviceTypeMap.get(device.type.id);
 
-    if(dType.tags.includes("display")) {
-      this.dataService.DeviceHasRole(device, "VideoOut")
+    if (dType.tags.includes("display")) {
+      this.dataService.DeviceHasRole(device, "VideoOut");
     }
 
-    return false
+    return false;
   }
 
   IsAnAudioDevice(audioName: string): boolean {
-    let device = this.dataService.GetDevice(this.data.config.id+"-"+audioName)
+    const device = this.dataService.GetDevice(this.data.config.id+"-"+audioName);
 
-    let dType = this.dataService.deviceTypeMap.get(device.type.id)
+    const dType = this.dataService.deviceTypeMap.get(device.type.id);
 
-    if(dType.tags.includes("display")) {
-      this.dataService.DeviceHasRole(device, "AudioOut")
+    if (dType.tags.includes("display")) {
+      this.dataService.DeviceHasRole(device, "AudioOut");
     }
 
-    return false
+    return false;
   }  
 
   IsAnIndependentAudio(audioName: string): boolean {
-    let device = this.dataService.GetDevice(this.data.config.id+"-"+audioName)
+    const device = this.dataService.GetDevice(this.data.config.id+"-"+audioName);
 
-    let dType = this.dataService.deviceTypeMap.get(device.type.id)
+    const dType = this.dataService.deviceTypeMap.get(device.type.id);
 
     // if(dType.tags.includes("display")) {
-      this.dataService.DeviceHasRole(device, "Microphone")
+      this.dataService.DeviceHasRole(device, "Microphone");
     // }
 
-    return false
+    return false;
   }
 
   RoomHasIndependentAudios(): boolean {
     if(this.data.config == null || this.dataService.roomToDevicesMap.get(this.data.config.id) == null) {
-      return false
+      return false;
     }
 
-    for(let dev of this.dataService.roomToDevicesMap.get(this.data.config.id)) {
-      if(this.dataService.DeviceHasRole(dev, "Microphone")) {
-        return true
+    for (const dev of this.dataService.roomToDevicesMap.get(this.data.config.id)) {
+      if (this.dataService.DeviceHasRole(dev, "Microphone")) {
+        return true;
       }
     }
     
-    return false
+    return false;
   }
 
   GetInputs(deviceType: DeviceType) {
-    return this.inputTypeMap.get(deviceType.id)
+    return this.inputTypeMap.get(deviceType.id);
   }
 
   CreateInputTypeMap() {
-    if(this.data.config == null) {
-      return
+    if (this.data.config == null) {
+      return;
     }
 
     this.inputTypeMap.clear();
 
-    for(let input of this.data.config.inputConfiguration) {
-      for(let dev of this.dataService.roomToDevicesMap.get(this.data.config.id)) {
-        if(dev.name === input.name && this.dataService.deviceTypeMap.get(dev.type.id).input) {
-          if(this.inputTypeMap.get(dev.type.id) == null) {
+    for (const input of this.data.config.inputConfiguration) {
+      for (const dev of this.dataService.roomToDevicesMap.get(this.data.config.id)) {
+        if (dev.name === input.name && this.dataService.deviceTypeMap.get(dev.type.id).input) {
+          if (this.inputTypeMap.get(dev.type.id) == null) {
             this.inputTypeMap.set(dev.type.id, [input]);
           } else {
             this.inputTypeMap.get(dev.type.id).push(input);
@@ -221,7 +221,7 @@ export class PresetModalComponent implements OnInit {
 
   ChangeIcon(caller: any) {
     this.dialog.open(IconModalComponent).afterClosed().subscribe(result => {
-      if(result != null) {
+      if (result != null) {
         caller.icon = result;
       }
     });
@@ -229,15 +229,15 @@ export class PresetModalComponent implements OnInit {
 
   private SortAlphaNum(a,b) {
     // Sort the array first alphabetically and then numerically.
-    let reA: RegExp = /[^a-zA-Z]/g;
-    let reN: RegExp = /[^0-9]/g;
+    const reA: RegExp = /[^a-zA-Z]/g;
+    const reN: RegExp = /[^0-9]/g;
     
-    let aA = a.replace(reA, "");
-    let bA = b.replace(reA, "");
+    const aA = a.replace(reA, "");
+    const bA = b.replace(reA, "");
 
     if(aA === bA) {
-        let aN = parseInt(a.replace(reN, ""), 10);
-        let bN = parseInt(b.replace(reN, ""), 10);
+        const aN = parseInt(a.replace(reN, ""), 10);
+        const bN = parseInt(b.replace(reN, ""), 10);
         return aN === bN ? 0 : aN > bN ? 1 : -1;
     } else {
         return aA > bA ? 1 : -1;

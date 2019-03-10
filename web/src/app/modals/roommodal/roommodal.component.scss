@@ -1,0 +1,29 @@
+$status-good: #00c853;
+$status-bad:#e53935;
+$status-warning:#ffd600;
+.column {
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+.row {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-evenly;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+mat-form-field {
+    margin-left: 1vw;
+    margin-right: 1vw;
+}
+
+.button {
+    &.submit {
+        color: $status-good;
+    }
+    &.close {
+        color: $status-bad;
+    }
+}

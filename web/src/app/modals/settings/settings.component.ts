@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { StringsService } from 'src/app/services/strings.service';
 import { MatDialogRef } from '@angular/material';
 import { DataService } from 'src/app/services/data.service';

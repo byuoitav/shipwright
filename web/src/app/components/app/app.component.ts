@@ -3,7 +3,6 @@ import { StringsService } from 'src/app/services/strings.service';
 import { APIService } from 'src/app/services/api.service';
 import { ModalService } from 'src/app/services/modal.service';
 import { DataService } from 'src/app/services/data.service';
-import { WebsiteTitle } from "./../../services/strings.service";
 
 @Component({
   selector: 'app-root',
@@ -42,7 +41,7 @@ export class AppComponent implements OnInit {
 
     window.history.replaceState(
       null,
-      WebsiteTitle,
+      this.text.WebsiteTitle,
       window.location.pathname + "?" + this.urlParams.toString()
     );
   }

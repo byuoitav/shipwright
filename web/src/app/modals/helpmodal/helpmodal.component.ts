@@ -18,35 +18,35 @@ export class HelpModalComponent implements OnInit {
   filteredRooms: Room[] = [];
 
   constructor(public dialogRef: MatDialogRef<HelpModalComponent>, @Inject(MAT_DIALOG_DATA) public data: any, public dataService: DataService, public api: APIService) {
-    if(this.dataService.finished) {
+    if (this.dataService.finished) {
       this.filterRooms();
     } else {
       this.dataService.loaded.subscribe(() => {
         this.filterRooms();
-      })
+      });
     }
   }
 
   ngOnInit() {
-    if(this.dataService.finished) {
+    if (this.dataService.finished) {
       this.filterRooms();
     } else {
       this.dataService.loaded.subscribe(() => {
         this.filterRooms();
-      })
+      });
     }
   }
 
   filterRooms() {
     this.filteredRooms = [];
 
-    if(this.roomID == null || this.roomID.length == 0) {
+    if(this.roomID == null || this.roomID.length === 0) {
       this.filteredRooms = this.dataService.allRooms;
-      return
+      return;
     }
 
-    for(let room of this.dataService.allRooms) {
-      if(room.id.toLowerCase().includes(this.roomID.toLowerCase())) {
+    for (let room of this.dataService.allRooms) {
+      if (room.id.toLowerCase().includes(this.roomID.toLowerCase())) {
         this.filteredRooms.push(room);
       }
     }
@@ -60,10 +60,10 @@ export class HelpModalComponent implements OnInit {
     alert.requester = this.caller;
     alert.message = this.notes;
     alert.active = true;
-    alert.type = "Help Request"
-    alert.category = "Help Request"
-    alert.deviceID = this.roomID+"-HR1"
-    alert.severity = "Critical"
+    alert.type = "Help Request";
+    alert.category = "Help Request";
+    alert.deviceID = this.roomID+"-HR1";
+    alert.severity = "Critical";
     alert.manualResolve = true;
 
     this.api.AddAlert(alert);

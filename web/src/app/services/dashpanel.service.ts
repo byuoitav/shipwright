@@ -1,8 +1,5 @@
 import { Injectable } from '@angular/core';
 import { AlertTableComponent } from '../components/dashboard/alerttable/alerttable.component';
-import { BatteryReportComponent } from '../components/dashboard/batteryreport/batteryreport.component';
-import { DashPanel } from '../components/dashboard/dashpanel/idashpanel';
-
 
 export const enum DashPanelTypes {
   AllAlerts,
