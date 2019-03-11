@@ -1,0 +1,34 @@
+<div>
+  <section><h2 class="mat-h2">Choose a resolution code</h2></section>
+  <mat-form-field class="notes">
+    <mat-select [(ngModel)]="info.issue.resolutionInfo.code">
+      <mat-option *ngFor="let code of data.closureCodes" [value]="code">{{
+        code
+      }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <section><h2 class="mat-h2">How was this resolved?</h2></section>
+
+  <mat-form-field class="notes">
+    <textarea
+      matInput
+      placeholder="Notes"
+      [matTextareaAutosize]="true"
+      [(ngModel)]="info.issue.resolutionInfo.notes"
+    ></textarea>
+  </mat-form-field>
+
+  <section class="row spread">
+    <button
+      mat-flat-button
+      (click)="dialogRef.close(info.issue)"
+      class="button resolve"
+    >
+      Resolve
+    </button>
+    <button mat-flat-button (click)="dialogRef.close()" class="button cancel">
+      Cancel
+    </button>
+  </section>
+</div>

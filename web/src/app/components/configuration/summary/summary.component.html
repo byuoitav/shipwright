@@ -32,67 +32,112 @@
             </mat-expansion-panel>
           </ng-container>
         </mat-accordion>
-        <!--
-            <mat-card-content>
-            <section class="notes-row">
-            <aside class="notes-column">
-            <div>
-            <button mat-raised-button color="primary" class="button" (click)="HelpWasSent()">
-            Help Sent!
-            </button>
 
-            <mat-label>@</mat-label>
-            <mat-form-field class="time">
-            <input type="time" matInput [(ngModel)]="sentTime" />
-            </mat-form-field>
-            </div>
-            <div>
-            <button mat-raised-button color="warn" class="button" (click)="HelpHasArrived()">
-            Help Arrived!
-            </button>
-
-            <mat-label>@</mat-label>
-            <mat-form-field class="time">
-            <input type="time" matInput [(ngModel)]="arrivedTime" />
-            </mat-form-field>
-            </div>
-            <div>
-            <button mat-raised-button class="button resolve" color="accent" (click)="UpdateIssue(roomIssue)">
-            Update Issue
-            </button>
-            </div>
-            <div>
-            <button *ngIf="isResolvable()" mat-raised-button class="button resolve">
-            Resolve Alerts
-            </button>
-            </div>
-            </aside>
+        <mat-card-title>Actions</mat-card-title>
+        <mat-card-content>
+          <section class="notes-row">
+            <!-- Actions -->
             <aside class="notes-column">
-            <div>
-            <mat-form-field>
-            <mat-label>Responders</mat-label>
-            <mat-chip-list #respChips>
-            <mat-chip *ngFor="let resp of responders" [selectable]="true" [removable]="true" (removed)="RemoveResponder(resp)">
-            {{ resp.name }}
-            <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
-            <input matInput type="text" [matChipInputFor]="respChips" [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="
-            AddResponder($event.input.value, $event)
-            " [matAutocomplete]="auto" [(ngModel)]="responderSearch" (ngModelChange)="FilterResponders()" />
-            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="
-            AddResponder($event.option.value, $event)
-            ">
-            <mat-option *ngFor="let responder of filteredResponders" [value]="responder.name" (click)="AddResponder(responder.id, $event)">
-            {{ responder.name }}
-            </mat-option>
-            </mat-autocomplete>
-            </mat-chip-list>
-            </mat-form-field>
-            </div>
+              <div>
+                <button
+                  mat-raised-button
+                  color="primary"
+                  class="button"
+                  (click)="HelpWasSent()"
+                >
+                  Help Sent!
+                </button>
+
+                <mat-label>@</mat-label>
+                <mat-form-field class="time">
+                  <input type="time" matInput [(ngModel)]="sentTime" />
+                </mat-form-field>
+              </div>
+              <div>
+                <button
+                  mat-raised-button
+                  color="warn"
+                  class="button"
+                  (click)="HelpHasArrived()"
+                >
+                  Help Arrived!
+                </button>
+
+                <mat-label>@</mat-label>
+                <mat-form-field class="time">
+                  <input type="time" matInput [(ngModel)]="arrivedTime" />
+                </mat-form-field>
+              </div>
+              <div>
+                <button
+                  mat-raised-button
+                  class="button resolve"
+                  color="accent"
+                  (click)="UpdateIssue(roomIssue)"
+                >
+                  Update Issue
+                </button>
+              </div>
+              <div>
+                <button
+                  class="button resolve"
+                  *ngIf="isResolvable()"
+                  (click)="openResolve()"
+                  mat-raised-button
+                >
+                  Resolve Alerts
+                </button>
+              </div>
             </aside>
-            </section>
-            </mat-card-content>
-        -->
+
+            <!-- Responders -->
+            <aside class="notes-column">
+              <div>
+                <mat-form-field>
+                  <mat-label>Responders</mat-label>
+                  <mat-chip-list #respChips>
+                    <mat-chip
+                      *ngFor="let resp of responders"
+                      [selectable]="true"
+                      [removable]="true"
+                      (removed)="RemoveResponder(resp)"
+                    >
+                      {{ resp.name }}
+                      <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                    <input
+                      matInput
+                      type="text"
+                      [matChipInputFor]="respChips"
+                      [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes"
+                      [matChipInputAddOnBlur]="true"
+                      (matChipInputTokenEnd)="
+                        AddResponder($event.input.value, $event)
+                      "
+                      [matAutocomplete]="auto"
+                      [(ngModel)]="responderSearch"
+                      (ngModelChange)="FilterResponders()"
+                    />
+                    <mat-autocomplete
+                      #auto="matAutocomplete"
+                      (optionSelected)="
+                        AddResponder($event.option.value, $event)
+                      "
+                    >
+                      <mat-option
+                        *ngFor="let responder of filteredResponders"
+                        [value]="responder.name"
+                        (click)="AddResponder(responder.id, $event)"
+                      >
+                        {{ responder.name }}
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-chip-list>
+                </mat-form-field>
+              </div>
+            </aside>
+          </section>
+        </mat-card-content>
       </mat-card>
 
       <!-- Notes Card -->

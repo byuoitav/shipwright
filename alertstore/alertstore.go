@@ -393,16 +393,15 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 				v.Message = alert.Message
 			}
 
-			// if v.Active != alert.Active {
-			// 	roomAggregateChange = true
-			// }
-
+			var runInit bool
 			if !alert.Active && v.Active {
 				if alert.AlertEndTime.IsZero() {
 					v.AlertEndTime = time.Now()
 				} else {
 					v.AlertEndTime = alert.AlertEndTime
 				}
+			} else if alert.Active && !v.Active {
+				runInit = true
 			}
 
 			v.Active = alert.Active
@@ -423,7 +422,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 				v.AlertTags = alert.AlertTags
 			}
 
-			if alert.Source == Init {
+			if alert.Source == Init || runInit {
 				//create run the actions based on the alert in storage - since that's more up to date
 				a.runAlertInitActions(v)
 			}
@@ -645,7 +644,7 @@ func combineIssues(n, o structs.RoomIssue) (structs.RoomIssue, bool) {
 		foundMatch := false
 
 		for _, oldResponse := range o.RoomIssueResponses {
-			if len(newResponse.Responders) == len(oldResponse.Responders) && structs.ContainsAllTags(newResponse.Responders, oldResponse.Responders...) {
+			if len(newResponse.Responders) == len(oldResponse.Responders) && structs.HasAllPeople(newResponse.Responders, oldResponse.Responders...) {
 				if newResponse.HelpSentAt == oldResponse.HelpSentAt {
 					if newResponse.HelpArrivedAt == oldResponse.HelpArrivedAt {
 						foundMatch = true

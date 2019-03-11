@@ -41,7 +41,7 @@ import { FormsModule } from "@angular/forms";
 import { DashboardComponent } from "./components/dashboard/dashboard.component";
 import { ConfigurationComponent } from "./components/configuration/configuration.component";
 import { SettingsModalComponent } from "./modals/settings/settings.component";
-import { RespondModalComponent } from "./modals/respond/respond.component";
+import { ResolveModalComponent } from "./modals/resolve/resolve.component";
 import { BuildingModalComponent } from "./modals/buildingmodal/buildingmodal.component";
 import { RoomModalComponent } from "./modals/roommodal/roommodal.component";
 import { DeviceModalComponent } from "./modals/devicemodal/devicemodal.component";
@@ -95,7 +95,7 @@ import { ResponseModalComponent } from "./modals/responsemodal/responsemodal.com
     DeviceListComponent,
     DeviceComponent,
     SettingsModalComponent,
-    RespondModalComponent,
+    ResolveModalComponent,
     BuildingModalComponent,
     RoomModalComponent,
     DeviceModalComponent,
@@ -148,7 +148,7 @@ import { ResponseModalComponent } from "./modals/responsemodal/responsemodal.com
   ],
   entryComponents: [
     SettingsModalComponent,
-    RespondModalComponent,
+    ResolveModalComponent,
     BuildingModalComponent,
     RoomModalComponent,
     DeviceModalComponent,

@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { SettingsModalComponent } from "../modals/settings/settings.component";
-import { RespondModalComponent } from "../modals/respond/respond.component";
 import { BuildingModalComponent } from "../modals/buildingmodal/buildingmodal.component";
 import { RoomModalComponent } from "../modals/roommodal/roommodal.component";
 import { DeviceModalComponent } from "../modals/devicemodal/devicemodal.component";
@@ -30,19 +29,6 @@ export class ModalService {
 
   OpenSettingsModal() {
     this.dialog.open(SettingsModalComponent);
-  }
-
-  OpenRespondModal(issue: RoomIssue, selected: Alert[]) {
-    this.dialog
-      .open(RespondModalComponent, {
-        data: { issue: issue, selected: selected }
-      })
-      .afterClosed()
-      .subscribe(issue => {
-        if (issue != null) {
-          this.api.ResolveIssue(issue);
-        }
-      });
   }
 
   OpenBuildingModal(building: Building) {
@@ -94,6 +80,7 @@ export class ModalService {
 
   OpenResponseModal(response: RoomIssueResponse) {
     this.dialog.open(ResponseModalComponent);
+
   }
 
   OpenHelpModal() {

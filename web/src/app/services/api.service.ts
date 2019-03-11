@@ -1,10 +1,21 @@
 import { Injectable, EventEmitter } from "@angular/core";
 import { JsonConvert, Any } from "json2typescript";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Building, DBResponse, Room, RoomConfiguration, Device, DeviceType, Person, Role, UIConfig, Template } from "../objects/database";
+import {
+  Building,
+  DBResponse,
+  Room,
+  RoomConfiguration,
+  Device,
+  DeviceType,
+  Person,
+  Role,
+  UIConfig,
+  Template
+} from "../objects/database";
 import { StaticDevice, CombinedRoomState } from "../objects/static";
-import { RoomIssue, Alert } from "../objects/alerts";
-import { StringsService } from './strings.service';
+import { RoomIssue, Alert, ResolutionInfo } from "../objects/alerts";
+import { StringsService } from "./strings.service";
 
 @Injectable({
   providedIn: "root"
@@ -284,7 +295,10 @@ export class APIService {
       const data: any = await this.http
         .get("rooms/configurations", { headers: this.headers })
         .toPromise();
-      const roomConfigs = this.converter.deserializeArray(data, RoomConfiguration);
+      const roomConfigs = this.converter.deserializeArray(
+        data,
+        RoomConfiguration
+      );
 
       return roomConfigs;
     } catch (e) {
@@ -684,7 +698,6 @@ export class APIService {
     }
   }
 
-
   public async GetAllStaticRooms() {
     try {
       const data: any = await this.http
@@ -719,10 +732,12 @@ export class APIService {
     }
   }
 
-  public async ResolveIssue(issue: RoomIssue) {
+  public async ResolveIssue(id: string, info: ResolutionInfo) {
     try {
       const data: any = await this.http
-        .put("issues/" + issue.issueID + "/resolve", this.converter.serialize(issue), { headers: this.headers })
+        .put("issues/" + id + "/resolve", this.converter.serialize(info), {
+          headers: this.headers
+        })
         .toPromise();
 
       const response = this.converter.deserializeObject(data, DBResponse);
@@ -748,7 +763,9 @@ export class APIService {
   public async UpdateIssue(issue: RoomIssue) {
     try {
       const data: any = await this.http
-        .put("issues", this.converter.serialize(issue), { headers: this.headers })
+        .put("issues", this.converter.serialize(issue), {
+          headers: this.headers
+        })
         .toPromise();
 
       // const response = this.converter.deserializeObject(data, DBResponse);
@@ -762,7 +779,9 @@ export class APIService {
   public async AddAlert(alert: Alert) {
     try {
       const data: any = await this.http
-        .put("alerts/add", this.converter.serialize(alert), { headers: this.headers })
+        .put("alerts/add", this.converter.serialize(alert), {
+          headers: this.headers
+        })
         .toPromise();
 
       return data;
@@ -783,5 +802,4 @@ export class APIService {
       throw new Error("error trying to get possible responders: " + e);
     }
   }
-
 }
