@@ -13,6 +13,7 @@ import (
 	"github.com/labstack/echo"
 )
 
+// Test is a test function for something...
 func Test(context echo.Context) error {
 	T := true
 
