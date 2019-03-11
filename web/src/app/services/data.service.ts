@@ -1,9 +1,24 @@
 import { Injectable, EventEmitter } from "@angular/core";
 import { APIService } from "./api.service";
-import { Building, Room, Device, UIConfig, DeviceType, Person, Role, RoomConfiguration, Template } from "../objects/database";
+import {
+  Building,
+  Room,
+  Device,
+  UIConfig,
+  DeviceType,
+  Person,
+  Role,
+  RoomConfiguration,
+  Template
+} from "../objects/database";
 import { RoomIssue } from "../objects/alerts";
 import { SocketService } from "./socket.service";
-import { StaticDevice, RoomStatus, BuildingStatus, CombinedRoomState } from "../objects/static";
+import {
+  StaticDevice,
+  RoomStatus,
+  BuildingStatus,
+  CombinedRoomState
+} from "../objects/static";
 import { StringsService } from "./strings.service";
 import { NotifierService } from "angular-notifier";
 
@@ -45,7 +60,7 @@ export class DataService {
   increment: number = Math.ceil(this.totalCompletion / 19);
 
   settingsChanged: EventEmitter<any>;
-  panelCount = 2;
+  panelCount = 1;
 
   issueEmitter: EventEmitter<any>;
 
@@ -53,7 +68,12 @@ export class DataService {
 
   currentUsername: string;
 
-  constructor(public api: APIService, private socket: SocketService, private text: StringsService, notify: NotifierService) {
+  constructor(
+    public api: APIService,
+    private socket: SocketService,
+    private text: StringsService,
+    notify: NotifierService
+  ) {
     this.loaded = new EventEmitter<boolean>();
     this.settingsChanged = new EventEmitter<number>();
     this.issueEmitter = new EventEmitter<any>();
@@ -82,12 +102,12 @@ export class DataService {
     await this.GetBuildingStatusList(); //    17
     await this.GetClosureCodes(); //          18
     await this.SetPossibleResponders(); //    19
-     this.finished = true;
-     this.loaded.emit(true);
+    this.finished = true;
+    this.loaded.emit(true);
   }
 
   private async GetCurrentUsername() {
-    await this.api.GetCurrentUsername().then((username) => {
+    await this.api.GetCurrentUsername().then(username => {
       this.currentUsername = username as string;
       this.completedOperations += this.increment;
     });
@@ -96,7 +116,7 @@ export class DataService {
   private async GetAllBuildings() {
     this.allBuildings = [];
 
-    await this.api.GetAllBuildings().then((buildings) => {
+    await this.api.GetAllBuildings().then(buildings => {
       this.allBuildings = buildings;
       this.completedOperations += this.increment;
     });
@@ -106,7 +126,7 @@ export class DataService {
     this.allRooms = [];
     this.buildingToRoomsMap.clear();
 
-    await this.api.GetAllRooms().then((rooms) => {
+    await this.api.GetAllRooms().then(rooms => {
       this.allRooms = rooms;
       this.completedOperations += this.increment;
     });
@@ -116,7 +136,7 @@ export class DataService {
     this.allDevices = [];
     this.roomToDevicesMap.clear();
 
-    await this.api.GetAllDevices().then((devices) => {
+    await this.api.GetAllDevices().then(devices => {
       this.allDevices = devices;
       this.completedOperations += this.increment;
     });
@@ -126,7 +146,7 @@ export class DataService {
     this.deviceTypeList = [];
     this.deviceTypeMap.clear();
 
-    await this.api.GetDeviceTypes().then((types) => {
+    await this.api.GetDeviceTypes().then(types => {
       this.deviceTypeList = types;
 
       for (const type of this.deviceTypeList) {
@@ -139,7 +159,7 @@ export class DataService {
   private async GetAllRoomConfigurations() {
     this.roomConfigurations = [];
 
-    await this.api.GetRoomConfigurations().then((configurations) => {
+    await this.api.GetRoomConfigurations().then(configurations => {
       this.roomConfigurations = configurations;
       this.completedOperations += this.increment;
     });
@@ -148,7 +168,7 @@ export class DataService {
   private async GetAllRoomDesignations() {
     this.roomDesignations = [];
 
-    this.api.GetRoomDesignations().then((designations) => {
+    this.api.GetRoomDesignations().then(designations => {
       this.roomDesignations = designations as string[];
       this.completedOperations += this.increment;
     });
@@ -158,7 +178,7 @@ export class DataService {
     this.allUIConfigs = [];
     this.roomToUIConfigMap.clear();
 
-    await this.api.GetAllUIConfigs().then((configs) => {
+    await this.api.GetAllUIConfigs().then(configs => {
       this.allUIConfigs = configs;
 
       for (const config of this.allUIConfigs) {
@@ -171,7 +191,7 @@ export class DataService {
   private async GetAllDeviceRoles() {
     this.deviceRoles = [];
 
-    this.api.GetDeviceRoles().then((roles) => {
+    this.api.GetDeviceRoles().then(roles => {
       this.deviceRoles = roles;
       this.completedOperations += this.increment;
     });
@@ -180,7 +200,7 @@ export class DataService {
   private async GetAllTemplates() {
     this.templateList = [];
 
-    this.api.GetTemplates().then((list) => {
+    this.api.GetTemplates().then(list => {
       this.templateList = list;
       this.completedOperations += this.increment;
     });
@@ -189,7 +209,7 @@ export class DataService {
   private async GetIconList() {
     this.iconList = [];
 
-    this.api.GetIcons().then((icons) => {
+    this.api.GetIcons().then(icons => {
       this.iconList = icons as string[];
       this.completedOperations += this.increment;
     });
@@ -230,7 +250,7 @@ export class DataService {
   }
 
   private async GetStoredRoomIssues() {
-    await this.api.GetAllIssues().then((issues) => {
+    await this.api.GetAllIssues().then(issues => {
       this.roomIssueList = issues;
       this.SetRoomIssuesMap();
       this.completedOperations += this.increment;
@@ -251,7 +271,6 @@ export class DataService {
 
   private ListenForIssues() {
     this.socket.listener.subscribe(issue => {
-
       if (this.roomIssueList == null) {
         if (!issue.resolved) {
           this.roomIssueList = [issue];
@@ -259,13 +278,21 @@ export class DataService {
       } else {
         const found = false;
 
-        const matchingIssue = this.roomIssueList.find(one => one.issueID === issue.issueID);
+        const matchingIssue = this.roomIssueList.find(
+          one => one.issueID === issue.issueID
+        );
 
         if (matchingIssue == null) {
           if (issue.resolved) {
             // this.notifier.notify( "warning", "New Room Issue received for " + issue.roomID + " but already resolved" );
           } else {
-            this.notifier.notify( "error", "New Room Issue [" + issue.activeAlertTypes[0] + "] for " + issue.roomID );
+            this.notifier.notify(
+              "error",
+              "New Room Issue [" +
+                issue.activeAlertTypes[0] +
+                "] for " +
+                issue.roomID
+            );
             this.roomIssueList.push(issue);
             // this.roomIssueList = this.roomIssueList.sort(this.RoomIssueSorter)
           }
@@ -275,7 +302,10 @@ export class DataService {
 
           if (index > -1) {
             if (issue.resolved) {
-              this.notifier.notify( "success", "Room Issue for " + issue.roomID + " resolved.");
+              this.notifier.notify(
+                "success",
+                "Room Issue for " + issue.roomID + " resolved."
+              );
               this.roomIssueList.splice(index, 1);
             } else {
               this.roomIssueList.splice(index, 1, issue);
@@ -291,21 +321,21 @@ export class DataService {
   private async GetClosureCodes() {
     this.closureCodes = [];
 
-    await this.api.GetClosureCodes().then((codes) => {
+    await this.api.GetClosureCodes().then(codes => {
       this.closureCodes = codes as string[];
       this.completedOperations += this.increment;
     });
   }
 
   private async GetStaticDevices() {
-    await this.api.GetAllStaticDeviceRecords().then((records) => {
+    await this.api.GetAllStaticDeviceRecords().then(records => {
       this.staticDeviceList = records;
       this.completedOperations += this.increment;
     });
   }
 
   private async GetCombinedRoomState() {
-    await this.api.GetAllCombinedRoomStates().then((records) => {
+    await this.api.GetAllCombinedRoomStates().then(records => {
       this.combinedRoomStateList = records;
       this.completedOperations += this.increment;
     });
@@ -418,6 +448,11 @@ export class DataService {
       return this.roomIssueList;
     } else {
       for (const issue of this.roomIssueList) {
+        // exclude development rooms
+        if (issue.roomTags.includes("development")) {
+          continue;
+        }
+
         for (const issueSev of issue.activeAlertSeverities) {
           if (issueSev.toLowerCase() === severity.toLowerCase()) {
             temp.push(issue);
@@ -429,10 +464,9 @@ export class DataService {
   }
 
   async SetPossibleResponders() {
-    await this.api.GetPossibleResponders().then((response) => {
+    await this.api.GetPossibleResponders().then(response => {
       this.possibleResponders = response;
       this.completedOperations += this.increment;
     });
   }
-
 }
