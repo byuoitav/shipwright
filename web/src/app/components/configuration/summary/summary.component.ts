@@ -25,35 +25,33 @@ export class SummaryComponent implements OnInit {
 
   tempNotes: string;
 
-  alertsToResolve: Alert[] = [];
-
   sentTime: string;
   arrivedTime: string;
 
   @ViewChild(AlertTableComponent) table: AlertTableComponent;
 
-  constructor(public text: StringsService,
+  constructor(
+    public text: StringsService,
     private route: ActivatedRoute,
     public data: DataService,
     public modal: ModalService,
-    private api: APIService, private changes: ChangeDetectorRef) {
+    private api: APIService,
+    private changes: ChangeDetectorRef
+  ) {
     this.route.params.subscribe(params => {
       this.roomID = params["roomID"];
-
 
       if (this.data.finished) {
         this.SetupSummary();
       } else {
         this.data.loaded.subscribe(() => {
           this.SetupSummary();
-      });
+        });
       }
-
     });
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   SetupSummary() {
     this.roomIssue = this.data.GetRoomIssue(this.roomID);
@@ -61,12 +59,12 @@ export class SummaryComponent implements OnInit {
     this.filteredDevices = this.deviceList;
     this.filteredResponders = this.data.possibleResponders;
 
-    this.data.issueEmitter.subscribe((changedIssue) => {
+    this.data.issueEmitter.subscribe(changedIssue => {
       if (!this.changes["destroyed"]) {
-          if (changedIssue.roomID === this.roomID) {
-            this.roomIssue = this.data.GetRoomIssue(this.roomID);
-            this.changes.detectChanges();
-          }
+        if (changedIssue.roomID === this.roomID) {
+          this.roomIssue = this.data.GetRoomIssue(this.roomID);
+          this.changes.detectChanges();
+        }
       }
     });
   }
@@ -80,25 +78,33 @@ export class SummaryComponent implements OnInit {
     }
 
     this.deviceList.forEach(device => {
-      if(!this.filteredDevices.includes(device)) {
-        if (device.name.toLowerCase().includes(this.deviceSearch.toLowerCase())) {
+      if (!this.filteredDevices.includes(device)) {
+        if (
+          device.name.toLowerCase().includes(this.deviceSearch.toLowerCase())
+        ) {
           this.filteredDevices.push(device);
         }
-  
-        if (device.displayName.toLowerCase().includes(this.deviceSearch.toLowerCase())) {
+
+        if (
+          device.displayName
+            .toLowerCase()
+            .includes(this.deviceSearch.toLowerCase())
+        ) {
           this.filteredDevices.push(device);
         }
-  
-        if (device.type.id.toLowerCase().includes(this.deviceSearch.toLowerCase())) {
+
+        if (
+          device.type.id.toLowerCase().includes(this.deviceSearch.toLowerCase())
+        ) {
           this.filteredDevices.push(device);
         }
-  
+
         device.roles.forEach(role => {
           if (role.id.toLowerCase().includes(this.deviceSearch.toLowerCase())) {
             this.filteredDevices.push(device);
           }
         });
-  
+
         if (device.tags != null) {
           device.tags.forEach(tag => {
             if (tag.toLowerCase().includes(this.deviceSearch.toLowerCase())) {
@@ -107,7 +113,6 @@ export class SummaryComponent implements OnInit {
           });
         }
       }
-      
     });
   }
 
@@ -170,12 +175,18 @@ export class SummaryComponent implements OnInit {
     if (this.roomIssue.notesLog == null) {
       this.roomIssue.notesLog = [];
     }
-    if (!(/\S/.test(this.tempNotes))) {
+
+    if (!/\S/.test(this.tempNotes)) {
       console.log("there was nothing");
       return;
     } else {
       const now = new Date();
-      this.roomIssue.notes = this.data.currentUsername + " (" + now.toLocaleTimeString() + ") | " + this.tempNotes;
+      this.roomIssue.notes =
+        this.data.currentUsername +
+        " (" +
+        now.toLocaleTimeString() +
+        ") | " +
+        this.tempNotes;
       // this.roomIssue.notesLog.push(noteToAdd);
       this.UpdateIssue(this.roomIssue);
       this.tempNotes = "";
@@ -241,13 +252,40 @@ export class SummaryComponent implements OnInit {
       return;
     }
     for (const person of this.data.possibleResponders) {
-      if (!this.filteredResponders.includes(person) && !this.responders.includes(person)) {
-        if ((person.name.toLowerCase().includes(this.responderSearch.toLowerCase())) ||
-          (person.id.toLowerCase().includes(this.responderSearch.toLowerCase()))) {
+      if (
+        !this.filteredResponders.includes(person) &&
+        !this.responders.includes(person)
+      ) {
+        if (
+          person.name
+            .toLowerCase()
+            .includes(this.responderSearch.toLowerCase()) ||
+          person.id.toLowerCase().includes(this.responderSearch.toLowerCase())
+        ) {
           this.filteredResponders.push(person);
         }
       }
     }
   }
 
+  isResolvable() {
+    if (this.roomIssue == null || this.roomIssue === undefined) {
+      return false;
+    }
+
+    if (this.roomIssue.alerts == null || this.roomIssue === undefined) {
+      return false;
+    }
+
+    const filtered = this.roomIssue.alerts.filter(
+      a => !a.manualResolve || (a.active && !a.manualResolve)
+    );
+    console.log("filtered", filtered);
+
+    return (
+      this.roomIssue.alerts.filter(
+        a => !a.manualResolve || (a.active && !a.manualResolve)
+      ).length === 0
+    );
+  }
 }

@@ -449,7 +449,7 @@ export class DataService {
     } else {
       for (const issue of this.roomIssueList) {
         // exclude development rooms
-        if (issue.roomTags.includes("development")) {
+        if (issue.roomTags.includes("development") || issue.roomTags.includes("testing")) {
           continue;
         }
 
