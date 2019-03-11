@@ -20,7 +20,7 @@ export class SummaryComponent implements OnInit {
   filteredResponders: Person[];
   responders: Person[] = [];
   deviceSearch: string;
-  responderSearch: string;
+  responderSearch: string = "";
   roomID: string;
 
   tempNotes: string;
@@ -252,18 +252,11 @@ export class SummaryComponent implements OnInit {
       return;
     }
     for (const person of this.data.possibleResponders) {
-      if (
-        !this.filteredResponders.includes(person) &&
-        !this.responders.includes(person)
-      ) {
-        if (
-          person.name
-            .toLowerCase()
-            .includes(this.responderSearch.toLowerCase()) ||
-          person.id.toLowerCase().includes(this.responderSearch.toLowerCase())
-        ) {
-          this.filteredResponders.push(person);
-        }
+      if (person.id.toLowerCase().includes(this.responderSearch.toLowerCase()) && !this.filteredResponders.includes(person)) {
+        this.filteredResponders.push(person);
+      }
+      if (person.name.toLowerCase().includes(this.responderSearch.toLowerCase()) && !this.filteredResponders.includes(person)) {
+        this.filteredResponders.push(person);
       }
     }
   }
@@ -280,7 +273,7 @@ export class SummaryComponent implements OnInit {
     const filtered = this.roomIssue.alerts.filter(
       a => !a.manualResolve || (a.active && !a.manualResolve)
     );
-    console.log("filtered", filtered);
+    // console.log("filtered", filtered);
 
     return (
       this.roomIssue.alerts.filter(
