@@ -277,15 +277,6 @@ export class SummaryComponent implements OnInit {
       return false;
     }
 
-    const filtered = this.roomIssue.alerts.filter(
-      a => !a.manualResolve || (a.active && !a.manualResolve)
-    );
-    console.log("filtered", filtered);
-
-    return (
-      this.roomIssue.alerts.filter(
-        a => !a.manualResolve || (a.active && !a.manualResolve)
-      ).length === 0
-    );
+    return !this.roomIssue.alerts.some(a => a.active && !a.manualResolve);
   }
 }
