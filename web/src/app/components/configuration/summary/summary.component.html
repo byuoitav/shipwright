@@ -1,127 +1,186 @@
 <div class="base">
-    <div *ngIf="!data.finished && roomIssue == null">
-        <h3 class="mat-h3">Currently updating room issues...</h3>
-    </div>
-    <div *ngIf="data.finished && roomIssue == null">
-        <h3 class="mat-h3">There are no issues with this room at the moment!</h3>
-    </div>
-    <div class="container" *ngIf="roomIssue != null">
-        <app-alert-table [singleRoom]="true" [expIssue]="roomIssue"></app-alert-table>
+  <div *ngIf="!data.finished && roomIssue == null">
+    <h3 class="mat-h3">Currently updating room issues...</h3>
+  </div>
+  <div *ngIf="data.finished && roomIssue == null">
+    <h3 class="mat-h3">There are no issues with this room at the moment!</h3>
+  </div>
+  <div class="container" *ngIf="roomIssue != null">
+    <app-alert-table
+      [singleRoom]="true"
+      [expIssue]="roomIssue"
+    ></app-alert-table>
 
-        <section class="cardrow">
-            <!-- Action Card -->
-            <mat-card class="actioncard">
-                <mat-card-title>Actions</mat-card-title>
-                <mat-card-content>
-                    <section class="notes-row">
-                        <!-- Actions -->
-                        <aside class="notes-column">
-                            <div>
-                                <button mat-raised-button color="primary" class="button" (click)="HelpWasSent()">
+    <section class="cardrow">
+      <!-- Action Card -->
+      <mat-card class="actioncard">
+        <mat-card-title>Actions</mat-card-title>
+        <mat-card-content>
+          <section class="notes-row">
+            <!-- Actions -->
+            <aside class="notes-column">
+              <div>
+                <button
+                  mat-raised-button
+                  color="primary"
+                  class="button"
+                  (click)="HelpWasSent()"
+                >
                   Help Sent!
                 </button>
 
-                                <mat-label>@</mat-label>
-                                <mat-form-field class="time">
-                                    <input type="time" matInput [(ngModel)]="sentTime" />
-                                </mat-form-field>
-                            </div>
-                            <div>
-                                <button mat-raised-button color="warn" class="button" (click)="HelpHasArrived()">
+                <mat-label>@</mat-label>
+                <mat-form-field class="time">
+                  <input type="time" matInput [(ngModel)]="sentTime" />
+                </mat-form-field>
+              </div>
+              <div>
+                <button
+                  mat-raised-button
+                  color="warn"
+                  class="button"
+                  (click)="HelpHasArrived()"
+                >
                   Help Arrived!
                 </button>
 
-                                <mat-label>@</mat-label>
-                                <mat-form-field class="time">
-                                    <input type="time" matInput [(ngModel)]="arrivedTime" />
-                                </mat-form-field>
-                            </div>
-                            <div>
-                                <button mat-raised-button class="button resolve" color="accent" (click)="UpdateIssue(roomIssue)">
+                <mat-label>@</mat-label>
+                <mat-form-field class="time">
+                  <input type="time" matInput [(ngModel)]="arrivedTime" />
+                </mat-form-field>
+              </div>
+              <div>
+                <button
+                  mat-raised-button
+                  class="button resolve"
+                  color="accent"
+                  (click)="UpdateIssue(roomIssue)"
+                >
                   Update Issue
                 </button>
-                            </div>
-                            <div>
-                                <button *ngIf="isResolvable()" mat-raised-button class="button resolve">
+              </div>
+              <div>
+                <button
+                  class="button resolve"
+                  *ngIf="isResolvable()"
+                  (click)="openResolve()"
+                  mat-raised-button
+                >
                   Resolve Alerts
                 </button>
-                            </div>
-                        </aside>
-                        <!-- Responders -->
-                        <aside class="notes-column">
-                            <div>
-                                <mat-form-field>
-                                    <mat-label>Responders</mat-label>
-                                    <mat-chip-list #respChips>
-                                        <mat-chip *ngFor="let resp of responders" [selectable]="true" [removable]="true" (removed)="RemoveResponder(resp)">
-                                            {{ resp.name }}
-                                            <mat-icon matChipRemove>cancel</mat-icon>
-                                        </mat-chip>
-                                        <input matInput type="text" [matChipInputFor]="respChips" [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="
+              </div>
+            </aside>
+            <!-- Responders -->
+            <aside class="notes-column">
+              <div>
+                <mat-form-field>
+                  <mat-label>Responders</mat-label>
+                  <mat-chip-list #respChips>
+                    <mat-chip
+                      *ngFor="let resp of responders"
+                      [selectable]="true"
+                      [removable]="true"
+                      (removed)="RemoveResponder(resp)"
+                    >
+                      {{ resp.name }}
+                      <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                    <input
+                      matInput
+                      type="text"
+                      [matChipInputFor]="respChips"
+                      [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes"
+                      [matChipInputAddOnBlur]="true"
+                      (matChipInputTokenEnd)="
                         AddResponder($event.input.value, $event)
-                      " [matAutocomplete]="auto" [(ngModel)]="responderSearch" (ngModelChange)="FilterResponders()" />
-                                        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="
+                      "
+                      [matAutocomplete]="auto"
+                      [(ngModel)]="responderSearch"
+                      (ngModelChange)="FilterResponders()"
+                    />
+                    <mat-autocomplete
+                      #auto="matAutocomplete"
+                      (optionSelected)="
                         AddResponder($event.option.value, $event)
-                      ">
-                                            <mat-option *ngFor="let responder of filteredResponders" [value]="responder.name" (click)="AddResponder(responder.id, $event)">
-                                                {{ responder.name }}
-                                            </mat-option>
-                                        </mat-autocomplete>
-                                    </mat-chip-list>
-                                </mat-form-field>
-                            </div>
-                        </aside>
-                    </section>
-                </mat-card-content>
-            </mat-card>
+                      "
+                    >
+                      <mat-option
+                        *ngFor="let responder of filteredResponders"
+                        [value]="responder.name"
+                        (click)="AddResponder(responder.id, $event)"
+                      >
+                        {{ responder.name }}
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-chip-list>
+                </mat-form-field>
+              </div>
+            </aside>
+          </section>
+        </mat-card-content>
+      </mat-card>
 
-            <!-- Notes Card -->
-            <mat-card class="notescard">
-                <mat-card-title>Notes</mat-card-title>
-                <mat-divider></mat-divider>
-                <mat-card-content>
-                    <section class="notes-row">
-                        <aside class="notes-column">
-                            <h4 class="mat-subheading-2">Add Notes</h4>
-                            <mat-form-field class="notes" appearance="outline">
-                                <textarea matInput placeholder="Add New Note" [matAutosizeMinRows]="4" [matTextareaAutosize]="true" [(ngModel)]="tempNotes" (keyup)="$event.keyCode == 13 ? AddNote() : null"></textarea>
-                            </mat-form-field>
-                        </aside>
-                        <aside class="notes-column">
-                            <h4 class="mat-subheading-2">Notes Log</h4>
-                            <!-- <mat-form-field appearance="outline"> -->
-                            <mat-list class="notes-log" appearance="outline">
-                                <mat-list-item *ngFor="let note of roomIssue.notesLog.slice().reverse()">
-                                    <mat-icon mat-list-icon>arrow_right</mat-icon>
-                                    <h3 mat-line>{{ ExtractNoteInfo(note, false) }}</h3>
-                                    <p mat-line class="timestamp">
-                                        {{ ExtractNoteInfo(note, true) }}
-                                    </p>
-                                </mat-list-item>
-                            </mat-list>
-                            <!-- </mat-form-field> -->
-                        </aside>
-                    </section>
-                </mat-card-content>
-            </mat-card>
-        </section>
-    </div>
-
-    <div class="column mat-elevation-z3" *ngIf="filteredDevices != null">
-        <div class="searchbar devices mat-elevation-z0">
-            <mat-icon class="searchbar icon mat-elevation-z0">search</mat-icon>
-            <mat-form-field class="short">
-                <input matInput [(ngModel)]="deviceSearch" (ngModelChange)="SearchDevices()" />
-            </mat-form-field>
-        </div>
-        <mat-list class="list mat-elevation-z0">
-            <ng-container *ngFor="let device of filteredDevices">
-                <mat-list-item *ngIf="device != null">
-                    <mat-icon mat-list-icon>{{ text.DefaultIcons[device.type.id] }}
-                    </mat-icon>
-                    <h5 mat-line class="mat-h5">{{ device.name }}</h5>
+      <!-- Notes Card -->
+      <mat-card class="notescard">
+        <mat-card-title>Notes</mat-card-title>
+        <mat-divider></mat-divider>
+        <mat-card-content>
+          <section class="notes-row">
+            <aside class="notes-column">
+              <h4 class="mat-subheading-2">Add Notes</h4>
+              <mat-form-field class="notes" appearance="outline">
+                <textarea
+                  matInput
+                  placeholder="Add New Note"
+                  [matAutosizeMinRows]="4"
+                  [matTextareaAutosize]="true"
+                  [(ngModel)]="tempNotes"
+                  (keyup)="$event.keyCode == 13 ? AddNote() : null"
+                ></textarea>
+              </mat-form-field>
+            </aside>
+            <aside class="notes-column">
+              <h4 class="mat-subheading-2">Notes Log</h4>
+              <!-- <mat-form-field appearance="outline"> -->
+              <mat-list class="notes-log" appearance="outline">
+                <mat-list-item
+                  *ngFor="let note of roomIssue.notesLog.slice().reverse()"
+                >
+                  <mat-icon mat-list-icon>arrow_right</mat-icon>
+                  <h3 mat-line>{{ ExtractNoteInfo(note, false) }}</h3>
+                  <p mat-line class="timestamp">
+                    {{ ExtractNoteInfo(note, true) }}
+                  </p>
                 </mat-list-item>
-            </ng-container>
-        </mat-list>
+              </mat-list>
+              <!-- </mat-form-field> -->
+            </aside>
+          </section>
+        </mat-card-content>
+      </mat-card>
+    </section>
+  </div>
+
+  <div class="column mat-elevation-z3" *ngIf="filteredDevices != null">
+    <div class="searchbar devices mat-elevation-z0">
+      <mat-icon class="searchbar icon mat-elevation-z0">search</mat-icon>
+      <mat-form-field class="short">
+        <input
+          matInput
+          [(ngModel)]="deviceSearch"
+          (ngModelChange)="SearchDevices()"
+        />
+      </mat-form-field>
     </div>
+    <mat-list class="list mat-elevation-z0">
+      <ng-container *ngFor="let device of filteredDevices">
+        <mat-list-item *ngIf="device != null">
+          <mat-icon mat-list-icon
+            >{{ text.DefaultIcons[device.type.id] }}
+          </mat-icon>
+          <h5 mat-line class="mat-h5">{{ device.name }}</h5>
+        </mat-list-item>
+      </ng-container>
+    </mat-list>
+  </div>
 </div>
