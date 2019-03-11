@@ -1,8 +1,28 @@
-import { Component, OnInit, Input, ViewChild, ChangeDetectorRef, AfterViewInit, OnChanges } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Input,
+  ViewChild,
+  ChangeDetectorRef,
+  AfterViewInit,
+  OnChanges
+} from "@angular/core";
 import { StringsService } from "src/app/services/strings.service";
 import { IDashPanel, DashPanel } from "../dashpanel/idashpanel";
-import { MatTableDataSource, MatPaginator, MatSort, SortDirection, PageEvent } from "@angular/material";
-import { animate, state, style, transition, trigger } from "@angular/animations";
+import {
+  MatTableDataSource,
+  MatPaginator,
+  MatSort,
+  SortDirection,
+  PageEvent
+} from "@angular/material";
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger
+} from "@angular/animations";
 import { ActivatedRoute } from "@angular/router";
 import { DataService } from "src/app/services/data.service";
 import { RoomIssue, Alert } from "src/app/objects/alerts";
@@ -15,14 +35,20 @@ import { DashPanelTypes } from "src/app/services/dashpanel.service";
   styleUrls: ["./alerttable.component.scss"],
   animations: [
     trigger("detailExpand", [
-      state("collapsed", style({ height: "0px", minHeight: "0", display: "none" })),
+      state(
+        "collapsed",
+        style({ height: "0px", minHeight: "0", display: "none" })
+      ),
       state("expanded", style({ height: "*" })),
-      transition("expanded <=> collapsed", animate("225ms cubic-bezier(0.4, 0.0, 0.2, 1)")),
-    ]),
-  ],
+      transition(
+        "expanded <=> collapsed",
+        animate("225ms cubic-bezier(0.4, 0.0, 0.2, 1)")
+      )
+    ])
+  ]
 })
-
-export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit, OnChanges {
+export class AlertTableComponent
+  implements OnInit, IDashPanel, AfterViewInit, OnChanges {
   @Input() info: RoomIssue[] = [];
   @Input() chosenSeverity: DashPanelTypes;
   @Input() singleRoom = false;
@@ -38,15 +64,35 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit, O
 
   // Alert Table's Data
   issueData: MatTableDataSource<RoomIssue>;
-  selection = new SelectionModel<Alert>(true, []);
 
-  issueColumns: string[] = ["icon", "roomID", "severity", "count", "types", "incident"]; // , "help-sent", "help-arrived", "responders"];
-  alertColumns: string[] = ["severity-color", "name", "type", "category", "message", "start-time", "end-time"];
+  issueColumns: string[] = [
+    "icon",
+    "roomID",
+    "severity",
+    "count",
+    "types",
+    "incident"
+  ]; // , "help-sent", "help-arrived", "responders"];
+  alertColumns: string[] = [
+    "severity-color",
+    "name",
+    "type",
+    "category",
+    "message",
+    "start-time",
+    "end-time"
+  ];
 
-  private serviceNowURL = "https://ittest.byu.edu/incident.do?sysparm_query=number=";
+  private serviceNowURL =
+    "https://ittest.byu.edu/incident.do?sysparm_query=number=";
 
-  constructor(public text: StringsService, public data: DataService, private route: ActivatedRoute, private changes: ChangeDetectorRef) {
-        if (this.data.finished) {
+  constructor(
+    public text: StringsService,
+    public data: DataService,
+    private route: ActivatedRoute,
+    private changes: ChangeDetectorRef
+  ) {
+    if (this.data.finished) {
       this.Setup();
     } else {
       this.data.loaded.subscribe(() => {
@@ -73,7 +119,7 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit, O
   convertDashPanelTypeToSeverity(dashPanelType: DashPanelTypes): string {
     if (dashPanelType === DashPanelTypes.AllAlerts) {
       return "all";
-  } else if (dashPanelType === DashPanelTypes.CriticalAlerts) {
+    } else if (dashPanelType === DashPanelTypes.CriticalAlerts) {
       return "critical";
     } else if (dashPanelType === DashPanelTypes.WarningAlerts) {
       return "warning";
@@ -90,9 +136,16 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit, O
       this.route.params.subscribe(par => {
         this.roomID = par["roomID"];
       });
-      this.issueData = new MatTableDataSource(this.data.GetRoomIssues(this.roomID));
-    } else { // Otherwise, get the issues by severity
-      this.issueData = new MatTableDataSource(this.data.GetRoomIssuesBySeverity(this.convertDashPanelTypeToSeverity(this.chosenSeverity)));
+      this.issueData = new MatTableDataSource(
+        this.data.GetRoomIssues(this.roomID)
+      );
+    } else {
+      // Otherwise, get the issues by severity
+      this.issueData = new MatTableDataSource(
+        this.data.GetRoomIssuesBySeverity(
+          this.convertDashPanelTypeToSeverity(this.chosenSeverity)
+        )
+      );
     }
 
     // if (this.sort.active == undefined || this.sort.active == "') {
@@ -101,15 +154,16 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit, O
     //   this.sort.sortChange.emit();
     // }
 
-    this.data.issueEmitter.subscribe((changedIssue) => {
+    this.data.issueEmitter.subscribe(changedIssue => {
       if (!this.changes["destroyed"]) {
-
         if (this.singleRoom) {
           if (changedIssue.roomID === this.roomID) {
             this.issueData.data = this.data.GetRoomIssues(this.roomID);
           }
         } else {
-          this.issueData.data = this.data.GetRoomIssuesBySeverity(this.convertDashPanelTypeToSeverity(this.chosenSeverity));
+          this.issueData.data = this.data.GetRoomIssuesBySeverity(
+            this.convertDashPanelTypeToSeverity(this.chosenSeverity)
+          );
         }
 
         if (this.sort.active === undefined || this.sort.active === "") {
@@ -125,8 +179,10 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit, O
     this.issueData.sortingDataAccessor = (item, property) => {
       // console.log(item, property);
       switch (property) {
-        case "types": return this.ArrayToString(item["activeAlertTypes"]);
-        default: return item[property];
+        case "types":
+          return this.ArrayToString(item["activeAlertTypes"]);
+        default:
+          return item[property];
       }
     };
   }
@@ -151,18 +207,6 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit, O
     window.open(this.serviceNowURL + incidentID, "_blank");
   }
 
-  IsAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.issueData.data[0].alerts.length;
-    return numSelected === numRows;
-  }
-
-  MasterToggle() {
-    this.IsAllSelected() ?
-      this.selection.clear() :
-      this.issueData.data[0].alerts.forEach(alert => this.selection.select(alert));
-  }
-
   GetDeviceName(deviceID: string): string {
     return deviceID.split("-")[2];
   }
@@ -175,7 +219,7 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit, O
     }
   }
 
-  TimeIsZero(time: Date): boolean  {
+  TimeIsZero(time: Date): boolean {
     if (time === undefined) {
       return true;
     }
@@ -230,7 +274,7 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit, O
       } else if (a.severity != "Critical" && b.severity === "Critical") {
         return 1;
       } else if (a.severity === "Warning" && b.severity === "Low") {
-        return -1
+        return -1;
       } else if (a.severity === "Low" && b.severity === "Warning") {
         return 1;
       } else {
