@@ -644,7 +644,7 @@ func combineIssues(n, o structs.RoomIssue) (structs.RoomIssue, bool) {
 		foundMatch := false
 
 		for _, oldResponse := range o.RoomIssueResponses {
-			if len(newResponse.Responders) == len(oldResponse.Responders) && structs.ContainsAllTags(newResponse.Responders, oldResponse.Responders...) {
+			if len(newResponse.Responders) == len(oldResponse.Responders) && structs.HasAllPeople(newResponse.Responders, oldResponse.Responders...) {
 				if newResponse.HelpSentAt == oldResponse.HelpSentAt {
 					if newResponse.HelpArrivedAt == oldResponse.HelpArrivedAt {
 						foundMatch = true

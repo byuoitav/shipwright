@@ -387,7 +387,7 @@ func (m *RoomIssueMatch) DoesRoomIssueMatch(ctx context.Context) bool {
 						reg := regex.Copy()
 
 						for _, s := range issueResponseToCheck.Responders {
-							if reg.MatchString(s) {
+							if reg.MatchString(s.ID) {
 								matched++
 								break
 							}
