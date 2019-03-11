@@ -41,7 +41,7 @@ export class AppComponent implements OnInit {
 
     window.history.replaceState(
       null,
-      "Shipwright",
+      this.text.WebsiteTitle,
       window.location.pathname + "?" + this.urlParams.toString()
     );
   }

@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { StringsService } from 'src/app/services/strings.service';
-import { MonitoringService } from 'src/app/services/monitoring.service';
 import { DataService } from 'src/app/services/data.service';
 
 
@@ -27,7 +26,7 @@ export class CampusStateComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(public text: StringsService, public monitor: MonitoringService, public data: DataService) {
+  constructor(public text: StringsService, public data: DataService) {
     // if (this.ss.finished) {
     //   console.log(this.ss.staticRoomList);
     //   this.dataSource = new MatTableDataSource(this.ss.staticRoomList)

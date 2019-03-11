@@ -1,44 +1,48 @@
 <div class="column">
-    <!-- ID -->
-    <mat-form-field #roomID>
-        <mat-label>ID</mat-label>
-        <input matInput type="text" [(ngModel)]="data.id" required>
-    </mat-form-field>
-    <!-- NAME -->
-    <mat-form-field #roomName>
-        <mat-label>Name</mat-label>
-        <input matInput type="text" [(ngModel)]="data.name" required>
-    </mat-form-field>
-    <!-- DESCRIPTION -->
-    <mat-form-field #roomDescription>
-        <mat-label>Description</mat-label>
-        <input matInput type="text" [(ngModel)]="data.description">
-    </mat-form-field>
-    <!-- CONFIGURATION -->
-    <mat-form-field>
-        <mat-label>Configuration</mat-label>
-        <mat-select required matInput [(ngModel)]="data.configuration.id">
-            <mat-option *ngFor="let c of dataService.roomConfigurations" [value]="c.id">{{c.id}}</mat-option>
-        </mat-select>
-    </mat-form-field>
-    <!-- DESIGNATION -->
-    <mat-form-field>
-        <mat-label>Designation</mat-label>
-        <mat-select required matInput [(ngModel)]="data.designation">
-            <mat-option *ngFor="let d of dataService.roomDesignations" [value]="d">{{text.Title(d)}}</mat-option>
-        </mat-select>
-    </mat-form-field>
-    <!-- TAGS -->
-    <mat-form-field>
-        <mat-label>Tags</mat-label>
-        <mat-chip-list #roomTags>
-            <mat-chip *ngFor="let tag of data.tags" [selectable]="true" [removable]="true" (removed)="text.RemoveTag(tag, data)">
-                {{tag}}
-                <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
-            <input matInput type="text" [matChipInputFor]="roomTags" [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="text.AddTag($event, data)">
-        </mat-chip-list>
-    </mat-form-field>
+    <section class="row">
+        <!-- ID -->
+        <mat-form-field #roomID>
+            <mat-label>ID</mat-label>
+            <input matInput type="text" [(ngModel)]="data.id" required>
+        </mat-form-field>
+        <!-- NAME -->
+        <mat-form-field #roomName>
+            <mat-label>Name</mat-label>
+            <input matInput type="text" [(ngModel)]="data.name" required>
+        </mat-form-field>
+        <!-- DESCRIPTION -->
+        <mat-form-field #roomDescription>
+            <mat-label>Description</mat-label>
+            <input matInput type="text" [(ngModel)]="data.description">
+        </mat-form-field>
+    </section>
+    <section class="row">
+        <!-- CONFIGURATION -->
+        <mat-form-field>
+            <mat-label>Configuration</mat-label>
+            <mat-select required matInput [(ngModel)]="data.configuration.id">
+                <mat-option *ngFor="let c of dataService.roomConfigurations" [value]="c.id">{{c.id}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <!-- DESIGNATION -->
+        <mat-form-field>
+            <mat-label>Designation</mat-label>
+            <mat-select required matInput [(ngModel)]="data.designation">
+                <mat-option *ngFor="let d of dataService.roomDesignations" [value]="d">{{text.Title(d)}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <!-- TAGS -->
+        <mat-form-field>
+            <mat-label>Tags</mat-label>
+            <mat-chip-list #roomTags>
+                <mat-chip *ngFor="let tag of data.tags" [selectable]="true" [removable]="true" (removed)="text.RemoveTag(tag, data)">
+                    {{tag}}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+                <input matInput type="text" [matChipInputFor]="roomTags" [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="text.AddTag($event, data)">
+            </mat-chip-list>
+        </mat-form-field>
+    </section>
     <!-- BUTTONS -->
     <div class="row">
         <button mat-button class="button submit" (click)="UpdateRoom()">{{data.isNew ? "ADD" : "UPDATE"}}</button>

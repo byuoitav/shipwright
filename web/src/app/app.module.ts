@@ -40,7 +40,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ConfigurationComponent } from './components/configuration/configuration.component';
-import { StateComponent } from './components/state/state.component';
 import { SettingsModalComponent } from './modals/settings/settings.component';
 import { RespondModalComponent } from './modals/respond/respond.component';
 import { BuildingModalComponent } from './modals/buildingmodal/buildingmodal.component';
@@ -49,8 +48,6 @@ import { DeviceModalComponent } from './modals/devicemodal/devicemodal.component
 import { APIService } from './services/api.service';
 import { SocketService } from './services/socket.service';
 import { DataService } from './services/data.service';
-import { StaticService } from './services/static.service';
-import { MonitoringService } from './services/monitoring.service';
 import { ModalService } from './services/modal.service';
 import { StringsService } from './services/strings.service';
 import { OverlayContainer } from '@angular/cdk/overlay';
@@ -75,7 +72,7 @@ import { DashPanelDirective } from './components/dashboard/dashpanel/dashpanel.d
 import { CampusStateComponent } from './components/state/campus/campus-state.component';
 import { RoomStateComponent } from './components/state/room/room-state.component';
 
-import {NotifierModule} from 'angular-notifier';
+import { NotifierModule } from 'angular-notifier';
 import { HelpModalComponent } from './modals/helpmodal/helpmodal.component';
 import { DeviceStateComponent } from './components/state/device-state/device-state.component'
 
@@ -84,7 +81,6 @@ import { DeviceStateComponent } from './components/state/device-state/device-sta
     AppComponent,
     DashboardComponent,
     ConfigurationComponent,
-    StateComponent,
     DashPanelComponent,
     AlertTableComponent,
     BatteryReportComponent,
@@ -165,8 +161,6 @@ import { DeviceStateComponent } from './components/state/device-state/device-sta
     APIService,
     SocketService,
     DataService,
-    StaticService,
-    MonitoringService,
     ModalService,
     StringsService,
     DashPanelService,
@@ -180,6 +174,6 @@ export class AppModule {
     api.themeSwitched.subscribe((themes) => {
       this.overlayContainer.getContainerElement().classList.remove(themes[0]);
       this.overlayContainer.getContainerElement().classList.add(themes[1]);
-    })
+    });
   }
 }

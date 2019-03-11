@@ -18,11 +18,11 @@ export class RoomModalComponent implements OnInit {
   }
   UpdateRoom() {
     this.api.UpdateRoom(this.data.id, this.data).then((resp) => {
-      this.dialogRef.close(resp)
-    }
-    )
+      this.dialogRef.close(resp);
+    });
   }
+
   CloseModal() {
-    this.dialogRef.close()
+    this.dialogRef.close();
   }
 }

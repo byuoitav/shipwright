@@ -14,17 +14,25 @@ export class BuildingComponent implements OnInit {
   @Input() building: Building = new Building();
   state: BuildingStatus;
 
+  alertingRoomCount = 0;
+  goodRoomCount = 0;
+
   constructor(public text: StringsService, public modal: ModalService, private data: DataService) {
-    this.state = new BuildingStatus();
   }
 
   ngOnInit() {
-    if(this.data.finished) {
-      this.GetBuildingState()
-      } else {
-        this.data.loaded.subscribe(() => {
-        this.GetBuildingState()
+    if (this.data.finished) {
+      this.GetBuildingState();
+      this.UpdateCounts();
+    } else {
+      this.data.loaded.subscribe(() => {
+        this.GetBuildingState();
+        this.UpdateCounts();
       })
+    }
+
+    if (this.building.name == null || this.building.name.length === 0) {
+      this.building.name = this.building.id;
     }
   }
 
@@ -34,5 +42,21 @@ export class BuildingComponent implements OnInit {
 
   GetBuildingState() {
     this.state = this.data.GetBuildingState(this.building.id);
+  }
+
+  UpdateCounts() {
+    if (this.state != null && this.state.roomStates != null) {
+      for (const rs of this.state.roomStates) {
+        if (rs.roomIssue != null) {
+          if (rs.roomIssue.length > 0) {
+            this.alertingRoomCount++;
+          } else {
+            this.goodRoomCount++;
+          }
+        } else {
+          this.goodRoomCount++;
+        }
+      }
+    }
   }
 }

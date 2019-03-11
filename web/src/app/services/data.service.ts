@@ -42,7 +42,7 @@ export class DataService {
   finished = false;
   completedOperations = 0;
   totalCompletion = 100;
-  increment: number = Math.ceil(this.totalCompletion / 20);
+  increment: number = Math.ceil(this.totalCompletion / 19);
 
   settingsChanged: EventEmitter<any>;
   panelCount = 2;
@@ -63,46 +63,25 @@ export class DataService {
   }
 
   private async LoadData() {
-    await this.GetCurrentUsername();
-    this.completedOperations += this.increment;
-    await this.GetAllBuildings(); //          1
-    this.completedOperations += this.increment;
-    await this.GetAllRooms(); //              2
-    this.completedOperations += this.increment;
-    await this.GetAllDevices(); //            3
-    this.completedOperations += this.increment;
-    await this.GetAllUIConfigs(); //          4
-    this.completedOperations += this.increment;
-    await this.GetAllDeviceTypes(); //        5
-    this.completedOperations += this.increment;
-    await this.GetAllDeviceRoles(); //        6
-    this.completedOperations += this.increment;
-    await this.GetAllTemplates(); //          7
-    this.completedOperations += this.increment;
-    await this.GetAllRoomConfigurations(); // 8
-    this.completedOperations += this.increment;
-    await this.GetAllRoomDesignations(); //   9
-    this.completedOperations += this.increment;
-    await this.SetBuildingToRoomsMap(); //   10
-    this.completedOperations += this.increment;
-    await this.SetRoomToDevicesMap(); //     11
-    this.completedOperations += this.increment;
-    await this.GetIconList(); //             12
-    this.completedOperations += this.increment;
-    await this.GetStoredRoomIssues(); //     13
-    this.completedOperations += this.increment;
-    await this.GetStaticDevices(); //        14
-    this.completedOperations += this.increment;
-    await this.GetRoomStatusList(); //       15
-    this.completedOperations += this.increment;
-    await this.GetBuildingStatusList(); //   16
-    this.completedOperations += this.increment;
-    await this.GetClosureCodes(); //         17
-    this.completedOperations += this.increment;
-    await this.GetCombinedRoomState(); //    18
-    this.completedOperations += this.increment;
-    await this.SetPossibleResponders(); //   19
-    this.completedOperations += this.increment;
+    await this.GetCurrentUsername(); //       1
+    await this.GetAllBuildings(); //          2
+    await this.GetAllRooms(); //              3
+    await this.GetAllDevices(); //            4
+    await this.GetAllUIConfigs(); //          5
+    await this.GetAllDeviceTypes(); //        6
+    await this.GetAllDeviceRoles(); //        7
+    await this.GetAllTemplates(); //          8
+    await this.GetAllRoomConfigurations(); // 9
+    await this.GetAllRoomDesignations(); //   10
+    await this.SetBuildingToRoomsMap(); //    11
+    await this.SetRoomToDevicesMap(); //      12
+    await this.GetIconList(); //              13
+    await this.GetStoredRoomIssues(); //      14
+    await this.GetStaticDevices(); //         15
+    await this.GetCombinedRoomState(); //     16
+    await this.GetBuildingStatusList(); //    17
+    await this.GetClosureCodes(); //          18
+    await this.SetPossibleResponders(); //    19
      this.finished = true;
      this.loaded.emit(true);
   }
@@ -110,6 +89,7 @@ export class DataService {
   private async GetCurrentUsername() {
     await this.api.GetCurrentUsername().then((username) => {
       this.currentUsername = username as string;
+      this.completedOperations += this.increment;
     });
   }
 
@@ -118,6 +98,7 @@ export class DataService {
 
     await this.api.GetAllBuildings().then((buildings) => {
       this.allBuildings = buildings;
+      this.completedOperations += this.increment;
     });
   }
 
@@ -127,6 +108,7 @@ export class DataService {
 
     await this.api.GetAllRooms().then((rooms) => {
       this.allRooms = rooms;
+      this.completedOperations += this.increment;
     });
   }
 
@@ -136,6 +118,7 @@ export class DataService {
 
     await this.api.GetAllDevices().then((devices) => {
       this.allDevices = devices;
+      this.completedOperations += this.increment;
     });
   }
 
@@ -149,6 +132,7 @@ export class DataService {
       for (const type of this.deviceTypeList) {
         this.deviceTypeMap.set(type.id, type);
       }
+      this.completedOperations += this.increment;
     });
   }
 
@@ -157,6 +141,7 @@ export class DataService {
 
     await this.api.GetRoomConfigurations().then((configurations) => {
       this.roomConfigurations = configurations;
+      this.completedOperations += this.increment;
     });
   }
 
@@ -165,6 +150,7 @@ export class DataService {
 
     this.api.GetRoomDesignations().then((designations) => {
       this.roomDesignations = designations as string[];
+      this.completedOperations += this.increment;
     });
   }
 
@@ -178,6 +164,7 @@ export class DataService {
       for (const config of this.allUIConfigs) {
         this.roomToUIConfigMap.set(config.id, config);
       }
+      this.completedOperations += this.increment;
     });
   }
 
@@ -186,6 +173,7 @@ export class DataService {
 
     this.api.GetDeviceRoles().then((roles) => {
       this.deviceRoles = roles;
+      this.completedOperations += this.increment;
     });
   }
 
@@ -194,6 +182,7 @@ export class DataService {
 
     this.api.GetTemplates().then((list) => {
       this.templateList = list;
+      this.completedOperations += this.increment;
     });
   }
 
@@ -202,6 +191,7 @@ export class DataService {
 
     this.api.GetIcons().then((icons) => {
       this.iconList = icons as string[];
+      this.completedOperations += this.increment;
     });
   }
 
@@ -219,6 +209,7 @@ export class DataService {
         }
       }
     }
+    this.completedOperations += this.increment;
   }
 
   private async SetRoomToDevicesMap() {
@@ -235,12 +226,14 @@ export class DataService {
         }
       }
     }
+    this.completedOperations += this.increment;
   }
 
   private async GetStoredRoomIssues() {
     await this.api.GetAllIssues().then((issues) => {
       this.roomIssueList = issues;
       this.SetRoomIssuesMap();
+      this.completedOperations += this.increment;
     });
   }
 
@@ -295,63 +288,33 @@ export class DataService {
     });
   }
 
-  private RoomIssueSorter(a, b): number {
-    if (a.roomID == null && b.roomID != null) {return 1; }
-    if (b.roomID == null && a.roomID != null) {return -1; }
-    return a.roomID.localeCompare(b.roomID);
-  }
-
   private async GetClosureCodes() {
     this.closureCodes = [];
 
-    this.api.GetClosureCodes().then((codes) => {
+    await this.api.GetClosureCodes().then((codes) => {
       this.closureCodes = codes as string[];
+      this.completedOperations += this.increment;
     });
   }
 
   private async GetStaticDevices() {
     await this.api.GetAllStaticDeviceRecords().then((records) => {
       this.staticDeviceList = records;
-      // this.GetRoomStatusList();
+      this.completedOperations += this.increment;
     });
-  }
-
-  private async GetRoomStatusList() {
-    this.roomStatusList = [];
-
-    for (const sd of this.staticDeviceList) {
-      const roomID = sd.deviceID.substring(0, sd.deviceID.lastIndexOf("-"));
-      let added = false;
-
-      for (const rs of this.roomStatusList) {
-        if (rs.roomID === roomID) {
-          rs.deviceStates.push(sd);
-          rs.roomIssues = this.GetRoomIssues(rs.roomID);
-          added = true;
-          rs.UpdateAlerts();
-        }
-      }
-      if (!added) {
-        const roomState = new RoomStatus();
-        roomState.roomID = roomID;
-        roomState.deviceStates = [sd];
-        roomState.roomIssues = this.GetRoomIssues(roomState.roomID);
-        this.roomStatusList.push(roomState);
-      }
-    }
   }
 
   private async GetCombinedRoomState() {
     await this.api.GetAllCombinedRoomStates().then((records) => {
       this.combinedRoomStateList = records;
-      // this.GetRoomStatusList();
+      this.completedOperations += this.increment;
     });
   }
 
   private async GetBuildingStatusList() {
     this.buildingStatusList = [];
 
-    for (const rs of this.roomStatusList) {
+    for (const rs of this.combinedRoomStateList) {
       const buildingID = rs.roomID.substring(0, rs.roomID.lastIndexOf("-"));
       let added = false;
 
@@ -368,7 +331,7 @@ export class DataService {
         this.buildingStatusList.push(buildingState);
       }
     }
-
+    this.completedOperations += this.increment;
   }
 
   GetBuilding(buildingID: string): Building {
@@ -418,9 +381,8 @@ export class DataService {
     return this.roomIssuesMap.get(roomID);
   }
 
-  GetRoomIssue(roomID): RoomIssue[] {
-    // I added this to get it to complie
-    return null;
+  GetRoomIssue(roomID): RoomIssue {
+    return this.roomIssuesMap.get(roomID)[0];
   }
 
   GetStaticDevice(deviceID: string): StaticDevice {
@@ -432,13 +394,12 @@ export class DataService {
     return new StaticDevice();
   }
 
-  GetRoomState(roomID: string): RoomStatus {
-    for (const record of this.roomStatusList) {
+  GetRoomState(roomID: string): CombinedRoomState {
+    for (const record of this.combinedRoomStateList) {
       if (record.roomID === roomID) {
         return record;
       }
     }
-    return new RoomStatus();
   }
 
   GetBuildingState(buildingID: string): BuildingStatus {
@@ -457,12 +418,11 @@ export class DataService {
       return this.roomIssueList;
     } else {
       for (const issue of this.roomIssueList) {
-        console.log("Issue: ", issue)
         for (const issueSev of issue.activeAlertSeverities) {
           if (issueSev.toLowerCase() === severity.toLowerCase()) {
             temp.push(issue);
           }
-        }        
+        }
       }
     }
     return temp;
@@ -471,7 +431,7 @@ export class DataService {
   async SetPossibleResponders() {
     await this.api.GetPossibleResponders().then((response) => {
       this.possibleResponders = response;
-      console.log(this.possibleResponders);
+      this.completedOperations += this.increment;
     });
   }
 

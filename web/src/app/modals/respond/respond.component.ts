@@ -24,8 +24,8 @@ export class RespondModalComponent implements OnInit {
   }
 
   UpdateSelected() {
-    if(this.info.selected.length == 0) {
-      this.info.selected = this.info.issue.alerts
+    if (this.info.selected.length === 0) {
+      this.info.selected = this.info.issue.alerts;
     }
   }
 }

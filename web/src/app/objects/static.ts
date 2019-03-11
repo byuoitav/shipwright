@@ -5,7 +5,6 @@ import {
   JsonCustomConvert
 } from "json2typescript";
 import { RoomIssue, Alert } from "./alerts";
-import { Room } from "./database";
 
 @JsonConverter
 class DateConverter implements JsonCustomConvert<Date> {
@@ -303,42 +302,6 @@ export class StaticRoom {
   // updateTimes: [string] = undefined;
 }
 
-@JsonObject("BuildingStatus")
-export class BuildingStatus {
-  @JsonProperty("building-id", String, true)
-  buildingID: string = undefined;
-
-  @JsonProperty("room-count", Number, true)
-  roomCount: number = undefined;
-
-  @JsonProperty("alerting-room-count", Number, true)
-  alertingCount: number = undefined;
-
-  @JsonProperty("good-room-count", Number, true)
-  goodCount: number = undefined;
-
-  @JsonProperty("room-states", [RoomStatus], true)
-  roomStates: RoomStatus[] = Array<RoomStatus>();
-
-  constructor() { }
-
-  Update() {
-    this.roomCount = 0;
-    this.alertingCount = 0;
-    this.goodCount = 0;
-
-    for (const rs of this.roomStates) {
-      this.roomCount++;
-      if (rs.alertingCount > 0) {
-        this.alertingCount++;
-      } else {
-        this.goodCount++;
-      }
-    }
-  }
-}
-
-
 @JsonObject("CombinedRoomState")
 export class CombinedRoomState {
   @JsonProperty("roomID", String, true)
@@ -361,4 +324,22 @@ export class CombinedRoomState {
 
   @JsonProperty("static-devices", [StaticDevice], true)
   deviceStates: StaticDevice[] = Array<StaticDevice>();
+}
+
+@JsonObject("BuildingStatus")
+export class BuildingStatus {
+  @JsonProperty("building-id", String, true)
+  buildingID: string = undefined;
+
+  @JsonProperty("room-count", Number, true)
+  roomCount: number = undefined;
+
+  @JsonProperty("alerting-room-count", Number, true)
+  alertingCount: number = undefined;
+
+  @JsonProperty("good-room-count", Number, true)
+  goodCount: number = undefined;
+
+  @JsonProperty("room-states", [CombinedRoomState], true)
+  roomStates: CombinedRoomState[] = Array<CombinedRoomState>();
 }

@@ -163,7 +163,7 @@ func main() {
 	readconfig.GET("/static/devices", handlers.GetAllStaticDeviceRecords)
 	readconfig.GET("/static/rooms", handlers.GetAllStaticRoomRecords)
 	readconfig.GET("/static/rooms/state", handlers.GetAllRoomCombinedStateRecords)
-	readconfig.GET("/static/rooms/:roomID/state", handlers.GetRoomCombinedStateRecord)
+	readconfig.GET("/static/rooms/:room/state", handlers.GetRoomCombinedStateRecord)
 
 	// Alert Endpoints
 	readconfig.GET("/issues", handlers.GetAllRoomIssues)

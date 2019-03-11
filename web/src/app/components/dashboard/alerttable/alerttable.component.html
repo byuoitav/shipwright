@@ -68,7 +68,7 @@
         <ng-container matColumnDef="expandedDetail">
             <td mat-cell *matCellDef="let issue" [attr.colspan]="issueColumns.length">
                 <div class="alert-detail" [@detailExpand]="ShouldIExpand(issue) ? 'expanded' : 'collapsed'">
-                    <table mat-table [dataSource]="issue.alerts" class="mat-elevation-z0">
+                    <table mat-table [dataSource]="issue.alerts.sort(SortByActiveAlerts)" class="mat-elevation-z0">
 
                         <!--
                         <ng-container matColumnDef="select">
