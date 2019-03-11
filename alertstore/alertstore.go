@@ -352,8 +352,8 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 	//get the issue associated with the alert
 	issueID := GetIssueIDFromAlertID(alert.AlertID)
 
-	// //Do we need to change the roomaggregate info?
-	// roomAggregateChange := false
+	//Do we need to change the roomaggregate info?
+	//roomAggregateChange := false
 
 	//we should check to see if the room already has an issue associated with it.
 	issue, err := alertcache.GetAlertCache("default").GetIssue(issueID)
@@ -498,8 +498,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		}
 	}
 
-	// MB - replacing with the room state endpoint
-	// issue.CalculateAggregateInfo()
+	issue.CalculateAggregateInfo()
 	// if roomAggregateChange {
 	// 	calculateAggregateInfo(issue)
 	// }
