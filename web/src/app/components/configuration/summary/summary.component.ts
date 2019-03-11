@@ -20,7 +20,7 @@ export class SummaryComponent implements OnInit {
   filteredResponders: Person[];
   responders: Person[] = [];
   deviceSearch: string;
-  responderSearch: string;
+  responderSearch = "";
   roomID: string;
 
   tempNotes: string;
@@ -253,17 +253,18 @@ export class SummaryComponent implements OnInit {
     }
     for (const person of this.data.possibleResponders) {
       if (
-        !this.filteredResponders.includes(person) &&
-        !this.responders.includes(person)
+        person.id.toLowerCase().includes(this.responderSearch.toLowerCase()) &&
+        !this.filteredResponders.includes(person)
       ) {
-        if (
-          person.name
-            .toLowerCase()
-            .includes(this.responderSearch.toLowerCase()) ||
-          person.id.toLowerCase().includes(this.responderSearch.toLowerCase())
-        ) {
-          this.filteredResponders.push(person);
-        }
+        this.filteredResponders.push(person);
+      }
+      if (
+        person.name
+          .toLowerCase()
+          .includes(this.responderSearch.toLowerCase()) &&
+        !this.filteredResponders.includes(person)
+      ) {
+        this.filteredResponders.push(person);
       }
     }
   }

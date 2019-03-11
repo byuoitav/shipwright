@@ -755,7 +755,7 @@ export class APIService {
 
       return data;
     } catch (e) {
-      throw new Error("error trying to resolve an issue: " + e);
+      throw new Error("error trying to update an issue: " + e);
     }
   }
 
@@ -773,24 +773,11 @@ export class APIService {
 
   public async GetPossibleResponders() {
     try {
-     /* const data: any = await this.http
+      const data: any = await this.http
         .get("alerts/responders", { headers: this.headers })
         .toPromise();
 
       const responders = this.converter.deserializeArray(data, Person);
-      */
-      const responders: Person[] = [];
-      const peopleNames = ["Caleb", "Baeleb", "Shmaeleb", "Kaleb", "Taylub"];
-      const peopleIDs = ["calebrulez4", "TheBest!", "Disrespected15", "DumbName6", "WhoAmI2"];
-      for (let i = 0; i < peopleNames.length; i++) {
-        const newPerson: Person = {
-          name: peopleNames[i],
-          id : peopleIDs[i]
-        };
-        newPerson.name = peopleNames[i];
-        newPerson.id = peopleIDs[i];
-        responders.push(newPerson);
-      }
       return responders;
     } catch (e) {
       throw new Error("error trying to get possible responders: " + e);
