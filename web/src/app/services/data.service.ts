@@ -412,7 +412,16 @@ export class DataService {
   }
 
   GetRoomIssue(roomID): RoomIssue {
-    return this.roomIssuesMap.get(roomID)[0];
+    if (this.roomIssuesMap == null || this.roomIssuesMap === undefined) {
+      return null;
+    }
+
+    const issues = this.roomIssuesMap.get(roomID);
+    if (issues == null || issues === undefined || issues.length === 0) {
+      return null;
+    }
+
+    return issues[0];
   }
 
   GetStaticDevice(deviceID: string): StaticDevice {
@@ -449,7 +458,10 @@ export class DataService {
     } else {
       for (const issue of this.roomIssueList) {
         // exclude development rooms
-        if (issue.roomTags.includes("development") || issue.roomTags.includes("testing")) {
+        if (
+          issue.roomTags.includes("development") ||
+          issue.roomTags.includes("testing")
+        ) {
           continue;
         }
 

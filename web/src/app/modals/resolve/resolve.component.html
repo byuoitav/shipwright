@@ -1,21 +1,33 @@
 <h1 mat-dialog-title>Resolving issue in {{ data?.issue?.roomID }}</h1>
 <div mat-dialog-content>
   <mat-form-field>
-    <mat-select
-      class="full-width"
+    <input
       placeholder="Closure Code"
-      [(value)]="data.resInfo.code"
+      [formControl]="codeCtrl"
+      [matAutocomplete]="auto"
+      matInput
+    />
+
+    <mat-error
+      *ngIf="codeCtrl.hasError('invalid') && !codeCtrl.hasError('required')"
     >
-      <mat-option *ngFor="let code of data?.codes" [value]="code">{{
-        code
-      }}</mat-option>
-    </mat-select>
+      Invalid closure code
+    </mat-error>
+    <mat-error *ngIf="codeCtrl.hasError('required')">
+      Closure code is <strong>required</strong>
+    </mat-error>
+
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option *ngFor="let code of (filteredCodes | async)" [value]="code">
+        {{ code }}
+      </mat-option>
+    </mat-autocomplete>
   </mat-form-field>
 
   <mat-form-field class="full-width">
     <textarea
       placeholder="Notes"
-      [(value)]="data.resInfo.notes"
+      [(ngModel)]="data.resInfo.notes"
       matInput
       matTextareaAutosize
     ></textarea>
@@ -27,6 +39,7 @@
     class="resolve"
     [class.success]="resolved"
     [class.error]="error"
+    [disabled]="!validForm()"
     (click)="resolve()"
     mat-button
   >

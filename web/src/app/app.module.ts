@@ -38,7 +38,7 @@ import {
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./components/app/app.component";
 import { HttpClientModule } from "@angular/common/http";
-import { FormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { DashboardComponent } from "./components/dashboard/dashboard.component";
 import { ConfigurationComponent } from "./components/configuration/configuration.component";
 import { SettingsModalComponent } from "./modals/settings/settings.component";
@@ -133,6 +133,7 @@ import { ResponseModalComponent } from "./modals/responsemodal/responsemodal.com
     MatDialogModule,
     MatCheckboxModule,
     FormsModule,
+    ReactiveFormsModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatPaginatorModule,

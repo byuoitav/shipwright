@@ -3,7 +3,12 @@ import { StringsService } from "src/app/services/strings.service";
 import { ActivatedRoute } from "@angular/router";
 import { DataService } from "src/app/services/data.service";
 import { ModalService } from "src/app/services/modal.service";
-import { Alert, RoomIssue, RoomIssueResponse, ResolutionInfo } from "src/app/objects/alerts";
+import {
+  Alert,
+  RoomIssue,
+  RoomIssueResponse,
+  ResolutionInfo
+} from "src/app/objects/alerts";
 import { Device, Person } from "src/app/objects/database";
 import { AlertTableComponent } from "../../dashboard/alerttable/alerttable.component";
 import { APIService } from "src/app/services/api.service";
@@ -58,6 +63,11 @@ export class SummaryComponent implements OnInit {
 
   SetupSummary() {
     this.roomIssue = this.data.GetRoomIssue(this.roomID);
+    if (this.roomIssue == null || this.roomIssue === undefined) {
+      console.error("no room issue found for room", this.roomID);
+      return;
+    }
+
     if (this.roomIssue.roomIssueResponses == null) {
       this.roomIssue.roomIssueResponses = [];
     }
@@ -285,8 +295,7 @@ export class SummaryComponent implements OnInit {
       return false;
     }
 
-    // return !this.roomIssue.alerts.some(a => a.active && !a.manualResolve);
-    return true;
+    return !this.roomIssue.alerts.some(a => a.active && !a.manualResolve);
   }
 
   openResolve() {
