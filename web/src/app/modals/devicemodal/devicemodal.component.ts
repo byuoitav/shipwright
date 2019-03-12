@@ -1,20 +1,25 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { StringsService } from 'src/app/services/strings.service';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { DataService} from 'src/app/services/data.service';
-import { Device, DeviceType, Port } from 'src/app/objects/database';
+import { Component, OnInit, Inject } from "@angular/core";
+import { StringsService } from "src/app/services/strings.service";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
+import { DataService } from "src/app/services/data.service";
+import { Device, DeviceType, Port } from "src/app/objects/database";
 
 @Component({
-  selector: 'device-modal',
-  templateUrl: './devicemodal.component.html',
-  styleUrls: ['./devicemodal.component.scss']
+  selector: "device-modal",
+  templateUrl: "./devicemodal.component.html",
+  styleUrls: ["./devicemodal.component.scss"]
 })
 export class DeviceModalComponent implements OnInit {
   RoleList = [];
   UnappliedRoles = [];
-  CurrentType : DeviceType = new DeviceType();
+  CurrentType: DeviceType = new DeviceType();
 
-  constructor(public text: StringsService, public dialogRef: MatDialogRef<DeviceModalComponent>, @Inject(MAT_DIALOG_DATA) public data: Device, public dataService: DataService) {
+  constructor(
+    public text: StringsService,
+    public dialogRef: MatDialogRef<DeviceModalComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: Device,
+    public dataService: DataService
+  ) {
     this.RoleList = data.roles;
     this.UpdateRoleLists();
     this.CurrentType = this.dataService.deviceTypeMap.get(this.data.type.id);
@@ -30,11 +35,11 @@ export class DeviceModalComponent implements OnInit {
   }
 
   FixMe() {
-    for (let port of this.data.ports) {
+    for (const port of this.data.ports) {
       if (port.tags == null || port.tags.length === 0) {
-        for (let typePort of this.CurrentType.ports) {
-          if (typePort.id == port.id) {
-            for (let tag of typePort.tags) {
+        for (const typePort of this.CurrentType.ports) {
+          if (typePort.id === port.id) {
+            for (const tag of typePort.tags) {
               port.tags.push(tag);
             }
           }
@@ -43,14 +48,13 @@ export class DeviceModalComponent implements OnInit {
     }
   }
 
-
   UpdateRoleLists() {
     this.UnappliedRoles = [];
     this.RoleList.forEach(role => {
-      let PushToAddList : boolean = true;
+      let PushToAddList = true;
 
       this.data.roles.forEach(dRole => {
-        if (role.id === dRole.id){
+        if (role.id === dRole.id) {
           PushToAddList = false;
         }
       });
@@ -78,7 +82,7 @@ export class DeviceModalComponent implements OnInit {
     }
   }
 
-  IsAnInPort(port : Port) : boolean {
+  IsAnInPort(port: Port): boolean {
     return port.tags.includes("port-in");
   }
 }

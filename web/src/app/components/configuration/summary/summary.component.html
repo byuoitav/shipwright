@@ -14,6 +14,25 @@
     <section class="cardrow">
       <!-- Action Card -->
       <mat-card class="actioncard">
+        <mat-card-title>Visits</mat-card-title>
+        <button
+          mat-mini-fab
+          color="primary"
+          (click)="modal.OpenResponseModal()"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+
+        <mat-accordion *ngIf="roomIssue.roomIssueResponses.length > 1">
+          <ng-container
+            *ngFor="let response of roomIssue.roomIssueResponses; let i = index"
+          >
+            <mat-expansion-panel *ngIf="i >= 1">
+              <mat-expansion-panel-header>Derek</mat-expansion-panel-header>
+            </mat-expansion-panel>
+          </ng-container>
+        </mat-accordion>
+
         <mat-card-title>Actions</mat-card-title>
         <mat-card-content>
           <section class="notes-row">
@@ -70,6 +89,7 @@
                 </button>
               </div>
             </aside>
+
             <!-- Responders -->
             <aside class="notes-column">
               <div>

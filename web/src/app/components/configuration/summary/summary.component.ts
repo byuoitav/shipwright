@@ -3,7 +3,7 @@ import { StringsService } from "src/app/services/strings.service";
 import { ActivatedRoute } from "@angular/router";
 import { DataService } from "src/app/services/data.service";
 import { ModalService } from "src/app/services/modal.service";
-import { RoomIssue, Alert, ResolutionInfo } from "src/app/objects/alerts";
+import { Alert, RoomIssue, RoomIssueResponse, ResolutionInfo } from "src/app/objects/alerts";
 import { Device, Person } from "src/app/objects/database";
 import { AlertTableComponent } from "../../dashboard/alerttable/alerttable.component";
 import { APIService } from "src/app/services/api.service";
@@ -22,7 +22,7 @@ export class SummaryComponent implements OnInit {
   filteredResponders: Person[];
   responders: Person[] = [];
   deviceSearch: string;
-  responderSearch = "";
+  responderSearch: string;
   roomID: string;
 
   tempNotes: string;
@@ -58,6 +58,10 @@ export class SummaryComponent implements OnInit {
 
   SetupSummary() {
     this.roomIssue = this.data.GetRoomIssue(this.roomID);
+    if (this.roomIssue.roomIssueResponses == null) {
+      this.roomIssue.roomIssueResponses = [];
+    }
+
     this.deviceList = this.data.roomToDevicesMap.get(this.roomID);
     this.filteredDevices = this.deviceList;
     this.filteredResponders = this.data.possibleResponders;

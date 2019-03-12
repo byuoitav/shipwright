@@ -7,6 +7,7 @@ import { DeviceModalComponent } from "../modals/devicemodal/devicemodal.componen
 import { NotifyModalComponent } from "../modals/notify/notify.component";
 import { PresetModalComponent } from "../modals/presetmodal/presetmodal.component";
 import { IconModalComponent } from "../modals/iconmodal/iconmodal.component";
+import { ResponseModalComponent } from "../modals/responsemodal/responsemodal.component";
 import { RoomIssue, Alert } from "../objects/alerts";
 import {
   Building,
@@ -75,6 +76,11 @@ export class ModalService {
           caller.icon = result;
         }
       });
+  }
+
+  OpenResponseModal(response: RoomIssueResponse) {
+    this.dialog.open(ResponseModalComponent);
+
   }
 
   OpenHelpModal() {
