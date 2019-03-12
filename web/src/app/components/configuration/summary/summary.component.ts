@@ -3,7 +3,12 @@ import { StringsService } from "src/app/services/strings.service";
 import { ActivatedRoute } from "@angular/router";
 import { DataService } from "src/app/services/data.service";
 import { ModalService } from "src/app/services/modal.service";
-import { Alert, RoomIssue, RoomIssueResponse, ResolutionInfo } from "src/app/objects/alerts";
+import {
+  Alert,
+  RoomIssue,
+  RoomIssueResponse,
+  ResolutionInfo
+} from "src/app/objects/alerts";
 import { Device, Person } from "src/app/objects/database";
 import { AlertTableComponent } from "../../dashboard/alerttable/alerttable.component";
 import { APIService } from "src/app/services/api.service";
@@ -58,6 +63,11 @@ export class SummaryComponent implements OnInit {
 
   SetupSummary() {
     this.roomIssue = this.data.GetRoomIssue(this.roomID);
+    if (this.roomIssue == null || this.roomIssue === undefined) {
+      console.error("no room issue found for room", this.roomID);
+      return;
+    }
+
     if (this.roomIssue.roomIssueResponses == null) {
       this.roomIssue.roomIssueResponses = [];
     }
@@ -289,22 +299,18 @@ export class SummaryComponent implements OnInit {
   }
 
   openResolve() {
+    const resInfo = new ResolutionInfo();
+    resInfo.notes = "";
+
     const ref = this.dialog.open(ResolveModalComponent, {
       width: "25vw",
-      data: {}
+      data: {
+        issue: this.roomIssue,
+        resInfo: resInfo,
+        codes: this.data.closureCodes
+      }
     });
 
     ref.afterClosed().subscribe(result => {});
   }
-
-  /*
-  resolve() {
-    const info = new ResolutionInfo();
-    info.code = "hi";
-    info.notes = "closed!";
-    info.resolvedAt = new Date();
-
-    await this.api.ResolveIssue(this.roomIssue.issueID, info);
-  }
-     */
 }

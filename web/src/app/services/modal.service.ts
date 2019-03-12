@@ -78,9 +78,8 @@ export class ModalService {
       });
   }
 
-  OpenResponseModal(response: RoomIssueResponse) {
+  OpenResponseModal() {
     this.dialog.open(ResponseModalComponent);
-
   }
 
   OpenHelpModal() {

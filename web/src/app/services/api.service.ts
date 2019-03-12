@@ -734,16 +734,20 @@ export class APIService {
 
   public async ResolveIssue(id: string, info: ResolutionInfo) {
     try {
-      const data: any = await this.http
+      const data = await this.http
         .put("issues/" + id + "/resolve", this.converter.serialize(info), {
-          headers: this.headers
+          headers: this.headers,
+          responseType: "text"
         })
         .toPromise();
 
-      const response = this.converter.deserializeObject(data, DBResponse);
-
-      return response;
+      return data;
     } catch (e) {
+      if (e.status === 200) {
+        console.log(e.error.text);
+        return e.error.text;
+      }
+
       throw new Error("error trying to resolve an issue: " + e);
     }
   }

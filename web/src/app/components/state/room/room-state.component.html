@@ -2,6 +2,16 @@
     <h3 class="mat-h3">Getting room states...</h3>
 </div>
 <div *ngIf="data.finished" class="mat-elevation-z8">
+    <mat-form-field class="filters">
+        <mat-label>Filters</mat-label>
+        <mat-chip-list #filterList>
+            <mat-chip *ngFor="let query of filterQueries" [selectable]=true [removable]=true (removed)="text.RemoveChip(query, filterQueries); FilterBuildings()">
+                {{query}}
+                <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input type="text" matInput [matChipInputFor]="filterList" [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes" [matChipInputAddOnBlur]=true (matChipInputTokenEnd)="text.AddChip($event, filterQueries); FilterBuildings()">
+        </mat-chip-list>
+    </mat-form-field>
     <table mat-table [dataSource]="dataSource">
         <ng-container matColumnDef="type">
             <th mat-header-cell *matHeaderCellDef>System Type</th>
@@ -43,5 +53,9 @@
         <tr mat-row *matRowDef="let row; columns: columns;"></tr>
     </table>
 
-    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+    <mat-paginator [length]="length"
+              [pageSize]="pageSize"
+              [pageSizeOptions]="pageSizeOptions"
+              (page)="pageEvent = $event">
+    </mat-paginator>
 </div>

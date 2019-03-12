@@ -57,16 +57,16 @@ func ResolveIssue(context echo.Context) error {
 	err := context.Bind(&resolution)
 	if err != nil {
 		log.L.Errorf("failed to bind resolution body from request: %s", err.Error())
-		return context.JSON(http.StatusBadRequest, err)
+		return context.String(http.StatusBadRequest, err.Error())
 	}
 
 	ne := alertstore.ResolveIssue(resolution, issueID)
 	if ne != nil {
 		log.L.Errorf("failed to resolve issue: %s", ne.Error())
-		return context.JSON(http.StatusBadRequest, ne)
+		return context.String(http.StatusBadRequest, ne.Error())
 	}
 
-	return context.JSON(http.StatusOK, "ok")
+	return context.String(http.StatusOK, "ok")
 }
 
 // UpdateRoomIssue resolves an alert on the server side alert store
