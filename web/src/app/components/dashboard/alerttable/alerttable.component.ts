@@ -59,8 +59,8 @@ export class AlertTableComponent
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort = new MatSort();
 
-  pageOptions: number[] = [5, 10, 15, 20, 25, 30, 50, 100];
-  pageSize = 20;
+  pageOptions: number[] = [16, 32, 64, 128, 256];
+  pageSize = 32;
 
   // Alert Table's Data
   issueData: MatTableDataSource<RoomIssue>;

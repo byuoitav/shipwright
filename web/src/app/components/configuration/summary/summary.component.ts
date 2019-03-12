@@ -3,10 +3,12 @@ import { StringsService } from "src/app/services/strings.service";
 import { ActivatedRoute } from "@angular/router";
 import { DataService } from "src/app/services/data.service";
 import { ModalService } from "src/app/services/modal.service";
-import { RoomIssue, Alert } from "src/app/objects/alerts";
+import { Alert, RoomIssue, RoomIssueResponse, ResolutionInfo } from "src/app/objects/alerts";
 import { Device, Person } from "src/app/objects/database";
 import { AlertTableComponent } from "../../dashboard/alerttable/alerttable.component";
 import { APIService } from "src/app/services/api.service";
+import { MatDialog, MatDialogRef } from "@angular/material";
+import { ResolveModalComponent } from "../../../modals/resolve/resolve.component";
 
 @Component({
   selector: "app-summary",
@@ -20,7 +22,7 @@ export class SummaryComponent implements OnInit {
   filteredResponders: Person[];
   responders: Person[] = [];
   deviceSearch: string;
-  responderSearch: string = "";
+  responderSearch: string;
   roomID: string;
 
   tempNotes: string;
@@ -35,6 +37,7 @@ export class SummaryComponent implements OnInit {
     private route: ActivatedRoute,
     public data: DataService,
     public modal: ModalService,
+    private dialog: MatDialog,
     private api: APIService,
     private changes: ChangeDetectorRef
   ) {
@@ -55,6 +58,10 @@ export class SummaryComponent implements OnInit {
 
   SetupSummary() {
     this.roomIssue = this.data.GetRoomIssue(this.roomID);
+    if (this.roomIssue.roomIssueResponses == null) {
+      this.roomIssue.roomIssueResponses = [];
+    }
+
     this.deviceList = this.data.roomToDevicesMap.get(this.roomID);
     this.filteredDevices = this.deviceList;
     this.filteredResponders = this.data.possibleResponders;
@@ -252,10 +259,18 @@ export class SummaryComponent implements OnInit {
       return;
     }
     for (const person of this.data.possibleResponders) {
-      if (person.id.toLowerCase().includes(this.responderSearch.toLowerCase()) && !this.filteredResponders.includes(person)) {
+      if (
+        person.id.toLowerCase().includes(this.responderSearch.toLowerCase()) &&
+        !this.filteredResponders.includes(person)
+      ) {
         this.filteredResponders.push(person);
       }
-      if (person.name.toLowerCase().includes(this.responderSearch.toLowerCase()) && !this.filteredResponders.includes(person)) {
+      if (
+        person.name
+          .toLowerCase()
+          .includes(this.responderSearch.toLowerCase()) &&
+        !this.filteredResponders.includes(person)
+      ) {
         this.filteredResponders.push(person);
       }
     }
@@ -270,15 +285,23 @@ export class SummaryComponent implements OnInit {
       return false;
     }
 
-    const filtered = this.roomIssue.alerts.filter(
-      a => !a.manualResolve || (a.active && !a.manualResolve)
-    );
-    // console.log("filtered", filtered);
+    // return !this.roomIssue.alerts.some(a => a.active && !a.manualResolve);
+    return true;
+  }
 
-    return (
-      this.roomIssue.alerts.filter(
-        a => !a.manualResolve || (a.active && !a.manualResolve)
-      ).length === 0
-    );
+  openResolve() {
+    const resInfo = new ResolutionInfo();
+    resInfo.notes = "";
+
+    const ref = this.dialog.open(ResolveModalComponent, {
+      width: "25vw",
+      data: {
+        issue: this.roomIssue,
+        resInfo: resInfo,
+        codes: this.data.closureCodes
+      }
+    });
+
+    ref.afterClosed().subscribe(result => {});
   }
 }

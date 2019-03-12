@@ -1,0 +1,42 @@
+<h1 mat-dialog-title>Resolving issue in {{ data?.issue?.roomID }}</h1>
+<div mat-dialog-content>
+  <mat-form-field>
+    <mat-select
+      class="full-width"
+      placeholder="Closure Code"
+      [(value)]="data.resInfo.code"
+    >
+      <mat-option *ngFor="let code of data?.codes" [value]="code">{{
+        code
+      }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="full-width">
+    <textarea
+      placeholder="Notes"
+      [(value)]="data.resInfo.notes"
+      matInput
+      matTextareaAutosize
+    ></textarea>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions align="end">
+  <button (click)="onNoClick()" mat-button>Cancel</button>
+  <button
+    class="resolve"
+    [class.success]="resolved"
+    [class.error]="error"
+    (click)="resolve()"
+    mat-button
+  >
+    <span [class.active]="!resolving && !resolved && !error">Resolve</span>
+    <mat-spinner
+      class="spinner"
+      [class.active]="resolving && !resolved && !error"
+      diameter="20"
+    ></mat-spinner>
+    <mat-icon [class.active]="resolved">check</mat-icon>
+    <mat-icon [class.active]="error">close</mat-icon>
+  </button>
+</div>
