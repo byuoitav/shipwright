@@ -281,26 +281,23 @@ export class SummaryComponent implements OnInit {
       return false;
     }
 
-    return !this.roomIssue.alerts.some(a => a.active && !a.manualResolve);
+    // return !this.roomIssue.alerts.some(a => a.active && !a.manualResolve);
+    return true;
   }
 
   openResolve() {
+    const resInfo = new ResolutionInfo();
+    resInfo.notes = "";
+
     const ref = this.dialog.open(ResolveModalComponent, {
       width: "25vw",
-      data: {}
+      data: {
+        issue: this.roomIssue,
+        resInfo: resInfo,
+        codes: this.data.closureCodes
+      }
     });
 
     ref.afterClosed().subscribe(result => {});
   }
-
-  /*
-  resolve() {
-    const info = new ResolutionInfo();
-    info.code = "hi";
-    info.notes = "closed!";
-    info.resolvedAt = new Date();
-
-    await this.api.ResolveIssue(this.roomIssue.issueID, info);
-  }
-     */
 }
