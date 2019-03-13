@@ -1,5 +1,7 @@
 package circular
 
+/*
+
 import (
 	"context"
 	"fmt"
@@ -242,3 +244,4 @@ func syncRoomIssueWithIncident(roomIssue structs.RoomIssue, incidentID string, c
 		return newIncident.Number, nil
 	}
 }
+*/
