@@ -1,3 +1,47 @@
-<p>
-  responsemodal works!
-</p>
+<div>
+  <div>
+    Help Sent
+  </div>
+  <div>
+    Help Arrived
+  </div>
+  <div>
+    <mat-form-field>
+      <mat-label>Responders</mat-label>
+      <mat-chip-list #respChips>
+        <mat-chip
+          *ngFor="let resp of responders"
+          [selectable]="true"
+          [removable]="true"
+          (removed)="RemoveResponder(resp)"
+        >
+          {{ resp.name }}
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+        <input
+          matInput
+          type="text"
+          [matChipInputFor]="respChips"
+          [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes"
+          [matChipInputAddOnBlur]="true"
+          (matChipInputTokenEnd)="AddResponder($event.input.value, $event)"
+          [matAutocomplete]="auto"
+          [(ngModel)]="responderSearch"
+          (ngModelChange)="FilterResponders()"
+        />
+        <mat-autocomplete
+          #auto="matAutocomplete"
+          (optionSelected)="AddResponder($event.option.value, $event)"
+        >
+          <mat-option
+            *ngFor="let responder of filteredResponders"
+            [value]="responder.name"
+            (click)="AddResponder(responder.id, $event)"
+          >
+            {{ responder.name }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-chip-list>
+    </mat-form-field>
+  </div>
+</div>
