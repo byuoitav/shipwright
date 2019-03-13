@@ -1,10 +1,9 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from "@angular/core";
 import { DataService } from "src/app/services/data.service";
-import { MatTableDataSource, MatPaginator } from "@angular/material";
+import { MatTableDataSource, MatPaginator, MatSort } from "@angular/material";
 import { CombinedRoomState, StaticDevice } from "src/app/objects/static";
 import { StringsService } from "src/app/services/strings.service";
 import { PageEvent } from "@angular/material";
-import { MatSort } from "@angular/material";
 
 @Component({
   selector: "room-state",
@@ -13,12 +12,12 @@ import { MatSort } from "@angular/material";
 })
 export class RoomStateComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  dataSource: MatTableDataSource<CombinedRoomState>;
+  @ViewChild(MatSort) sort: MatSort;
+  dataSource = new MatTableDataSource<CombinedRoomState>([]);
   columns = ["type", "roomID", "alerts", "devices"];
   roomList: CombinedRoomState[] = [];
   filteredRoomList: CombinedRoomState[] = [];
-  filterQueries: string[] = [];
-
+  filterQueries: string[] = [];  
   length = 360;
   pageSize = 20;
   pageSizeOptions: number[] = [5, 10, 15, 20, 25, 30, 50, 100];
@@ -27,30 +26,51 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
   pageEvent: PageEvent;
 
   constructor(public data: DataService, public text: StringsService) {
+    
+  }
+
+  ngOnInit() {
+     
+  }
+
+  ngAfterViewInit() {
     if (this.data.finished) {
       console.log("Got the data");
       this.roomList = this.data.combinedRoomStateList;
+      this.roomList.sort((a, b) => a.roomID.localeCompare(b.roomID))
+
+      for (let room of this.roomList) {
+        room.deviceStates.sort((a, b) => 
+        {
+          if (a.deviceType === b.deviceType)
+            return a.deviceName.localeCompare(b.deviceName);
+          
+          return a.deviceType.localeCompare(b.deviceType);
+
+        });    
+        console.log(room.deviceStates);
+      }
+
       this.filteredRoomList = this.roomList;
-      this.dataSource = new MatTableDataSource(this.filteredRoomList);
-      // this.dataSource.paginator = this.paginator;
+      this.SetDataSource();
     } else {
       this.data.loaded.subscribe(() => {
         console.log("Subscribed to get the data");
         this.roomList = this.data.combinedRoomStateList;
+        this.roomList.sort((a, b) => a.roomID.localeCompare(b.roomID))
+
         this.filteredRoomList = this.roomList;
-        this.dataSource = new MatTableDataSource(this.filteredRoomList);
-        console.log("list in datasource:", this.dataSource);
-        //  this.dataSource.paginator = this.paginator;
+        this.SetDataSource();
       });
     }
   }
 
-  ngOnInit() {
-    // this.dataSource.sort = this.sort;
-  }
-
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
+  SetDataSource() {    
+    this.dataSource.data = this.filteredRoomList;
+    setTimeout(() => {
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;   
+      });
   }
 
   GetDeviceName(deviceID: string): string {
@@ -76,15 +96,21 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
 
   GetStyle(ds: StaticDevice): string {
     let style = "default-chip";
-    if (ds.deviceType === "display" || ds.deviceType === "dmps") {
-      if (ds.power === "on") {
+    let deviceType = ds.deviceType;
+    if (deviceType) deviceType = deviceType.toLowerCase();
+
+    let power = ds.power;
+    if (power) power = power.toLowerCase();
+
+    if (deviceType === "display" || deviceType === "dmps") {
+      if (power === "on") {
         style = "display-on";
         return style;
       }
       // style = "display-standby";
       return style;
     }
-    if (ds.deviceType === "via") {
+    if (deviceType === "via") {
       if (ds.currentUserCount > 0) {
         style = "display-on";
         return style;
@@ -93,7 +119,7 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
       return style;
     }
 
-    if (ds.deviceType === "microphone") {
+    if (deviceType === "microphone") {
       if (ds.batteryChargeMinutes >= 300) {
         style = "mic-good";
         return style;
@@ -150,18 +176,22 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
   }
 
   FilterRooms() {
+
     this.filteredRoomList = [];
+
     if (this.filterQueries.length === 0) {
       this.filteredRoomList = this.roomList;
-      this.dataSource.data = this.filteredRoomList;
+      this.SetDataSource();
       return;
     }
+
     for (const room of this.roomList) {
       if (this.checkRoom(room, this.filterQueries)) {
-        this.filteredRoomList.push(room);
+        this.filteredRoomList.push(room);        
       }
     }
-    this.dataSource.data = this.filteredRoomList;
+    
+    this.SetDataSource();
   }
 
   activeAlerts() {
@@ -171,7 +201,7 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
         this.filteredRoomList.push(room);
       }
     }
-    this.dataSource.data = this.filteredRoomList;
+    this.SetDataSource();
   }
   lowMic() {
     this.filteredRoomList = [];
@@ -189,7 +219,7 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
         }
       }
     }
-    this.dataSource.data = this.filteredRoomList;
+    this.SetDataSource();
   }
   warnMic() {
     this.filteredRoomList = [];
@@ -207,7 +237,7 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
         }
       }
     }
-    this.dataSource.data = this.filteredRoomList;
+    this.SetDataSource();
   }
 
   inUse() {
@@ -215,9 +245,15 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
     for (const room of this.roomList) {
       if (room.deviceStates != null) {
         for (const device of room.deviceStates) {
-          if (device.deviceType === "display" || device.deviceType === "dmps") {
+          let deviceType = device.deviceType;
+          if (deviceType) deviceType = deviceType.toLowerCase();
+
+          let power = device.power;
+          if (power) power = power.toLowerCase();
+
+          if (deviceType === "display" || deviceType === "dmps") {
             if (
-              device.power === "on" &&
+              power === "on" &&
               !this.filteredRoomList.includes(room)
             ) {
               this.filteredRoomList.push(room);
@@ -226,6 +262,6 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
         }
       }
     }
-    this.dataSource.data = this.filteredRoomList;
+    this.SetDataSource();
   }
 }
