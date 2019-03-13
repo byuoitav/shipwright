@@ -3,7 +3,7 @@ import {
   JsonProperty,
   JsonConverter,
   JsonCustomConvert,
-  Any
+  Any,
 } from "json2typescript";
 import { Person } from "src/app/objects/database";
 
@@ -221,4 +221,28 @@ export class RoomIssue {
 
     return this.resolutionInfo.resolvedAt.toISOString() === zero;
   }
+}
+
+@JsonObject("ClassHalfHourBlock")
+export class ClassHalfHourBlock {
+  @JsonProperty("block-start", String, true)
+  blockStart: string = undefined;
+
+  @JsonProperty("class-name", String, true)
+  className: string = undefined;
+
+  @JsonProperty("class-time", String, true)
+  classTime: string = undefined;
+
+  @JsonProperty("teacher", Person, true)
+  teacher: Person = undefined;
+
+  @JsonProperty("days", String, true)
+  days: string = undefined;
+
+  @JsonProperty("class-start-time", DateConverter, true)
+  classStartTime: Date = undefined;
+
+  @JsonProperty("class-end-time", DateConverter, true)
+  classEndTime: Date = undefined;
 }

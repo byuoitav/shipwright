@@ -3,10 +3,12 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/structs"
 	"github.com/byuoitav/shipwright/helpers"
+	schedule "github.com/byuoitav/wso2services/classschedules/registar"
 	"github.com/labstack/echo"
 )
 
@@ -217,4 +219,63 @@ func GetRoomDesignations(context echo.Context) error {
 
 	log.L.Debugf("%s Successfully got all room designations!", helpers.RoomsTag)
 	return context.JSON(http.StatusOK, designations)
+}
+
+// GetRoomClassSchedule gets the class schedule for a room
+func GetRoomClassSchedule(context echo.Context) error {
+	roomID := context.Param("roomID")
+	t := time.Now()
+	t6 := t.Add(time.Hour * 6)
+
+	var toReturn []structs.ClassHalfHourBlock
+
+	classes, err := schedule.GetClassScheduleForTimeBlock(roomID, t, t6)
+	if err != nil {
+		err.Addf("failed to get schedule for %s at %s", roomID, t.String())
+		return context.JSON(http.StatusInternalServerError, err)
+	}
+
+	// iterate through the twelve blocks that we want to make
+	// for i := (time.Minute * 0); i < (time.Hour * 6); i += (time.Minute * 30) {
+	for i := 0; i < 12; i++ {
+		blockHour := t.Add(time.Hour * time.Duration(i/2)).Hour()
+
+		var blockMin int
+		if i%2 == 0 {
+			blockMin = 00
+		} else {
+			blockMin = 30
+		}
+
+		block := structs.ClassHalfHourBlock{
+			BlockStart: fmt.Sprintf("%d:%02d", blockHour, blockMin),
+			ClassName:  "--",
+			ClassTime:  "--",
+			Teacher: structs.Person{
+				Name: "--",
+				ID:   "--",
+			},
+			Days: "--",
+		}
+
+		for _, class := range classes {
+			if blockHour >= class.StartTime.Hour() && blockHour <= class.EndTime.Hour() {
+				if blockHour == class.EndTime.Hour() && blockMin >= class.EndTime.Add(time.Minute*5).Minute() {
+					continue
+				}
+				block.ClassName = fmt.Sprintf("%s %s", class.DeptName, class.CatalogNumber)
+				block.ClassTime = class.ClassTime
+				block.Days = class.Days
+				block.Teacher.Name = class.InstructorName
+				block.ClassStartTime = class.StartTime
+				block.ClassEndTime = class.EndTime
+
+				break
+			}
+		}
+
+		toReturn = append(toReturn, block)
+	}
+
+	return context.JSON(http.StatusOK, toReturn)
 }
