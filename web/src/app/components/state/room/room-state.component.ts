@@ -4,6 +4,7 @@ import { MatTableDataSource, MatPaginator } from "@angular/material";
 import { CombinedRoomState, StaticDevice } from "src/app/objects/static";
 import { StringsService } from "src/app/services/strings.service";
 import {PageEvent} from "@angular/material";
+import {MatSort} from "@angular/material";
 
 @Component({
   selector: "room-state",
@@ -46,10 +47,7 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
    }
 
   ngOnInit() {
-    // if (this.dataSource == null) {
-    //   this.dataSource = new MatTableDataSource();
-    // }
-    // this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   ngAfterViewInit() {
@@ -119,23 +117,99 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
     return ds.batteryChargeMinutes != null;
   }
 
-  FilterBuildings() {
-    this.filteredRoomList = [];
+  checkRoom(room, query) {
+    for (const item of query) {
+      if (room.roomID.toLowerCase().includes(item.toLowerCase())) {
+        continue;
+      }
+      if (room.staticRoom.systemType.length > 0) {
+        if (room.staticRoom.systemType[0].toLowerCase().includes(item.toLowerCase())) {
+          continue;
+        }
+      }
+      if (room.deviceStates != null) {
+        let result = false;
+        for (const device of room.deviceStates) {
+          if (device.deviceID.toLowerCase().includes(item.toLowerCase()) && !this.filteredRoomList.includes(room)) {
+            result = true;
+            break;
+          }
+        }
+        if (result) {
+          continue;
+        }
+      }
+      return false;
+    }
+    return true;
+  }
 
+  FilterRooms() {
+    this.filteredRoomList = [];
     if (this.filterQueries.length === 0) {
       this.filteredRoomList = this.roomList;
+      this.dataSource.data = this.filteredRoomList;
       return;
     }
-
     for (const room of this.roomList) {
-        for (const query of this.filterQueries) {
-          if (room.roomID.toLowerCase().includes(query.toLowerCase()) && !this.filteredRoomList.includes(room)) {
-            this.roomList.push(room);
-          }
-          if (room.staticRoom.systemType[0].toLowerCase().includes(query.toLowerCase()) && !this.filteredRoomList.includes(room)) {
-            this.roomList.push(room);
-          }
+      if (this.checkRoom(room, this.filterQueries)) {
+        this.filteredRoomList.push(room);
       }
     }
+    this.dataSource.data = this.filteredRoomList;
+  }
+
+  activeAlerts() {
+    this.filteredRoomList = [];
+    for (const room of this.roomList) {
+      if (room.activeAlertCount > 0) {
+        this.filteredRoomList.push(room);
+      }
+    }
+    this.dataSource.data = this.filteredRoomList;
+  }
+  lowMic() {
+    this.filteredRoomList = [];
+    for (const room of this.roomList) {
+      if (room.deviceStates != null) {
+        for (const device of room.deviceStates) {
+          if (device.deviceType === "microphone" && 90 > device.batteryChargeMinutes && device.batteryChargeMinutes >= 0 
+          && !this.filteredRoomList.includes(room)) {
+            this.filteredRoomList.push(room);
+          }
+        }
+      }
+    }
+    this.dataSource.data = this.filteredRoomList;
+  }
+  warnMic() {
+    this.filteredRoomList = [];
+    for (const room of this.roomList) {
+      if (room.deviceStates != null) {
+        for (const device of room.deviceStates) {
+          if (device.deviceType === "microphone" && 300 > device.batteryChargeMinutes && device.batteryChargeMinutes >= 90 
+          && !this.filteredRoomList.includes(room)) {
+            this.filteredRoomList.push(room);
+          }
+        }
+      }
+    }
+    this.dataSource.data = this.filteredRoomList;
+  }
+
+  inUse() {
+    this.filteredRoomList = [];
+    for (const room of this.roomList) {
+      if (room.deviceStates != null) {
+        for (const device of room.deviceStates) {
+          if (device.deviceType === "display" || device.deviceType === "dmps") {
+            if (device.power === "on" && !this.filteredRoomList.includes(room)) {
+              this.filteredRoomList.push(room);
+            }
+          }
+        }
+      }
+    }
+    this.dataSource.data = this.filteredRoomList;
   }
 }
