@@ -158,7 +158,6 @@ func (a *alertStore) putAlert(alert structs.Alert) (string, *nerr.E) {
 }
 
 func (a *alertStore) resolveRoomIssue(resolutionInfo structs.ResolutionInfo, roomIssue string) *nerr.E {
-
 	a.resolutionChannel <- resolutionRequest{
 		RoomIssue:      roomIssue,
 		ResolutionInfo: resolutionInfo,

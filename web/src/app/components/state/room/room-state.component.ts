@@ -3,8 +3,8 @@ import { DataService } from "src/app/services/data.service";
 import { MatTableDataSource, MatPaginator } from "@angular/material";
 import { CombinedRoomState, StaticDevice } from "src/app/objects/static";
 import { StringsService } from "src/app/services/strings.service";
-import {PageEvent} from "@angular/material";
-import {MatSort} from "@angular/material";
+import { PageEvent } from "@angular/material";
+import { MatSort } from "@angular/material";
 
 @Component({
   selector: "room-state",
@@ -27,27 +27,26 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
   pageEvent: PageEvent;
 
   constructor(public data: DataService, public text: StringsService) {
-   if (this.data.finished) {
-    console.log("Got the data");
-    this.roomList = this.data.combinedRoomStateList;
-    this.filteredRoomList = this.roomList;
-    this.dataSource = new MatTableDataSource(this.filteredRoomList);
-    // this.dataSource.paginator = this.paginator;
-
-   }
-   else {
-     this.data.loaded.subscribe(() => {
-     console.log("Subscribed to get the data");
-     this.roomList = this.data.combinedRoomStateList;
-     this.filteredRoomList = this.roomList;
-     this.dataSource = new MatTableDataSource(this.filteredRoomList);
-     console.log("list in datasource:", this.dataSource);
-    //  this.dataSource.paginator = this.paginator;
-      })}
-   }
+    if (this.data.finished) {
+      console.log("Got the data");
+      this.roomList = this.data.combinedRoomStateList;
+      this.filteredRoomList = this.roomList;
+      this.dataSource = new MatTableDataSource(this.filteredRoomList);
+      // this.dataSource.paginator = this.paginator;
+    } else {
+      this.data.loaded.subscribe(() => {
+        console.log("Subscribed to get the data");
+        this.roomList = this.data.combinedRoomStateList;
+        this.filteredRoomList = this.roomList;
+        this.dataSource = new MatTableDataSource(this.filteredRoomList);
+        console.log("list in datasource:", this.dataSource);
+        //  this.dataSource.paginator = this.paginator;
+      });
+    }
+  }
 
   ngOnInit() {
-    this.dataSource.sort = this.sort;
+    // this.dataSource.sort = this.sort;
   }
 
   ngAfterViewInit() {
@@ -71,7 +70,6 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
         }
       }
       deviceTypes = deviceTypes.sort();
-
     }
     return deviceTypes;
   }
@@ -123,14 +121,21 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
         continue;
       }
       if (room.staticRoom.systemType.length > 0) {
-        if (room.staticRoom.systemType[0].toLowerCase().includes(item.toLowerCase())) {
+        if (
+          room.staticRoom.systemType[0]
+            .toLowerCase()
+            .includes(item.toLowerCase())
+        ) {
           continue;
         }
       }
       if (room.deviceStates != null) {
         let result = false;
         for (const device of room.deviceStates) {
-          if (device.deviceID.toLowerCase().includes(item.toLowerCase()) && !this.filteredRoomList.includes(room)) {
+          if (
+            device.deviceID.toLowerCase().includes(item.toLowerCase()) &&
+            !this.filteredRoomList.includes(room)
+          ) {
             result = true;
             break;
           }
@@ -173,8 +178,12 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
     for (const room of this.roomList) {
       if (room.deviceStates != null) {
         for (const device of room.deviceStates) {
-          if (device.deviceType === "microphone" && 90 > device.batteryChargeMinutes && device.batteryChargeMinutes >= 0 
-          && !this.filteredRoomList.includes(room)) {
+          if (
+            device.deviceType === "microphone" &&
+            90 > device.batteryChargeMinutes &&
+            device.batteryChargeMinutes >= 0 &&
+            !this.filteredRoomList.includes(room)
+          ) {
             this.filteredRoomList.push(room);
           }
         }
@@ -187,8 +196,12 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
     for (const room of this.roomList) {
       if (room.deviceStates != null) {
         for (const device of room.deviceStates) {
-          if (device.deviceType === "microphone" && 300 > device.batteryChargeMinutes && device.batteryChargeMinutes >= 90 
-          && !this.filteredRoomList.includes(room)) {
+          if (
+            device.deviceType === "microphone" &&
+            300 > device.batteryChargeMinutes &&
+            device.batteryChargeMinutes >= 90 &&
+            !this.filteredRoomList.includes(room)
+          ) {
             this.filteredRoomList.push(room);
           }
         }
@@ -203,7 +216,10 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
       if (room.deviceStates != null) {
         for (const device of room.deviceStates) {
           if (device.deviceType === "display" || device.deviceType === "dmps") {
-            if (device.power === "on" && !this.filteredRoomList.includes(room)) {
+            if (
+              device.power === "on" &&
+              !this.filteredRoomList.includes(room)
+            ) {
               this.filteredRoomList.push(room);
             }
           }

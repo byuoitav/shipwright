@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { StringsService } from "src/app/services/strings.service";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { DataService } from "src/app/services/data.service";
 import { ModalService } from "src/app/services/modal.service";
 import {
@@ -40,6 +40,7 @@ export class SummaryComponent implements OnInit {
   constructor(
     public text: StringsService,
     private route: ActivatedRoute,
+    private router: Router,
     public data: DataService,
     public modal: ModalService,
     private dialog: MatDialog,
@@ -79,9 +80,15 @@ export class SummaryComponent implements OnInit {
       if (
         changedIssue != null &&
         changedIssue !== undefined &&
-        this.roomIssue.issueID === changedIssue.issueID
+        this.roomID === changedIssue.roomID
       ) {
         this.roomIssue = changedIssue;
+
+        if (changedIssue.resolved) {
+          this.router.navigate(["/dashboard"], {
+            queryParamsHandling: "merge"
+          });
+        }
       }
     });
   }
