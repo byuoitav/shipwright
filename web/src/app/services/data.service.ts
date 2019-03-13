@@ -62,7 +62,7 @@ export class DataService {
   settingsChanged: EventEmitter<any>;
   panelCount = 1;
 
-  issueEmitter: EventEmitter<any>;
+  issueEmitter: EventEmitter<RoomIssue>;
 
   notifier: NotifierService;
 
@@ -76,7 +76,7 @@ export class DataService {
   ) {
     this.loaded = new EventEmitter<boolean>();
     this.settingsChanged = new EventEmitter<number>();
-    this.issueEmitter = new EventEmitter<any>();
+    this.issueEmitter = new EventEmitter<RoomIssue>();
     this.notifier = notify;
     this.LoadData();
     this.ListenForIssues();
@@ -271,6 +271,10 @@ export class DataService {
 
   private ListenForIssues() {
     this.socket.listener.subscribe(issue => {
+      if (!issue.resolved) {
+        this.roomIssuesMap.set(issue.roomID, [issue]);
+      }
+
       if (this.roomIssueList == null) {
         if (!issue.resolved) {
           this.roomIssueList = [issue];

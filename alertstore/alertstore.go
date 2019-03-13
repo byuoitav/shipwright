@@ -158,7 +158,6 @@ func (a *alertStore) putAlert(alert structs.Alert) (string, *nerr.E) {
 }
 
 func (a *alertStore) resolveRoomIssue(resolutionInfo structs.ResolutionInfo, roomIssue string) *nerr.E {
-
 	a.resolutionChannel <- resolutionRequest{
 		RoomIssue:      roomIssue,
 		ResolutionInfo: resolutionInfo,
@@ -238,7 +237,6 @@ func (a *alertStore) run() {
 
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
 func (a *alertStore) editIssueInformation(issue structs.RoomIssue) *nerr.E {
-
 	//check to see if it exists
 	v, err := alertcache.GetAlertCache("default").GetIssue(issue.RoomIssueID)
 	if err != nil {
@@ -251,12 +249,13 @@ func (a *alertStore) editIssueInformation(issue structs.RoomIssue) *nerr.E {
 	}
 
 	//v is our deal, we need to combine
-
 	i, changes := combineIssues(issue, v)
-
 	if changes {
 		persist.GetElkAlertPersist().StoreIssue(i, false, false)
 		alertcache.GetAlertCache("default").PutIssue(i)
+
+		a.runIssueActions(i)
+		socket.GetManager().WriteToSockets(i)
 	}
 
 	return nil
@@ -317,7 +316,6 @@ func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue stri
 			persist.GetElkAlertPersist().StoreIssue(newRoomIssue, true, true)
 			socket.GetManager().WriteToSockets(newRoomIssue)
 			a.runIssueActions(newRoomIssue)
-
 		} else {
 			log.L.Infof("Resolving full issue %v", roomIssue)
 			err := alertcache.GetAlertCache("default").DeleteIssue(roomIssue)

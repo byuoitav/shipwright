@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { StringsService } from "src/app/services/strings.service";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { DataService } from "src/app/services/data.service";
 import { ModalService } from "src/app/services/modal.service";
 import {
@@ -40,11 +40,11 @@ export class SummaryComponent implements OnInit {
   constructor(
     public text: StringsService,
     private route: ActivatedRoute,
+    private router: Router,
     public data: DataService,
     public modal: ModalService,
     private dialog: MatDialog,
-    private api: APIService,
-    private changes: ChangeDetectorRef
+    private api: APIService
   ) {
     this.route.params.subscribe(params => {
       this.roomID = params["roomID"];
@@ -77,10 +77,17 @@ export class SummaryComponent implements OnInit {
     this.filteredResponders = this.data.possibleResponders;
 
     this.data.issueEmitter.subscribe(changedIssue => {
-      if (!this.changes["destroyed"]) {
-        if (changedIssue.roomID === this.roomID) {
-          this.roomIssue = this.data.GetRoomIssue(this.roomID);
-          this.changes.detectChanges();
+      if (
+        changedIssue != null &&
+        changedIssue !== undefined &&
+        this.roomID === changedIssue.roomID
+      ) {
+        this.roomIssue = changedIssue;
+
+        if (changedIssue.resolved) {
+          this.router.navigate(["/dashboard"], {
+            queryParamsHandling: "merge"
+          });
         }
       }
     });
