@@ -271,6 +271,10 @@ export class DataService {
 
   private ListenForIssues() {
     this.socket.listener.subscribe(issue => {
+      if (!issue.resolved) {
+        this.roomIssuesMap.set(issue.roomID, [issue]);
+      }
+
       if (this.roomIssueList == null) {
         if (!issue.resolved) {
           this.roomIssueList = [issue];
