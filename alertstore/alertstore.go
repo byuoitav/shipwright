@@ -2,6 +2,7 @@ package alertstore
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/byuoitav/common/log"
@@ -508,33 +509,67 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		return
 	}
 
-	active := false
-	for _, v := range issue.Alerts {
-		if v.Active {
-			active = true
-			break
-		}
-	}
-
-	//run the alert active issue.
+	//run the alert change issue.
 	a.runAlertActions(alert)
 
-	//auto-resolution rule
-	if !active {
+	if len(issue.RoomIssueResponses) == 0 {
+		//auto-resolution rule
+		if len(issue.ActiveAlertSeverities) == 0 {
 
-		log.L.Debugf("Autoresolving Issue %v", issue.RoomIssueID)
-		resInfo := structs.ResolutionInfo{
-			Code:       "Auto Resolved",
-			Notes:      "issue was auto resolved.",
-			ResolvedAt: time.Now(),
+			log.L.Debugf("Autoresolving Issue %v", issue.RoomIssueID)
+			resInfo := structs.ResolutionInfo{
+				Code:       "Auto Resolved",
+				Notes:      "issue was auto resolved.",
+				ResolvedAt: time.Now(),
+			}
+
+			err := a.resolveIssue(resInfo, issue.RoomIssueID, false, []string{})
+			if err != nil {
+				log.L.Errorf("Problem autoresolving issue %v: %v", issue.RoomIssueID, err.Error())
+			}
+
+			return
+		} else if len(issue.ActiveAlertSeverities) < len(issue.AlertSeverities) {
+			//its a partial resolution
+
+			toClear := []structs.AlertSeverity{}
+			for _, i := range issue.ActiveAlertSeverities {
+				found := false
+				for _, j := range issue.AlertSeverities {
+					if i == j {
+						found = true
+						break
+					}
+				}
+				if !found {
+					toClear = append(toClear, i)
+				}
+			}
+			//for each alert severity to clear we're gonna do a partial resolution with those alerts
+			resInfo := structs.ResolutionInfo{
+				Code:       "Auto Resolved",
+				Notes:      fmt.Sprintf("alerts for severity type(s) %v were auto resolved.", issue.AlertSeverities),
+				ResolvedAt: time.Now(),
+			}
+
+			toResolve := []string{}
+			for _, i := range issue.Alerts {
+				for _, j := range toClear {
+					if i.Severity == j && !i.Active {
+						toResolve = append(toResolve, i.AlertID)
+					}
+				}
+			}
+			//sumbit for partial resolution
+
+			err := a.resolveIssue(resInfo, issue.RoomIssueID, true, toResolve)
+
+			if err != nil {
+				log.L.Errorf("Problem doing a partial autoresolutio issue %v: %v", issue.RoomIssueID, err.Error())
+			}
+
+			return
 		}
-
-		err := a.resolveIssue(resInfo, issue.RoomIssueID, false, []string{})
-		if err != nil {
-			log.L.Errorf("Problem autoresolving issue %v: %v", issue.RoomIssueID, err.Error())
-		}
-
-		return
 	}
 
 	persist.GetElkAlertPersist().StoreIssue(issue, false, false)

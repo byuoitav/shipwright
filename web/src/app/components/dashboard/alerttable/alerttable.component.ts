@@ -3,9 +3,7 @@ import {
   OnInit,
   Input,
   ViewChild,
-  ChangeDetectorRef,
-  AfterViewInit,
-  OnChanges
+  AfterViewInit
 } from "@angular/core";
 import { StringsService } from "src/app/services/strings.service";
 import { IDashPanel, DashPanel } from "../dashpanel/idashpanel";
@@ -46,8 +44,7 @@ import { DashPanelTypes } from "src/app/services/dashpanel.service";
     ])
   ]
 })
-export class AlertTableComponent
-  implements OnInit, IDashPanel, AfterViewInit, OnChanges {
+export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
   @Input() info: RoomIssue[] = [];
   @Input() chosenSeverity: DashPanelTypes;
   @Input() singleRoom = false;
@@ -88,8 +85,7 @@ export class AlertTableComponent
   constructor(
     public text: StringsService,
     public data: DataService,
-    private route: ActivatedRoute,
-    private changes: ChangeDetectorRef
+    private route: ActivatedRoute
   ) {
     if (this.data.finished) {
       this.Setup();
@@ -147,31 +143,25 @@ export class AlertTableComponent
       );
     }
 
-    // if (this.sort.active == undefined || this.sort.active == "') {
-    //   this.sort.active = "roomID';
-    //   this.sort.direction = "asc' as SortDirection;
-    //   this.sort.sortChange.emit();
-    // }
-
     this.data.issueEmitter.subscribe(changedIssue => {
-      if (!this.changes["destroyed"]) {
-        if (this.singleRoom) {
-          if (changedIssue.roomID === this.roomID) {
-            this.issueData.data = this.data.GetRoomIssues(this.roomID);
-          }
-        } else {
-          this.issueData.data = this.data.GetRoomIssuesBySeverity(
-            this.convertDashPanelTypeToSeverity(this.chosenSeverity)
-          );
+      if (this.singleRoom) {
+        if (
+          changedIssue != null &&
+          changedIssue !== undefined &&
+          changedIssue.roomID === this.roomID
+        ) {
+          this.issueData.data = [changedIssue];
         }
+      } else {
+        this.issueData.data = this.data.GetRoomIssuesBySeverity(
+          this.convertDashPanelTypeToSeverity(this.chosenSeverity)
+        );
+      }
 
-        if (this.sort.active === undefined || this.sort.active === "") {
-          this.sort.active = "roomID";
-          this.sort.direction = "asc" as SortDirection;
-          this.sort.sortChange.emit();
-        }
-
-        this.changes.detectChanges();
+      if (this.sort.active === undefined || this.sort.active === "") {
+        this.sort.active = "roomID";
+        this.sort.direction = "asc" as SortDirection;
+        this.sort.sortChange.emit();
       }
     });
 
@@ -184,12 +174,6 @@ export class AlertTableComponent
           return item[property];
       }
     };
-  }
-
-  ngOnChanges() {
-    if (!this.changes["destroyed"]) {
-      this.changes.detectChanges();
-    }
   }
 
   ExpandRow(issue: RoomIssue) {
@@ -268,9 +252,9 @@ export class AlertTableComponent
     } else if (!a.active && b.active) {
       return 1;
     } else {
-      if (a.severity === "Critical" && b.severity != "Critical") {
+      if (a.severity === "Critical" && b.severity !== "Critical") {
         return -1;
-      } else if (a.severity != "Critical" && b.severity === "Critical") {
+      } else if (a.severity !== "Critical" && b.severity === "Critical") {
         return 1;
       } else if (a.severity === "Warning" && b.severity === "Low") {
         return -1;

@@ -1,0 +1,16 @@
+.time {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.help-label {
+  width: 6em;
+}
+
+.time-input {
+  width: 80px;
+  max-width: 80px;
+  margin-left: 10px;
+}
