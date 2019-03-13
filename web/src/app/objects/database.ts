@@ -2,22 +2,22 @@ import { JsonObject, JsonProperty } from "json2typescript";
 
 @JsonObject("Building")
 export class Building {
-    @JsonProperty("_id", String, true)
-    id: string = undefined;
+  @JsonProperty("_id", String, true)
+  id: string = undefined;
 
-    @JsonProperty("_rev", String, true)
-    rev: string = undefined;
+  @JsonProperty("_rev", String, true)
+  rev: string = undefined;
 
-    @JsonProperty("name", String, true)
-    name: string = undefined;
+  @JsonProperty("name", String, true)
+  name: string = undefined;
 
-    @JsonProperty("description", String, true)
-    description: string = undefined;
+  @JsonProperty("description", String, true)
+  description: string = undefined;
 
-    @JsonProperty("tags", [String], true)
-    tags: string[] = Array<string>();
+  @JsonProperty("tags", [String], true)
+  tags: string[] = Array<string>();
 
-    isNew = false;
+  isNew = false;
 }
 
 @JsonObject("RoomConfiguration")
@@ -138,10 +138,9 @@ export class Person {
   @JsonProperty("name", String)
   name: string = undefined;
 
-  @JsonProperty("id", String, true)
+  @JsonProperty("net-id", String, true)
   id: string = undefined;
-  }
-
+}
 
 @JsonObject("Room")
 export class Room {
