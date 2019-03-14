@@ -38,7 +38,7 @@ export class SummaryComponent implements OnInit {
 
   classSchedule: ClassHalfHourBlock[] = [];
   scheduleData: MatTableDataSource<ClassHalfHourBlock>;
-  scheduleColumns: string[] = ["block", "className", ]
+  scheduleColumns: string[] = ["block", "className", "classTime", "teacher", "days"];
 
   @ViewChild(AlertTableComponent) table: AlertTableComponent;
 
