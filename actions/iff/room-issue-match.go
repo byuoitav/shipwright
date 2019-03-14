@@ -17,8 +17,6 @@ type RoomIssueMatch struct {
 	BuildingID  string `json:"buildingID,omitempty"`
 	RoomID      string `json:"roomID,omitempty"`
 
-	Severities []string `json:"severity,omitempty"`
-
 	RoomTags []string `json:"room-tags,omitempty"`
 
 	AlertTypes      []string `json:"alert-types,omitempty"`
@@ -89,6 +87,7 @@ type RoomIssueMatch struct {
 	}
 }
 
+// RoomIssueResponseMatchRegex .
 type RoomIssueResponseMatchRegex struct {
 	Responders    []*regexp.Regexp
 	HelpSentAt    *regexp.Regexp

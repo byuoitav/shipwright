@@ -513,9 +513,8 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 	a.runAlertActions(alert)
 
 	if len(issue.RoomIssueResponses) == 0 {
-		//auto-resolution rule
+		// auto-resolution rule
 		if len(issue.ActiveAlertSeverities) == 0 {
-
 			log.L.Debugf("Autoresolving Issue %v", issue.RoomIssueID)
 			resInfo := structs.ResolutionInfo{
 				Code:       "Auto Resolved",
@@ -530,8 +529,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 			return
 		} else if len(issue.ActiveAlertSeverities) < len(issue.AlertSeverities) {
-			//its a partial resolution
-
+			// its a partial resolution
 			toClear := []structs.AlertSeverity{}
 			for _, i := range issue.ActiveAlertSeverities {
 				found := false
@@ -545,7 +543,8 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 					toClear = append(toClear, i)
 				}
 			}
-			//for each alert severity to clear we're gonna do a partial resolution with those alerts
+
+			// for each alert severity to clear we're gonna do a partial resolution with those alerts
 			resInfo := structs.ResolutionInfo{
 				Code:       "Auto Resolved",
 				Notes:      fmt.Sprintf("alerts for severity type(s) %v were auto resolved.", issue.AlertSeverities),
@@ -560,12 +559,11 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 					}
 				}
 			}
+
 			//sumbit for partial resolution
-
 			err := a.resolveIssue(resInfo, issue.RoomIssueID, true, toResolve)
-
 			if err != nil {
-				log.L.Errorf("Problem doing a partial autoresolutio issue %v: %v", issue.RoomIssueID, err.Error())
+				log.L.Errorf("Problem doing a partial autoresolution issue %v: %v", issue.RoomIssueID, err.Error())
 			}
 
 			return
@@ -573,9 +571,7 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 	}
 
 	persist.GetElkAlertPersist().StoreIssue(issue, false, false)
-
 	a.runIssueActions(issue)
-
 	socket.GetManager().WriteToSockets(issue)
 }
 
@@ -584,7 +580,7 @@ func (a *alertStore) runIssueActions(issue structs.RoomIssue) {
 		go func() {
 			acts := actions.DefaultConfig().GetActionsByTrigger("issue-change")
 
-			log.L.Debugf("Running %v alert change actions for issue %v", len(acts), issue.RoomIssueID)
+			log.L.Debugf("Running %v issue change actions for issue %v", len(acts), issue.RoomIssueID)
 
 			// a new context for the run of this action
 			actx := actionctx.PutRoomIssue(context.Background(), issue)
