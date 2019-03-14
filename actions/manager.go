@@ -120,15 +120,10 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 
 					a.matchActionsMu.RLock()
 					for i := range a.matchActions {
-						log.L.Debugf("THIS IS WEIRD %v %v", i, actx)
-						//a.matchActionsMu.RUnlock()
-
 						a.reqs <- &ActionRequest{
 							Context: actx,
 							Action:  a.matchActions[i],
 						}
-
-						//a.matchActionsMu.RLock() - THIS SHOULD NEVER BE HERE JOE SAYS
 					}
 
 					a.matchActionsMu.RUnlock()
