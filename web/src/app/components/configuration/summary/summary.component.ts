@@ -66,7 +66,7 @@ export class SummaryComponent implements OnInit {
 
   ngOnInit() {}
 
-  SetupSummary() {
+  async SetupSummary() {
     this.roomIssue = this.data.GetRoomIssue(this.roomID);
     if (this.roomIssue == null || this.roomIssue === undefined) {
       console.error("no room issue found for room", this.roomID);
@@ -80,7 +80,7 @@ export class SummaryComponent implements OnInit {
     this.deviceList = this.data.roomToDevicesMap.get(this.roomID);
     this.filteredDevices = this.deviceList;
     this.filteredResponders = this.data.possibleResponders;
-    this.SetupSchedule();
+    await this.SetupSchedule();
 
     this.data.issueEmitter.subscribe(changedIssue => {
       if (
