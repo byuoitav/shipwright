@@ -1,7 +1,7 @@
 {
   "extends": "../tslint.json",
   "rules": {
-    "directive-selector": [true, "attribute", "app", "camelCase"],
+    "directive-selector": [false, "attribute", "app", "camelCase"],
     "component-selector": [false, "element", "app", "kebab-case"],
     "quotemark": [true, "double"],
     "semicolon": [true, "always", "ignore-bound-class-methods"]

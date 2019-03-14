@@ -1,18 +1,3 @@
-// .container {
-//     // display: flex;
-//     // flex-flow: row wrap;
-//     // justify-content: space-evenly;
-// }
-
-// .panel {
-//     min-width: 30%;
-//     // max-width: 49%;
-//     flex: 1 1 auto;
-//     &.multi {
-//         max-width: 45%;
-//     }
-// }
-
 .alignTop {
   ::ng-deep {
     .mat-figure {
@@ -34,7 +19,26 @@
 }
 
 .dashpanelClass {
-  height: calc(100% - 60px);
-  margin: 0px 5px;
+  height: 100%;
   width: 100%;
+  margin: 0px 5px;
+  overflow: auto;
+}
+
+::-webkit-scrollbar {
+  width: 0.4em;
+}
+
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 1px grey;
+  border-radius: 0.2em;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #757575;
+  border-radius: 0.2em;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: darkgray;
 }

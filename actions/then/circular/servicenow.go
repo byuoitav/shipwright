@@ -20,7 +20,6 @@ import (
 func SyncRoomIssueWithServiceNow(ctx context.Context, with []byte, log *zap.SugaredLogger) (err *nerr.E) {
 	//get the RoomIssue from the context
 	roomIssue, ok := actionctx.GetRoomIssue(ctx)
-
 	if !ok {
 		log.Errorf("Failed to get RoomIssue")
 		return nerr.Create("Must have RoomIssue to create ticket", "")
