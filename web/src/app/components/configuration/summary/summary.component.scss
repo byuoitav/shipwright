@@ -38,6 +38,52 @@ $save:#0046c8;
         width: 100px;
         justify-self: flex-start
     }
+    &.visits {
+        margin-left: 10px;
+        margin-right: 10px;
+        align-items: flex-start;
+        width: 20%;
+    }
+    &.schedule {
+        margin-left: 10px;
+        margin-right: 10px;
+        align-items: flex-start;
+        width: 35%;
+    }
+    &.notes {
+        margin-left: 10px;
+        margin-right: 10px;
+        align-items: flex-start;
+        width: 35%;
+    }
+}
+
+.schedule-container {
+    max-height: 80%;
+    overflow: hidden;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    /* width */
+    &::-webkit-scrollbar {
+        width: 5px;
+    }
+    /* Track */
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    &:hover {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
 }
 
 .searchbar {
@@ -93,7 +139,7 @@ $save:#0046c8;
 .row {
     display: flex;
     flex-flow: row nowrap;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: baseline;
     margin-top: 3vh;
     margin-bottom: 3vh;
@@ -102,6 +148,9 @@ $save:#0046c8;
     }
     &.resolve {
         align-items: flex-start;
+    }
+    &.action {
+        padding: 10px;
     }
 }
 
@@ -123,25 +172,14 @@ $save:#0046c8;
 .cardrow {
     display: flex;
     flex-flow: row nowrap;
-    justify-content: space-between;
+    justify-content: flex-start;
+    width: 100%;
 }
 
 .actioncard {
     margin-top: 10px;
     // float: left;
-    width: 20%;
-}
-
-.notescard {
-    margin-top: 10px;
-    // float: right;
-    // width: 45%;
-}
-
-.schedulecard {
-    margin-top: 10px;
-    // float: right;
-    // width: 45%;
+    width: 100%;
 }
 
 .time {
@@ -166,26 +204,29 @@ $save:#0046c8;
 .notes-row {
     display: flex;
     flex-flow: row nowrap;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-top: 20px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    // margin-top: 20px;
 }
 
 .notes-column {
     padding: 5px;
     min-height: 30vh;
     width: 17vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
 .notes-log {
     display: flex;
     flex-direction: column-reverse;
-    justify-self: flex-start;
-    max-height: 25vh;
+    // justify-self: flex-end;
+    max-height: 27vh;
     height: wrap;
     overflow: hidden;
-    padding: 7px;
-    margin-top: 15px;
+    padding: 5px;
+    margin-top: 5px;
     width: 100%;
     border-radius: 5px;
     border: 1px solid #e2e2e2;
@@ -209,4 +250,52 @@ $save:#0046c8;
         overflow-y: auto;
         overflow-x: hidden;
     }
+}
+
+#notesLog {
+    height: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#icon {
+    top: 0px;
+    left: 0px;
+    position: absolute;
+    font-size: 8pt;
+}
+
+.mat-column-block {
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 6em;
+    max-width: 6em;
+}
+
+.mat-column-className {
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 6em;
+    max-width: 6em;
+}
+
+.mat-column-classTime {
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 6em;
+    max-width: 6em;
+}
+
+.mat-column-teacher {
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 6em;
+    max-width: 6em;
+}
+
+.mat-column-days {
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 5em;
+    max-width: 5em;
 }

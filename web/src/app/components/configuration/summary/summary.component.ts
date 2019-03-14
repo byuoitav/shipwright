@@ -7,12 +7,13 @@ import {
   Alert,
   RoomIssue,
   RoomIssueResponse,
-  ResolutionInfo
+  ResolutionInfo,
+  ClassHalfHourBlock
 } from "src/app/objects/alerts";
 import { Device, Person } from "src/app/objects/database";
 import { AlertTableComponent } from "../../dashboard/alerttable/alerttable.component";
 import { APIService } from "src/app/services/api.service";
-import { MatDialog, MatDialogRef } from "@angular/material";
+import { MatDialog, MatDialogRef, MatTableDataSource } from "@angular/material";
 import { ResolveModalComponent } from "../../../modals/resolve/resolve.component";
 
 @Component({
@@ -34,6 +35,16 @@ export class SummaryComponent implements OnInit {
 
   sentTime: string;
   arrivedTime: string;
+
+  classSchedule: ClassHalfHourBlock[] = [];
+  scheduleData: MatTableDataSource<ClassHalfHourBlock>;
+  scheduleColumns: string[] = [
+    "block",
+    "className",
+    "classTime",
+    "teacher",
+    "days"
+  ];
 
   @ViewChild(AlertTableComponent) table: AlertTableComponent;
 
@@ -61,7 +72,7 @@ export class SummaryComponent implements OnInit {
 
   ngOnInit() {}
 
-  SetupSummary() {
+  async SetupSummary() {
     this.roomIssue = this.data.GetRoomIssue(this.roomID);
     if (this.roomIssue == null || this.roomIssue === undefined) {
       console.error("no room issue found for room", this.roomID);
@@ -75,6 +86,7 @@ export class SummaryComponent implements OnInit {
     this.deviceList = this.data.roomToDevicesMap.get(this.roomID);
     this.filteredDevices = this.deviceList;
     this.filteredResponders = this.data.possibleResponders;
+    await this.SetupSchedule();
 
     this.data.issueEmitter.subscribe(changedIssue => {
       if (
@@ -83,6 +95,7 @@ export class SummaryComponent implements OnInit {
         this.roomID === changedIssue.roomID
       ) {
         this.roomIssue = changedIssue;
+        console.log("changed issue", changedIssue);
 
         if (changedIssue.resolved) {
           this.router.navigate(["/dashboard"], {
@@ -90,6 +103,14 @@ export class SummaryComponent implements OnInit {
           });
         }
       }
+    });
+  }
+
+  async SetupSchedule() {
+    await this.api.GetClassSchedule(this.roomID).then(result => {
+      this.classSchedule = result;
+
+      this.scheduleData = new MatTableDataSource(this.classSchedule);
     });
   }
 
@@ -160,7 +181,7 @@ export class SummaryComponent implements OnInit {
     const timestamp = today + ", " + time;
   }
 
-  private to24Hour(time: string): string {
+  to24Hour(time: string): string {
     let hours = time.split(":")[0];
     const mins = time.split(":")[1];
     let period;

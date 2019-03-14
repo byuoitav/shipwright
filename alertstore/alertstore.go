@@ -252,12 +252,13 @@ func (a *alertStore) editIssueInformation(issue structs.RoomIssue) *nerr.E {
 	}
 
 	//v is our deal, we need to combine
-
 	i, changes := combineIssues(issue, v)
-
 	if changes {
 		persist.GetElkAlertPersist().StoreIssue(i, false, false)
 		alertcache.GetAlertCache("default").PutIssue(i)
+
+		a.runIssueActions(i)
+		socket.GetManager().WriteToSockets(i)
 	}
 
 	return nil
@@ -318,7 +319,6 @@ func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue stri
 			persist.GetElkAlertPersist().StoreIssue(newRoomIssue, true, true)
 			socket.GetManager().WriteToSockets(newRoomIssue)
 			a.runIssueActions(newRoomIssue)
-
 		} else {
 			log.L.Infof("Resolving full issue %v", roomIssue)
 			err := alertcache.GetAlertCache("default").DeleteIssue(roomIssue)
@@ -331,11 +331,11 @@ func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue stri
 			v.ResolutionInfo = resInfo
 
 			//submit for persistence
-			persist.GetElkAlertPersist().StoreIssue(v, true, true)
-			socket.GetManager().WriteToSockets(v)
-
 			v.CalculateAggregateInfo()
+
+			persist.GetElkAlertPersist().StoreIssue(v, true, true)
 			a.runIssueActions(v)
+			socket.GetManager().WriteToSockets(v)
 		}
 	} else if err.Type == alertcache.NotFound {
 		log.L.Errorf("%v", nerr.Create("Unkown room issue "+roomIssue, "not-found"))
