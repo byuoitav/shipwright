@@ -174,7 +174,7 @@ export class SummaryComponent implements OnInit {
     const timestamp = today + ", " + time;
   }
 
-  private to24Hour(time: string): string {
+  to24Hour(time: string): string {
     let hours = time.split(":")[0];
     const mins = time.split(":")[1];
     let period;

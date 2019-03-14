@@ -46,7 +46,7 @@
                                 <table mat-table [dataSource]="scheduleData">
                                     <ng-container matColumnDef="block">
                                         <th mat-header-cell *matHeaderCellDef>Time</th>
-                                        <td mat-cell *matCellDef="let classBlock">{{classBlock.blockStart}}</td>
+                                        <td mat-cell *matCellDef="let classBlock">{{to24Hour(classBlock.blockStart)}}</td>
                                     </ng-container>
                                     <ng-container matColumnDef="className">
                                         <th mat-header-cell *matHeaderCellDef>Class</th>
@@ -73,15 +73,15 @@
                         <aside class="column notes">
                             <h3 class="mat-h3">Notes</h3>
                             <section class="notes-row">
-                                <aside class="notes-column">
-                                    <h4 class="mat-subheading-2">Add Notes</h4>
+                                <div class="notes-column">
+                                    <!-- <h4 class="mat-subheading-2">Add Notes</h4> -->
                                     <mat-form-field class="notes" appearance="outline">
                                         <textarea matInput placeholder="Add New Note" [matAutosizeMinRows]="4" [matTextareaAutosize]="true" [(ngModel)]="tempNotes" (keyup)="$event.keyCode == 13 ? AddNote() : null"></textarea>
                                     </mat-form-field>
-                                </aside>
-                                <aside class="notes-column">
-                                    <h4 class="mat-subheading-2">Notes Log</h4>
-                                    <mat-list class="notes-log" appearance="outline">
+                                </div>
+                                <div class="notes-column">
+                                    <!-- <h4 class="mat-subheading-2">Notes Log</h4> -->
+                                    <mat-list class="notes-log">
                                         <mat-list-item id="notesLog" *ngFor="let note of roomIssue.notesLog.slice().reverse()">
                                             <mat-icon id="icon" mat-list-icon>label</mat-icon>
                                             <p mat-line>{{ ExtractNoteInfo(note, false) }}</p>
@@ -90,7 +90,7 @@
                                             </p>
                                         </mat-list-item>
                                     </mat-list>
-                                </aside>
+                                </div>
                             </section>
                         </aside>
                     </section>
