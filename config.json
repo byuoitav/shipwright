@@ -5,6 +5,8 @@
         "ACTION_CONFIG_DIR",
         "ALERT_STORE_CONFIG",
         "BYPASS_AUTH",
+        "CLIENT_KEY",
+        "CLIENT_SECRET",
         "COOKIE_DOMAIN",
         "COUCH_ADDRESS",
         "COUCH_PASSWORD",
@@ -34,6 +36,7 @@
         "SERVICE_CONFIG_LOCATION",
         "SLACK_CHANNEL",
         "STOP_REPLICATION",
-        "SYSTEM_ID"
+        "SYSTEM_ID",
+        "TOKEN_REFRESH_URL"
     ]
 }
