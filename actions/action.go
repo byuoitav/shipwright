@@ -44,7 +44,6 @@ func (a *Action) Run(ctx context.Context) {
 	}
 
 	a.Log.Debugf("Running if checks")
-
 	if ctx, passed := a.If.Check(ctx, a.Log); passed {
 		count := atomic.AddUint64(&a.runCount, 1)
 		pruneCount := atomic.LoadUint64(&a.PruneCount)
@@ -54,13 +53,14 @@ func (a *Action) Run(ctx context.Context) {
 			}
 
 			a.Kill()
-		} else if pruneCount != 0 && count < pruneCount {
-			a.Log.Debugf("Passed if checks, running thens (run #%v/%v)", count, pruneCount)
-		} else {
-			a.Log.Debugf("Passed if checks, running thens")
 		}
 
-		a.Log.Infof("If checks passed; Running %d thens", len(a.Then))
+		if pruneCount != 0 {
+			a.Log.Infof("If checks passed; Running %d thens (run #%v/%v)", len(a.Then), count, pruneCount)
+		} else {
+			a.Log.Infof("If checks passed; Running %d thens", len(a.Then))
+		}
+
 		exec := func(c context.Context) {
 			for i := range a.Then {
 				err := a.Then[i].Execute(c, a.Log)
