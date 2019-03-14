@@ -500,7 +500,7 @@ func (m *RoomIssueMatch) buildRegex() {
 	}
 
 	for _, s := range m.AlertSeverities {
-		m.regex.AlertCategories = append(m.regex.AlertCategories, regexp.MustCompile(s))
+		m.regex.AlertSeverities = append(m.regex.AlertSeverities, regexp.MustCompile(s))
 		m.count++
 	}
 
