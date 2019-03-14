@@ -58,9 +58,9 @@
                                 <aside class="notes-column">
                                     <h4 class="mat-subheading-2">Notes Log</h4>
                                     <mat-list class="notes-log" appearance="outline">
-                                        <mat-list-item *ngFor="let note of roomIssue.notesLog.slice().reverse()">
-                                            <mat-icon mat-list-icon>label</mat-icon>
-                                            <h3 mat-line>{{ ExtractNoteInfo(note, false) }}</h3>
+                                        <mat-list-item id="notesLog" *ngFor="let note of roomIssue.notesLog.slice().reverse()">
+                                            <mat-icon id="icon" mat-list-icon>label</mat-icon>
+                                            <p mat-line>{{ ExtractNoteInfo(note, false) }}</p>
                                             <p mat-line class="timestamp">
                                                 {{ ExtractNoteInfo(note, true) }}
                                             </p>
