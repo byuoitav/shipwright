@@ -71,7 +71,6 @@ func ResolveIssue(context echo.Context) error {
 
 // UpdateRoomIssue resolves an alert on the server side alert store
 func UpdateRoomIssue(context echo.Context) error {
-
 	var issue structs.RoomIssue
 
 	err := context.Bind(&issue)

@@ -38,7 +38,13 @@ export class SummaryComponent implements OnInit {
 
   classSchedule: ClassHalfHourBlock[] = [];
   scheduleData: MatTableDataSource<ClassHalfHourBlock>;
-  scheduleColumns: string[] = ["block", "className", "classTime", "teacher", "days"];
+  scheduleColumns: string[] = [
+    "block",
+    "className",
+    "classTime",
+    "teacher",
+    "days"
+  ];
 
   @ViewChild(AlertTableComponent) table: AlertTableComponent;
 
@@ -89,6 +95,7 @@ export class SummaryComponent implements OnInit {
         this.roomID === changedIssue.roomID
       ) {
         this.roomIssue = changedIssue;
+        console.log("changed issue", changedIssue);
 
         if (changedIssue.resolved) {
           this.router.navigate(["/dashboard"], {
@@ -100,7 +107,7 @@ export class SummaryComponent implements OnInit {
   }
 
   async SetupSchedule() {
-    await this.api.GetClassSchedule(this.roomID).then((result) => {
+    await this.api.GetClassSchedule(this.roomID).then(result => {
       this.classSchedule = result;
 
       this.scheduleData = new MatTableDataSource(this.classSchedule);
