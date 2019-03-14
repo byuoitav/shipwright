@@ -34,36 +34,45 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    if (this.data.finished) {
-      console.log("Got the data");
-      this.roomList = this.data.combinedRoomStateList;
-      this.roomList.sort((a, b) => a.roomID.localeCompare(b.roomID))
-
-      for (const room of this.roomList) {
-        room.deviceStates.sort((a, b) => 
-        {
-          if (a.deviceType === b.deviceType) {
-            return a.deviceName.localeCompare(b.deviceName);
-          }
-
-          return a.deviceType.localeCompare(b.deviceType);
-
-        });
-        console.log(room.deviceStates);
-      }
-
-      this.filteredRoomList = this.roomList;
-      this.SetDataSource();
+    if (this.data.finished) {      
+      this.SetDataSourceFirstTime();
     } else {
-      this.data.loaded.subscribe(() => {
-        console.log("Subscribed to get the data");
-        this.roomList = this.data.combinedRoomStateList;
-        this.roomList.sort((a, b) => a.roomID.localeCompare(b.roomID))
-
-        this.filteredRoomList = this.roomList;
-        this.SetDataSource();
+      this.data.loaded.subscribe(() => {        
+        this.SetDataSourceFirstTime();
       });
     }
+  }
+
+  SetDataSourceFirstTime() {
+    this.roomList = this.data.combinedRoomStateList;
+    this.roomList.sort((a, b) => a.roomID.localeCompare(b.roomID))
+
+    for (let room of this.roomList) {
+      if (room.deviceStates) {
+        room.deviceStates.sort((a, b) => 
+        {
+          let aDT = a.deviceType ? a.deviceType : "";
+          let bDT = b.deviceType ? b.deviceType : "";
+          let aID = a.deviceID ? a.deviceID : "";
+          let bID = b.deviceID ? b.deviceID : "";
+
+          if (aDT.toLowerCase() == "dmps" || aDT.toLowerCase() == "control-processor")
+            aDT = "aaa";
+
+          if (bDT.toLowerCase() == "dmps" || bDT.toLowerCase() == "control-processor")
+            bDT = "aaa";
+
+          if (aDT === bDT) {
+            return aID.localeCompare(bID);
+          }
+
+          return aDT.localeCompare(bDT);
+       });    
+      }
+    }
+
+    this.filteredRoomList = this.roomList;
+    this.SetDataSource();
   }
 
   SetDataSource() {
