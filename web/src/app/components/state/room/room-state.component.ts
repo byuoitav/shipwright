@@ -39,15 +39,16 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
       this.roomList = this.data.combinedRoomStateList;
       this.roomList.sort((a, b) => a.roomID.localeCompare(b.roomID))
 
-      for (let room of this.roomList) {
+      for (const room of this.roomList) {
         room.deviceStates.sort((a, b) => 
         {
-          if (a.deviceType === b.deviceType)
+          if (a.deviceType === b.deviceType) {
             return a.deviceName.localeCompare(b.deviceName);
-          
+          }
+
           return a.deviceType.localeCompare(b.deviceType);
 
-        });    
+        });
         console.log(room.deviceStates);
       }
 
@@ -65,11 +66,11 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
     }
   }
 
-  SetDataSource() {    
+  SetDataSource() {
     this.dataSource.data = this.filteredRoomList;
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;   
+      this.dataSource.sort = this.sort;
       });
   }
 
@@ -170,6 +171,28 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
           continue;
         }
       }
+      if (item === "Has Alerts") {
+        console.log("has alerts is suposed to run");
+        if (this.activeAlerts(room)) {
+          console.log("returned true");
+          continue;
+        }
+      }
+      if (item === "Low Mic") {
+        if (this.lowMic(room)) {
+          continue;
+        }
+      }
+      if (item === "Warn Mic") {
+        if (this.warnMic(room)) {
+          continue;
+        }
+      }
+      if (item === "System In Use") {
+        if (this.inUse(room)) {
+          continue;
+        }
+      }
       return false;
     }
     return true;
@@ -178,7 +201,6 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
   FilterRooms() {
 
     this.filteredRoomList = [];
-
     if (this.filterQueries.length === 0) {
       this.filteredRoomList = this.roomList;
       this.SetDataSource();
@@ -187,25 +209,33 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
 
     for (const room of this.roomList) {
       if (this.checkRoom(room, this.filterQueries)) {
-        this.filteredRoomList.push(room);        
-      }
-    }
-    
-    this.SetDataSource();
-  }
-
-  activeAlerts() {
-    this.filteredRoomList = [];
-    for (const room of this.roomList) {
-      if (room.activeAlertCount > 0) {
         this.filteredRoomList.push(room);
       }
     }
+
     this.SetDataSource();
   }
-  lowMic() {
-    this.filteredRoomList = [];
-    for (const room of this.roomList) {
+
+  activeAlerts(room?: CombinedRoomState) {
+    if (!this.filterQueries.includes("Has Alerts")) {
+      this.filterQueries.push("Has Alerts");
+      this.FilterRooms();
+    }
+    if (room) {
+      if (room.activeAlertCount > 0) {
+        return true;
+      }
+    return false;
+    }
+
+  }
+
+  lowMic(room?: CombinedRoomState) {
+    if (!this.filterQueries.includes("Low Mic")) {
+      this.filterQueries.push("Low Mic");
+      this.FilterRooms();
+    }
+    if (room) {
       if (room.deviceStates != null) {
         for (const device of room.deviceStates) {
           if (
@@ -214,16 +244,20 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
             device.batteryChargeMinutes >= 0 &&
             !this.filteredRoomList.includes(room)
           ) {
-            this.filteredRoomList.push(room);
+            return true;
           }
         }
       }
+      return false;
     }
-    this.SetDataSource();
   }
-  warnMic() {
-    this.filteredRoomList = [];
-    for (const room of this.roomList) {
+
+  warnMic(room?: CombinedRoomState) {
+    if (!this.filterQueries.includes("Warn Mic")) {
+      this.filterQueries.push("Warn Mic");
+      this.FilterRooms();
+    }
+    if (room) {
       if (room.deviceStates != null) {
         for (const device of room.deviceStates) {
           if (
@@ -232,36 +266,39 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
             device.batteryChargeMinutes >= 90 &&
             !this.filteredRoomList.includes(room)
           ) {
-            this.filteredRoomList.push(room);
+            return true;
           }
         }
       }
+      return false;
     }
-    this.SetDataSource();
   }
 
-  inUse() {
-    this.filteredRoomList = [];
-    for (const room of this.roomList) {
+  inUse(room?: CombinedRoomState) {
+    if (!this.filterQueries.includes("System In Use")) {
+      this.filterQueries.push("System In Use");
+      this.FilterRooms();
+    }
+    if (room) {
       if (room.deviceStates != null) {
         for (const device of room.deviceStates) {
           let deviceType = device.deviceType;
-          if (deviceType) deviceType = deviceType.toLowerCase();
+          if (deviceType) {deviceType = deviceType.toLowerCase(); }
 
           let power = device.power;
-          if (power) power = power.toLowerCase();
+          if (power) {power = power.toLowerCase(); }
 
           if (deviceType === "display" || deviceType === "dmps") {
             if (
               power === "on" &&
               !this.filteredRoomList.includes(room)
             ) {
-              this.filteredRoomList.push(room);
+              return true;
             }
           }
         }
       }
+      return false;
     }
-    this.SetDataSource();
   }
 }
