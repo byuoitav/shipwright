@@ -7,12 +7,13 @@ import {
   Alert,
   RoomIssue,
   RoomIssueResponse,
-  ResolutionInfo
+  ResolutionInfo,
+  ClassHalfHourBlock
 } from "src/app/objects/alerts";
 import { Device, Person } from "src/app/objects/database";
 import { AlertTableComponent } from "../../dashboard/alerttable/alerttable.component";
 import { APIService } from "src/app/services/api.service";
-import { MatDialog, MatDialogRef } from "@angular/material";
+import { MatDialog, MatDialogRef, MatTableDataSource } from "@angular/material";
 import { ResolveModalComponent } from "../../../modals/resolve/resolve.component";
 
 @Component({
@@ -34,6 +35,10 @@ export class SummaryComponent implements OnInit {
 
   sentTime: string;
   arrivedTime: string;
+
+  classSchedule: ClassHalfHourBlock[] = [];
+  scheduleData: MatTableDataSource<ClassHalfHourBlock>;
+  scheduleColumns: string[] = ["block", "className", ]
 
   @ViewChild(AlertTableComponent) table: AlertTableComponent;
 
@@ -75,6 +80,7 @@ export class SummaryComponent implements OnInit {
     this.deviceList = this.data.roomToDevicesMap.get(this.roomID);
     this.filteredDevices = this.deviceList;
     this.filteredResponders = this.data.possibleResponders;
+    this.SetupSchedule();
 
     this.data.issueEmitter.subscribe(changedIssue => {
       if (
@@ -90,6 +96,14 @@ export class SummaryComponent implements OnInit {
           });
         }
       }
+    });
+  }
+
+  async SetupSchedule() {
+    await this.api.GetClassSchedule(this.roomID).then((result) => {
+      this.classSchedule = result;
+
+      this.scheduleData = new MatTableDataSource(this.classSchedule);
     });
   }
 

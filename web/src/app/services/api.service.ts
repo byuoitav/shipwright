@@ -14,7 +14,7 @@ import {
   Template
 } from "../objects/database";
 import { StaticDevice, CombinedRoomState } from "../objects/static";
-import { RoomIssue, Alert, ResolutionInfo } from "../objects/alerts";
+import { RoomIssue, Alert, ResolutionInfo, ClassHalfHourBlock } from "../objects/alerts";
 import { StringsService } from "./strings.service";
 
 @Injectable({
@@ -803,6 +803,19 @@ export class APIService {
       return responders;
     } catch (e) {
       throw new Error("error trying to get possible responders: " + e);
+    }
+  }
+
+  public async GetClassSchedule(roomID: string) {
+    try {
+      const data: any = await this.http
+        .get("rooms/" + roomID + "/schedule", { headers: this.headers })
+        .toPromise();
+
+      const schedule = this.converter.deserializeArray(data, ClassHalfHourBlock);
+      return schedule;
+    } catch (e) {
+      throw new Error("error trying to get the schedule for " + roomID + ": " + e)
     }
   }
 }

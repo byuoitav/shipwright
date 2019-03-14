@@ -38,6 +38,12 @@ $save:#0046c8;
         width: 100px;
         justify-self: flex-start
     }
+    &.action {
+        margin-left: 1vw;
+        margin-right: 1vw;
+        align-items: flex-start;
+        width: 20vw;
+    }
 }
 
 .searchbar {
@@ -102,6 +108,9 @@ $save:#0046c8;
     }
     &.resolve {
         align-items: flex-start;
+    }
+    &.action {
+        padding: 10px;
     }
 }
 
