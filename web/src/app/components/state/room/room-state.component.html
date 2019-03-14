@@ -44,8 +44,7 @@
             <td mat-cell *matCellDef="let rs">
                 <mat-chip-list class="chipList">
                     <mat-chip *ngFor="let ds of rs.deviceStates" [ngClass]="GetStyle(ds)">
-                        {{GetDeviceName(ds.deviceID)}}
-                        {{ds.deviceType}}
+                        {{GetDeviceName(ds.deviceID)}}                        
                         <ng-container *ngIf="HasBatteryCharge(ds)">
                             <mat-icon *ngIf="ds.batteryChargeMinutes >= 300" class="mic-good icon">battery_full</mat-icon>
                             <mat-icon *ngIf="ds.batteryChargeMinutes < 300 && ds.batteryChargeMinutes >= 90" class="mic-okay icon">battery_full</mat-icon>
