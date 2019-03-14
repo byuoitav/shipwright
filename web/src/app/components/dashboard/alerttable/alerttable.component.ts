@@ -24,7 +24,6 @@ import {
 import { ActivatedRoute } from "@angular/router";
 import { DataService } from "src/app/services/data.service";
 import { RoomIssue, Alert } from "src/app/objects/alerts";
-import { SelectionModel } from "@angular/cdk/collections";
 import { DashPanelTypes } from "src/app/services/dashpanel.service";
 
 @Component({
@@ -57,7 +56,7 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort = new MatSort();
 
   pageOptions: number[] = [16, 32, 64, 128, 256];
-  pageSize = 32;
+  pageSize = 20;
 
   // Alert Table's Data
   issueData: MatTableDataSource<RoomIssue>;

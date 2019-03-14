@@ -14,6 +14,7 @@ import (
 	"github.com/byuoitav/common/v2/auth"
 	"github.com/byuoitav/common/v2/events"
 	"github.com/byuoitav/shipwright/actions"
+	"github.com/byuoitav/shipwright/alertstore"
 	"github.com/byuoitav/shipwright/couch"
 	"github.com/byuoitav/shipwright/state/roomsync"
 	"github.com/labstack/echo"
@@ -21,7 +22,6 @@ import (
 
 	// imported to initialize the list of then's
 	_ "github.com/byuoitav/shipwright/actions/then/circular"
-	"github.com/byuoitav/shipwright/alertstore"
 	"github.com/byuoitav/shipwright/handlers"
 	"github.com/byuoitav/shipwright/socket"
 	figure "github.com/common-nighthawk/go-figure"
@@ -126,6 +126,7 @@ func main() {
 	writeconfig.GET("/rooms/:room/delete", handlers.DeleteRoom)
 	readconfig.GET("/rooms/configurations", handlers.GetRoomConfigurations)
 	readconfig.GET("/rooms/designations", handlers.GetRoomDesignations)
+	readconfig.GET("/rooms/:roomID/schedule", handlers.GetRoomClassSchedule)
 
 	// Device Endpoints
 	writeconfig.POST("/devices/:device", handlers.AddDevice)

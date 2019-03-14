@@ -690,8 +690,7 @@ export class APIService {
       for (const sd of data) {
         const rec = this.converter.deserializeObject(sd, CombinedRoomState);
         records.push(rec);
-      }
-      console.log("is this even running?");
+      }      
       return records;
     } catch (e) {
       throw new Error("error getting the Combined Room State records: " + e);

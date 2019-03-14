@@ -61,15 +61,15 @@ $sidenavHeight: calc(100% - #{$matToolbarHeight});
         margin-left: $wideSideNavWidth !important;
     }
     &::-webkit-scrollbar {
-        width: 0.8em;
+        width: 0.6em;
     }
     &::-webkit-scrollbar-thumb {
         background: #666;
-        border-radius: 3em;
+        // border-radius: 0.5em;
     }
     &::-webkit-scrollbar-track {
         background: #ddd;
-        border-radius: 3em;
+        // border-radius: 0.5em;
     }
 }
 

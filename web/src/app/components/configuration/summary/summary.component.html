@@ -1,118 +1,127 @@
 <div class="base">
-  <div *ngIf="!data.finished && roomIssue == null">
-    <h3 class="mat-h3">Currently updating room issues...</h3>
-  </div>
-  <div *ngIf="data.finished && roomIssue == null">
-    <h3 class="mat-h3">There are no issues with this room at the moment!</h3>
-  </div>
-  <div class="container" *ngIf="roomIssue != null">
-    <app-alert-table
-      [singleRoom]="true"
-      [expIssue]="roomIssue"
-    ></app-alert-table>
+    <div *ngIf="!data.finished && roomIssue == null">
+        <h3 class="mat-h3">Currently updating room issues...</h3>
+    </div>
+    <div *ngIf="data.finished && roomIssue == null">
+        <h3 class="mat-h3">There are no issues with this room at the moment!</h3>
+    </div>
+    <div class="container" *ngIf="roomIssue != null">
+        <section class="row">
+            <app-alert-table [singleRoom]="true" [expIssue]="roomIssue"></app-alert-table>
 
-    <section class="cardrow">
-      <!-- Action Card -->
-      <mat-card class="actioncard">
-        <mat-card-title>Visits</mat-card-title>
-        <mat-card-content>
-          <button
-            mat-mini-fab
-            color="primary"
-            (click)="modal.OpenResponseModal()"
-          >
-            <mat-icon>add</mat-icon>
-          </button>
+            <aside class="column mat-elevation-z3" *ngIf="filteredDevices != null">
+                <div class="searchbar devices mat-elevation-z0">
+                    <mat-icon class="searchbar icon mat-elevation-z0">search</mat-icon>
+                    <mat-form-field class="short">
+                        <input matInput [(ngModel)]="deviceSearch" (ngModelChange)="SearchDevices()" />
+                    </mat-form-field>
+                </div>
+                <mat-list class="list mat-elevation-z0">
+                    <ng-container *ngFor="let device of filteredDevices">
+                        <mat-list-item *ngIf="device != null">
+                            <mat-icon mat-list-icon>{{ text.DefaultIcons[device.type.id] }}
+                            </mat-icon>
+                            <h5 mat-line class="mat-h5">{{ device.name }}</h5>
+                        </mat-list-item>
+                    </ng-container>
+                </mat-list>
+            </aside>
+        </section>
 
-          <mat-accordion *ngIf="roomIssue.roomIssueResponses.length > 1">
-            <ng-container
-              *ngFor="
+
+        <section class="cardrow">
+            <!-- Action Card -->
+            <mat-card class="actioncard">
+                <mat-card-header>
+                    <mat-card-title>Visits</mat-card-title>
+                    <span class="fill-remaining-space"></span>
+                    <button mat-raised-button color="primary" (click)="modal.OpenResponseModal()">
+                      New Visit <mat-icon>add</mat-icon>
+                    </button>
+                </mat-card-header>
+
+                <mat-card-content>
+
+
+                    <!-- <mat-accordion *ngIf="roomIssue.roomIssueResponses.length > 1">
+                        <ng-container *ngFor="
                 let response of roomIssue.roomIssueResponses;
                 let i = index
-              "
-            >
-              <mat-expansion-panel *ngIf="i >= 1">
-                <mat-expansion-panel-header>Derek</mat-expansion-panel-header>
-              </mat-expansion-panel>
-            </ng-container>
-          </mat-accordion>
-          <div>
-            <button
-              mat-raised-button
-              class="button resolve"
-              *ngIf="isResolvable()"
-              (click)="openResolve()"
-            >
+              ">
+                            <mat-expansion-panel *ngIf="i >= 1">
+                                <mat-expansion-panel-header>Derek</mat-expansion-panel-header>
+                            </mat-expansion-panel>
+                        </ng-container>
+                    </mat-accordion> -->
+                    <mat-list>
+                        <mat-list-item *ngFor="let response of roomIssue.roomIssueResponses">
+                            <mat-form-field>
+                                <mat-label>Help Sent</mat-label>
+                                <input matInput type="time" readonly=true [(ngModel)]="response.helpSentAt">
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Help Arrived</mat-label>
+                                <input matInput type="time" readonly=true [(ngModel)]="response.helpArrivedAt">
+                            </mat-form-field>
+                        </mat-list-item>
+                    </mat-list>
+                    <div>
+                        <button mat-raised-button class="button resolve" *ngIf="isResolvable()" (click)="openResolve()">
               Resolve Alerts
             </button>
-          </div>
-        </mat-card-content>
-        <!-- Responders -->
-        <aside class="notes-column"></aside>
-      </mat-card>
-    </section>
-    <section class="cardrow">
-      <!-- Notes Card -->
-      <mat-card class="notescard">
-        <mat-card-title>Notes</mat-card-title>
-        <mat-divider></mat-divider>
-        <mat-card-content>
-          <section class="notes-row">
-            <aside class="notes-column">
-              <h4 class="mat-subheading-2">Add Notes</h4>
-              <mat-form-field class="notes" appearance="outline">
-                <textarea
-                  matInput
-                  placeholder="Add New Note"
-                  [matAutosizeMinRows]="4"
-                  [matTextareaAutosize]="true"
-                  [(ngModel)]="tempNotes"
-                  (keyup)="$event.keyCode == 13 ? AddNote() : null"
-                ></textarea>
-              </mat-form-field>
-            </aside>
-            <aside class="notes-column">
-              <h4 class="mat-subheading-2">Notes Log</h4>
-              <!-- <mat-form-field appearance="outline"> -->
-              <mat-list class="notes-log" appearance="outline">
-                <mat-list-item
-                  *ngFor="let note of roomIssue.notesLog.slice().reverse()"
-                >
-                  <mat-icon mat-list-icon>alternate_email</mat-icon>
-                  <h3 mat-line>{{ ExtractNoteInfo(note, false) }}</h3>
-                  <p mat-line class="timestamp">
-                    {{ ExtractNoteInfo(note, true) }}
-                  </p>
-                </mat-list-item>
-              </mat-list>
-              <!-- </mat-form-field> -->
-            </aside>
-          </section>
-        </mat-card-content>
-      </mat-card>
-    </section>
-  </div>
+                    </div>
+                </mat-card-content>
+                <!-- Responders -->
+                <aside class="notes-column">
+                </aside>
+            </mat-card>
 
-  <div class="column mat-elevation-z3" *ngIf="filteredDevices != null">
-    <div class="searchbar devices mat-elevation-z0">
-      <mat-icon class="searchbar icon mat-elevation-z0">search</mat-icon>
-      <mat-form-field class="short">
-        <input
-          matInput
-          [(ngModel)]="deviceSearch"
-          (ngModelChange)="SearchDevices()"
-        />
-      </mat-form-field>
+            <mat-card class="schedulecard">
+                <mat-card-header>
+                    <mat-card-title>Schedule</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="notescard">
+                <mat-card-header>
+                    <mat-card-title>Notes</mat-card-title>
+                </mat-card-header>
+
+                <mat-divider></mat-divider>
+                <mat-card-content>
+                    <section class="notes-row">
+                        <aside class="notes-column">
+                            <h4 class="mat-subheading-2">Add Notes</h4>
+                            <mat-form-field class="notes" appearance="outline">
+                                <textarea matInput placeholder="Add New Note" [matAutosizeMinRows]="4" [matTextareaAutosize]="true" [(ngModel)]="tempNotes" (keyup)="$event.keyCode == 13 ? AddNote() : null"></textarea>
+                            </mat-form-field>
+                        </aside>
+                        <aside class="notes-column">
+                            <h4 class="mat-subheading-2">Notes Log</h4>
+                            <!-- <mat-form-field appearance="outline"> -->
+                            <mat-list class="notes-log" appearance="outline">
+                                <mat-list-item *ngFor="let note of roomIssue.notesLog.slice().reverse()">
+                                    <mat-icon mat-list-icon>label</mat-icon>
+                                    <h3 mat-line>{{ ExtractNoteInfo(note, false) }}</h3>
+                                    <p mat-line class="timestamp">
+                                        {{ ExtractNoteInfo(note, true) }}
+                                    </p>
+                                </mat-list-item>
+                            </mat-list>
+                            <!-- </mat-form-field> -->
+                        </aside>
+                    </section>
+                </mat-card-content>
+            </mat-card>
+        </section>
+        <!-- <section class="cardrow"> -->
+        <!-- Notes Card -->
+
+        <!-- </section> -->
     </div>
-    <mat-list class="list mat-elevation-z0">
-      <ng-container *ngFor="let device of filteredDevices">
-        <mat-list-item *ngIf="device != null">
-          <mat-icon mat-list-icon
-            >{{ text.DefaultIcons[device.type.id] }}
-          </mat-icon>
-          <h5 mat-line class="mat-h5">{{ device.name }}</h5>
-        </mat-list-item>
-      </ng-container>
-    </mat-list>
-  </div>
+
+
 </div>

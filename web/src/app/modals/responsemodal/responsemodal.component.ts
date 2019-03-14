@@ -12,6 +12,8 @@ export class ResponseModalComponent implements OnInit {
   responderSearch: string;
   filteredResponders: Person[];
   responders: Person[] = [];
+  sentTime: string;
+  arrivalTime: string;
 
   constructor(public text: StringsService, public data: DataService) {}
 
