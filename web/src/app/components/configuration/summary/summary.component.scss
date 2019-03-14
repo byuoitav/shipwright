@@ -38,11 +38,51 @@ $save:#0046c8;
         width: 100px;
         justify-self: flex-start
     }
-    &.action {
+    &.visits {
         margin-left: 1vw;
         margin-right: 1vw;
         align-items: flex-start;
-        width: 20vw;
+        width: 20%;
+    }
+    &.schedule {
+        margin-left: 1vw;
+        margin-right: 1vw;
+        align-items: flex-start;
+        width: 35%;
+    }
+    &.notes {
+        margin-left: 1vw;
+        margin-right: 1vw;
+        align-items: flex-start;
+        width: 35%;
+    }
+}
+
+.schedule-container {
+    max-height: 80%;
+    overflow: hidden;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    /* width */
+    &::-webkit-scrollbar {
+        width: 5px;
+    }
+    /* Track */
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    &:hover {
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 }
 
@@ -99,7 +139,7 @@ $save:#0046c8;
 .row {
     display: flex;
     flex-flow: row nowrap;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: baseline;
     margin-top: 3vh;
     margin-bottom: 3vh;
@@ -132,25 +172,14 @@ $save:#0046c8;
 .cardrow {
     display: flex;
     flex-flow: row nowrap;
-    justify-content: space-between;
+    justify-content: flex-start;
+    width: 100%;
 }
 
 .actioncard {
     margin-top: 10px;
     // float: left;
-    width: 20%;
-}
-
-.notescard {
-    margin-top: 10px;
-    // float: right;
-    // width: 45%;
-}
-
-.schedulecard {
-    margin-top: 10px;
-    // float: right;
-    // width: 45%;
+    width: 100%;
 }
 
 .time {
@@ -175,7 +204,7 @@ $save:#0046c8;
 .notes-row {
     display: flex;
     flex-flow: row nowrap;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: baseline;
     margin-top: 20px;
 }
@@ -218,4 +247,37 @@ $save:#0046c8;
         overflow-y: auto;
         overflow-x: hidden;
     }
+}
+
+.mat-column-block {
+    width: 5em;
+    max-width: 5em;
+}
+
+.mat-column-className {
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 6em;
+    max-width: 6em;
+}
+
+.mat-column-classTime {
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 6em;
+    max-width: 6em;
+}
+
+.mat-column-teacher {
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 6em;
+    max-width: 6em;
+}
+
+.mat-column-days {
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 5em;
+    max-width: 5em;
 }
