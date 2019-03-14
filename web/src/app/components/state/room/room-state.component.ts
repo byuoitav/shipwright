@@ -112,7 +112,7 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
     let power = ds.power;
     if (power) power = power.toLowerCase();
 
-    if (deviceType === "display" || deviceType === "dmps") {
+    if (deviceType === "display" || deviceType === "dmps" || deviceType == "microphone") {
       if (power === "on") {
         style = "display-on";
         return style;
