@@ -3,37 +3,12 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/byuoitav/common/log"
-	sd "github.com/byuoitav/common/state/statedefinition"
 	"github.com/byuoitav/common/structs"
 	"github.com/byuoitav/shipwright/helpers"
-	"github.com/byuoitav/shipwright/state/cache"
 	"github.com/labstack/echo"
 )
-
-// Test is a test function for something...
-func Test(context echo.Context) error {
-	T := true
-
-	room := sd.StaticRoom{
-		BuildingID:      "ITB",
-		RoomID:          "ITB-1101",
-		MaintenenceMode: &T,
-		UpdateTimes: map[string]time.Time{
-			"maintenance-mode": time.Now(),
-		},
-	}
-	changes, room, err := cache.GetCache("default").CheckAndStoreRoom(room)
-	if err != nil {
-		log.L.Errorf("%s", err.Stack)
-		return context.JSON(http.StatusInternalServerError, err.Error())
-	}
-	log.L.Infof("%v", changes)
-
-	return context.JSON(http.StatusOK, room)
-}
 
 // AddBuilding adds a building to the database
 func AddBuilding(context echo.Context) error {

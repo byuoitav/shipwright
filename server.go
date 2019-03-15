@@ -102,7 +102,6 @@ func main() {
 		)
 	*/
 
-	router.POST("/test", handlers.Test)
 	router.GET("/actions", actions.DefaultActionManager().Info)
 	router.GET("/actions/trigger/:trigger", actions.DefaultActionManager().Config.ActionsByTrigger)
 
@@ -165,6 +164,7 @@ func main() {
 	readconfig.GET("/static/rooms", handlers.GetAllStaticRoomRecords)
 	readconfig.GET("/static/rooms/state", handlers.GetAllRoomCombinedStateRecords)
 	readconfig.GET("/static/rooms/:room/state", handlers.GetRoomCombinedStateRecord)
+	readconfig.PUT("/static/rooms/:room/maintenance", handlers.UpdateStaticRoom)
 
 	// Alert Endpoints
 	readconfig.GET("/issues", handlers.GetAllRoomIssues)

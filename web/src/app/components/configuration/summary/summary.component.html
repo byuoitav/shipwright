@@ -7,27 +7,19 @@
   </div>
   <div class="container" *ngIf="roomIssue != null">
     <section class="row">
-      <app-alert-table
-        [singleRoom]="true"
-        [expIssue]="roomIssue"
-      ></app-alert-table>
+      <app-alert-table [singleRoom]="true" [expIssue]="roomIssue"></app-alert-table>
 
       <aside class="column mat-elevation-z3" *ngIf="filteredDevices != null">
         <div class="searchbar devices mat-elevation-z0">
           <mat-icon class="searchbar icon mat-elevation-z0">search</mat-icon>
           <mat-form-field class="short">
-            <input
-              matInput
-              [(ngModel)]="deviceSearch"
-              (ngModelChange)="SearchDevices()"
-            />
+            <input matInput [(ngModel)]="deviceSearch" (ngModelChange)="SearchDevices()" />
           </mat-form-field>
         </div>
         <mat-list class="list mat-elevation-z0">
           <ng-container *ngFor="let device of filteredDevices">
             <mat-list-item *ngIf="device != null">
-              <mat-icon mat-list-icon
-                >{{ text.DefaultIcons[device.type.id] }}
+              <mat-icon mat-list-icon>{{ text.DefaultIcons[device.type.id] }}
               </mat-icon>
               <h5 mat-line class="mat-h5">{{ device.name }}</h5>
             </mat-list-item>
@@ -44,7 +36,9 @@
         <mat-divider></mat-divider>
         <mat-card-content>
           <section class="row action">
-            <aside class="column visits"><h3 class="mat-h3">Visits</h3></aside>
+            <aside class="column visits">
+              <h3 class="mat-h3">Visits</h3>
+            </aside>
             <aside class="column schedule">
               <h3 class="mat-h3">Schedule</h3>
               <div class="schedule-container mat-elevation-z2">
@@ -79,14 +73,8 @@
                       {{ classBlock.days }}
                     </td>
                   </ng-container>
-                  <tr
-                    mat-header-row
-                    *matHeaderRowDef="scheduleColumns; sticky: true"
-                  ></tr>
-                  <tr
-                    mat-row
-                    *matRowDef="let classBlock; columns: scheduleColumns"
-                  ></tr>
+                  <tr mat-header-row *matHeaderRowDef="scheduleColumns; sticky: true"></tr>
+                  <tr mat-row *matRowDef="let classBlock; columns: scheduleColumns"></tr>
                 </table>
               </div>
             </aside>
@@ -95,24 +83,15 @@
               <section class="notes-row">
                 <div class="notes-column">
                   <mat-form-field class="notes" appearance="outline">
-                    <textarea
-                      matInput
-                      placeholder="Add New Note"
-                      [matAutosizeMinRows]="4"
-                      [matTextareaAutosize]="true"
-                      [(ngModel)]="tempNotes"
-                      (keyup)="$event.keyCode == 13 ? AddNote() : null"
-                    ></textarea>
+                    <textarea matInput placeholder="Add New Note" [matAutosizeMinRows]="4" [matTextareaAutosize]="true"
+                      [(ngModel)]="tempNotes" (keyup)="$event.keyCode == 13 ? AddNote() : null"></textarea>
                   </mat-form-field>
                 </div>
 
                 <div class="notes-column">
                   <!-- <h4 class="mat-subheading-2">Notes Log</h4> -->
                   <mat-list class="notes-log">
-                    <mat-list-item
-                      id="notesLog"
-                      *ngFor="let note of roomIssue.notesLog"
-                    >
+                    <mat-list-item id="notesLog" *ngFor="let note of roomIssue.notesLog">
                       <mat-icon id="icon" mat-list-icon>label</mat-icon>
                       <p mat-line>{{ ExtractNoteInfo(note, false) }}</p>
                       <p mat-line class="timestamp">
@@ -127,19 +106,13 @@
         </mat-card-content>
         <mat-divider></mat-divider>
         <mat-card-actions>
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="modal.OpenResponseModal()"
-          >
+          <button mat-raised-button color="primary" (click)="modal.OpenResponseModal()">
             New Visit <mat-icon>add</mat-icon>
           </button>
-          <button
-            mat-raised-button
-            class="button resolve"
-            *ngIf="isResolvable()"
-            (click)="openResolve()"
-          >
+          <button mat-raised-button color="primary" (click)="openMaintenance()">
+            Maintenance <mat-icon>add</mat-icon>
+          </button>
+          <button mat-raised-button class="button resolve" *ngIf="isResolvable()" (click)="openResolve()">
             Resolve Alerts
           </button>
         </mat-card-actions>

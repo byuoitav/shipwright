@@ -8,8 +8,33 @@ import (
 	"github.com/byuoitav/common/db"
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
+	sd "github.com/byuoitav/common/state/statedefinition"
 	"github.com/byuoitav/common/structs"
+	cache "github.com/byuoitav/shipwright/state/cache"
 )
+
+//Update the static rooms (putting them in and out of maintenance mode etc.)
+func UpdateStaticRoom(roomID string, room sd.StaticRoom) *nerr.E {
+
+	room.RoomID = roomID
+	// buildingID := strings.Split(roomID, "-")
+	// T := true
+	// room = sd.StaticRoom{
+	// 	BuildingID:      buildingID[0],
+	// 	RoomID:          roomID,
+	// 	MaintenenceMode: &T,
+	// 	UpdateTimes: map[string]time.Time{
+	// 		"maintenance-mode": time.Now(),
+	// 	},
+	// }
+	changes, room, err := cache.GetCache("default").CheckAndStoreRoom(room)
+	if err != nil {
+		log.L.Errorf("%s", err.Stack)
+		return nerr.Translate(err)
+	}
+	log.L.Infof("%v", changes)
+	return nil
+}
 
 // AddRoom adds a room to the database
 func AddRoom(roomID string, room structs.Room) (DBResponse, *nerr.E) {

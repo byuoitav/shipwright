@@ -15,6 +15,7 @@ import { AlertTableComponent } from "../../dashboard/alerttable/alerttable.compo
 import { APIService } from "src/app/services/api.service";
 import { MatDialog, MatDialogRef, MatTableDataSource } from "@angular/material";
 import { ResolveModalComponent } from "../../../modals/resolve/resolve.component";
+import { MaintenanceModalComponent } from 'src/app/modals/maintenancemodal/maintenancemodal.component';
 
 @Component({
   selector: "app-summary",
@@ -341,4 +342,14 @@ export class SummaryComponent implements OnInit {
 
     ref.afterClosed().subscribe(result => {});
   }
+
+  openMaintenance() {
+
+    const ref = this.dialog.open(MaintenanceModalComponent, {
+      width: "25vw",
+    });
+
+    ref.afterClosed().subscribe(result => {});
+  }
+
 }

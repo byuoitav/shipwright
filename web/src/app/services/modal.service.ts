@@ -8,6 +8,7 @@ import { NotifyModalComponent } from "../modals/notify/notify.component";
 import { PresetModalComponent } from "../modals/presetmodal/presetmodal.component";
 import { IconModalComponent } from "../modals/iconmodal/iconmodal.component";
 import { ResponseModalComponent } from "../modals/responsemodal/responsemodal.component";
+import { MaintenanceModalComponent } from "../modals/maintenancemodal/maintenancemodal.component";
 import { RoomIssue, Alert } from "../objects/alerts";
 import {
   Building,
@@ -80,6 +81,10 @@ export class ModalService {
 
   OpenResponseModal() {
     this.dialog.open(ResponseModalComponent);
+  }
+
+  OpenMaintenanceModal() {
+    this.dialog.open(MaintenanceModalComponent);
   }
 
   OpenHelpModal() {

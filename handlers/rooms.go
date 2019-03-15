@@ -6,11 +6,35 @@ import (
 	"time"
 
 	"github.com/byuoitav/common/log"
+	sd "github.com/byuoitav/common/state/statedefinition"
 	"github.com/byuoitav/common/structs"
 	"github.com/byuoitav/shipwright/helpers"
 	schedule "github.com/byuoitav/wso2services/classschedules/registar"
 	"github.com/labstack/echo"
 )
+
+// Test is a test function for something...
+func UpdateStaticRoom(context echo.Context) error {
+	roomID := context.Param("room")
+
+	var room sd.StaticRoom
+	err := context.Bind(&room)
+	if err != nil {
+		log.L.Errorf("failed to bind request body for %s : %s", roomID, err.Error())
+		return context.JSON(http.StatusBadRequest, err)
+	}
+
+	// call helper function
+	ne := helpers.UpdateStaticRoom(roomID, room)
+	if ne != nil {
+		log.L.Errorf("%s", ne.Error())
+		return context.JSON(http.StatusInternalServerError, ne.Error())
+	}
+
+	log.L.Debugf("%s was changed to maintenance mode, %s", roomID, room)
+
+	return context.JSON(http.StatusOK, room)
+}
 
 // AddRoom adds a room to the database
 func AddRoom(context echo.Context) error {
