@@ -531,9 +531,9 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		} else if len(issue.ActiveAlertSeverities) < len(issue.AlertSeverities) {
 			// its a partial resolution
 			toClear := []structs.AlertSeverity{}
-			for _, i := range issue.ActiveAlertSeverities {
+			for _, i := range issue.AlertSeverities {
 				found := false
-				for _, j := range issue.AlertSeverities {
+				for _, j := range issue.ActiveAlertSeverities {
 					if i == j {
 						found = true
 						break
@@ -543,7 +543,8 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 					toClear = append(toClear, i)
 				}
 			}
-			log.L.Infof("Room Issue %s, doing partial resolution for alert types %v", issue.RoomID, toClear)
+
+			log.L.Debugf("Room Issue %s, doing partial resolution for alert types %v", issue.RoomID, toClear)
 
 			// for each alert severity to clear we're gonna do a partial resolution with those alerts
 			resInfo := structs.ResolutionInfo{
@@ -567,14 +568,14 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 
 			//sumbit for partial resolution
 			if len(toResolve) > 0 {
-				log.L.Infof("Room Issue %s, doing partial resolution for alerts %v", issue.RoomID, toResolve)
+				log.L.Debugf("Room Issue %s, doing partial resolution for alerts %v", issue.RoomID, toResolve)
 
 				err := a.resolveIssue(resInfo, issue.RoomIssueID, true, toResolve)
 				if err != nil {
 					log.L.Errorf("Problem doing a partial autoresolution issue %v: %v", issue.RoomIssueID, err.Error())
 				}
 			} else {
-				log.L.Infof("Room Issue %s, Alerts for serverity %v to be cleared, but no alerts found.  AlertSeverities: %v, ActiveAlertSeverities: %v",
+				log.L.Errorf("Room Issue %s, Alerts for serverity %v to be cleared, but no alerts found.  AlertSeverities: %v, ActiveAlertSeverities: %v",
 					issue.RoomIssueID, toClear, issue.AlertSeverities, issue.ActiveAlertSeverities)
 			}
 		}
