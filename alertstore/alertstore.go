@@ -276,12 +276,12 @@ func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue stri
 			//we need to copy the RoomIssue
 			newRoomIssue := v
 
-			//copy all of our slices
+			//copy some of our slices
 			copy(newRoomIssue.RoomTags, v.RoomTags)
-			copy(newRoomIssue.AlertTypes, v.AlertTypes)
-			copy(newRoomIssue.AlertCategories, v.AlertCategories)
-			copy(newRoomIssue.ActiveAlertTypes, v.ActiveAlertTypes)
-			copy(newRoomIssue.ActiveAlertCategories, v.ActiveAlertCategories)
+			// copy(newRoomIssue.AlertTypes, v.AlertTypes)
+			// copy(newRoomIssue.AlertCategories, v.AlertCategories)
+			// copy(newRoomIssue.ActiveAlertTypes, v.ActiveAlertTypes)
+			// copy(newRoomIssue.ActiveAlertCategories, v.ActiveAlertCategories)
 			newRoomIssue.Alerts = []structs.Alert{}
 			copy(newRoomIssue.RoomIssueResponses, v.RoomIssueResponses)
 			copy(newRoomIssue.NotesLog, v.NotesLog)
@@ -311,6 +311,8 @@ func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue stri
 
 			v.CalculateAggregateInfo()
 			newRoomIssue.CalculateAggregateInfo()
+
+			log.L.Infof("partial resolve - new issue: %+v, old issue: %+v", newRoomIssue, v)
 
 			persist.GetElkAlertPersist().StoreIssue(v, true, false)
 			socket.GetManager().WriteToSockets(v)
