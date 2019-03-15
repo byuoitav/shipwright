@@ -7,7 +7,8 @@ export const enum DashPanelTypes {
   WarningAlerts,
   LowSeverityAlerts,
   RecentlyResolvedAlerts,
-  MaintenanceRoomAlerts
+  MaintenanceRoomAlerts,
+  StageDevAlerts,
   //MicrophoneBatteries - someday
   //SuppressedAlerts - someday
 }
@@ -53,13 +54,18 @@ export class DashPanelService {
       component: AlertTableComponent,
       title: "Maintenance Room Alerts"
     },
+    {
+      dashPanelType: DashPanelTypes.StageDevAlerts,
+      component: AlertTableComponent,
+      title: "Stage and Development Room Alerts"
+    },
    ];
-  
-   getPanel(panelType: DashPanelTypes) : DashPanelConfig {
-    return this.configs.find(one => one.dashPanelType == panelType);    
+
+   getPanel(panelType: DashPanelTypes): DashPanelConfig {
+    return this.configs.find(one => one.dashPanelType === panelType);
    }
 
-   getAllPanelConfigs() : DashPanelConfig[] {
+   getAllPanelConfigs(): DashPanelConfig[] {
      return this.configs;
    }
 }
