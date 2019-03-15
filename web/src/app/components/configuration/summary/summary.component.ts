@@ -74,6 +74,11 @@ export class SummaryComponent implements OnInit {
   ngOnInit() {}
 
   async SetupSummary() {
+    this.deviceList = this.data.roomToDevicesMap.get(this.roomID);
+    this.filteredDevices = this.deviceList;
+    this.filteredResponders = this.data.possibleResponders;
+    await this.SetupSchedule();
+
     this.roomIssue = this.data.GetRoomIssue(this.roomID);
     if (this.roomIssue == null || this.roomIssue === undefined) {
       console.error("no room issue found for room", this.roomID);
@@ -84,10 +89,7 @@ export class SummaryComponent implements OnInit {
       this.roomIssue.roomIssueResponses = [];
     }
 
-    this.deviceList = this.data.roomToDevicesMap.get(this.roomID);
-    this.filteredDevices = this.deviceList;
-    this.filteredResponders = this.data.possibleResponders;
-    await this.SetupSchedule();
+    
 
     this.data.issueEmitter.subscribe(changedIssue => {
       if (
@@ -201,6 +203,11 @@ export class SummaryComponent implements OnInit {
       if (hours.length === 1) {
         hours = "0" + hours;
       }
+    }
+
+    if (hoursNum == 0) {
+      hoursNum += 12;
+      hours = String(hoursNum);
     }
 
     return hours + ":" + mins + " " + period;

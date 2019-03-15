@@ -4,19 +4,22 @@ $save:#0046c8;
 .base {
     min-height: 100%;
     height: 100vh;
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-evenly;
     padding: 10px;
 }
 
 .container {
+    display: inline-block;
     height: 100%;
     flex: 1 1 auto;
     &.full {
         width: 100%;
         padding: 1%;
     }
+}
+
+.info-header {
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .fill-remaining-space {
@@ -33,6 +36,7 @@ $save:#0046c8;
     margin-right: 4vw;
     height: wrap;
     max-height: 40vh;
+    flex-grow: 1;
     width: 220px;
     &.back {
         width: 100px;
@@ -140,7 +144,7 @@ $save:#0046c8;
     display: flex;
     flex-flow: row nowrap;
     justify-content: flex-start;
-    align-items: baseline;
+    align-items: stretch;
     margin-top: 3vh;
     margin-bottom: 3vh;
     &.help {
@@ -151,6 +155,11 @@ $save:#0046c8;
     }
     &.action {
         padding: 10px;
+    }
+    &.table {
+        align-items: baseline;
+        padding-top: 10px;
+        padding-bottom: 10px;
     }
 }
 
