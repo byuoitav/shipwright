@@ -6,13 +6,8 @@
 .device-list {
   width: 90%;
 
-  .mat-form-field {
-    font-size: 1em;
+  .filter-list {
     width: 100%;
-  }
-
-  ::ng-deep.mat-sort-header-position-before {
-    justify-content: flex-end;
   }
 
   .table {
@@ -65,4 +60,19 @@
 
 .space {
   flex: 1 1 auto;
+}
+
+.cell {
+  &:hover {
+    button {
+      opacity: 1;
+    }
+  }
+
+  button {
+    margin: 0 1vw 0;
+    opacity: 0;
+
+    transition: opacity 0.3s ease-in-out;
+  }
 }

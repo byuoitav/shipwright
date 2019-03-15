@@ -1,8 +1,59 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
-import { MatPaginator, MatSort, MatTableDataSource } from "@angular/material";
+import { COMMA, ENTER } from "@angular/cdk/keycodes";
+import {
+  MatPaginator,
+  MatSort,
+  MatTableDataSource,
+  MatChipInputEvent
+} from "@angular/material";
 
 import { DataService } from "../../../services/data.service";
 import { StaticDevice } from "../../../objects/static";
+
+enum FilterType {
+  ForKey,
+  General
+}
+
+class Filter {
+  ftype: FilterType;
+  key: string;
+  val: string;
+
+  filter = (data: StaticDevice): boolean => {
+    switch (this.ftype) {
+      case FilterType.General: {
+        const datastr = Object.keys(data)
+          .reduce((currentTerm: string, key: string) => {
+            if (!data[key]) {
+              return currentTerm;
+            }
+
+            return currentTerm + (data as { [key: string]: any })[key] + "◬";
+          }, "")
+          .toLowerCase();
+
+        return datastr.includes(this.val);
+      }
+      case FilterType.ForKey: {
+        if (!data[this.key]) {
+          return false;
+        }
+
+        const datastr = (data as { [k: string]: any })[this.key].toLowerCase();
+        return datastr.includes(this.val);
+      }
+      default:
+        break;
+    }
+  };
+
+  constructor(ftype: FilterType, key: string, val: string) {
+    this.ftype = ftype;
+    this.key = key;
+    this.val = val ? val.trim().toLowerCase() : val;
+  }
+}
 
 @Component({
   selector: "app-device-state",
@@ -10,16 +61,13 @@ import { StaticDevice } from "../../../objects/static";
   styleUrls: ["./device-state.component.scss"]
 })
 export class DeviceStateComponent implements OnInit {
+  readonly separatorKeyCodes: number[] = [ENTER, COMMA]; // delimate filters with these keys
+  readonly filterType: typeof FilterType = FilterType; // so the component can use them
+
   allColumns: string[] = [];
   displayedColumns: string[] = [];
-
   dataSource: MatTableDataSource<StaticDevice>;
-
-  // all of the applied filters
-  filters: Map<
-    string,
-    (data: StaticDevice, filter?: string) => boolean
-  > = new Map();
+  filters: Filter[] = [];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -27,97 +75,81 @@ export class DeviceStateComponent implements OnInit {
   constructor(private data: DataService) {}
 
   ngOnInit() {
+    if (this.data.loaded) {
+      this.load();
+    }
+
     this.data.loaded.subscribe(() => {
-      this.dataSource = new MatTableDataSource(this.data.staticDeviceList);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-      this.dataSource.filterPredicate = this.filterPred;
-
-      // add generalFilter
-      this.filters.set("◬", this.generalFilter);
-
-      console.log("filters", this.filters);
-
-      if (
-        this.data.staticDeviceList != null &&
-        this.data.staticDeviceList.length > 0
-      ) {
-        this.allColumns = Object.keys(this.data.staticDeviceList[0]).sort();
-        this.displayedColumns.push(...["deviceID", "power", "input"]);
-      }
+      this.load();
     });
   }
 
-  filterPred = (data: StaticDevice, filter: string): boolean => {
-    // loop through all the filters, if one of them fails, return false
-    for (const [k, v] of this.filters) {
-      if (!v(data, filter)) {
-        return false;
-      }
-    }
-
-    return true;
-  };
-
-  generalFilter = (data: StaticDevice, filter: string): boolean => {
-    const datastr = Object.keys(data)
-      .reduce((currentTerm: string, key: string) => {
-        if (data[key] == null || data[key] === undefined) {
-          return currentTerm;
+  private load() {
+    this.dataSource = new MatTableDataSource(this.data.staticDeviceList);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    this.dataSource.filterPredicate = (
+      data: StaticDevice,
+      filter: string
+    ): boolean => {
+      // loop through all the filters, if one of them fails, return false
+      for (const f of this.filters) {
+        if (!f.filter(data)) {
+          return false;
         }
-
-        return currentTerm + (data as { [key: string]: any })[key] + "◬";
-      }, "")
-      .toLowerCase();
-
-    // trim ending whitespace and turn filter into lowercase
-    filter = filter.trim().toLowerCase();
-
-    // assume filter string is a space delimated set of AND's
-    const split = filter.split(" ");
-
-    for (const term of split) {
-      if (datastr.indexOf(term) < 0) {
-        return false;
-      }
-    }
-
-    return true;
-  };
-
-  applyColumnFilter(col: string, filter: string) {
-    const func = (data: StaticDevice): boolean => {
-      if (data[col] == null || data[col] === undefined) {
-        return false;
       }
 
-      // convert column to string
-      const datastr = (data as { [key: string]: any })[col].toLowerCase();
-
-      // trim ending whitespace and turn filter into lowercase
-      filter = filter.trim().toLowerCase();
-
-      return datastr.indexOf(filter) !== -1;
+      return true;
     };
 
-    if (filter == null || filter === undefined || filter.length === 0) {
-      this.filters.delete(col);
-    } else {
-      this.filters.set(col, func);
+    if (this.data.staticDeviceList && this.data.staticDeviceList.length > 0) {
+      this.allColumns = Object.keys(this.data.staticDeviceList[0]).sort();
+      this.displayedColumns.push(...["deviceID", "power", "input"]);
     }
+  }
 
-    // console.log("filters", this.filters);
+  addFilter(ftype: FilterType, key: string, val: string) {
+    const f = new Filter(ftype, key, val);
+    this.filters.push(f);
+
     this.forceFilter();
   }
 
+  removeFilter(filter: Filter): void {
+    const index = this.filters.indexOf(filter);
+
+    if (index >= 0) {
+      this.filters.splice(index, 1);
+    }
+
+    this.forceFilter();
+  }
+
+  addChip(event: MatChipInputEvent): void {
+    const value = event.value.trim();
+
+    let split = value.split(/:(.*)/);
+    split = split.filter(s => s); // filter out blank ones
+    split = split.map(s => s.trim()); // trim each string
+
+    if (split.length === 2 && this.allColumns.includes(split[0])) {
+      this.addFilter(FilterType.ForKey, split[0], split[1]);
+    } else {
+      this.addFilter(FilterType.General, undefined, value);
+    }
+
+    if (event.input) {
+      event.input.value = ""; // reset the input
+    }
+  }
+
   public forceFilter() {
-    if (!this.dataSource.filter && this.filters.size > 1) {
+    if (!this.dataSource.filter && this.filters.length > 0) {
       this.dataSource.filter = "◬";
     }
 
     this.dataSource._filterData(this.dataSource.data);
     this.dataSource._updateChangeSubscription();
-    console.log("filtered", this.dataSource.filteredData);
 
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
@@ -127,7 +159,7 @@ export class DeviceStateComponent implements OnInit {
   public applyFilter(f: string) {
     this.dataSource.filter = f;
 
-    if (!this.dataSource.filter && this.filters.size > 1) {
+    if (!this.dataSource.filter && this.filters.length > 1) {
       f = "◬";
     }
 
@@ -139,9 +171,6 @@ export class DeviceStateComponent implements OnInit {
   public removeColumn(col: string) {
     const idx = this.displayedColumns.indexOf(col, 0);
     if (idx > -1) {
-      this.filters.delete(col);
-      this.forceFilter();
-
       this.displayedColumns.splice(idx, 1);
     }
   }
