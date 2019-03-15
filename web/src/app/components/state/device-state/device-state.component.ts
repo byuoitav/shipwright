@@ -38,26 +38,30 @@ class Filter {
       }
       case FilterType.For: {
         if (!data[this.key]) {
-          if (!val) {
+          if (!this.val) {
             return true;
           }
 
           return false;
         }
 
-        const datastr = (data as { [k: string]: any })[this.key].toLowerCase();
+        const datastr = (data as { [k: string]: any })[this.key]
+          .toString()
+          .toLowerCase();
         return datastr.includes(this.val);
       }
       case FilterType.Out: {
         if (!data[this.key]) {
-          if (!val) {
+          if (!this.val) {
             return false;
           }
 
           return true;
         }
 
-        const datastr = (data as { [k: string]: any })[this.key].toLowerCase();
+        const datastr = (data as { [k: string]: any })[this.key]
+          .toString()
+          .toLowerCase();
         return !datastr.includes(this.val);
       }
       default:
@@ -68,7 +72,12 @@ class Filter {
   constructor(ftype: FilterType, key: string, val: string) {
     this.ftype = ftype;
     this.key = key;
-    this.val = val ? val.trim().toLowerCase() : val;
+    this.val = val
+      ? val
+          .toString()
+          .trim()
+          .toLowerCase()
+      : val;
   }
 }
 
@@ -121,13 +130,14 @@ export class DeviceStateComponent implements OnInit {
 
     if (this.data.staticDeviceList && this.data.staticDeviceList.length > 0) {
       this.allColumns = Object.keys(this.data.staticDeviceList[0]).sort();
-      this.displayedColumns.push(...["deviceID", "power", "input"]);
+      this.displayedColumns.push(
+        ...["deviceID", "deviceType", "power", "input", "lastHeartbeat"]
+      );
     }
   }
 
   addFilter(ftype: FilterType, key: string, val: string) {
     const f = new Filter(ftype, key, val);
-    console.log("added filter", f);
     this.filters.push(f);
 
     this.forceFilter();
@@ -186,26 +196,10 @@ export class DeviceStateComponent implements OnInit {
     }
   }
 
-  public removeColumn(col: string) {
-    const idx = this.displayedColumns.indexOf(col, 0);
-    if (idx > -1) {
-      this.displayedColumns.splice(idx, 1);
+  public changeCol(o: string, n: string) {
+    const index = this.displayedColumns.indexOf(o);
+    if (index >= 0) {
+      this.displayedColumns[index] = n;
     }
-  }
-
-  public addColumn(col: string) {
-    this.displayedColumns.push(col);
-  }
-
-  public shiftLeft(col: string) {
-    const idx = this.displayedColumns.indexOf(col);
-
-    if (idx <= 0) {
-      return;
-    }
-
-    const swap = this.displayedColumns[idx];
-    this.displayedColumns[idx] = this.displayedColumns[idx - 1];
-    this.displayedColumns[idx - 1] = swap;
   }
 }
