@@ -11,7 +11,8 @@ import { DataService } from "../../../services/data.service";
 import { StaticDevice } from "../../../objects/static";
 
 enum FilterType {
-  ForKey,
+  For,
+  Out,
   General
 }
 
@@ -20,7 +21,7 @@ class Filter {
   key: string;
   val: string;
 
-  filter = (data: StaticDevice): boolean => {
+  filter = (data: any): boolean => {
     switch (this.ftype) {
       case FilterType.General: {
         const datastr = Object.keys(data)
@@ -35,13 +36,29 @@ class Filter {
 
         return datastr.includes(this.val);
       }
-      case FilterType.ForKey: {
+      case FilterType.For: {
         if (!data[this.key]) {
+          if (!val) {
+            return true;
+          }
+
           return false;
         }
 
         const datastr = (data as { [k: string]: any })[this.key].toLowerCase();
         return datastr.includes(this.val);
+      }
+      case FilterType.Out: {
+        if (!data[this.key]) {
+          if (!val) {
+            return false;
+          }
+
+          return true;
+        }
+
+        const datastr = (data as { [k: string]: any })[this.key].toLowerCase();
+        return !datastr.includes(this.val);
       }
       default:
         break;
@@ -110,6 +127,7 @@ export class DeviceStateComponent implements OnInit {
 
   addFilter(ftype: FilterType, key: string, val: string) {
     const f = new Filter(ftype, key, val);
+    console.log("added filter", f);
     this.filters.push(f);
 
     this.forceFilter();
@@ -133,7 +151,7 @@ export class DeviceStateComponent implements OnInit {
     split = split.map(s => s.trim()); // trim each string
 
     if (split.length === 2 && this.allColumns.includes(split[0])) {
-      this.addFilter(FilterType.ForKey, split[0], split[1]);
+      this.addFilter(FilterType.For, split[0], split[1]);
     } else {
       this.addFilter(FilterType.General, undefined, value);
     }

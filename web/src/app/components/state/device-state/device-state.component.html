@@ -15,6 +15,8 @@
     <mat-form-field class="filter-list">
       <mat-chip-list #filterChips>
         <mat-chip
+          [class.red]="filter?.ftype === filterType.Out"
+          [class.green]="filter?.ftype === filterType.For"
           *ngFor="let filter of filters"
           [selectable]="true"
           [removable]="true"
@@ -62,9 +64,15 @@
           <span>{{ element[column] }}</span>
           <button
             mat-icon-button
-            (click)="addFilter(filterType.ForKey, column, element[column])"
+            (click)="addFilter(filterType.For, column, element[column])"
           >
             <mat-icon>zoom_in</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            (click)="addFilter(filterType.Out, column, element[column])"
+          >
+            <mat-icon>zoom_out</mat-icon>
           </button>
         </td>
       </ng-container>
