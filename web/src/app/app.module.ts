@@ -77,6 +77,10 @@ import { NotifierModule } from "angular-notifier";
 import { HelpModalComponent } from "./modals/helpmodal/helpmodal.component";
 import { DeviceStateComponent } from "./components/state/device-state/device-state.component";
 import { ResponseModalComponent } from "./modals/responsemodal/responsemodal.component";
+import {
+  MaintenanceModalComponent,
+  MaintenanceModalComponentDialog
+} from "./modals/maintenancemodal/maintenancemodal.component";
 
 @NgModule({
   declarations: [
@@ -108,7 +112,9 @@ import { ResponseModalComponent } from "./modals/responsemodal/responsemodal.com
     RoomStateComponent,
     HelpModalComponent,
     DeviceStateComponent,
-    ResponseModalComponent
+    ResponseModalComponent,
+    MaintenanceModalComponent,
+    MaintenanceModalComponentDialog
   ],
   imports: [
     BrowserModule,
@@ -161,7 +167,8 @@ import { ResponseModalComponent } from "./modals/responsemodal/responsemodal.com
     PresetModalComponent,
     IconModalComponent,
     HelpModalComponent,
-    ResponseModalComponent
+    ResponseModalComponent,
+    MaintenanceModalComponentDialog
   ],
   providers: [
     APIService,
