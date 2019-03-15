@@ -312,8 +312,12 @@ func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue stri
 			v.CalculateAggregateInfo()
 			newRoomIssue.CalculateAggregateInfo()
 
-			log.L.Infof("partial resolve - new issue: %+v, old issue: %+v", newRoomIssue, v)
+			log.L.Debugf("partial resolve - new issue: %+v, old issue: %+v", newRoomIssue, v)
 
+			//update in cache
+			alertcache.GetAlertCache("default").PutIssue(v)
+
+			//persist to elk for storage
 			persist.GetElkAlertPersist().StoreIssue(v, true, false)
 			socket.GetManager().WriteToSockets(v)
 			a.runIssueActions(v)
