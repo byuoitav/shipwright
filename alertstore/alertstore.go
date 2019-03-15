@@ -561,12 +561,14 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 			}
 
 			//sumbit for partial resolution
-			err := a.resolveIssue(resInfo, issue.RoomIssueID, true, toResolve)
-			if err != nil {
-				log.L.Errorf("Problem doing a partial autoresolution issue %v: %v", issue.RoomIssueID, err.Error())
+			if len(toResolve) > 0 {
+				err := a.resolveIssue(resInfo, issue.RoomIssueID, true, toResolve)
+				if err != nil {
+					log.L.Errorf("Problem doing a partial autoresolution issue %v: %v", issue.RoomIssueID, err.Error())
+				}
+			} else {
+				log.L.Infof("Room Issue %s, Alerts for serverity %v to be cleared, but no alerts found.  AlertSeverities: %s, ActiveAlertSeverities: %s", issue.RoomIssueID, toClear, issue.AlertActiveCount, issue.ActiveAlertSeverities)
 			}
-
-			return
 		}
 	}
 
