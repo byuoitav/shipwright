@@ -456,7 +456,17 @@ export class DataService {
 
   GetRoomIssuesBySeverity(severity?: string): RoomIssue[] {
     const temp: RoomIssue[] = [];
-
+    if (severity === "development") {
+      for (const issue of this.roomIssueList) {
+        if (
+          issue.roomTags.includes("development") ||
+          issue.roomTags.includes("testing")
+        ) {
+          temp.push(issue);
+        }
+      }
+      return temp;
+    }
     if (severity == null || severity === "all" || severity === undefined) {
       return this.roomIssueList;
     } else {

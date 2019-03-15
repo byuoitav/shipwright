@@ -120,6 +120,8 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
       return "warning";
     } else if (dashPanelType === DashPanelTypes.LowSeverityAlerts) {
       return "low";
+    } else if (dashPanelType === DashPanelTypes.StageDevAlerts) {
+      return "development";
     }
 
     return "";

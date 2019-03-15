@@ -276,12 +276,12 @@ func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue stri
 			//we need to copy the RoomIssue
 			newRoomIssue := v
 
-			//copy all of our slices
+			//copy some of our slices
 			copy(newRoomIssue.RoomTags, v.RoomTags)
-			copy(newRoomIssue.AlertTypes, v.AlertTypes)
-			copy(newRoomIssue.AlertCategories, v.AlertCategories)
-			copy(newRoomIssue.ActiveAlertTypes, v.ActiveAlertTypes)
-			copy(newRoomIssue.ActiveAlertCategories, v.ActiveAlertCategories)
+			// copy(newRoomIssue.AlertTypes, v.AlertTypes)
+			// copy(newRoomIssue.AlertCategories, v.AlertCategories)
+			// copy(newRoomIssue.ActiveAlertTypes, v.ActiveAlertTypes)
+			// copy(newRoomIssue.ActiveAlertCategories, v.ActiveAlertCategories)
 			newRoomIssue.Alerts = []structs.Alert{}
 			copy(newRoomIssue.RoomIssueResponses, v.RoomIssueResponses)
 			copy(newRoomIssue.NotesLog, v.NotesLog)
@@ -312,6 +312,12 @@ func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue stri
 			v.CalculateAggregateInfo()
 			newRoomIssue.CalculateAggregateInfo()
 
+			log.L.Debugf("partial resolve - new issue: %+v, old issue: %+v", newRoomIssue, v)
+
+			//update in cache
+			alertcache.GetAlertCache("default").PutIssue(v)
+
+			//persist to elk for storage
 			persist.GetElkAlertPersist().StoreIssue(v, true, false)
 			socket.GetManager().WriteToSockets(v)
 			a.runIssueActions(v)
@@ -531,9 +537,9 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 		} else if len(issue.ActiveAlertSeverities) < len(issue.AlertSeverities) {
 			// its a partial resolution
 			toClear := []structs.AlertSeverity{}
-			for _, i := range issue.ActiveAlertSeverities {
+			for _, i := range issue.AlertSeverities {
 				found := false
-				for _, j := range issue.AlertSeverities {
+				for _, j := range issue.ActiveAlertSeverities {
 					if i == j {
 						found = true
 						break
@@ -543,6 +549,8 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 					toClear = append(toClear, i)
 				}
 			}
+
+			log.L.Debugf("Room Issue %s, doing partial resolution for alert types %v", issue.RoomID, toClear)
 
 			// for each alert severity to clear we're gonna do a partial resolution with those alerts
 			resInfo := structs.ResolutionInfo{
@@ -554,19 +562,28 @@ func (a *alertStore) storeAlert(alert structs.Alert) {
 			toResolve := []string{}
 			for _, i := range issue.Alerts {
 				for _, j := range toClear {
-					if i.Severity == j && !i.Active {
-						toResolve = append(toResolve, i.AlertID)
+					if i.Severity == j {
+						if i.Active {
+							log.L.Errorf("Active alert found in partial clearing")
+						} else {
+							toResolve = append(toResolve, i.AlertID)
+						}
 					}
 				}
 			}
 
 			//sumbit for partial resolution
-			err := a.resolveIssue(resInfo, issue.RoomIssueID, true, toResolve)
-			if err != nil {
-				log.L.Errorf("Problem doing a partial autoresolution issue %v: %v", issue.RoomIssueID, err.Error())
-			}
+			if len(toResolve) > 0 {
+				log.L.Debugf("Room Issue %s, doing partial resolution for alerts %v", issue.RoomID, toResolve)
 
-			return
+				err := a.resolveIssue(resInfo, issue.RoomIssueID, true, toResolve)
+				if err != nil {
+					log.L.Errorf("Problem doing a partial autoresolution issue %v: %v", issue.RoomIssueID, err.Error())
+				}
+			} else {
+				log.L.Errorf("Room Issue %s, Alerts for serverity %v to be cleared, but no alerts found.  AlertSeverities: %v, ActiveAlertSeverities: %v",
+					issue.RoomIssueID, toClear, issue.AlertSeverities, issue.ActiveAlertSeverities)
+			}
 		}
 	}
 
