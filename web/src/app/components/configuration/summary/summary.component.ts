@@ -15,7 +15,7 @@ import { AlertTableComponent } from "../../dashboard/alerttable/alerttable.compo
 import { APIService } from "src/app/services/api.service";
 import { MatDialog, MatDialogRef, MatTableDataSource } from "@angular/material";
 import { ResolveModalComponent } from "../../../modals/resolve/resolve.component";
-import { MaintenanceModalComponent } from 'src/app/modals/maintenancemodal/maintenancemodal.component';
+import { MaintenanceModalComponent } from "src/app/modals/maintenancemodal/maintenancemodal.component";
 
 @Component({
   selector: "app-summary",
@@ -88,8 +88,6 @@ export class SummaryComponent implements OnInit {
     if (this.roomIssue.roomIssueResponses == null) {
       this.roomIssue.roomIssueResponses = [];
     }
-
-    
 
     this.data.issueEmitter.subscribe(changedIssue => {
       if (
@@ -205,7 +203,7 @@ export class SummaryComponent implements OnInit {
       }
     }
 
-    if (hoursNum == 0) {
+    if (hoursNum === 0) {
       hoursNum += 12;
       hours = String(hoursNum);
     }
@@ -323,11 +321,7 @@ export class SummaryComponent implements OnInit {
   }
 
   isResolvable() {
-    if (this.roomIssue == null || this.roomIssue === undefined) {
-      return false;
-    }
-
-    if (this.roomIssue.alerts == null || this.roomIssue === undefined) {
+    if (!this.roomIssue || !this.roomIssue.alerts) {
       return false;
     }
 
@@ -338,10 +332,13 @@ export class SummaryComponent implements OnInit {
     const resInfo = new ResolutionInfo();
     resInfo.notes = "";
 
-    this.modal.OpenResolveModal({
-      issue: this.roomIssue,
-      resInfo: resInfo,
-      codes: this.data.closureCodes
+    const ref = this.dialog.open(ResolveModalComponent, {
+      width: "25vw",
+      data: {
+        issue: this.roomIssue,
+        resInfo: resInfo,
+        codes: this.data.closureCodes
+      }
     });
   }
 }

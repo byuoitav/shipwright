@@ -21,7 +21,6 @@ import {
 } from "../objects/database";
 import { APIService } from "./api.service";
 import { HelpModalComponent } from "../modals/helpmodal/helpmodal.component";
-import { ResolveModalComponent } from '../modals/resolve/resolve.component';
 
 @Injectable({
   providedIn: "root"
@@ -90,15 +89,5 @@ export class ModalService {
 
   OpenHelpModal() {
     this.dialog.open(HelpModalComponent);
-  }
-
-  OpenResolveModal(resolveData: any) {
-    this.dialog.open(ResolveModalComponent, {
-      width: "25vw",
-      data: resolveData
-    }).afterClosed()
-    .subscribe(result => {
-
-    });
   }
 }
