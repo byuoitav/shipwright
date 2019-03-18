@@ -89,7 +89,7 @@ export class ModalService {
     this.dialog.open(MaintenanceModalComponent, {data: roomID}).afterClosed()
     .subscribe(result => {
       if (result != null) {
-        this.api.SetMaintenanceMode();
+        this.api.SetMaintenanceMode(result.roomID, result);
       }
     });
   }

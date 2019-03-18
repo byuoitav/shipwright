@@ -1,0 +1,12 @@
+.row {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    margin-top: 2vh;
+    // margin-bottom: 15px;
+}
+
+mat-form-field {
+    width: 120px;
+    // margin-right: 20px;
+}
