@@ -1,1 +1,25 @@
 <p>Maintenance Modal works!</p>
+<h3>Would you like to put {{data}} in maintenance mode?</h3>
+
+<p>- putting a room in maintenance mode will suppress all alerts that come from the room
+    until the designated time. 
+</p>
+
+<mat-label class="help-label">In Maintance until:</mat-label>
+<div>
+<mat-form-field>
+    <input matInput [matDatepicker]="picker" placeholder="Choose a date">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+</mat-form-field>
+<div>
+<mat-form-field class="time-input">
+    <input type="time" matInput [(ngModel)]="arrivalTime" />
+</mat-form-field>
+</div>
+</div>
+
+<div>
+    <button mat-button (click)="submit(picker, arrivalTime, data)">Done</button>
+    <button mat-button (click)="this.dialogRef.close()">Cancel</button>
+</div>

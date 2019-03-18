@@ -13,7 +13,7 @@ import {
   UIConfig,
   Template
 } from "../objects/database";
-import { StaticDevice, CombinedRoomState } from "../objects/static";
+import { StaticDevice, CombinedRoomState, StaticRoom } from "../objects/static";
 import { RoomIssue, Alert, ResolutionInfo, ClassHalfHourBlock } from "../objects/alerts";
 import { StringsService } from "./strings.service";
 
@@ -816,6 +816,26 @@ export class APIService {
       return schedule;
     } catch (e) {
       throw new Error("error trying to get the schedule for " + roomID + ": " + e)
+    }
+  }
+
+  public async SetMaintenanceMode(id: string, info: StaticRoom) {
+    try {
+      const data = await this.http
+        .put("rooms/" + id + "/maintenance", this.converter.serialize(info), {
+          headers: this.headers,
+          responseType: "text"
+        })
+        .toPromise();
+
+      return data;
+    } catch (e) {
+      if (e.status === 200) {
+        console.log(e.error.text);
+        return e.error.text;
+      }
+
+      throw new Error("error trying to set room to maintenance mode: " + e);
     }
   }
 }
