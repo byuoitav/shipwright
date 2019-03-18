@@ -23,9 +23,9 @@
       </mat-chip-list>
     </mat-form-field>
 
-    <table mat-table [dataSource]="dataSource" class="table">
+    <table mat-table [dataSource]="dataSource" class="table" matSort>
       <ng-container *ngFor="let column of allColumns" [matColumnDef]="column">
-        <th mat-header-cell *matHeaderCellDef>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
           <mat-form-field class="header">
             <mat-select
               [value]="column"
