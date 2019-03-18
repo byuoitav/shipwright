@@ -22,6 +22,7 @@ import {
 import { APIService } from "./api.service";
 import { HelpModalComponent } from "../modals/helpmodal/helpmodal.component";
 import { ResolveModalComponent } from '../modals/resolve/resolve.component';
+import { StaticRoom } from '../objects/static';
 
 @Injectable({
   providedIn: "root"
@@ -84,8 +85,13 @@ export class ModalService {
     this.dialog.open(ResponseModalComponent);
   }
 
-  OpenMaintenanceModal() {
-    this.dialog.open(MaintenanceModalComponent);
+  OpenMaintenanceModal(roomID: string) {
+    this.dialog.open(MaintenanceModalComponent, {data: roomID}).afterClosed()
+    .subscribe(result => {
+      if (result != null) {
+        this.api.SetMaintenanceMode();
+      }
+    });
   }
 
   OpenHelpModal() {

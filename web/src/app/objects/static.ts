@@ -5,6 +5,8 @@ import {
   JsonCustomConvert
 } from "json2typescript";
 import { RoomIssue, Alert } from "./alerts";
+import { timeInterval } from 'rxjs/operators';
+import { Time } from '@angular/common';
 
 @JsonConverter
 class DateConverter implements JsonCustomConvert<Date> {
@@ -287,9 +289,17 @@ export class StaticRoom {
   @JsonProperty("roomID", String, true)
   roomID: string = undefined;
 
-  // Not sure shy I can't put time in JsonProperty
-  // @JsonProperty("maintenence-mode-until", true)
-  // maintenence: Time = undefined;
+  @JsonProperty("maintenence-mode", Boolean, true)
+  MaintenenceMode: Boolean = undefined;
+
+  @JsonProperty("maintenence-mode-until", time.Time, true)
+  MaintenenceModeEndTime: Time = undefined;
+
+  @JsonProperty("monitoring", Boolean, true)
+  Monitoring: Boolean = undefined;
+
+  @JsonProperty("tags", [String], true)
+  Tags: string[] = Array<string>();
 
   @JsonProperty("designation", String, true)
   designation: string = undefined;
@@ -298,8 +308,8 @@ export class StaticRoom {
   systemType: string[] = Array<string>();
 
   // Not sure what how to label this type Go: map[string]time.Time
-  // @JsonProperty("update-times", true)
-  // updateTimes: [string] = undefined;
+  @JsonProperty("update-times", [String], true)
+  updateTimes: [String] = undefined;
 }
 
 @JsonObject("CombinedRoomState")
