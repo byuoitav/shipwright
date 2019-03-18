@@ -97,14 +97,4 @@ export class ModalService {
   OpenHelpModal() {
     this.dialog.open(HelpModalComponent);
   }
-
-  OpenResolveModal(resolveData: any) {
-    this.dialog.open(ResolveModalComponent, {
-      width: "25vw",
-      data: resolveData
-    }).afterClosed()
-    .subscribe(result => {
-
-    });
-  }
 }
