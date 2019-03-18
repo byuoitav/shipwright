@@ -122,10 +122,10 @@
                 </mat-card-content>
                 <mat-divider></mat-divider>
                 <mat-card-actions>
-                    <button mat-raised-button color="primary" (click)="modal.OpenResponseModal()">
+                    <button mat-raised-button color="primary" (click)="openResolve()">
             New Visit <mat-icon>add</mat-icon>
           </button>
-                    <button mat-raised-button color="primary" (click)="openMaintenance()">
+                    <button mat-raised-button color="primary" (click)="modal.OpenMaintenanceModal(roomID)">
             Maintenance <mat-icon>add</mat-icon>
           </button>
                     <button mat-raised-button class="button resolve" *ngIf="isResolvable()" (click)="openResolve()">

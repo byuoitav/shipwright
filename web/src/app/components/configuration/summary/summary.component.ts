@@ -338,25 +338,10 @@ export class SummaryComponent implements OnInit {
     const resInfo = new ResolutionInfo();
     resInfo.notes = "";
 
-    const ref = this.dialog.open(ResolveModalComponent, {
-      width: "25vw",
-      data: {
-        issue: this.roomIssue,
-        resInfo: resInfo,
-        codes: this.data.closureCodes
-      }
+    this.modal.OpenResolveModal({
+      issue: this.roomIssue,
+      resInfo: resInfo,
+      codes: this.data.closureCodes
     });
-
-    ref.afterClosed().subscribe(result => {});
   }
-
-  openMaintenance() {
-
-    const ref = this.dialog.open(MaintenanceModalComponent, {
-      width: "25vw",
-    });
-
-    ref.afterClosed().subscribe(result => {});
-  }
-
 }
