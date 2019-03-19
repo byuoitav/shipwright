@@ -5,8 +5,8 @@ import {
   JsonCustomConvert
 } from "json2typescript";
 import { RoomIssue, Alert } from "./alerts";
-import { timeInterval } from 'rxjs/operators';
-import { Time } from '@angular/common';
+import { timeInterval } from "rxjs/operators";
+import { Time } from "@angular/common";
 
 @JsonConverter
 class DateConverter implements JsonCustomConvert<Date> {
@@ -292,8 +292,8 @@ export class StaticRoom {
   @JsonProperty("maintenence-mode", Boolean, true)
   MaintenenceMode: Boolean = undefined;
 
-  @JsonProperty("maintenence-mode-until", time.Time, true)
-  MaintenenceModeEndTime: Time = undefined;
+  // @JsonProperty("maintenence-mode-until", time.Time, true)
+  // MaintenenceModeEndTime: Time = undefined;
 
   @JsonProperty("monitoring", Boolean, true)
   Monitoring: Boolean = undefined;
