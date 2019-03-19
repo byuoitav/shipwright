@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit, ViewChild, ModuleWithComponentFactories } from "@angular/core";
 import { StringsService } from "src/app/services/strings.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { DataService } from "src/app/services/data.service";
@@ -17,6 +17,7 @@ import { MatDialog, MatDialogRef, MatTableDataSource } from "@angular/material";
 import { ResolveModalComponent } from "../../../modals/resolve/resolve.component";
 import { ResponseModalComponent } from "../../../modals/responsemodal/responsemodal.component";
 import { MaintenanceModalComponent } from "src/app/modals/maintenancemodal/maintenancemodal.component";
+import { toDate } from '@angular/common/src/i18n/format_date';
 
 @Component({
   selector: "app-summary",
@@ -111,7 +112,6 @@ export class SummaryComponent implements OnInit {
   async SetupSchedule() {
     await this.api.GetClassSchedule(this.roomID).then(result => {
       this.classSchedule = result;
-
       this.scheduleData = new MatTableDataSource(this.classSchedule);
     });
   }
