@@ -1,16 +1,12 @@
-.time {
+.content {
+  width: 100%;
+
   display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-  align-items: baseline;
-}
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: flex-start;
 
-.help-label {
-  width: 6em;
-}
-
-.time-input {
-  width: 80px;
-  max-width: 80px;
-  margin-left: 10px;
+  .mat-form-field {
+    width: 100%;
+  }
 }

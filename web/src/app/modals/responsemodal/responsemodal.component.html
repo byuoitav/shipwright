@@ -1,61 +1,45 @@
-<div>
-  <section class="time">
-    <!-- Help Sent Time -->
-    <mat-label class="help-label">Help Sent</mat-label>
-    <span>@</span>
-    <mat-form-field class="time-input">
-      <input type="time" matInput [(ngModel)]="sentTime" />
-    </mat-form-field>
-  </section>
-  <!-- Help Arrived Time -->
-  <section class="time">
-    <mat-label class="help-label">Help Arrived</mat-label>
-    <span>@</span>
-    <mat-form-field class="time-input">
-      <input type="time" matInput [(ngModel)]="arrivalTime" />
-    </mat-form-field>
-  </section>
-  <!-- Responder List -->
-  <div>
-    <mat-form-field>
-      <mat-label>Responders</mat-label>
-      <mat-chip-list #respChips>
-        <mat-chip
-          *ngFor="let resp of responders"
-          [selectable]="true"
-          [removable]="true"
-          (removed)="RemoveResponder(resp)"
+<h1 mat-dialog-title>Sending people to {{ data?.roomID }}</h1>
+<div mat-dialog-content class="content">
+  <mat-form-field>
+    <input
+      placeholder="Time sent"
+      type="time"
+      [(ngModel)]="sentTime"
+      matInput
+    />
+  </mat-form-field>
+  <mat-form-field>
+    <mat-chip-list #chipList>
+      <mat-chip *ngFor="let person of selectedResponders" selectable removable>
+        {{ person?.name }}
+        <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+      </mat-chip>
+
+      <input
+        #respondersInput
+        placeholder="Responders"
+        [formControl]="respondersCtrl"
+        [matAutocomplete]="auto"
+        [matChipInputFor]="chipList"
+        [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
+        (matChipInputTokenEnd)="addResponder($event)"
+      />
+
+      <mat-autocomplete
+        #auto="matAutocomplete"
+        (optionSelected)="addResponder($event)"
+      >
+        <mat-option
+          *ngFor="let person of (filteredResponders | async)"
+          [value]="person.id"
         >
-          {{ resp.name }}
-          <mat-icon matChipRemove>cancel</mat-icon>
-        </mat-chip>
-        <input
-          matInput
-          type="text"
-          [matChipInputFor]="respChips"
-          [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes"
-          [matChipInputAddOnBlur]="true"
-          (matChipInputTokenEnd)="AddResponder($event.input.value, $event)"
-          [matAutocomplete]="auto"
-          [(ngModel)]="responderSearch"
-          (ngModelChange)="FilterResponders()"
-        />
-        <mat-autocomplete
-          #auto="matAutocomplete"
-          (optionSelected)="AddResponder($event.option.value, $event)"
-        >
-          <mat-option
-            *ngFor="let responder of filteredResponders"
-            [value]="responder.name"
-            (click)="AddResponder(responder.id, $event)"
-          >
-            {{ responder.name }}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-chip-list>
-    </mat-form-field>
-  </div>
-  <div>
-    <button mat-button>Accept</button>
-  </div>
+          {{ person?.name }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-chip-list>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions align="end">
+  <button (click)="onNoClick()" mat-button>Cancel</button>
+  <button (click)="onNoClick()" mat-button>Send</button>
 </div>

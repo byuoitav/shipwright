@@ -2,8 +2,8 @@ import { Component, Inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { DataService } from "src/app/services/data.service";
 import { StringsService } from "src/app/services/strings.service";
-import { FormControl } from '@angular/forms';
-import { StaticRoom } from 'src/app/objects/static';
+import { FormControl } from "@angular/forms";
+import { StaticRoom } from "src/app/objects/static";
 
 @Component({
   selector: "app-maintenancemodal",
@@ -15,38 +15,42 @@ export class MaintenanceModalComponent {
   endDate = new FormControl(new Date());
   staticRoom: StaticRoom;
 
-  constructor(public dialogRef: MatDialogRef<MaintenanceModalComponent>,
-    public text: StringsService, public dataService: DataService,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
-      this.endTime = this.toDefaultMaintenanceEndTime(this.endDate.value.toTimeString());
+  constructor(
+    public dialogRef: MatDialogRef<MaintenanceModalComponent>,
+    public text: StringsService,
+    public dataService: DataService,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {
+    this.endTime = this.toDefaultMaintenanceEndTime(
+      this.endDate.value.toTimeString()
+    );
 
-      if (this.dataService.finished) {
+    if (this.dataService.finished) {
+      this.staticRoom = this.dataService.GetRoomState(data).staticRoom;
+    } else {
+      this.dataService.loaded.subscribe(() => {
         this.staticRoom = this.dataService.GetRoomState(data).staticRoom;
-      } else {
-        this.dataService.loaded.subscribe(() => {
-          this.staticRoom = this.dataService.GetRoomState(data).staticRoom;
-        })
-      } 
+      });
     }
-
+  }
 
   submit(setMM: boolean) {
-    if(setMM) {
+    if (setMM) {
       const timeParts = this.to24HourTime(this.endTime).split(":");
 
       this.endDate.value.setHours(+timeParts[0], +timeParts[1], +timeParts[2]);
-  
+
       this.staticRoom.MaintenenceModeEndTime = this.endDate.value;
     }
-    
+
     this.staticRoom.MaintenenceMode = setMM;
-    
+
     this.dialogRef.close(this.staticRoom);
   }
 
   toDefaultMaintenanceEndTime(time: string) {
     const timeParts = time.split(":");
-    
+
     if (timeParts.length < 2) {
       return time;
     }

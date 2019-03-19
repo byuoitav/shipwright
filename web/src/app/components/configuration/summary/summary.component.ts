@@ -15,6 +15,7 @@ import { AlertTableComponent } from "../../dashboard/alerttable/alerttable.compo
 import { APIService } from "src/app/services/api.service";
 import { MatDialog, MatDialogRef, MatTableDataSource } from "@angular/material";
 import { ResolveModalComponent } from "../../../modals/resolve/resolve.component";
+import { ResponseModalComponent } from "../../../modals/responsemodal/responsemodal.component";
 import { MaintenanceModalComponent } from "src/app/modals/maintenancemodal/maintenancemodal.component";
 import { toDate } from '@angular/common/src/i18n/format_date';
 
@@ -338,6 +339,16 @@ export class SummaryComponent implements OnInit {
         issue: this.roomIssue,
         resInfo: resInfo,
         codes: this.data.closureCodes
+      }
+    });
+  }
+
+  openRespond() {
+    const ref = this.dialog.open(ResponseModalComponent, {
+      width: "25vw",
+      data: {
+        roomID: this.roomIssue.roomID,
+        responders: this.data.possibleResponders
       }
     });
   }
