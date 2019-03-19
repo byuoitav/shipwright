@@ -1,4 +1,10 @@
-import { Component, OnInit, Inject, ViewChild } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Inject,
+  ViewChild,
+  ElementRef
+} from "@angular/core";
 import {
   FormControl,
   Validators,
@@ -29,7 +35,7 @@ export class ResponseModalComponent implements OnInit {
   respondersCtrl: FormControl;
   selectedResponders: Person[];
   filteredResponders: Observable<Person[]>;
-  @ViewChild("respondersInput") respondersInput: HTMLInputElement;
+  @ViewChild("respondersInput") respondersInput: ElementRef;
 
   sentTime: string;
 

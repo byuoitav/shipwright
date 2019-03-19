@@ -91,7 +91,7 @@ export class ModalService {
       .afterClosed()
       .subscribe(result => {
         if (result != null) {
-          // this.api.SetMaintenanceMode();
+          this.api.SetMaintenanceMode(result.roomID, result);
         }
       });
   }

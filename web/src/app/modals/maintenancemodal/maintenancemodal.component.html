@@ -1,25 +1,31 @@
-<p>Maintenance Modal works!</p>
-<h3>Would you like to put {{data}} in maintenance mode?</h3>
-
-<p>- putting a room in maintenance mode will suppress all alerts that come from the room
-    until the designated time. 
-</p>
-
-<mat-label class="help-label">In Maintance until:</mat-label>
-<div>
-<mat-form-field>
-    <input matInput [matDatepicker]="picker" placeholder="Choose a date">
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-datepicker #picker></mat-datepicker>
-</mat-form-field>
-<div>
-<mat-form-field class="time-input">
-    <input type="time" matInput [(ngModel)]="arrivalTime" />
-</mat-form-field>
-</div>
-</div>
-
-<div>
-    <button mat-button (click)="submit(picker, arrivalTime, data)">Done</button>
-    <button mat-button (click)="this.dialogRef.close()">Cancel</button>
-</div>
+<mat-card class="mat-elevation-z0">
+    <mat-card-title>
+        {{data}} Maintenance Mode
+    </mat-card-title>
+    <mat-card-subtitle>
+        *Alerts will be suppressed until the time specified
+    </mat-card-subtitle>
+    <mat-card-content>
+        <div *ngIf="staticRoom.MaintenenceMode">
+            <h4 class="mat-h4">{{data}} is currently in Maintenance Mode.</h4>
+            <h4 class="mat-h4">Would you like to end that early?</h4>
+        </div>
+        <div class="row" *ngIf="!staticRoom.MaintenenceMode">
+            <mat-form-field>
+                <input matInput [matDatepicker]="picker" placeholder="Choose a date" [formControl]="endDate">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+            <div>
+                <mat-form-field class="time-input">
+                    <input type="time" matInput [(ngModel)]="endTime" />
+                </mat-form-field>
+            </div>
+        </div>
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-button (click)="submit(true)" *ngIf="!staticRoom.MaintenenceMode">Done</button>
+        <button mat-button (click)="submit(false)" *ngIf="staticRoom.MaintenenceMode" color="warn">End Now</button>
+        <button mat-button (click)="this.dialogRef.close()">Cancel</button>
+    </mat-card-actions>
+</mat-card>
