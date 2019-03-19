@@ -10,9 +10,14 @@
   </mat-form-field>
   <mat-form-field>
     <mat-chip-list #chipList>
-      <mat-chip *ngFor="let person of selectedResponders" selectable removable>
+      <mat-chip
+        *ngFor="let person of selectedResponders"
+        (removed)="removeResponder(person)"
+        selectable
+        removable
+      >
         {{ person?.name }}
-        <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+        <mat-icon matChipRemove>cancel</mat-icon>
       </mat-chip>
 
       <input

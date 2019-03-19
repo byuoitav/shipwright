@@ -1,10 +1,4 @@
-import {
-  Component,
-  OnInit,
-  Inject,
-  ViewChild,
-  ElementRef
-} from "@angular/core";
+import { Component, OnInit, Inject, ViewChild } from "@angular/core";
 import {
   FormControl,
   Validators,
@@ -15,6 +9,7 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
   MatChipInputEvent,
+  MatChipInput,
   MatAutocompleteSelectedEvent
 } from "@angular/material";
 import { COMMA, ENTER } from "@angular/cdk/keycodes";
@@ -30,12 +25,12 @@ import { APIService } from "src/app/services/api.service";
   styleUrls: ["./responsemodal.component.scss"]
 })
 export class ResponseModalComponent implements OnInit {
-  readonly separatorKeyCodes: number[] = [ENTER]; // delimate filters with these keys
+  readonly separatorKeyCodes: number[] = []; // delimate filters with these keys
 
   respondersCtrl: FormControl;
   selectedResponders: Person[];
   filteredResponders: Observable<Person[]>;
-  @ViewChild("respondersInput") respondersInput: ElementRef;
+  @ViewChild(MatChipInput) respondersInput: MatChipInput;
 
   sentTime: string;
 
@@ -106,10 +101,23 @@ export class ResponseModalComponent implements OnInit {
       this.selectedResponders.push(person);
     }
 
-    // clear the input
+    // reset the input
     if (this.respondersInput) {
-      console.log("clearing input", this.respondersInput);
-      this.respondersInput.nativeElement.value = "";
+      this.respondersInput._inputElement.value = "";
+    }
+    if (this.isMatChipInputEvent(event) && event.input) {
+      event.input.value = "";
+    }
+
+    // reset the autocomplete
+    this.respondersCtrl.setValue("");
+  }
+
+  removeResponder(person: Person): void {
+    const index = this.selectedResponders.indexOf(person);
+
+    if (index >= 0) {
+      this.selectedResponders.splice(index, 1);
     }
   }
 

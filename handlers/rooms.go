@@ -259,6 +259,8 @@ func GetRoomClassSchedule(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, err)
 	}
 
+	log.L.Infof("classes: %+v", classes)
+
 	// iterate through the twelve blocks that we want to make
 	// for i := (time.Minute * 0); i < (time.Hour * 6); i += (time.Minute * 30) {
 	for i := 0; i < 12; i++ {
