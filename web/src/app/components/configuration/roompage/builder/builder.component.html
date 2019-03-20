@@ -1,0 +1,32 @@
+<p>Builder works</p>
+
+<div class="container-base">
+    <section class="container">
+
+    </section>
+    <section class="container-bottom">
+        <div class="row-devices">
+
+        </div>
+        <div class="menu">
+            <button mat-fab [matMenuTriggerFor]="classes"><mat-icon>add</mat-icon></button>
+
+            <mat-menu #classes>
+                <button mat-menu-item>
+                    <mat-icon>{{text.DefaultIcons["Pi3"]}}</mat-icon>
+                    <span>Pi</span>
+                </button>
+                <button mat-menu-item>
+                    <mat-icon>{{text.DefaultIcons["SonyXBR"]}}</mat-icon>
+                    <span>TV</span>
+                </button>
+                <button mat-menu-item [matMenuTriggerFor]="projectors">Projector</button>
+                <!-- <button mat-menu-item [matMenuTriggerFor]="inputs">Inputs</button> -->
+            </mat-menu>
+
+            <mat-menu #projectors>
+
+            </mat-menu>
+        </div>
+    </section>
+</div>

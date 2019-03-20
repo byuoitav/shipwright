@@ -3,7 +3,7 @@ import { StringsService } from 'src/app/services/strings.service';
 import { DataService } from 'src/app/services/data.service';
 import { ActivatedRoute } from '@angular/router';
 import { ModalService } from 'src/app/services/modal.service';
-import { Room, Device, UIConfig, Preset, Panel } from 'src/app/objects/database';
+import { Room, Device, UIConfig, Preset, Panel, DeviceType } from 'src/app/objects/database';
 
 @Component({
   selector: 'builder',
@@ -17,6 +17,9 @@ export class BuilderComponent implements OnInit {
   filteredDevices: Device[] = [];
 
   config: UIConfig
+
+  projectorTypes: DeviceType[] = [];
+  inputTypes: DeviceType[] = [];
 
   constructor(public text: StringsService, public data: DataService, private route: ActivatedRoute, public modal: ModalService) {
     this.route.params.subscribe(params => {
@@ -43,6 +46,8 @@ export class BuilderComponent implements OnInit {
     this.filteredDevices = this.devicesInRoom;
 
     this.config = this.data.roomToUIConfigMap.get(this.roomID);
+
+    this.SetDeviceTypeLists();
   }
 
   GetPresetUIPath(presetName: string) {
@@ -75,5 +80,19 @@ export class BuilderComponent implements OnInit {
     }
     
     this.modal.OpenPresetModal(preset, currentPanels, this.config)
+  }
+
+  SetDeviceTypeLists() {
+    this.projectorTypes = [];
+    this.inputTypes = [];
+
+    for (const type of this.data.deviceTypeList) {
+      if(type.tags.includes("projector")) {
+        this.projectorTypes.push(type);
+      }
+      if(type.input) {
+        this.projectorTypes.push(type);
+      }
+    }
   }
 }

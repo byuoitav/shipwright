@@ -1,30 +1,26 @@
-import { Component, OnInit, ViewChild, ModuleWithComponentFactories } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { StringsService } from "src/app/services/strings.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { DataService } from "src/app/services/data.service";
 import { ModalService } from "src/app/services/modal.service";
 import {
-  Alert,
   RoomIssue,
-  RoomIssueResponse,
   ResolutionInfo,
   ClassHalfHourBlock
 } from "src/app/objects/alerts";
 import { Device, Person } from "src/app/objects/database";
-import { AlertTableComponent } from "../../dashboard/alerttable/alerttable.component";
+import { AlertTableComponent } from "../../../dashboard/alerttable/alerttable.component";
 import { APIService } from "src/app/services/api.service";
-import { MatDialog, MatDialogRef, MatTableDataSource } from "@angular/material";
-import { ResolveModalComponent } from "../../../modals/resolve/resolve.component";
-import { ResponseModalComponent } from "../../../modals/responsemodal/responsemodal.component";
-import { MaintenanceModalComponent } from "src/app/modals/maintenancemodal/maintenancemodal.component";
-import { toDate } from '@angular/common/src/i18n/format_date';
+import { MatDialog, MatTableDataSource } from "@angular/material";
+import { ResolveModalComponent } from "../../../../modals/resolve/resolve.component";
+import { ResponseModalComponent } from "../../../../modals/responsemodal/responsemodal.component";
 
 @Component({
-  selector: "app-summary",
-  templateUrl: "./summary.component.html",
-  styleUrls: ["./summary.component.scss"]
+  selector: "alerts",
+  templateUrl: "./alerts.component.html",
+  styleUrls: ["./alerts.component.scss"]
 })
-export class SummaryComponent implements OnInit {
+export class AlertsComponent implements OnInit {
   roomIssue: RoomIssue;
   deviceList: Device[] = [];
   filteredDevices: Device[];

@@ -1,16 +1,13 @@
-<!-- Commented for now. Will return when we work on these other things
+<!-- Commented for now. Will return when we work on these other things -->
 
-<mat-tab-group mat-stretch-tabs class="full mat-elevation-z0">
+<mat-tab-group mat-stretch-tabs class="full mat-elevation-z0" [selectedIndex]="selectedTab">
     <mat-tab label="Summary">
-        <summary></summary>
+        <alerts></alerts>
     </mat-tab>
-    
-    <mat-tab *ngIf="NotADump()" label="Devices">
-        <device-list></device-list>
+    <mat-tab label="Builder">
+        <builder></builder>
     </mat-tab>
-    <mat-tab label="State">
-        <room-state></room-state>
-    </mat-tab> 
-</mat-tab-group> -->
-
-<app-summary></app-summary>
+    <mat-tab label="Routing">
+        <routing></routing>
+    </mat-tab>
+</mat-tab-group>
