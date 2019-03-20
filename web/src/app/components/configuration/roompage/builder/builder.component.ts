@@ -91,7 +91,7 @@ export class BuilderComponent implements OnInit {
         this.projectorTypes.push(type);
       }
       if(type.input) {
-        this.projectorTypes.push(type);
+        this.inputTypes.push(type);
       }
     }
   }

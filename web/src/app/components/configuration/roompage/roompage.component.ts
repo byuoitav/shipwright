@@ -29,7 +29,7 @@ export class RoomPageComponent implements OnInit {
     if (this.urlParams.has("tab")) {
       this.selectedTab = this.tabMap[this.urlParams.get("tab")];
     } else {
-      this.TabChange(this.selectedTab);
+      // this.TabChange(this.selectedTab);
     }
     this.route.params.subscribe(params => {
       this.roomID = params["roomID"];

@@ -8,23 +8,49 @@
     background-size: cover;
 }
 
+.fill-remaining-space {
+    flex: 1 1 auto;
+}
+
+$containerHeight: calc(100vh - 124px);
 .container {
-    display: flex;
-    width: 100%;
-    flex-grow: 1 1 auto;
-    &.base {
-        flex-flow: column nowrap;
-        justify-content: space-between;
-        height: 100%;
+    // border: solid 2px teal;
+    height: $containerHeight;
+    &.top {
+        height: 80%;
+        // border: solid 1px blue;
     }
     &.bottom {
+        height: 20%;
+        // border: solid 1px red;
+        display: flex;
         flex-flow: row nowrap;
         justify-content: space-between;
-        max-height: 25%;
-        height: 25%;
+        align-items: center;
     }
 }
 
 .menu {
     justify-self: flex-end;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.device-box {
+    // width: 100px;
+    align-content: center;
+}
+
+.row {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-evenly;
+    align-items: baseline;
+    align-content: center;
+    &.card {
+        padding: 5px;
+        justify-content: space-evenly;
+        align-items: baseline;
+    }
 }
