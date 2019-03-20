@@ -1,47 +1,54 @@
 <!-- <p>Builder works</p> -->
 
 <div class="container">
-    <section class="container top">
-        <!-- <span class="fill-remaining-space"></span> -->
-    </section>
-    <section class="container bottom">
-        <div class="row">
-            <div *ngFor="let device of filteredDevices" class="device-box mat-elevation-z2">
-                <div class="row card">
-                    <mat-icon>{{text.DefaultIcons[device.type.id]}}</mat-icon>
-                    <h3 class="mat-h3">{{device.name}}</h3>
-                </div>
-            </div>
+  <section class="container top">
+    <!-- <span class="fill-remaining-space"></span> -->
+  </section>
+  <section class="container bottom">
+    <div class="row">
+      <div
+        *ngFor="let device of filteredDevices"
+        class="device-box mat-elevation-z2 spacing"
+      >
+        <div class="row card">
+          <mat-icon>{{ text.DefaultIcons[device.type.id] }}</mat-icon>
+          <h3 class="mat-h3">{{ device.name }}</h3>
         </div>
-        <div class="menu">
-            <button mat-fab [matMenuTriggerFor]="classes"><mat-icon>add</mat-icon></button>
+      </div>
+    </div>
+    <div class="menu">
+      <button mat-fab [matMenuTriggerFor]="classes">
+        <mat-icon>add</mat-icon>
+      </button>
 
-            <mat-menu #classes>
-                <button mat-menu-item>
-                    <mat-icon>{{text.DefaultIcons["Pi3"]}}</mat-icon>
-                    <span>Pi</span>
-                </button>
-                <button mat-menu-item>
-                    <mat-icon>{{text.DefaultIcons["SonyXBR"]}}</mat-icon>
-                    <span>TV</span>
-                </button>
-                <button mat-menu-item [matMenuTriggerFor]="projectors">Projector</button>
-                <button mat-menu-item [matMenuTriggerFor]="inputs">Inputs</button>
-            </mat-menu>
+      <mat-menu #classes class="switch-nested-menu-arrows">
+        <button mat-menu-item>
+          <mat-icon>{{ text.DefaultIcons["Pi3"] }}</mat-icon>
+          <span>Pi</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon>{{ text.DefaultIcons["SonyXBR"] }}</mat-icon>
+          <span>TV</span>
+        </button>
+        <button mat-menu-item [matMenuTriggerFor]="projectors">
+          Projector
+        </button>
+        <button mat-menu-item [matMenuTriggerFor]="inputs">Inputs</button>
+      </mat-menu>
 
-            <mat-menu #projectors>
-                <button mat-menu-item *ngFor="let type of projectorTypes">
-                    <mat-icon>{{text.DefaultIcons[type.id]}}</mat-icon>
-                    <span>{{type.displayName}}</span>
-                </button>
-            </mat-menu>
+      <mat-menu #projectors>
+        <button mat-menu-item *ngFor="let type of projectorTypes">
+          <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
+          <span>{{ type.displayName }}</span>
+        </button>
+      </mat-menu>
 
-            <mat-menu #inputs>
-                <button mat-menu-item *ngFor="let type of inputTypes">
-                    <mat-icon>{{text.DefaultIcons[type.id]}}</mat-icon>
-                    <span>{{type.displayName}}</span>
-                </button>
-            </mat-menu>
-        </div>
-    </section>
+      <mat-menu #inputs>
+        <button mat-menu-item *ngFor="let type of inputTypes">
+          <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
+          <span>{{ type.displayName }}</span>
+        </button>
+      </mat-menu>
+    </div>
+  </section>
 </div>
