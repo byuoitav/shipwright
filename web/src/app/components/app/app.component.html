@@ -47,6 +47,11 @@
                 <mat-icon>devices_other</mat-icon>
                 <ng-container *ngIf="wideSidenav()">Device Status</ng-container>
             </button>
+            
+            <button mat-flat-button color="" routerLink="/information" routerLinkActive="mat-accent" queryParamsHandling="merge">
+                <mat-icon>info</mat-icon>
+                <ng-container *ngIf="wideSidenav()">Information</ng-container>
+            </button>
 
             <button mat-flat-button color="" class="bottom" (click)="setWideSidenav(!wideSidenav())">
                 <mat-icon *ngIf="wideSidenav()">chevron_left</mat-icon>

@@ -27,7 +27,7 @@
   </ng-container>
 
   <ng-container matColumnDef="severity">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Severity</th>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header="activeAlertSeverities">Severity</th>
     <td mat-cell *matCellDef="let issue" (click)="ExpandRow(issue)">
       <span
         *ngFor="let sev of issue.activeAlertSeverities"

@@ -6,6 +6,7 @@ import { RoomListComponent } from './components/configuration/roomlist/roomlist.
 import { RoomPageComponent } from './components/configuration/roompage/roompage.component';
 import { RoomStateComponent } from './components/state/room/room-state.component';
 import { DeviceStateComponent } from './components/state/device-state/device-state.component';
+import { InformationComponent } from './components/information/information.component';
 
 const routes: Routes = [
   {
@@ -32,6 +33,10 @@ const routes: Routes = [
   {
     path: "deviceStatus",
     component: DeviceStateComponent
+  },
+  {
+    path: "information",
+    component: InformationComponent
   },
   {
     path: "configuration/:buildingID/roomlist",

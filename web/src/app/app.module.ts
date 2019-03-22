@@ -79,6 +79,7 @@ import { AlertsComponent } from './components/configuration/roompage/alerts/aler
 import { BuilderComponent } from './components/configuration/roompage/builder/builder.component';
 import { DeviceComponent } from './components/configuration/devicelist/device/device.component';
 import { RoutingComponent } from './components/configuration/roompage/routing/routing.component';
+import { InformationComponent } from './components/information/information.component';
 
 @NgModule({
   declarations: [
@@ -112,7 +113,8 @@ import { RoutingComponent } from './components/configuration/roompage/routing/ro
     DeviceStateComponent,
     ResponseModalComponent,
     MaintenanceModalComponent,
-    RoutingComponent
+    RoutingComponent,
+    InformationComponent
   ],
   imports: [
     BrowserModule,
