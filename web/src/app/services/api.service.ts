@@ -14,7 +14,12 @@ import {
   Template
 } from "../objects/database";
 import { StaticDevice, CombinedRoomState, StaticRoom } from "../objects/static";
-import { RoomIssue, Alert, ResolutionInfo, ClassHalfHourBlock } from "../objects/alerts";
+import {
+  RoomIssue,
+  Alert,
+  ResolutionInfo,
+  ClassHalfHourBlock
+} from "../objects/alerts";
 import { StringsService } from "./strings.service";
 
 @Injectable({
@@ -690,7 +695,7 @@ export class APIService {
       for (const sd of data) {
         const rec = this.converter.deserializeObject(sd, CombinedRoomState);
         records.push(rec);
-      }      
+      }
       return records;
     } catch (e) {
       throw new Error("error getting the Combined Room State records: " + e);
@@ -743,7 +748,6 @@ export class APIService {
       return data;
     } catch (e) {
       if (e.status === 200) {
-        console.log(e.error.text);
         return e.error.text;
       }
 
@@ -765,16 +769,21 @@ export class APIService {
 
   public async UpdateIssue(issue: RoomIssue) {
     try {
+      const b = this.converter.serialize(issue);
+
       const data: any = await this.http
         .put("issues", this.converter.serialize(issue), {
-          headers: this.headers
+          headers: this.headers,
+          responseType: "text"
         })
         .toPromise();
 
-      // const response = this.converter.deserializeObject(data, DBResponse);
-
       return data;
     } catch (e) {
+      if (e.status === 200) {
+        return e.error.text;
+      }
+
       throw new Error("error trying to update an issue: " + e);
     }
   }
@@ -812,10 +821,15 @@ export class APIService {
         .get("rooms/" + roomID + "/schedule", { headers: this.headers })
         .toPromise();
 
-      const schedule = this.converter.deserializeArray(data, ClassHalfHourBlock);
+      const schedule = this.converter.deserializeArray(
+        data,
+        ClassHalfHourBlock
+      );
       return schedule;
     } catch (e) {
-      throw new Error("error trying to get the schedule for " + roomID + ": " + e)
+      throw new Error(
+        "error trying to get the schedule for " + roomID + ": " + e
+      );
     }
   }
 

@@ -1,4 +1,9 @@
-import { Component, OnInit, ViewChild, ModuleWithComponentFactories } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ModuleWithComponentFactories
+} from "@angular/core";
 import { StringsService } from "src/app/services/strings.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { DataService } from "src/app/services/data.service";
@@ -17,7 +22,7 @@ import { MatDialog, MatDialogRef, MatTableDataSource } from "@angular/material";
 import { ResolveModalComponent } from "../../../modals/resolve/resolve.component";
 import { ResponseModalComponent } from "../../../modals/responsemodal/responsemodal.component";
 import { MaintenanceModalComponent } from "src/app/modals/maintenancemodal/maintenancemodal.component";
-import { toDate } from '@angular/common/src/i18n/format_date';
+import { toDate } from "@angular/common/src/i18n/format_date";
 
 @Component({
   selector: "app-summary",
@@ -214,12 +219,11 @@ export class SummaryComponent implements OnInit {
 
   UpdateIssue(issue: RoomIssue) {
     if (issue.ResolvedAtIsZero()) {
-      issue.resolutionInfo.resolvedAt = new Date("1970-01-01T00:00:00.000Z");
+      // issue.resolutionInfo.resolvedAt = new Date("1970-01-01T00:00:00.000Z");
     }
     for (const alert of issue.alerts) {
       alert.endTime = new Date("1970-01-01T00:00:00.000Z");
     }
-    console.log(issue);
     this.api.UpdateIssue(issue);
   }
 
@@ -347,7 +351,7 @@ export class SummaryComponent implements OnInit {
     const ref = this.dialog.open(ResponseModalComponent, {
       width: "25vw",
       data: {
-        roomID: this.roomIssue.roomID,
+        issue: this.roomIssue,
         responders: this.data.possibleResponders
       }
     });

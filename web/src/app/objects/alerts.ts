@@ -3,41 +3,10 @@ import {
   JsonProperty,
   JsonConverter,
   JsonCustomConvert,
-  Any,
+  Any
 } from "json2typescript";
 import { Person } from "src/app/objects/database";
-
-@JsonConverter
-class DateConverter implements JsonCustomConvert<Date> {
-  serialize(date: Date): any {
-    function pad(n) {
-      return n < 10 ? "0" + n : n;
-    }
-
-    return (
-      date.getUTCFullYear() +
-      "-" +
-      pad(date.getUTCMonth() + 1) +
-      "-" +
-      pad(date.getUTCDate()) +
-      "T" +
-      pad(date.getUTCHours()) +
-      ":" +
-      pad(date.getUTCMinutes()) +
-      ":" +
-      pad(date.getUTCSeconds()) +
-      "Z"
-    );
-  }
-
-  deserialize(date: any): Date {
-    if (date == null) {
-      return undefined;
-    }
-
-    return new Date(date);
-  }
-}
+import { DateConverter } from "./date";
 
 @JsonObject("ResolutionInfo")
 export class ResolutionInfo {
@@ -48,7 +17,7 @@ export class ResolutionInfo {
   notes: string = undefined;
 
   @JsonProperty("resolved-at", DateConverter, true)
-  resolvedAt: Date = new Date("1970-01-01T00:00:00.000Z");
+  resolvedAt: Date = undefined;
 }
 
 @JsonObject("Alert")
@@ -113,7 +82,7 @@ export class Alert {
 
 @JsonObject("RoomIssueResponse")
 export class RoomIssueResponse {
-  @JsonProperty("responders", [String], true)
+  @JsonProperty("responders", [Person], true)
   responders: Person[] = Array<Person>();
 
   @JsonProperty("help-sent-at", DateConverter, true)
@@ -208,7 +177,7 @@ export class RoomIssue {
   resolved: boolean = undefined;
 
   @JsonProperty("resolution-info", ResolutionInfo, true)
-  resolutionInfo: ResolutionInfo = new ResolutionInfo();
+  resolutionInfo: ResolutionInfo = undefined;
 
   @JsonProperty("alerts", [Alert], true)
   alerts: Alert[] = Array<Alert>();

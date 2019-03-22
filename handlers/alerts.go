@@ -85,7 +85,7 @@ func UpdateRoomIssue(context echo.Context) error {
 		return context.JSON(http.StatusBadRequest, ne)
 	}
 
-	return context.JSON(http.StatusOK, "ok")
+	return context.String(http.StatusOK, "ok")
 }
 
 // AddAlert adds an alert to the store

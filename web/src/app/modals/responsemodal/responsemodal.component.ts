@@ -1,4 +1,10 @@
-import { Component, OnInit, Inject, ViewChild } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Inject,
+  ViewChild,
+  ElementRef
+} from "@angular/core";
 import {
   FormControl,
   Validators,
@@ -16,6 +22,7 @@ import { COMMA, ENTER } from "@angular/cdk/keycodes";
 import { Observable } from "rxjs";
 import { map, startWith } from "rxjs/operators";
 
+import { RoomIssue, RoomIssueResponse } from "src/app/objects/alerts";
 import { Person } from "src/app/objects/database";
 import { APIService } from "src/app/services/api.service";
 
@@ -26,24 +33,26 @@ import { APIService } from "src/app/services/api.service";
 })
 export class ResponseModalComponent implements OnInit {
   readonly separatorKeyCodes: number[] = []; // delimate filters with these keys
+  resolving = false;
+  resolved = false;
+  error = false;
 
   respondersCtrl: FormControl;
-  selectedResponders: Person[];
   filteredResponders: Observable<Person[]>;
-  @ViewChild(MatChipInput) respondersInput: MatChipInput;
+  @ViewChild("respondersInput") respondersInput: ElementRef;
 
+  response: RoomIssueResponse = new RoomIssueResponse();
   sentTime: string;
 
   constructor(
     public dialogRef: MatDialogRef<ResponseModalComponent>,
     private api: APIService,
     @Inject(MAT_DIALOG_DATA)
-    public data: { roomID: string; responders: Person[] }
+    public data: { issue: RoomIssue; responders: Person[] }
   ) {
     // set sent time to now
     const now = new Date();
     this.sentTime = now.getHours() + ":" + now.getMinutes();
-    this.selectedResponders = [];
 
     this.respondersCtrl = new FormControl(this.data.responders, [
       Validators.required
@@ -63,7 +72,7 @@ export class ResponseModalComponent implements OnInit {
     const val = filter.toLowerCase();
 
     return this.data.responders.filter(person => {
-      if (this.selectedResponders.includes(person)) {
+      if (this.response.responders.includes(person)) {
         return false;
       }
 
@@ -97,13 +106,13 @@ export class ResponseModalComponent implements OnInit {
       return;
     }
 
-    if (!this.selectedResponders.includes(person)) {
-      this.selectedResponders.push(person);
+    if (!this.response.responders.includes(person)) {
+      this.response.responders.push(person);
     }
 
     // reset the input
-    if (this.respondersInput) {
-      this.respondersInput._inputElement.value = "";
+    if (this.respondersInput && this.respondersInput.nativeElement) {
+      this.respondersInput.nativeElement.value = "";
     }
     if (this.isMatChipInputEvent(event) && event.input) {
       event.input.value = "";
@@ -114,10 +123,10 @@ export class ResponseModalComponent implements OnInit {
   }
 
   removeResponder(person: Person): void {
-    const index = this.selectedResponders.indexOf(person);
+    const index = this.response.responders.indexOf(person);
 
     if (index >= 0) {
-      this.selectedResponders.splice(index, 1);
+      this.response.responders.splice(index, 1);
     }
   }
 
@@ -125,5 +134,61 @@ export class ResponseModalComponent implements OnInit {
     return (
       obj.input instanceof HTMLInputElement && typeof obj.value === "string"
     );
+  }
+
+  validForm(): boolean {
+    return true;
+  }
+
+  resetButton() {
+    this.resolving = false;
+    this.resolved = false;
+    this.error = false;
+  }
+
+  async resolve() {
+    if (this.resolving) {
+      return;
+    }
+
+    this.resolving = true;
+
+    // set the date
+    const split = this.sentTime.split(":");
+    this.response.helpSentAt = new Date();
+    this.response.helpSentAt.setHours(parseInt(split[0], 10));
+    this.response.helpSentAt.setMinutes(parseInt(split[1], 10));
+
+    this.data.issue.roomIssueResponses.push(this.response);
+
+    try {
+      const response = await this.api.UpdateIssue(this.data.issue);
+      console.log("response", response);
+      if (response === "ok") {
+        console.log("here");
+        this.resolved = true;
+
+        setTimeout(() => {
+          this.resolving = false;
+          this.dialogRef.close();
+        }, 750);
+      } else {
+        console.log("here2");
+        this.error = true;
+        this.data.issue.roomIssueResponses.pop();
+
+        setTimeout(() => {
+          this.resetButton();
+        }, 2000);
+      }
+    } catch (e) {
+      this.error = true;
+      this.data.issue.roomIssueResponses.pop();
+      console.error("error updating issue", e);
+
+      setTimeout(() => {
+        this.resetButton();
+      }, 2000);
+    }
   }
 }

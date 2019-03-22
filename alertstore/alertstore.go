@@ -239,16 +239,16 @@ func (a *alertStore) run() {
 
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
 func (a *alertStore) editIssueInformation(issue structs.RoomIssue) *nerr.E {
-
 	//check to see if it exists
 	v, err := alertcache.GetAlertCache("default").GetIssue(issue.RoomIssueID)
 	if err != nil {
 		if err.Type == alertcache.NotFound {
 			log.L.Errorf("Trying to edit room issue that doesn't exist: %v", issue.RoomIssueID)
 			return nerr.Create("Trying to edit room issue that doesn't exist", "bad-id")
-		} else {
-			log.L.Errorf("Couldn't get room issue %v from cache %v", issue.RoomIssueID, err.Error())
 		}
+
+		log.L.Errorf("Couldn't get room issue %v from cache %v", issue.RoomIssueID, err.Error())
+		return err
 	}
 
 	//v is our deal, we need to combine
