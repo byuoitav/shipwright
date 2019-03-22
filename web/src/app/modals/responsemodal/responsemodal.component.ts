@@ -52,7 +52,10 @@ export class ResponseModalComponent implements OnInit {
   ) {
     // set sent time to now
     const now = new Date();
-    this.sentTime = now.getHours() + ":" + now.getMinutes();
+    const pad = n => {
+      return n < 10 ? "0" + n : n;
+    };
+    this.sentTime = pad(now.getHours()) + ":" + pad(now.getMinutes());
 
     this.respondersCtrl = new FormControl(this.data.responders, [
       Validators.required
