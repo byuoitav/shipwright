@@ -14,7 +14,23 @@ export class RoomPageComponent implements OnInit {
   room: Room;
   devices: Device[] = [];
 
+  selectedTab: number = 0;
+  urlParams: URLSearchParams;
+
+  tabMap = {
+    "alerts": 0,
+    "builder": 1,
+    "routing": 2
+  }
+
   constructor(public text: StringsService, private route: ActivatedRoute, public data: DataService) {
+    this.urlParams = new URLSearchParams(window.location.search);
+
+    if (this.urlParams.has("tab")) {
+      this.selectedTab = this.tabMap[this.urlParams.get("tab")];
+    } else {
+      // this.TabChange(this.selectedTab);
+    }
     this.route.params.subscribe(params => {
       this.roomID = params["roomID"];
       
@@ -32,7 +48,7 @@ export class RoomPageComponent implements OnInit {
         })
       }
       
-    })
+    });
   }
 
   ngOnInit() {
@@ -43,5 +59,20 @@ export class RoomPageComponent implements OnInit {
       return false
     }
     return this.room.configuration.id != "DMPS"
+  }
+
+  TabChange(tabIndex: number) {
+    if (tabIndex === 0) {
+      this.urlParams.set("tab", "alerts");
+      window.location.pathname = window.location.pathname + "?" + this.urlParams.toString();
+    }
+    if (tabIndex === 1) {
+      this.urlParams.set("tab", "builder");
+      window.location.pathname = window.location.pathname + "?" + this.urlParams.toString();
+    }
+    if (tabIndex === 2) {
+      this.urlParams.set("tab", "routing");
+      window.location.pathname = window.location.pathname + "?" + this.urlParams.toString();
+    }
   }
 }
