@@ -10,6 +10,7 @@ $save: #0046c8;
 .container {
   display: inline-block;
   height: 100%;
+  width: 100%;
   flex: 1 1 auto;
   &.full {
     width: 100%;
@@ -321,4 +322,59 @@ $save: #0046c8;
   padding-right: 5px;
   width: 5em;
   max-width: 5em;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.visit {
+  display: flex;
+  align-items: center;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.help-arrived {
+  * {
+    transition: opacity 0.3s ease-in-out;
+    opacity: 0;
+
+    &.active {
+      opacity: 1;
+    }
+  }
+
+  button {
+    transition: opacity 1.5s ease-in-out;
+  }
+
+  span {
+    transition: opacity 1.5s ease-in-out;
+  }
+
+  &.success {
+    background-color: #5cbb5c;
+  }
+
+  &.error {
+    background-color: #d9534f;
+  }
+
+  ::ng-deep.mat-button-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .spinner {
+    position: absolute;
+    top: 25%;
+  }
+
+  .mat-icon {
+    position: absolute;
+  }
 }
