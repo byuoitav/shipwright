@@ -22,11 +22,14 @@ export class BuilderComponent implements OnInit {
   room: Room;
   devicesInRoom: Device[] = [];
   filteredDevices: Device[] = [];
+  deviceSearch: string;
 
   config: UIConfig;
 
   projectorTypes: DeviceType[] = [];
   inputTypes: DeviceType[] = [];
+
+  tempDevices: Device[] = [];
 
   constructor(
     public text: StringsService,
@@ -45,6 +48,10 @@ export class BuilderComponent implements OnInit {
         });
       }
     });
+
+    window.onbeforeunload = function() {
+      
+    }
   }
 
   ngOnInit() {}
@@ -61,10 +68,14 @@ export class BuilderComponent implements OnInit {
     this.SetDeviceTypeLists();
   }
 
-  GetPresetUIPath(presetName: string) {
+  GetPresetUIPath(presetName: string, trim: boolean) {
     for (let i = 0; i < this.config.panels.length; i++) {
       if (this.config.panels[i].preset === presetName) {
-        return this.config.panels[i].uiPath;
+        if (!trim) {
+          return this.config.panels[i].uiPath;
+        } else {
+          return this.config.panels[i].uiPath.substr(1);
+        }
       }
     }
   }
@@ -103,5 +114,75 @@ export class BuilderComponent implements OnInit {
         this.inputTypes.push(type);
       }
     }
+  }
+
+  SearchDevices() {
+    this.filteredDevices = [];
+
+    const searchList: Device[] = this.devicesInRoom;
+    searchList.sort(this.text.SortDevicesAlphaNum);
+
+    if (this.deviceSearch == null || this.deviceSearch.length === 0) {
+      this.filteredDevices = searchList;
+      return;
+    }
+
+    searchList.forEach(device => {
+        if (device.name.toLowerCase().includes(this.deviceSearch.toLowerCase()) && !this.filteredDevices.includes(device)) {
+          this.filteredDevices.push(device);
+        }
+
+        if (device.displayName.toLowerCase().includes(this.deviceSearch.toLowerCase()) && !this.filteredDevices.includes(device)) {
+          this.filteredDevices.push(device);
+        }
+
+        if (device.type.id.toLowerCase().includes(this.deviceSearch.toLowerCase()) && !this.filteredDevices.includes(device)) {
+          this.filteredDevices.push(device);
+        }
+
+        device.roles.forEach(role => {
+          if (role.id.toLowerCase().includes(this.deviceSearch.toLowerCase()) && !this.filteredDevices.includes(device)) {
+            this.filteredDevices.push(device);
+          }
+        });
+
+        if (device.tags != null) {
+          device.tags.forEach(tag => {
+            if (tag.toLowerCase().includes(this.deviceSearch.toLowerCase()) && !this.filteredDevices.includes(device)) {
+              this.filteredDevices.push(device);
+            }
+          });
+        }
+    });
+
+
+  }
+
+  AddNewDevice(typeID: string) {
+    const type = this.data.deviceTypeMap.get(typeID);
+    const device = new Device(type);
+
+    device.name = this.text.DefaultDeviceNames[typeID];
+
+    const numRegex = /[0-9]/;
+    let num = 1;
+
+    for(const dev of this.devicesInRoom) {
+      const index = dev.name.search(numRegex);
+      const prefix = dev.name.substring(0, index);
+
+      if (prefix === device.name) {
+        num++;
+      }
+    }
+
+    device.name = device.name + num;
+
+    device.id = this.roomID + "-" + device.name;
+    device.address = device.id + ".byu.edu";
+    device.displayName = this.text.DefaultDisplayNames[device.type.id];
+
+    this.devicesInRoom.push(device);
+    this.devicesInRoom.sort(this.text.SortDevicesAlphaNum);
   }
 }

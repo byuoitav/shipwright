@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { MatChipInputEvent } from "@angular/material";
 import { COMMA, ENTER } from "@angular/cdk/keycodes";
+import { Device } from '../objects/database';
 
 @Injectable({
   providedIn: "root"
@@ -112,6 +113,60 @@ export class StringsService {
     "pi": PI_ICON,
     "scheduling": SCHEDULING_ICON,
     "timeclock": TIMECLOCK_ICON
+  }
+
+  public DefaultDeviceNames = {
+    "ADCP Sony VPL": "D",
+    "AppleTV": "AppleTV",
+    "Aruba8PortNetworkSwitch": "NS",
+    "Blu50": "DSP",
+    "ChromeCast": "ChromeCast",
+    "Computer": "PC",
+    "Crestron RMC-3 Gateway": "GW",
+    "DM-MD16x16": "SW",
+    "DividerSensors": "DS",
+    "FunnelGateway": "GW",
+    "JAP3GRX": "AVIPRX",
+    "JAP3GTX": "AVIPTX",
+    "Kramer VS-44DT": "SW",
+    "Pi3": "CP",
+    "PulseEight8x8": "SW",
+    "QSC-Core-110F": "DSP",
+    "SchedulingPanel": "SP",
+    "ShureULXD": "RCV",
+    "SonyPHZ10": "D",
+    "SonyXBR": "D",
+    "SonyVPL": "D",
+    "Shure Microphone": "MIC",
+    "VideoCard": "D",
+    "non-controllable": "HDMI",
+    "via-connect-pro": "VIA"
+  }
+
+  public DefaultDisplayNames = {
+    "non-controllable": "HDMI",
+    "via-connect-pro": "VIA",
+    "Pi3": "Pi",
+    "SonyXBR": "Flatpanel",
+    "Computer": "PC",
+    "ADCP Sony VPL": "Projector"
+  }
+
+  public SortDevicesAlphaNum(a: Device, b: Device) {
+    // Sort the array first alphabetically and then numerically.
+    let reA: RegExp = /[^a-zA-Z]/g;
+    let reN: RegExp = /[^0-9]/g;
+    
+    let aA = a.id.replace(reA, "");
+    let bA = b.id.replace(reA, "");
+
+    if(aA === bA) {
+        let aN = parseInt(a.id.replace(reN, ""), 10);
+        let bN = parseInt(b.id.replace(reN, ""), 10);
+        return aN === bN ? 0 : aN > bN ? 1 : -1;
+    } else {
+        return aA > bA ? 1 : -1;
+    }
   }
 }
 

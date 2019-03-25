@@ -131,6 +131,17 @@ export class Device {
   tags: string[] = Array<string>();
 
   isNew = false;
+
+  constructor(baseType?: DeviceType) {
+    if (baseType != null) {
+      this.type = new DeviceType();
+      this.type.id = baseType.id;
+
+      this.roles = baseType.roles;
+      this.ports = baseType.ports;
+      this.tags.concat(baseType.tags);
+    }
+  }
 }
 
 @JsonObject("Person")
