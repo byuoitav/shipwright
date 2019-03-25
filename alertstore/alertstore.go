@@ -696,5 +696,15 @@ func combineIssues(n, o structs.RoomIssue) (structs.RoomIssue, bool) {
 		changes = true
 	}
 
+	for i := range o.RoomIssueResponses {
+		// matching ones should be at the same index
+		if o.RoomIssueResponses[i].HelpSentAt != n.RoomIssueResponses[i].HelpSentAt ||
+			o.RoomIssueResponses[i].HelpArrivedAt != n.RoomIssueResponses[i].HelpArrivedAt ||
+			!structs.HasAllPeople(o.RoomIssueResponses[i].Responders, n.RoomIssueResponses[i].Responders...) {
+			o.RoomIssueResponses[i] = n.RoomIssueResponses[i]
+			changes = true
+		}
+	}
+
 	return o, changes
 }

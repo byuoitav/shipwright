@@ -9,6 +9,7 @@ import {
   ClassHalfHourBlock
 } from "src/app/objects/alerts";
 import { Device, Person } from "src/app/objects/database";
+import { RoomIssueResponse } from "src/app/objects/alerts";
 import { AlertTableComponent } from "../../../dashboard/alerttable/alerttable.component";
 import { APIService } from "src/app/services/api.service";
 import { MatDialog, MatTableDataSource } from "@angular/material";
@@ -44,6 +45,10 @@ export class AlertsComponent implements OnInit {
     "teacher",
     "days"
   ];
+
+  helpArrivedSent = false;
+  helpArrivedError = false;
+  helpArrivedSuccess = false;
 
   @ViewChild(AlertTableComponent) table: AlertTableComponent;
 
@@ -346,5 +351,46 @@ export class AlertsComponent implements OnInit {
         responders: this.data.possibleResponders
       }
     });
+  }
+
+  resetHelpArrived() {
+    this.helpArrivedSent = false;
+    this.helpArrivedError = false;
+    this.helpArrivedSuccess = false;
+  }
+
+  async helpArrived(resp: RoomIssueResponse) {
+    if (this.helpArrivedSent) {
+      return;
+    }
+
+    this.helpArrivedSent = true;
+    resp.helpArrivedAt = new Date();
+
+    try {
+      const response = await this.api.UpdateIssue(this.roomIssue);
+      if (response === "ok") {
+        this.helpArrivedSuccess = true;
+
+        setTimeout(() => {
+          this.resetHelpArrived();
+        }, 750);
+      } else {
+        this.helpArrivedError = true;
+        resp.helpArrivedAt = undefined;
+
+        setTimeout(() => {
+          this.resetHelpArrived();
+        }, 2000);
+      }
+    } catch (e) {
+      this.helpArrivedError = true;
+      resp.helpArrivedAt = undefined;
+      console.error("error updating issue", e);
+
+      setTimeout(() => {
+        this.resetHelpArrived();
+      }, 2000);
+    }
   }
 }
