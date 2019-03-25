@@ -166,9 +166,7 @@ export class ResponseModalComponent implements OnInit {
 
     try {
       const response = await this.api.UpdateIssue(this.data.issue);
-      console.log("response", response);
       if (response === "ok") {
-        console.log("here");
         this.resolved = true;
 
         setTimeout(() => {
@@ -176,7 +174,6 @@ export class ResponseModalComponent implements OnInit {
           this.dialogRef.close();
         }, 750);
       } else {
-        console.log("here2");
         this.error = true;
         this.data.issue.roomIssueResponses.pop();
 

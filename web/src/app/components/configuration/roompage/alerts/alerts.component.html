@@ -7,7 +7,7 @@
 
   <section class="container" *ngIf="data.finished">
     <section class="row" *ngIf="roomIssue != null">
-      <mat-card>
+      <mat-card class="full-width">
         <mat-card-header>
           <mat-card-title>Room Issues</mat-card-title>
         </mat-card-header>
@@ -45,7 +45,7 @@
     </section>
 
     <section class="cardrow">
-      <mat-card class="actioncard">
+      <mat-card class="actioncard full-width">
         <mat-card-header>
           <mat-card-title>Action Info</mat-card-title>
         </mat-card-header>
@@ -106,6 +106,65 @@
             </aside>
             <aside class="column visits" *ngIf="roomIssue != null">
               <h3 class="mat-h3">Visits</h3>
+              <mat-accordion class="full-width">
+                <mat-expansion-panel
+                  *ngFor="let resp of roomIssue?.roomIssueResponses"
+                >
+                  <mat-expansion-panel-header class="visit">
+                    <mat-panel-title>
+                      {{ resp?.helpSentAt | date: "short" }}
+                    </mat-panel-title>
+                    <mat-panel-description>
+                      <mat-icon *ngIf="!resp?.helpArrivedAt">warning</mat-icon>
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+
+                  <mat-list>
+                    <mat-list-item *ngFor="let person of resp?.responders">
+                      <span>{{ person?.name }}</span>
+                    </mat-list-item>
+                  </mat-list>
+
+                  <mat-action-row class="help-arrived">
+                    <span [class.active]="resp.helpArrivedAt"
+                      >Arrived at
+                      {{ resp?.helpArrivedAt | date: "short" }}</span
+                    >
+                    <button
+                      [class.active]="!resp?.helpArrivedAt"
+                      [class.success]="helpArrivedSuccess"
+                      [class.error]="helpArrivedError"
+                      color="primary"
+                      (click)="helpArrived(resp)"
+                      mat-button
+                    >
+                      <span
+                        [class.active]="
+                          !helpArrivedSent &&
+                          !helpArrivedSuccess &&
+                          !helpArrivedError
+                        "
+                        >Help Arrived</span
+                      >
+                      <mat-spinner
+                        class="spinner"
+                        [class.active]="
+                          helpArrivedSent &&
+                          !helpArrivedSuccess &&
+                          !helpArrivedError
+                        "
+                        diameter="20"
+                      ></mat-spinner>
+                      <mat-icon [class.active]="helpArrivedSuccess"
+                        >check</mat-icon
+                      >
+                      <mat-icon [class.active]="helpArrivedError"
+                        >close</mat-icon
+                      >
+                    </button>
+                  </mat-action-row>
+                </mat-expansion-panel>
+              </mat-accordion>
             </aside>
             <aside class="column notes" *ngIf="roomIssue != null">
               <h3 class="mat-h3">Notes</h3>
