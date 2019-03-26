@@ -1,8 +1,8 @@
 package rediscache
 
 import (
-	"bytes"
 	"encoding/gob"
+	"encoding/json"
 	"sync"
 	"time"
 
@@ -196,10 +196,7 @@ func (rc *RedisCache) GetAllDeviceRecords() ([]sd.StaticDevice, *nerr.E) {
 	for i := range result {
 		var tmp sd.StaticDevice
 
-		buf := bytes.NewBuffer([]byte(result[i].(string)))
-		dec := gob.NewDecoder(buf)
-
-		err = dec.Decode(&tmp)
+		err := json.Unmarshal([]byte(result[i].(string)), &tmp)
 		if err != nil {
 			return []sd.StaticDevice{}, nerr.Translate(err).Addf("Couldn't get all device records")
 		}
@@ -225,10 +222,7 @@ func (rc *RedisCache) GetAllRoomRecords() ([]sd.StaticRoom, *nerr.E) {
 	for i := range result {
 		var tmp sd.StaticRoom
 
-		buf := bytes.NewBuffer([]byte(result[i].(string)))
-		dec := gob.NewDecoder(buf)
-
-		err = dec.Decode(&tmp)
+		err := json.Unmarshal([]byte(result[i].(string)), &tmp)
 		if err != nil {
 			return []sd.StaticRoom{}, nerr.Translate(err).Addf("Couldn't get all device records")
 		}

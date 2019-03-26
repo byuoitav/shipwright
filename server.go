@@ -161,6 +161,7 @@ func main() {
 
 	// Static Record Endpoints
 	readconfig.GET("/static/devices", handlers.GetAllStaticDeviceRecords)
+	readconfig.GET("/static/devices/:device", handlers.GetStaticDeviceRecord)
 	readconfig.GET("/static/rooms", handlers.GetAllStaticRoomRecords)
 	readconfig.GET("/static/rooms/state", handlers.GetAllRoomCombinedStateRecords)
 	readconfig.GET("/static/rooms/:room/state", handlers.GetRoomCombinedStateRecord)
