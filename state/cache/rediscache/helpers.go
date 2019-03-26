@@ -1,8 +1,7 @@
 package rediscache
 
 import (
-	"bytes"
-	"encoding/gob"
+	"encoding/json"
 	"sync"
 
 	"github.com/byuoitav/common/log"
@@ -107,15 +106,13 @@ func (rc *RedisCache) getDevice(id string) (sd.StaticDevice, *nerr.E) {
 		log.L.Errorf("Error accessing redis cache: %v", err.Error())
 		return sd.StaticDevice{}, nerr.Translate(err).Addf("Couldn't access redis cache")
 	} else {
-		buf := bytes.NewBuffer(by)
-		dec := gob.NewDecoder(buf)
-
-		err = dec.Decode(&curDevice)
+		err := json.Unmarshal(by, &curDevice)
 		if err != nil {
 			log.L.Errorf("Error decoding device from cache record: %v", err.Error())
 			return sd.StaticDevice{}, nerr.Translate(err).Addf("Bad data in redis cluster: %s: %s", err.Error(), by)
 		}
 	}
+	log.L.Debugf("%+v", curDevice.WebsocketCount)
 
 	return curDevice, nil
 }
@@ -138,13 +135,9 @@ func (rc *RedisCache) getRoom(id string) (sd.StaticRoom, *nerr.E) {
 		log.L.Errorf("Error accessing redis cache: %v", err.Error())
 		return sd.StaticRoom{}, nerr.Translate(err).Addf("Couldn't access redis cache")
 	} else {
-		buf := bytes.NewBuffer(by)
-		dec := gob.NewDecoder(buf)
-
-		err = dec.Decode(&curRoom)
+		err := json.Unmarshal(by, &curRoom)
 		if err != nil {
-			log.L.Errorf("Error decoding device from cache record: %v", err.Error())
-			return sd.StaticRoom{}, nerr.Translate(err).Addf("Bad data in redis cluster: %s: %s", err.Error(), by)
+			return curRoom, nerr.Translate(err).Addf("Couldn't unmarshal from rediscache")
 		}
 	}
 
@@ -155,15 +148,13 @@ func (rc *RedisCache) getRoom(id string) (sd.StaticRoom, *nerr.E) {
 func (rc *RedisCache) putDevice(dev sd.StaticDevice) *nerr.E {
 	log.L.Debugf("Putting device %v to redis cache", dev.DeviceID)
 
-	var device bytes.Buffer
-	enc := gob.NewEncoder(&device)
-	err := enc.Encode(dev)
+	b, err := json.Marshal(dev)
 	if err != nil {
 		log.L.Errorf("%v", err.Error())
 		return nerr.Translate(err).Addf("Couldn't encode device: %v", err.Error())
 	}
 
-	err = rc.devclient.Set(dev.DeviceID, device.Bytes(), 0).Err()
+	err = rc.devclient.Set(dev.DeviceID, b, 0).Err()
 	if err != nil {
 		return nerr.Translate(err).Addf("Couldn't access redis cache")
 	}
@@ -174,15 +165,13 @@ func (rc *RedisCache) putDevice(dev sd.StaticDevice) *nerr.E {
 //assumes that we've already locked the room
 func (rc *RedisCache) putRoom(rm sd.StaticRoom) *nerr.E {
 
-	var room bytes.Buffer
-	enc := gob.NewEncoder(&room)
-	err := enc.Encode(rm)
+	b, err := json.Marshal(rm)
 	if err != nil {
 		log.L.Errorf("%v", err.Error())
 		return nerr.Translate(err).Addf("Couldn't encode room: %v", err.Error())
 	}
 
-	err = rc.roomclient.Set(rm.RoomID, room.Bytes(), 0).Err()
+	err = rc.roomclient.Set(rm.RoomID, b, 0).Err()
 	if err != nil {
 		return nerr.Translate(err).Addf("Couldn't access redis cache")
 	}
