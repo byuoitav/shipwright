@@ -53,10 +53,10 @@ export class SocketService {
     this.socket.onMessage(msg => {
       const data = JSON.parse(msg.data);
       if (this.isRoomIssue(data)) {
-        const a = jsonConvert.deserialize(data, RoomIssue);
+        const a = jsonConvert.deserializeObject(data, RoomIssue);
         this.issues.emit(a);
       } else if (this.isStaticDevice(data)) {
-        const a = jsonConvert.deserialize(data, StaticDevice);
+        const a = jsonConvert.deserializeObject(data, StaticDevice);
         this.devices.emit(a);
       } else {
         console.warn("unknown websocket message", msg);

@@ -28,6 +28,7 @@ export class BuilderComponent implements OnInit {
 
   projectorTypes: DeviceType[] = [];
   inputTypes: DeviceType[] = [];
+  audioTypes: DeviceType[] = [];
 
   tempDevices: Device[] = [];
 
@@ -105,6 +106,7 @@ export class BuilderComponent implements OnInit {
   SetDeviceTypeLists() {
     this.projectorTypes = [];
     this.inputTypes = [];
+    this.audioTypes = [];
 
     for (const type of this.data.deviceTypeList) {
       if (type.tags.includes("projector")) {
@@ -113,7 +115,16 @@ export class BuilderComponent implements OnInit {
       if (type.input) {
         this.inputTypes.push(type);
       }
+      for (const role of type.roles) {
+        if (role.id === "Microphone") {
+          this.audioTypes.push(type);
+        }
+      }
     }
+
+    console.log(this.projectorTypes);
+    console.log(this.inputTypes);
+    console.log(this.audioTypes);
   }
 
   SearchDevices() {
@@ -184,5 +195,53 @@ export class BuilderComponent implements OnInit {
 
     this.devicesInRoom.push(device);
     this.devicesInRoom.sort(this.text.SortDevicesAlphaNum);
+  }
+
+  GetValidDropZones(device: Device): string[] {
+    const dropZones: string[] = [];
+
+    if (device.type.id === "Pi3") {
+      dropZones.push("pi");
+    }
+    if (device.type.id === "SonyXBR") {
+      dropZones.push("display");
+    }
+    for (const t of this.projectorTypes) {
+      if (t.id === device.type.id) {
+        dropZones.push("display");
+      }
+    }
+    for (const t of this.inputTypes) {
+      if (t.id === device.type.id) {
+        dropZones.push("input");
+      }
+    }
+    for (const t of this.audioTypes) {
+      if (t.id === device.type.id) {
+        dropZones.push("audio");
+      }
+    }
+    return dropZones;
+  }
+
+  AddDisplayToPreset(preset: Preset, deviceName: string) {
+    if (!preset.displays.includes(deviceName)) {
+      preset.displays.push(deviceName);
+      preset.displays.sort();
+    }
+  }
+
+  AddInputToPreset(preset: Preset, deviceName: string) {
+    if (!preset.inputs.includes(deviceName)) {
+      preset.inputs.push(deviceName);
+      preset.inputs.sort();
+    }
+  }
+
+  AddAudioToPreset(preset: Preset, deviceName: string) {
+    if (!preset.independentAudioDevices.includes(deviceName)) {
+      preset.independentAudioDevices.push(deviceName);
+      preset.independentAudioDevices.sort();
+    }
   }
 }

@@ -16,55 +16,64 @@
                 <button mat-icon-button (click)="PrepPresetModal(preset)"><mat-icon>more_horiz</mat-icon></button>
             </mat-card-header>
             <mat-divider></mat-divider>
-            <mat-card-content>
+            <mat-card-content class="content">
                 <div class="row lists">
-                    <mat-list class="preset-list">
-                        <h3 mat-subheader>Displays</h3>
-                        <ng-container *ngFor="let out of config?.outputConfiguration">
-                            <mat-list-item *ngIf="preset?.displays?.includes(out.name)">
-                                <!-- <mat-icon mat-list-icon>{{out.icon}}</mat-icon>
-                                <span mat-line>{{out.name}}</span> -->
-                                <div class="device-box mat-elevation-z2 spacing">
-                                    <div class="row card">
-                                        <mat-icon>{{out.icon}}</mat-icon>
-                                        <span>{{out.name}}</span>
+                    <div class="drop-container list" dnd-droppable [dropZones]="['display']" (onDropSuccess)="AddDisplayToPreset(preset, $event.dragData.name)">
+                        <mat-list class="preset-list">
+                            <h3 mat-subheader>Displays</h3>
+                            <ng-container *ngFor="let out of config?.outputConfiguration">
+                                <mat-list-item *ngIf="preset?.displays?.includes(out.name)">
+                                    <!-- <mat-icon mat-list-icon>{{out.icon}}</mat-icon>
+                                            <span mat-line>{{out.name}}</span> -->
+                                    <div class="device-box mat-elevation-z2 spacing" dnd-draggable [dragEnabled]="true" [dropZones]="['display']" [dragData]="out">
+                                        <div class="row card">
+                                            <mat-icon>{{out.icon}}</mat-icon>
+                                            <span>{{out.name}}</span>
+                                        </div>
                                     </div>
-                                </div>
 
-                            </mat-list-item>
-                        </ng-container>
-                    </mat-list>
-                    <mat-list class="preset-list">
-                        <h3 mat-subheader>Inputs</h3>
-                        <ng-container *ngFor="let in of config?.inputConfiguration">
-                            <mat-list-item *ngIf="preset?.inputs?.includes(in.name)">
-                                <!-- <mat-icon mat-list-icon>{{in.icon}}</mat-icon>
-                                <span mat-line>{{in.name}}</span> -->
-                                <div class="device-box mat-elevation-z2 spacing">
-                                    <div class="row card">
-                                        <mat-icon>{{in.icon}}</mat-icon>
-                                        <span>{{ in.name === 'ChromeCast' ? 'CC1' : in.name === 'AppleTV' ? 'ATV1' : in.name }}</span>
-                                    </div>
-                                </div>
-                            </mat-list-item>
-                        </ng-container>
-                    </mat-list>
-                    <mat-list class="preset-list">
-                        <h3 mat-subheader>Audio Devices</h3>
-                        <ng-container *ngFor="let out of config?.outputConfiguration">
-                            <mat-list-item *ngIf="preset?.independentAudioDevices?.includes(out.name)">
-                                <!-- <mat-icon mat-list-icon>{{out.icon}}</mat-icon>
-                                <span mat-line>{{out.name}}</span> -->
-                                <div class="device-box mat-elevation-z2 spacing">
-                                    <div class="row card">
-                                        <mat-icon>{{out.icon}}</mat-icon>
-                                        <span>{{out.name}}</span>
-                                    </div>
-                                </div>
+                                </mat-list-item>
+                            </ng-container>
+                        </mat-list>
+                    </div>
 
-                            </mat-list-item>
-                        </ng-container>
-                    </mat-list>
+                    <div class="drop-container list" dnd-droppable [dropZones]="['input']" (onDropSuccess)="AddInputToPreset(preset, $event.dragData.name)">
+                        <mat-list class="preset-list">
+                            <h3 mat-subheader>Inputs</h3>
+                            <ng-container *ngFor="let in of config?.inputConfiguration">
+                                <mat-list-item *ngIf="preset?.inputs?.includes(in.name)">
+                                    <!-- <mat-icon mat-list-icon>{{in.icon}}</mat-icon>
+                                            <span mat-line>{{in.name}}</span> -->
+                                    <div class="device-box mat-elevation-z2 spacing" dnd-draggable [dragEnabled]="true" [dropZones]="['input']" [dragData]="in">
+                                        <div class="row card">
+                                            <mat-icon>{{in.icon}}</mat-icon>
+                                            <span>{{ in.name === 'ChromeCast' ? 'CC1' : in.name === 'AppleTV' ? 'ATV1' : in.name }}</span>
+                                        </div>
+                                    </div>
+                                </mat-list-item>
+                            </ng-container>
+                        </mat-list>
+                    </div>
+
+                    <div class="drop-container list" dnd-droppable [dropZones]="['audio']" (onDropSuccess)="AddAudioToPreset(preset, $event.dragData.name)">
+                        <mat-list class="preset-list">
+                            <h3 mat-subheader>Audio Devices</h3>
+                            <ng-container *ngFor="let out of config?.outputConfiguration">
+                                <mat-list-item *ngIf="preset?.independentAudioDevices?.includes(out.name)">
+                                    <!-- <mat-icon mat-list-icon>{{out.icon}}</mat-icon>
+                                            <span mat-line>{{out.name}}</span> -->
+                                    <div class="device-box mat-elevation-z2 spacing" dnd-draggable [dragEnabled]="true" [dropZones]="['audio']" [dragData]="out">
+                                        <div class="row card">
+                                            <mat-icon>{{out.icon}}</mat-icon>
+                                            <span>{{out.name}}</span>
+                                        </div>
+                                    </div>
+
+                                </mat-list-item>
+                            </ng-container>
+                        </mat-list>
+                    </div>
+
                 </div>
             </mat-card-content>
         </mat-card>
@@ -79,7 +88,7 @@
         </div>
         <div class="column">
             <div class="row">
-                <div *ngFor="let device of filteredDevices" class="device-box mat-elevation-z2 spacing">
+                <div *ngFor="let device of filteredDevices" class="device-box mat-elevation-z2 spacing" dnd-draggable [dragEnabled]="true" [dropZones]="GetValidDropZones(device)" [dragData]="device">
                     <div class="row card">
                         <mat-icon>{{ text.DefaultIcons[device.type.id] }}</mat-icon>
                         <span>{{ device.name === 'ChromeCast' ? 'CC1' : device.name === 'AppleTV' ? 'ATV1' : device.name }}</span>

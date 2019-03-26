@@ -89,7 +89,12 @@ $deviceCardWidth: 5vw;
     &.lists {
         flex-flow: row nowrap;
         align-items: flex-start;
+        height: 100%;
     }
+}
+
+.content {
+    height: 85%;
 }
 
 .searchbar {
@@ -153,4 +158,11 @@ $deviceCardWidth: 5vw;
 
 .preset-card {
     max-height: 50%;
+}
+
+.drop-container {
+    &.list {
+        height: 100%;
+        flex: 1 1 auto;
+    }
 }
