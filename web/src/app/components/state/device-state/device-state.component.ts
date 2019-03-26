@@ -137,7 +137,7 @@ export class DeviceStateComponent implements OnInit {
     }
 
     // refresh data each time a static device updates
-    this.socket.devices.subscribe(device => {
+    this.socket.devices.subscribe(() => {
       this.dataSource.data = this.data.staticDeviceList;
     });
   }

@@ -19,7 +19,6 @@ type StateQuery struct {
 
 //CheckStore doesn't expect anything in the context, but it will place the
 func (s *StateQuery) CheckStore(ctx context.Context) (bool, context.Context) {
-
 	s.initOnce.Do(func() {
 		s.runner = statequery.QueryRunner{
 			Query:     s.Query,

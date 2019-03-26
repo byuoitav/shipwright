@@ -17,7 +17,7 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
   columns = ["type", "roomID", "alerts", "devices"];
   roomList: CombinedRoomState[] = [];
   filteredRoomList: CombinedRoomState[] = [];
-  filterQueries: string[] = [];  
+  filterQueries: string[] = [];
   length = 360;
   pageSize = 20;
   pageSizeOptions: number[] = [5, 10, 15, 20, 25, 30, 50, 100];
@@ -25,19 +25,15 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
   // MatPaginator Output
   pageEvent: PageEvent;
 
-  constructor(public data: DataService, public text: StringsService) {
-    
-  }
+  constructor(public data: DataService, public text: StringsService) {}
 
-  ngOnInit() {
-     
-  }
+  ngOnInit() {}
 
   ngAfterViewInit() {
-    if (this.data.finished) {      
+    if (this.data.finished) {
       this.SetDataSourceFirstTime();
     } else {
-      this.data.loaded.subscribe(() => {        
+      this.data.loaded.subscribe(() => {
         this.SetDataSourceFirstTime();
       });
     }
@@ -45,29 +41,36 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
 
   SetDataSourceFirstTime() {
     this.roomList = this.data.combinedRoomStateList;
-    this.roomList.sort((a, b) => a.roomID.localeCompare(b.roomID))
+    this.roomList.sort((a, b) => a.roomID.localeCompare(b.roomID));
 
-    for (let room of this.roomList) {
+    for (const room of this.roomList) {
       if (room.deviceStates) {
-        room.deviceStates.sort((a, b) => 
-        {
+        room.deviceStates.sort((a, b) => {
           let aDT = a.deviceType ? a.deviceType : "";
           let bDT = b.deviceType ? b.deviceType : "";
-          let aID = a.deviceID ? a.deviceID : "";
-          let bID = b.deviceID ? b.deviceID : "";
+          const aID = a.deviceID ? a.deviceID : "";
+          const bID = b.deviceID ? b.deviceID : "";
 
-          if (aDT.toLowerCase() == "dmps" || aDT.toLowerCase() == "control-processor")
+          if (
+            aDT.toLowerCase() === "dmps" ||
+            aDT.toLowerCase() === "control-processor"
+          ) {
             aDT = "aaa";
+          }
 
-          if (bDT.toLowerCase() == "dmps" || bDT.toLowerCase() == "control-processor")
+          if (
+            bDT.toLowerCase() === "dmps" ||
+            bDT.toLowerCase() === "control-processor"
+          ) {
             bDT = "aaa";
+          }
 
           if (aDT === bDT) {
             return aID.localeCompare(bID);
           }
 
           return aDT.localeCompare(bDT);
-       });    
+        });
       }
     }
 
@@ -80,7 +83,7 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      });
+    });
   }
 
   GetDeviceName(deviceID: string): string {
@@ -107,12 +110,20 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
   GetStyle(ds: StaticDevice): string {
     let style = "default-chip";
     let deviceType = ds.deviceType;
-    if (deviceType) deviceType = deviceType.toLowerCase();
+    if (deviceType) {
+      deviceType = deviceType.toLowerCase();
+    }
 
     let power = ds.power;
-    if (power) power = power.toLowerCase();
+    if (power) {
+      power = power.toLowerCase();
+    }
 
-    if (deviceType === "display" || deviceType === "dmps" || deviceType == "microphone") {
+    if (
+      deviceType === "display" ||
+      deviceType === "dmps" ||
+      deviceType === "microphone"
+    ) {
       if (power === "on") {
         style = "display-on";
         return style;
@@ -208,7 +219,6 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
   }
 
   FilterRooms() {
-
     this.filteredRoomList = [];
     if (this.filterQueries.length === 0) {
       this.filteredRoomList = this.roomList;
@@ -234,9 +244,8 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
       if (room.activeAlertCount > 0) {
         return true;
       }
-    return false;
+      return false;
     }
-
   }
 
   lowMic(room?: CombinedRoomState) {
@@ -292,16 +301,17 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
       if (room.deviceStates != null) {
         for (const device of room.deviceStates) {
           let deviceType = device.deviceType;
-          if (deviceType) {deviceType = deviceType.toLowerCase(); }
+          if (deviceType) {
+            deviceType = deviceType.toLowerCase();
+          }
 
           let power = device.power;
-          if (power) {power = power.toLowerCase(); }
+          if (power) {
+            power = power.toLowerCase();
+          }
 
           if (deviceType === "display" || deviceType === "dmps") {
-            if (
-              power === "on" &&
-              !this.filteredRoomList.includes(room)
-            ) {
+            if (power === "on" && !this.filteredRoomList.includes(room)) {
               return true;
             }
           }
