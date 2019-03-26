@@ -79,7 +79,9 @@ export class DataService {
     this.issueEmitter = new EventEmitter<RoomIssue>();
     this.notifier = notify;
     this.LoadData();
+
     this.ListenForIssues();
+    this.updateDevices();
   }
 
   private async LoadData() {
@@ -270,7 +272,7 @@ export class DataService {
   }
 
   private ListenForIssues() {
-    this.socket.listener.subscribe(issue => {
+    this.socket.issues.subscribe(issue => {
       if (!issue.resolved) {
         this.roomIssuesMap.set(issue.roomID, [issue]);
       }
@@ -318,6 +320,18 @@ export class DataService {
         }
 
         this.issueEmitter.emit(issue);
+      }
+    });
+  }
+
+  private updateDevices() {
+    this.socket.devices.subscribe(device => {
+      const idx = this.staticDeviceList.findIndex(
+        d => d.deviceID === device.deviceID
+      );
+
+      if (idx >= 0) {
+        this.staticDeviceList[idx] = device;
       }
     });
   }
