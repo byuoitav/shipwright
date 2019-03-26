@@ -43,6 +43,12 @@ func (a *Action) Run(ctx context.Context) {
 		a.Log = log.L.Named(a.Name)
 	}
 
+	defer func() {
+		if r := recover(); r != nil {
+			a.Log.Errorf("Caught panic: %s", r)
+		}
+	}()
+
 	a.Log.Debugf("Running if checks")
 	if ctx, passed := a.If.Check(ctx, a.Log); passed {
 		count := atomic.AddUint64(&a.runCount, 1)
