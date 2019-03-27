@@ -422,6 +422,10 @@ func syncRoomIssueWithIncident(roomIssue structs.RoomIssue, incidentID string, c
 		ResolutionAction:  resolutionAction,
 	}
 
+	if roomIssue.Resolved {
+		input.State = servicenow.IncidentClosedState
+	}
+
 	if len(existingIncident.Number) > 0 {
 		//modify
 		updatedIncident, err := servicenow.ModifyIncident(input, existingIncident.SysID)
