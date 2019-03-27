@@ -141,6 +141,22 @@ func GetAllStaticDeviceRecords() ([]sd.StaticDevice, *nerr.E) {
 
 	return defaultDevices, nil
 }
+func GetStaticDeviceRecord(id string) (sd.StaticDevice, *nerr.E) {
+
+	dev, err := cache.GetCache("default").GetDeviceRecord(id)
+	if err != nil {
+		return sd.StaticDevice{}, err
+	}
+
+	// legacyDevices, err := cache.GetCache("legacy").GetAllDeviceRecords()
+	// if err != nil {
+	// 	return []sd.StaticDevice{}, err
+	// }
+
+	// defaultDevices = append(defaultDevices, legacyDevices...)
+
+	return dev, nil
+}
 
 // GetAllStaticRoomRecords returns a list of all the static room records
 func GetAllStaticRoomRecords() ([]sd.StaticRoom, *nerr.E) {
