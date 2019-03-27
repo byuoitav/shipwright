@@ -30,7 +30,6 @@
             (onDropSuccess)="AddDisplayToPreset(preset, $event.dragData.name)"
           >
             <mat-list class="preset-list">
-              <h3 mat-subheader>Displays</h3>
               <ng-container *ngFor="let out of config?.outputConfiguration">
                 <mat-list-item *ngIf="preset?.displays?.includes(out.name)">
                   <!-- <mat-icon mat-list-icon>{{out.icon}}</mat-icon>
@@ -41,7 +40,9 @@
                     [dragEnabled]="true"
                     [dropZones]="['display']"
                     [dragData]="out"
-                    (onDragSuccess)="RemoveDisplayFromPreset(preset, $event.dragData.name)"
+                    (onDragSuccess)="
+                      RemoveDisplayFromPreset(preset, $event.dragData.name)
+                    "
                   >
                     <div class="row card">
                       <mat-icon>{{ out.icon }}</mat-icon>

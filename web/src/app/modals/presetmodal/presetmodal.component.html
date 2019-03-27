@@ -36,18 +36,19 @@
   </section>
 
   <mat-divider></mat-divider>
-  <ng-container *ngIf="uipath == '/blueberry'">
+  <ng-container
+    *ngIf="uipath == '/blueberry' && HasShareableDisplays(data?.preset)"
+  >
     <section class="heading">
-      <h2 class="mat-h2">Displays</h2>
+      <mat-label>{{ text.Sharing[sharing.checked] }}</mat-label>
       <mat-slide-toggle
         #sharing
         (change)="ToggleSharing($event.checked)"
         [checked]="HasSharing()"
-        >{{ text.Sharing[sharing.checked] }}</mat-slide-toggle
-      >
+      ></mat-slide-toggle>
     </section>
 
-    <section class="checkboxes">
+    <section class="checkboxes" *ngIf="sharing.checked">
       <mat-label>Shared Displays:</mat-label>
       <div class="displays">
         <div

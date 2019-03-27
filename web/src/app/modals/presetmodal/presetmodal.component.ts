@@ -45,9 +45,7 @@ export class PresetModalComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
-    console.log(this.data.config);
-  }
+  ngOnInit() {}
 
   Close() {
     this.dialogRef.close();
@@ -264,6 +262,17 @@ export class PresetModalComponent implements OnInit {
           caller.icon = result;
         }
       });
+  }
+
+  HasShareableDisplays(preset: Preset): boolean {
+    for (const out of data.config.outputConfiguration) {
+      if (IsADisplay(out.name)) {
+        if (!preset.displays.includes(out.name)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   private SortAlphaNum(a, b) {
