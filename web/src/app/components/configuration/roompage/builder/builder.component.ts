@@ -28,6 +28,7 @@ export class BuilderComponent implements OnInit {
 
   projectorTypes: DeviceType[] = [];
   inputTypes: DeviceType[] = [];
+  audioTypes: DeviceType[] = [];
 
   tempDevices: Device[] = [];
 
@@ -49,9 +50,7 @@ export class BuilderComponent implements OnInit {
       }
     });
 
-    window.onbeforeunload = function() {
-      
-    }
+    window.onbeforeunload = function() {};
   }
 
   ngOnInit() {}
@@ -105,6 +104,7 @@ export class BuilderComponent implements OnInit {
   SetDeviceTypeLists() {
     this.projectorTypes = [];
     this.inputTypes = [];
+    this.audioTypes = [];
 
     for (const type of this.data.deviceTypeList) {
       if (type.tags.includes("projector")) {
@@ -112,6 +112,11 @@ export class BuilderComponent implements OnInit {
       }
       if (type.input) {
         this.inputTypes.push(type);
+      }
+      for (const role of type.roles) {
+        if (role.id === "Microphone") {
+          this.audioTypes.push(type);
+        }
       }
     }
   }
@@ -128,34 +133,51 @@ export class BuilderComponent implements OnInit {
     }
 
     searchList.forEach(device => {
-        if (device.name.toLowerCase().includes(this.deviceSearch.toLowerCase()) && !this.filteredDevices.includes(device)) {
+      if (
+        device.name.toLowerCase().includes(this.deviceSearch.toLowerCase()) &&
+        !this.filteredDevices.includes(device)
+      ) {
+        this.filteredDevices.push(device);
+      }
+
+      if (
+        device.displayName
+          .toLowerCase()
+          .includes(this.deviceSearch.toLowerCase()) &&
+        !this.filteredDevices.includes(device)
+      ) {
+        this.filteredDevices.push(device);
+      }
+
+      if (
+        device.type.id
+          .toLowerCase()
+          .includes(this.deviceSearch.toLowerCase()) &&
+        !this.filteredDevices.includes(device)
+      ) {
+        this.filteredDevices.push(device);
+      }
+
+      device.roles.forEach(role => {
+        if (
+          role.id.toLowerCase().includes(this.deviceSearch.toLowerCase()) &&
+          !this.filteredDevices.includes(device)
+        ) {
           this.filteredDevices.push(device);
         }
+      });
 
-        if (device.displayName.toLowerCase().includes(this.deviceSearch.toLowerCase()) && !this.filteredDevices.includes(device)) {
-          this.filteredDevices.push(device);
-        }
-
-        if (device.type.id.toLowerCase().includes(this.deviceSearch.toLowerCase()) && !this.filteredDevices.includes(device)) {
-          this.filteredDevices.push(device);
-        }
-
-        device.roles.forEach(role => {
-          if (role.id.toLowerCase().includes(this.deviceSearch.toLowerCase()) && !this.filteredDevices.includes(device)) {
+      if (device.tags != null) {
+        device.tags.forEach(tag => {
+          if (
+            tag.toLowerCase().includes(this.deviceSearch.toLowerCase()) &&
+            !this.filteredDevices.includes(device)
+          ) {
             this.filteredDevices.push(device);
           }
         });
-
-        if (device.tags != null) {
-          device.tags.forEach(tag => {
-            if (tag.toLowerCase().includes(this.deviceSearch.toLowerCase()) && !this.filteredDevices.includes(device)) {
-              this.filteredDevices.push(device);
-            }
-          });
-        }
+      }
     });
-
-
   }
 
   AddNewDevice(typeID: string) {
@@ -167,7 +189,7 @@ export class BuilderComponent implements OnInit {
     const numRegex = /[0-9]/;
     let num = 1;
 
-    for(const dev of this.devicesInRoom) {
+    for (const dev of this.devicesInRoom) {
       const index = dev.name.search(numRegex);
       const prefix = dev.name.substring(0, index);
 
@@ -184,5 +206,78 @@ export class BuilderComponent implements OnInit {
 
     this.devicesInRoom.push(device);
     this.devicesInRoom.sort(this.text.SortDevicesAlphaNum);
+  }
+
+  GetValidDropZones(device: Device): string[] {
+    const dropZones: string[] = [];
+
+    if (device.type.id === "Pi3") {
+      dropZones.push("pi");
+    }
+    if (device.type.id === "SonyXBR") {
+      dropZones.push("display");
+    }
+    for (const t of this.projectorTypes) {
+      if (t.id === device.type.id) {
+        dropZones.push("display");
+      }
+    }
+    for (const t of this.inputTypes) {
+      if (t.id === device.type.id) {
+        dropZones.push("input");
+      }
+    }
+    for (const t of this.audioTypes) {
+      if (t.id === device.type.id) {
+        dropZones.push("audio");
+      }
+    }
+    return dropZones;
+  }
+
+  AddDisplayToPreset(preset: Preset, deviceName: string) {
+    if (!preset.displays.includes(deviceName)) {
+      preset.displays.push(deviceName);
+      preset.displays.sort();
+    }
+  }
+
+  AddInputToPreset(preset: Preset, deviceName: string) {
+    if (!preset.inputs.includes(deviceName)) {
+      preset.inputs.push(deviceName);
+      preset.inputs.sort();
+    }
+  }
+
+  AddAudioToPreset(preset: Preset, deviceName: string) {
+    if (!preset.independentAudioDevices.includes(deviceName)) {
+      preset.independentAudioDevices.push(deviceName);
+      preset.independentAudioDevices.sort();
+    }
+  }
+
+  RemoveDisplayFromPreset(preset: Preset, deviceName: string) {
+    console.log("We are here 1");
+    //    console.log("Event", deviceName);
+    if (preset.displays.includes(deviceName)) {
+      preset.displays.splice(preset.displays.indexOf(deviceName), 1);
+    }
+  }
+
+  RemoveInputFromPreset(preset: Preset, deviceName: string) {
+    console.log("We are here 2");
+    if (preset.inputs.includes(deviceName)) {
+      preset.inputs.splice(preset.inputs.indexOf(deviceName), 1);
+    }
+  }
+
+  RemoveAudioFromPreset(preset: Preset, deviceName: string) {
+    console.log("We are here 3");
+    if (preset.independentAudioDevices.includes(deviceName)) {
+      preset.independentAudioDevices.splice(
+        preset.independentAudioDevices.indexOf(deviceName),
+        1
+      );
+    }
   }
 }
