@@ -235,49 +235,25 @@ export class BuilderComponent implements OnInit {
     return dropZones;
   }
 
-  AddDisplayToPreset(preset: Preset, deviceName: string) {
-    if (!preset.displays.includes(deviceName)) {
-      preset.displays.push(deviceName);
-      preset.displays.sort();
+  AddItemToPresetList(presetList: string[], deviceName: string) {
+    if (!presetList.includes(deviceName)) {
+      presetList.push(deviceName);
+      // presetList.sort();
+      console.log(this.config);
     }
   }
 
-  AddInputToPreset(preset: Preset, deviceName: string) {
-    if (!preset.inputs.includes(deviceName)) {
-      preset.inputs.push(deviceName);
-      preset.inputs.sort();
+  RemoveItemFromPresetList(presetList: string[], deviceName: string) {
+    if (presetList.includes(deviceName)) {
+      presetList.splice(presetList.indexOf(deviceName), 1);
     }
   }
 
-  AddAudioToPreset(preset: Preset, deviceName: string) {
-    if (!preset.independentAudioDevices.includes(deviceName)) {
-      preset.independentAudioDevices.push(deviceName);
-      preset.independentAudioDevices.sort();
-    }
-  }
-
-  RemoveDisplayFromPreset(preset: Preset, deviceName: string) {
-    console.log("We are here 1");
-    //    console.log("Event", deviceName);
-    if (preset.displays.includes(deviceName)) {
-      preset.displays.splice(preset.displays.indexOf(deviceName), 1);
-    }
-  }
-
-  RemoveInputFromPreset(preset: Preset, deviceName: string) {
-    console.log("We are here 2");
-    if (preset.inputs.includes(deviceName)) {
-      preset.inputs.splice(preset.inputs.indexOf(deviceName), 1);
-    }
-  }
-
-  RemoveAudioFromPreset(preset: Preset, deviceName: string) {
-    console.log("We are here 3");
-    if (preset.independentAudioDevices.includes(deviceName)) {
-      preset.independentAudioDevices.splice(
-        preset.independentAudioDevices.indexOf(deviceName),
-        1
-      );
+  SetPresetOnPanel(preset: Preset, hostname: string) {
+    for(const panel of this.config.panels) {
+      if (panel.hostname === hostname) {
+        panel.preset = preset.name;
+      }
     }
   }
 }
