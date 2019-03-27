@@ -3,6 +3,7 @@ import { StringsService } from "src/app/services/strings.service";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { DataService } from "src/app/services/data.service";
 import { Device, DeviceType, Port } from "src/app/objects/database";
+import { APIService } from 'src/app/services/api.service';
 
 @Component({
   selector: "device-modal",
@@ -13,17 +14,22 @@ export class DeviceModalComponent implements OnInit {
   RoleList = [];
   UnappliedRoles = [];
   CurrentType: DeviceType = new DeviceType();
+  rawIP: string = "";
 
   constructor(
     public text: StringsService,
     public dialogRef: MatDialogRef<DeviceModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: Device,
-    public dataService: DataService
+    public dataService: DataService,
+    private api: APIService
   ) {
     this.RoleList = data.roles;
     this.UpdateRoleLists();
     this.CurrentType = this.dataService.deviceTypeMap.get(this.data.type.id);
     this.FixMe();
+    this.api.GetDeviceRawIPAddress(this.data.address).then((addr) => {
+      this.rawIP = addr as string;
+    });
   }
 
   ngOnInit() {
@@ -83,6 +89,6 @@ export class DeviceModalComponent implements OnInit {
   }
 
   IsAnInPort(port: Port): boolean {
-    return port.tags.includes("port-in");
+    return port.tags.includes("in");
   }
 }
