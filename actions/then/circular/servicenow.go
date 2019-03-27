@@ -54,28 +54,47 @@ func SyncRoomIssueWithServiceNow(ctx context.Context, with []byte, log *zap.Suga
 	}
 
 	if len(criticalAlerts) > 0 {
-		cricitalIncidentID := ""
+		criticalIncidentID := ""
 
 		//see if we already have an incident to sync with
 		for _, incidentID := range roomIssue.IncidentID {
 			if strings.Contains(incidentID, "INC") {
-				cricitalIncidentID = incidentID
+				criticalIncidentID = incidentID
 				break
 			}
 		}
 
 		//go ahead and sync
-		newIncidentID, err := syncRoomIssueWithIncident(roomIssue, cricitalIncidentID, criticalAlerts)
+		newIncidentID, err := syncRoomIssueWithIncident(roomIssue, criticalIncidentID, criticalAlerts)
 
 		if err != nil {
 			log.Errorf("Unable to sync room issue with incident")
 			return err
 		}
+		log.Infof("Crit %v new %v", criticalIncidentID, newIncidentID)
 
-		if newIncidentID != cricitalIncidentID {
-			roomIssue.IncidentID = append(roomIssue.IncidentID, cricitalIncidentID)
+		if newIncidentID != criticalIncidentID {
+			log.Errorf("Resubmitting to the alert store for critical alerts")
+			if newIncidentID != "" {
+				roomIssue.IncidentID = append(roomIssue.IncidentID, newIncidentID)
+			}
+			//if the old one isn't blank we need to remove it
+			if criticalIncidentID != "" {
+				for i := range roomIssue.IncidentID {
+					if roomIssue.IncidentID[i] == criticalIncidentID {
+						//remove it
+						roomIssue.IncidentID[i] = roomIssue.IncidentID[len(roomIssue.IncidentID)-1]
+						roomIssue.IncidentID = roomIssue.IncidentID[:len(roomIssue.IncidentID)-1]
+
+						break
+					}
+
+				}
+			}
+
+			log.Infof("IncidentID in service Iow: %v", roomIssue.IncidentID)
+
 			roomIssueError := alertstore.UpdateRoomIssue(roomIssue)
-
 			if roomIssueError != nil {
 				log.Errorf("Unable to update Room Issue in persistence store")
 				return nerr.Translate(roomIssueError)
@@ -103,7 +122,22 @@ func SyncRoomIssueWithServiceNow(ctx context.Context, with []byte, log *zap.Suga
 		}
 
 		if newIncidentID != warningIncidentID {
-			roomIssue.IncidentID = append(roomIssue.IncidentID, warningIncidentID)
+			log.Debugf("Resubmitting to the alert store for warnings")
+			if newIncidentID != "" {
+				roomIssue.IncidentID = append(roomIssue.IncidentID, newIncidentID)
+			}
+			//remove the old one
+			if warningIncidentID != "" {
+				for i := range roomIssue.IncidentID {
+					if roomIssue.IncidentID[i] == warningIncidentID {
+						//remove it
+						roomIssue.IncidentID[i] = roomIssue.IncidentID[len(roomIssue.IncidentID)-1]
+						roomIssue.IncidentID = roomIssue.IncidentID[:len(roomIssue.IncidentID)-1]
+
+					}
+					break
+				}
+			}
 			roomIssueError := alertstore.UpdateRoomIssue(roomIssue)
 
 			if roomIssueError != nil {
