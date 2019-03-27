@@ -2,7 +2,11 @@
   <span class="fill-remaining-space"></span>
   <section class="container left">
     <mat-card *ngFor="let preset of config?.presets" class="preset-card">
-      <mat-card-header>
+      <mat-card-header
+        dnd-droppable
+        [dropZones]="['pi']"
+        (onDropSuccess)="SetPresetOnPanel(preset, $event.dragData.id)"
+      >
         <div
           mat-card-avatar
           [ngClass]="'uipath-' + GetPresetUIPath(preset.name, true)"
@@ -27,9 +31,12 @@
             class="drop-container list"
             dnd-droppable
             [dropZones]="['display']"
-            (onDropSuccess)="AddDisplayToPreset(preset, $event.dragData.name)"
+            (onDropSuccess)="
+              AddItemToPresetList(preset.displays, $event.dragData.name)
+            "
           >
             <mat-list class="preset-list">
+              <h3 mat-subheader>Displays</h3>
               <ng-container *ngFor="let out of config?.outputConfiguration">
                 <mat-list-item *ngIf="preset?.displays?.includes(out.name)">
                   <!-- <mat-icon mat-list-icon>{{out.icon}}</mat-icon>
@@ -41,12 +48,22 @@
                     [dropZones]="['display']"
                     [dragData]="out"
                     (onDragSuccess)="
-                      RemoveDisplayFromPreset(preset, $event.dragData.name)
+                      RemoveItemFromPresetList(
+                        preset.displays,
+                        $event.dragData.name
+                      )
                     "
                   >
                     <div class="row card">
-                      <mat-icon>{{ out.icon }}</mat-icon>
-                      <span>{{ out.name }}</span>
+                      <mat-icon (click)="modal.OpenIconModal(out)">{{
+                        out.icon
+                      }}</mat-icon>
+                      <span
+                        (click)="
+                          modal.OpenDeviceModal(GetDeviceByName(out.name))
+                        "
+                        >{{ out.name }}</span
+                      >
                     </div>
                   </div>
                 </mat-list-item>
@@ -58,7 +75,9 @@
             class="drop-container list"
             dnd-droppable
             [dropZones]="['input']"
-            (onDropSuccess)="AddInputToPreset(preset, $event.dragData.name)"
+            (onDropSuccess)="
+              AddItemToPresetList(preset.inputs, $event.dragData.name)
+            "
           >
             <mat-list class="preset-list">
               <h3 mat-subheader>Inputs</h3>
@@ -72,19 +91,29 @@
                     [dragEnabled]="true"
                     [dropZones]="['input']"
                     [dragData]="in"
-                    (onDragSuccessCallback)="
-                      RemoveInputFromPreset(preset, $event.dragData.name)
+                    (onDragSuccess)="
+                      RemoveItemFromPresetList(
+                        preset.inputs,
+                        $event.dragData.name
+                      )
                     "
                   >
                     <div class="row card">
-                      <mat-icon>{{ in.icon }}</mat-icon>
-                      <span>{{
-                        in.name === "ChromeCast"
-                          ? "CC1"
-                          : in.name === "AppleTV"
-                          ? "ATV1"
-                          : in.name
-                      }}</span>
+                      <mat-icon (click)="modal.OpenIconModal(in)">{{
+                        in.icon
+                      }}</mat-icon>
+                      <span
+                        (click)="
+                          modal.OpenDeviceModal(GetDeviceByName(in.name))
+                        "
+                        >{{
+                          in.name === "ChromeCast"
+                            ? "CC1"
+                            : in.name === "AppleTV"
+                            ? "ATV1"
+                            : in.name
+                        }}</span
+                      >
                     </div>
                   </div>
                 </mat-list-item>
@@ -96,7 +125,12 @@
             class="drop-container list"
             dnd-droppable
             [dropZones]="['audio']"
-            (onDropSuccess)="AddAudioToPreset(preset, $event.dragData.name)"
+            (onDropSuccess)="
+              AddItemToPresetList(
+                preset.independentAudioDevices,
+                $event.dragData.name
+              )
+            "
           >
             <mat-list class="preset-list">
               <h3 mat-subheader>Audio Devices</h3>
@@ -112,13 +146,23 @@
                     [dragEnabled]="true"
                     [dropZones]="['audio']"
                     [dragData]="out"
-                    (onDragSuccessCallback)="
-                      RemoveAudioFromPreset(preset, $event.dragData.name)
+                    (onDragSuccess)="
+                      RemoveItemFromPresetList(
+                        preset.independentAudioDevices,
+                        $event.dragData.name
+                      )
                     "
                   >
                     <div class="row card">
-                      <mat-icon>{{ out.icon }}</mat-icon>
-                      <span>{{ out.name }}</span>
+                      <mat-icon (click)="modal.OpenIconModal(out)">{{
+                        out.icon
+                      }}</mat-icon>
+                      <span
+                        (click)="
+                          modal.OpenDeviceModal(GetDeviceByName(out.name))
+                        "
+                        >{{ out.name }}</span
+                      >
                     </div>
                   </div>
                 </mat-list-item>
@@ -141,7 +185,11 @@
         />
       </mat-form-field>
     </div>
-    <div class="column">
+    <div
+      class="column"
+      dnd-droppable
+      [dropZones]="['pi', 'input', 'display', 'audio']"
+    >
       <div class="row">
         <div
           *ngFor="let device of filteredDevices"
