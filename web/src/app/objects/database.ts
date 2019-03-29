@@ -1,4 +1,9 @@
-import { JsonObject, JsonProperty } from "json2typescript";
+import {
+  JsonObject,
+  JsonProperty,
+  JsonCustomConvert,
+  JsonConverter
+} from "json2typescript";
 
 @JsonObject("Building")
 export class Building {
@@ -153,6 +158,34 @@ export class Person {
   id: string = undefined;
 }
 
+@JsonConverter
+class SignalPathConverter implements JsonCustomConvert<Map<string, string[]>> {
+  serialize(map: Map<string, string[]>): any {
+    return undefined;
+  }
+
+  deserialize(obj: any): Map<string, string[]> {
+    if (obj[""]) {
+      delete obj[""];
+    }
+    const map = new Map<string, string[]>();
+
+    for (const key of Object.keys(obj)) {
+      if (key && obj[key]) {
+        map.set(key, obj[key]);
+      }
+    }
+
+    return map;
+  }
+}
+
+@JsonObject("SignalPaths")
+export class SignalPaths {
+  @JsonProperty("video", SignalPathConverter, true)
+  video: Map<string, string[]> = undefined;
+}
+
 @JsonObject("Room")
 export class Room {
   @JsonProperty("_id", String)
@@ -178,6 +211,9 @@ export class Room {
 
   @JsonProperty("tags", [String], true)
   tags: string[] = Array<string>();
+
+  @JsonProperty("signal-paths", SignalPaths, true)
+  signalPaths: SignalPaths = undefined;
 
   isNew = false;
 }

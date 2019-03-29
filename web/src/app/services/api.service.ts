@@ -489,7 +489,7 @@ export class APIService {
       const data: any = await this.http
         .get("devices/" + hostname + "/address", { headers: this.headers })
         .toPromise();
-      
+
       return data;
     } catch (e) {
       throw new Error("error getting the IP address from the hostname: " + e);
