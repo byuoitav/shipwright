@@ -31,6 +31,8 @@ export class BuilderComponent implements OnInit {
   inputTypes: DeviceType[] = [];
   audioTypes: DeviceType[] = [];
 
+  tvSizes: string[] = ["\"43", "\"55", "\"65", "\"75"];
+
   tempDevices: Device[] = [];
 
   constructor(
@@ -64,6 +66,9 @@ export class BuilderComponent implements OnInit {
     this.filteredDevices = this.devicesInRoom;
 
     this.config = this.data.roomToUIConfigMap.get(this.roomID);
+    if (this.config == null) {
+      this.config = new UIConfig();
+    }
 
     this.FillMissingUIConfigInfo();
 
@@ -278,7 +283,7 @@ export class BuilderComponent implements OnInit {
   }
 
   SetPresetOnPanel(preset: Preset, hostname: string) {
-    for(const panel of this.config.panels) {
+    for (const panel of this.config.panels) {
       if (panel.hostname === hostname) {
         panel.preset = preset.name;
       }

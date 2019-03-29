@@ -10,14 +10,15 @@
             <mat-card class="full-width">
                 <mat-card-header>
                     <mat-card-title>Room Issues</mat-card-title>
+
                 </mat-card-header>
                 <mat-divider></mat-divider>
-                <mat-card-content class="row-table">
+                <mat-card-content class="issue-table">
                     <app-alert-table [singleRoom]="true" [expIssue]="roomIssue"></app-alert-table>
                 </mat-card-content>
             </mat-card>
 
-            <aside class="column mat-elevation-z3" *ngIf="filteredDevices != null">
+            <!-- <aside class="column mat-elevation-z3" *ngIf="filteredDevices != null">
                 <div class="searchbar devices mat-elevation-z0">
                     <mat-icon class="searchbar icon mat-elevation-z0">search</mat-icon>
                     <mat-form-field class="short">
@@ -33,7 +34,7 @@
                         </mat-list-item>
                     </ng-container>
                 </mat-list>
-            </aside>
+            </aside> -->
         </section>
 
         <section class="cardrow">
