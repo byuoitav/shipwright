@@ -265,8 +265,8 @@ export class PresetModalComponent implements OnInit {
   }
 
   HasShareableDisplays(preset: Preset): boolean {
-    for (const out of data.config.outputConfiguration) {
-      if (IsADisplay(out.name)) {
+    for (const out of this.data.config.outputConfiguration) {
+      if (this.IsADisplay(out.name)) {
         if (!preset.displays.includes(out.name)) {
           return true;
         }

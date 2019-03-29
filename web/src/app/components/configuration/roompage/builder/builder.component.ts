@@ -9,7 +9,8 @@ import {
   UIConfig,
   Preset,
   Panel,
-  DeviceType
+  DeviceType,
+  IOConfiguration
 } from "src/app/objects/database";
 
 @Component({
@@ -24,7 +25,7 @@ export class BuilderComponent implements OnInit {
   filteredDevices: Device[] = [];
   deviceSearch: string;
 
-  config: UIConfig;
+  config: UIConfig = new UIConfig();
 
   projectorTypes: DeviceType[] = [];
   inputTypes: DeviceType[] = [];
@@ -64,7 +65,34 @@ export class BuilderComponent implements OnInit {
 
     this.config = this.data.roomToUIConfigMap.get(this.roomID);
 
+    this.FillMissingUIConfigInfo();
+
     this.SetDeviceTypeLists();
+  }
+
+  FillMissingUIConfigInfo() {
+    // if missing output configuration
+    if (this.config.outputConfiguration == null || this.config.outputConfiguration.length === 0) {
+      this.config.outputConfiguration = [];
+      for (const dev of this.devicesInRoom) {
+        if (!this.config.outputConfiguration.some(io => io.name === dev.name)) {
+          if (this.data.DeviceHasRole(dev, "VideoOut") || this.data.DeviceHasRole(dev, "Microphone")) {
+            this.config.outputConfiguration.push(new IOConfiguration(dev.name, this.text.DefaultIcons[dev.type.id]));
+          }
+        }
+      }
+    }
+    // if missing input configuration
+    if (this.config.inputConfiguration == null || this.config.inputConfiguration.length === 0) {
+      this.config.inputConfiguration = [];
+      for (const dev of this.devicesInRoom) {
+        if (!this.config.inputConfiguration.some(io => io.name === dev.name)) {
+          if (this.data.deviceTypeMap.get(dev.type.id).input) {
+            this.config.inputConfiguration.push(new IOConfiguration(dev.name, this.text.DefaultIcons[dev.type.id]));
+          }
+        }
+      }
+    }
   }
 
   GetPresetUIPath(presetName: string, trim: boolean) {
