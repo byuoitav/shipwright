@@ -8,13 +8,12 @@
       <mat-icon>add</mat-icon> Help Request
     </button>
 
-    <button mat-icon-button [matMenuTriggerFor]="options">
+    <button mat-icon-button [matMenuTriggerFor]="options" class="username">
       <!-- <mat-icon class="menu-title">menu</mat-icon> -->
       {{ currentUsername }}
     </button>
 
     <mat-menu #options>
-      
       <button mat-menu-item (click)="modal.OpenSettingsModal()">
         <mat-label class="menu-item">Settings</mat-label>
         <mat-icon style="margin-left: 5px; padding-bottom: 2px;"
@@ -79,6 +78,7 @@
         <ng-container *ngIf="wideSidenav()">Device Status</ng-container>
       </button>
 
+      <<<<<<< HEAD
       <button
         mat-flat-button
         color=""
@@ -89,6 +89,29 @@
         <mat-icon>info</mat-icon>
         <ng-container *ngIf="wideSidenav()">Information</ng-container>
       </button>
+      =======
+      <button
+        mat-flat-button
+        color=""
+        routerLink="/deviceStatus"
+        routerLinkActive="mat-accent"
+        queryParamsHandling="merge"
+      >
+        <mat-icon>devices_other</mat-icon>
+        <ng-container *ngIf="wideSidenav()">Device Status</ng-container>
+      </button>
+
+      <button
+        mat-flat-button
+        color=""
+        routerLink="/information"
+        routerLinkActive="mat-accent"
+        queryParamsHandling="merge"
+      >
+        <mat-icon>info</mat-icon>
+        <ng-container *ngIf="wideSidenav()">Information</ng-container>
+      </button>
+      >>>>>>> e9c6f85530f088b92f75bb335c99897e52da4152
 
       <button
         mat-flat-button
