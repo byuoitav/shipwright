@@ -21,6 +21,7 @@ import {
   ClassHalfHourBlock
 } from "../objects/alerts";
 import { StringsService } from "./strings.service";
+import { CookieService } from "ngx-cookie-service";
 
 @Injectable({
   providedIn: "root"
@@ -34,7 +35,11 @@ export class APIService {
 
   private headers: HttpHeaders;
 
-  constructor(private http: HttpClient, private text: StringsService) {
+  constructor(
+    public cookies: CookieService,
+    private http: HttpClient,
+    private text: StringsService
+  ) {
     this.themeSwitched = new EventEmitter<string[]>();
     this.converter = new JsonConvert();
     this.converter.ignorePrimitiveChecks = false;
@@ -58,17 +63,16 @@ export class APIService {
     const oldTheme = this.theme + "-theme";
     const newTheme = name + "-theme";
 
-    console.log("switching theme to ", name);
 
     this.theme = name;
-    this.urlParams.set("theme", name);
+    this.cookies.set("theme", name);
 
     this.themeSwitched.emit([oldTheme, newTheme]);
 
     window.history.replaceState(
       null,
       this.text.WebsiteTitle,
-      window.location.pathname + "?" + this.urlParams.toString()
+      window.location.pathname
     );
   }
 
