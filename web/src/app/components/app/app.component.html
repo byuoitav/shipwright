@@ -1,142 +1,69 @@
 <div class="base" [ngClass]="api?.theme + '-theme'">
-  <mat-toolbar color="primary">
-    <span class="website-title">{{ text.WebsiteTitle }}</span>
+    <mat-toolbar color="primary">
+        <span class="website-title">{{ text.WebsiteTitle }}</span>
 
-    <span class="fill-remaining-space"></span>
+        <span class="fill-remaining-space"></span>
 
-    <button mat-button class="hr" (click)="modal.OpenHelpModal()">
+        <button mat-button class="hr" (click)="modal.OpenHelpModal()">
       <mat-icon>add</mat-icon> Help Request
     </button>
 
-    <button mat-icon-button [matMenuTriggerFor]="options" class="username">
+        <button mat-icon-button [matMenuTriggerFor]="options" class="username">
       <!-- <mat-icon class="menu-title">menu</mat-icon> -->
       {{ currentUsername }}
     </button>
 
-    <mat-menu #options>
-      <button mat-menu-item (click)="modal.OpenSettingsModal()">
+        <mat-menu #options>
+            <button mat-menu-item (click)="modal.OpenSettingsModal()">
         <mat-label class="menu-item">Settings</mat-label>
         <mat-icon style="margin-left: 5px; padding-bottom: 2px;"
           >settings</mat-icon
         >
       </button>
 
-      <button mat-menu-item>
+            <button mat-menu-item>
         <span class="menu-item">Logout</span>
       </button>
-    </mat-menu>
-  </mat-toolbar>
-  <mat-sidenav-container class="sidenav-container">
-    <mat-sidenav
-      #sidenav
-      mode="side"
-      opened
-      class="sidenav"
-      [class.wide]="wideSidenav()"
-    >
-      <button
-        mat-flat-button
-        color=""
-        routerLink="/dashboard"
-        routerLinkActive="mat-accent"
-        queryParamsHandling="merge"
-      >
+        </mat-menu>
+    </mat-toolbar>
+    <mat-sidenav-container class="sidenav-container">
+        <mat-sidenav #sidenav mode="side" opened class="sidenav" [class.wide]="wideSidenav()">
+            <button mat-flat-button color="" routerLink="/dashboard" routerLinkActive="mat-accent" queryParamsHandling="merge">
         <mat-icon>dashboard</mat-icon>
         <ng-container *ngIf="wideSidenav()">Dashboard</ng-container>
       </button>
 
-      <button
-        mat-flat-button
-        color=""
-        routerLink="/campus"
-        routerLinkActive="mat-accent"
-        queryParamsHandling="merge"
-      >
+            <button mat-flat-button color="" routerLink="/campus" routerLinkActive="mat-accent" queryParamsHandling="merge">
         <mat-icon>map</mat-icon>
         <ng-container *ngIf="wideSidenav()">Campus</ng-container>
       </button>
 
-      <button
-        mat-flat-button
-        color=""
-        routerLink="/roomStatus"
-        routerLinkActive="mat-accent"
-        queryParamsHandling="merge"
-      >
+            <button mat-flat-button color="" routerLink="/roomStatus" routerLinkActive="mat-accent" queryParamsHandling="merge">
         <mat-icon>meeting_room</mat-icon>
         <ng-container *ngIf="wideSidenav()">Room Status</ng-container>
       </button>
 
-      <button
-        mat-flat-button
-        color=""
-        routerLink="/deviceStatus"
-        routerLinkActive="mat-accent"
-        queryParamsHandling="merge"
-      >
+            <button mat-flat-button color="" routerLink="/deviceStatus" routerLinkActive="mat-accent" queryParamsHandling="merge">
         <mat-icon>devices_other</mat-icon>
         <ng-container *ngIf="wideSidenav()">Device Status</ng-container>
       </button>
 
-      <<<<<<< HEAD
-      <button
-        mat-flat-button
-        color=""
-        routerLink="/information"
-        routerLinkActive="mat-accent"
-        queryParamsHandling="merge"
-      >
+            <button mat-flat-button color="" routerLink="/information" routerLinkActive="mat-accent" queryParamsHandling="merge">
         <mat-icon>info</mat-icon>
         <ng-container *ngIf="wideSidenav()">Information</ng-container>
       </button>
-      =======
-      <button
-        mat-flat-button
-        color=""
-        routerLink="/deviceStatus"
-        routerLinkActive="mat-accent"
-        queryParamsHandling="merge"
-      >
-        <mat-icon>devices_other</mat-icon>
-        <ng-container *ngIf="wideSidenav()">Device Status</ng-container>
-      </button>
 
-      <button
-        mat-flat-button
-        color=""
-        routerLink="/information"
-        routerLinkActive="mat-accent"
-        queryParamsHandling="merge"
-      >
-        <mat-icon>info</mat-icon>
-        <ng-container *ngIf="wideSidenav()">Information</ng-container>
-      </button>
-      >>>>>>> e9c6f85530f088b92f75bb335c99897e52da4152
-
-      <button
-        mat-flat-button
-        color=""
-        class="bottom"
-        (click)="setWideSidenav(!wideSidenav())"
-      >
+            <button mat-flat-button color="" class="bottom" (click)="setWideSidenav(!wideSidenav())">
         <mat-icon *ngIf="wideSidenav()">chevron_left</mat-icon>
         <mat-icon *ngIf="!wideSidenav()">chevron_right</mat-icon>
 
         <ng-container *ngIf="wideSidenav()"> Collapse sidebar </ng-container>
       </button>
-    </mat-sidenav>
-    <mat-sidenav-content
-      class="content-container"
-      [class.wide-nav]="wideSidenav()"
-    >
-      <mat-progress-bar
-        *ngIf="!data.finished"
-        color="warn"
-        mode="determinate"
-        [value]="data.completedOperations"
-      ></mat-progress-bar>
-      <router-outlet></router-outlet>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
-  <notifier-container></notifier-container>
+        </mat-sidenav>
+        <mat-sidenav-content class="content-container" [class.wide-nav]="wideSidenav()">
+            <mat-progress-bar *ngIf="!data.finished" color="warn" mode="determinate" [value]="data.completedOperations"></mat-progress-bar>
+            <router-outlet></router-outlet>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
+    <notifier-container></notifier-container>
 </div>

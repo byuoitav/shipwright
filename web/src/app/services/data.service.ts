@@ -79,17 +79,17 @@ export class DataService {
   ) {
     this.loaded = new EventEmitter<boolean>();
     this.settingsChanged = new EventEmitter<number>();
-    this.panelCount = this.cookies.get("panelCount");
+    this.panelCount = +this.cookies.get("panelCount");
     if (this.panelCount == null) {
       // PANEL COUNT DEFAULT
       this.panelCount = 1;
     }
     this.issueEmitter = new EventEmitter<RoomIssue>();
     this.notifier = notify;
-    this.notifs = this.cookies.get("notifications");
-    if (this.notifs == null) {
+    this.notificationsEnabled = Boolean(this.cookies.get("notifications"));
+    if (this.notificationsEnabled == null) {
       // NOTIFCATIONS ENABLED DEFAULT
-      this.notifs = true;
+      this.notificationsEnabled = true;
     }
     this.LoadData();
 
