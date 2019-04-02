@@ -138,7 +138,7 @@ export class RoutingComponent implements OnInit {
             data: {
               id: source + ":" + dev.id,
               source: source + ":" + srcport.id,
-              target: dev.id + ":" + port.id
+              target: dev.id + ":" + destport.id
             }
           });
         } else {
