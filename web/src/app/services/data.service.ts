@@ -21,6 +21,7 @@ import {
 } from "../objects/static";
 import { StringsService } from "./strings.service";
 import { NotifierService } from "angular-notifier";
+import { CookieService } from "ngx-cookie-service";
 
 @Injectable({
   providedIn: "root"
@@ -60,11 +61,12 @@ export class DataService {
   increment: number = Math.ceil(this.totalCompletion / 19);
 
   settingsChanged: EventEmitter<any>;
-  panelCount = 1;
+  panelCount: number;
 
   issueEmitter: EventEmitter<RoomIssue>;
 
   notifier: NotifierService;
+  notificationsEnabled = true;
 
   currentUsername: string;
 
@@ -72,12 +74,23 @@ export class DataService {
     public api: APIService,
     private socket: SocketService,
     private text: StringsService,
+    public cookies: CookieService,
     notify: NotifierService
   ) {
     this.loaded = new EventEmitter<boolean>();
     this.settingsChanged = new EventEmitter<number>();
+    this.panelCount = +this.cookies.get("panelCount");
+    if (this.panelCount == null) {
+      // PANEL COUNT DEFAULT
+      this.panelCount = 1;
+    }
     this.issueEmitter = new EventEmitter<RoomIssue>();
     this.notifier = notify;
+    this.notificationsEnabled = Boolean(this.cookies.get("notifications"));
+    if (this.notificationsEnabled == null) {
+      // NOTIFCATIONS ENABLED DEFAULT
+      this.notificationsEnabled = true;
+    }
     this.LoadData();
 
     this.ListenForIssues();
@@ -291,7 +304,7 @@ export class DataService {
         if (matchingIssue == null) {
           if (issue.resolved) {
             // this.notifier.notify( "warning", "New Room Issue received for " + issue.roomID + " but already resolved" );
-          } else {
+          } else if (this.notificationsEnabled) {
             this.notifier.notify(
               "error",
               "New Room Issue [" +
@@ -307,7 +320,7 @@ export class DataService {
           const index = this.roomIssueList.indexOf(matchingIssue);
 
           if (index > -1) {
-            if (issue.resolved) {
+            if (issue.resolved && this.notificationsEnabled) {
               this.notifier.notify(
                 "success",
                 "Room Issue for " + issue.roomID + " resolved."

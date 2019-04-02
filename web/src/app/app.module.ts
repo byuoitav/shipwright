@@ -2,6 +2,8 @@ import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { NgModule } from "@angular/core";
 
+import { CookieService } from "ngx-cookie-service";
+
 import {
   MatSidenavModule,
   MatButtonModule,
@@ -73,13 +75,13 @@ import { HelpModalComponent } from "./modals/helpmodal/helpmodal.component";
 import { DeviceStateComponent } from "./components/state/device-state/device-state.component";
 import { ResponseModalComponent } from "./modals/responsemodal/responsemodal.component";
 import { MaintenanceModalComponent } from "./modals/maintenancemodal/maintenancemodal.component";
-import { BuildingComponent } from './components/configuration/buildinglist/building/building.component';
-import { RoomComponent } from './components/configuration/roomlist/room/room.component';
-import { AlertsComponent } from './components/configuration/roompage/alerts/alerts.component';
-import { BuilderComponent } from './components/configuration/roompage/builder/builder.component';
-import { DeviceComponent } from './components/configuration/devicelist/device/device.component';
-import { RoutingComponent } from './components/configuration/roompage/routing/routing.component';
-import { InformationComponent } from './components/information/information.component';
+import { BuildingComponent } from "./components/configuration/buildinglist/building/building.component";
+import { RoomComponent } from "./components/configuration/roomlist/room/room.component";
+import { AlertsComponent } from "./components/configuration/roompage/alerts/alerts.component";
+import { BuilderComponent } from "./components/configuration/roompage/builder/builder.component";
+import { DeviceComponent } from "./components/configuration/devicelist/device/device.component";
+import { RoutingComponent } from "./components/configuration/roompage/routing/routing.component";
+import { InformationComponent } from "./components/information/information.component";
 
 @NgModule({
   declarations: [
@@ -177,6 +179,7 @@ import { InformationComponent } from './components/information/information.compo
     ModalService,
     StringsService,
     DashPanelService,
+    CookieService,
     { provide: DateAdapter, useClass: NativeDateAdapter },
     { provide: MAT_DIALOG_DATA, useValue: {} }
   ],

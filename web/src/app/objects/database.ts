@@ -225,6 +225,15 @@ export class IOConfiguration {
 
   @JsonProperty("icon", String)
   icon: string = undefined;
+
+  constructor(name?: string, icon?: string) {
+    if (name != null) {
+      this.name = name;
+    }
+    if (icon != null) {
+      this.icon = icon;
+    }
+  }
 }
 
 @JsonObject("AudioConfiguration")

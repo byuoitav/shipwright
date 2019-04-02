@@ -1,10 +1,39 @@
+<div class="settings">
 <section>
-    <h2 class="mat-h1 title">Settings</h2>
+  <h2 class="mat-h1 title">Settings</h2>
 </section>
 
 <mat-form-field>
-    <mat-label># of Dashboard Panels</mat-label>
-    <mat-select matInput (selectionChange)="SetPanelCount($event.value)" color="accent" [(ngModel)]="data.panelCount">
-        <mat-option *ngFor="let num of panelMax" [value]="num">{{num}}</mat-option>
-    </mat-select>
+  <mat-label># of Dashboard Panels</mat-label>
+  <mat-select
+    matInput
+    (selectionChange)="SetPanelCount($event.value)"
+    color="accent"
+    [(ngModel)]="data.panelCount"
+  >
+    <mat-option *ngFor="let num of panelMax" [value]="num">{{
+      num
+    }}</mat-option>
+  </mat-select>
 </mat-form-field>
+<section>
+  <mat-label>Notifications Enabled</mat-label>
+
+  <mat-slide-toggle
+    (change)="UpdateNotifications($event.checked)"
+    [checked]="data?.notifs"
+    class="slider"
+  >
+  </mat-slide-toggle>
+</section>
+<section>
+  <mat-label>Dark Theme</mat-label>
+
+  <mat-slide-toggle
+    (change)="UpdateTheme($event.checked)"
+    [checked]="api?.theme === 'dark'"
+    class="slider"
+  >
+  </mat-slide-toggle>
+</section>
+</div>
