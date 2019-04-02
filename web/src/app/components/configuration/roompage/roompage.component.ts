@@ -14,7 +14,7 @@ export class RoomPageComponent implements OnInit {
   room: Room;
   devices: Device[] = [];
 
-  selectedTab = 0;
+  selectedTab = 2;
   urlParams: URLSearchParams;
 
   tabMap = {
