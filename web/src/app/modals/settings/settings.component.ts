@@ -22,13 +22,12 @@ export class SettingsModalComponent implements OnInit {
     public api: APIService
   ) {
     this.panelMax = Array.from(new Array(4), (val, index) => index + 1);
-    console.log(data.notificationsEnabled);
   }
 
   ngOnInit() {}
 
   SetPanelCount(value: number) {
-    this.cookies.set("panelCount", String(value));
+    this.cookies.set("panelCount", String(value), 365);
     this.data.panelCount = value;
     this.data.settingsChanged.emit(value);
   }
@@ -40,7 +39,7 @@ export class SettingsModalComponent implements OnInit {
     }
   }
   UpdateNotifications(notifications: boolean) {
-    this.cookies.set("notifications", String(notifications));
+    this.cookies.set("notifications", String(notifications), 365);
     this.data.notificationsEnabled = notifications;
   }
 }
