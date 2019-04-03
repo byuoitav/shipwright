@@ -56,7 +56,7 @@ export class APIService {
   }
 
   public refresh() {
-    window.location.reload(true);
+    window.location.reload();
   }
 
   public switchTheme(name: string) {

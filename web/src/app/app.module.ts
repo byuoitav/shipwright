@@ -34,7 +34,8 @@ import {
   MAT_DIALOG_DATA,
   MatSlideToggleModule,
   MatAutocompleteModule,
-  MatGridListModule
+  MatGridListModule,
+  MatTooltipModule
 } from "@angular/material";
 
 import { AppRoutingModule } from "./app-routing.module";
@@ -82,6 +83,7 @@ import { BuilderComponent } from "./components/configuration/roompage/builder/bu
 import { DeviceComponent } from "./components/configuration/devicelist/device/device.component";
 import { RoutingComponent } from "./components/configuration/roompage/routing/routing.component";
 import { InformationComponent } from "./components/information/information.component";
+import { PendingChangesGuard } from "./pending-changes.guard";
 
 @NgModule({
   declarations: [
@@ -151,6 +153,7 @@ import { InformationComponent } from "./components/information/information.compo
     MatChipsModule,
     MatSlideToggleModule,
     MatAutocompleteModule,
+    MatTooltipModule,
     DndModule.forRoot(),
     NotifierModule.withConfig({
       theme: "material"
@@ -181,7 +184,8 @@ import { InformationComponent } from "./components/information/information.compo
     DashPanelService,
     CookieService,
     { provide: DateAdapter, useClass: NativeDateAdapter },
-    { provide: MAT_DIALOG_DATA, useValue: {} }
+    { provide: MAT_DIALOG_DATA, useValue: {} },
+    PendingChangesGuard
   ],
   bootstrap: [AppComponent]
 })

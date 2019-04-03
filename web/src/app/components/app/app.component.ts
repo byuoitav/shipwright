@@ -12,7 +12,6 @@ import { CookieService } from "ngx-cookie-service";
 })
 export class AppComponent implements OnInit {
   currentUsername: string;
-  private urlParams: URLSearchParams;
 
   constructor(
     public text: StringsService,
@@ -38,24 +37,16 @@ export class AppComponent implements OnInit {
   }
 
   public wideSidenav(): boolean {
-    if (typeof this.urlParams === "undefined" || this.urlParams === null) {
+    const wide = this.cookies.get("wide-sidenav");
+
+    if (wide === "true") {
+      return true;
+    } else {
       return false;
     }
-
-    if (this.urlParams.has("wide-sidenav")) {
-      return this.urlParams.get("wide-sidenav").toLowerCase() === "true";
-    }
-
-    return true;
   }
 
   public setWideSidenav(val: boolean) {
-    this.urlParams.set("wide-sidenav", val.toString());
-
-    window.history.replaceState(
-      null,
-      this.text.WebsiteTitle,
-      window.location.pathname + "?" + this.urlParams.toString()
-    );
+    this.cookies.set("wide-sidenav", String(val));
   }
 }

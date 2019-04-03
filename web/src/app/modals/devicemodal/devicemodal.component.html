@@ -68,50 +68,36 @@
         </div>
     </mat-tab>
     <mat-tab label="Routing" [disabled]="data.ports == null || data.ports.length == 0">
-        <section>
+        <section class="container">
             <!-- Ports -->
-            <ng-container>
-                <h3 class="mat-h3">Ports</h3>
-                <div *ngFor="let port of data.ports">
-                    <!-- In Ports -->
-                    <mat-form-field>
-                        <mat-label>Port ID</mat-label>
-                        <input matInput [type]="'text'" [(ngModel)]="port.id">
-                    </mat-form-field>
-                    <mat-form-field>
+            <!-- <h3 class="mat-h3">Ports</h3> -->
+            <div *ngFor="let port of data.ports" class="row">
+                <!-- In Ports -->
+                <mat-form-field class="port-field">
+                    <mat-label>Port ID</mat-label>
+                    <input matInput [type]="'text'" [(ngModel)]="port.id" readonly=true>
+                </mat-form-field>
+                <mat-form-field class="port-field">
 
-                        <mat-label>Friendly ID</mat-label>
-                        <input matInput [type]="'text'" [(ngModel)]="port.friendlyName">
-                    </mat-form-field>
-                    <mat-form-field *ngIf="IsAnInPort(port)">
+                    <mat-label>Friendly ID</mat-label>
+                    <input matInput [type]="'text'" [(ngModel)]="port.friendlyName">
+                </mat-form-field>
+                <mat-form-field class="port-field" *ngIf="IsAnInPort(port)">
 
-                        <mat-label>Input</mat-label>
-                        <input matInput [type]="'text'" [(ngModel)]="port.sourceDevice">
-                    </mat-form-field>
-                    <!-- Out Ports -->
-                    <mat-form-field *ngIf="!IsAnInPort(port)">
-                        <mat-label>Output</mat-label>
-                        <input matInput [type]="'text'" [(ngModel)]="port.destinationDevice">
-                    </mat-form-field>
+                    <mat-label>Input</mat-label>
+                    <mat-select matInput [(ngModel)]="port.sourceDevice">
+                        <mat-option *ngFor="let dev of sourceDevices" [value]="dev">{{dev.substr(dev.lastIndexOf("-")+1)}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <!-- Out Ports -->
+                <mat-form-field class="port-field" *ngIf="!IsAnInPort(port)">
+                    <mat-label>Output</mat-label>
+                    <mat-select matInput [(ngModel)]="port.destinationDevice">
+                        <mat-option *ngFor="let dev of destinationDevices" [value]="dev">{{dev}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
 
-                </div>
-            </ng-container>
-            <!--
-                            (If len(array) > 0) For in-port on device
-                            Row{ Port ID, Friendly ID, Connection }
-                            Connection: List of source devices in the room
-                    
-                    
-                            (If len(array) > 0) For out-port on device
-                            Row{ Port ID, Friendly ID, Connection }
-                            Connection: List of destination devices in the room
-                    
-                            Add used devices to a list so they don't show up after they are being used
-                    
-                        -->
+            </div>
         </section>
     </mat-tab>
 </mat-tab-group>
-<!-- 
-<mat-divider>
-</mat-divider> -->

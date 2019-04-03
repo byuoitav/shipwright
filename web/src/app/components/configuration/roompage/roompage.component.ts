@@ -1,15 +1,18 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { StringsService } from "src/app/services/strings.service";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, CanDeactivate } from "@angular/router";
 import { DataService } from "src/app/services/data.service";
 import { Room, Device } from "src/app/objects/database";
+import { BuilderComponent } from "./builder/builder.component";
+import { Observable } from "rxjs";
+import { ComponentCanDeactivate } from "src/app/pending-changes.guard";
 
 @Component({
   selector: "room-page",
   templateUrl: "./roompage.component.html",
   styleUrls: ["./roompage.component.scss"]
 })
-export class RoomPageComponent implements OnInit {
+export class RoomPageComponent implements OnInit, CanDeactivate<ComponentCanDeactivate> {
   roomID: string;
   room: Room;
   devices: Device[] = [];
@@ -22,6 +25,8 @@ export class RoomPageComponent implements OnInit {
     builder: 1,
     routing: 2
   };
+
+  @ViewChild("builder") roomBuilder: BuilderComponent;
 
   constructor(
     public text: StringsService,
@@ -52,6 +57,14 @@ export class RoomPageComponent implements OnInit {
         });
       }
     });
+  }
+
+  canDeactivate(): boolean | Observable<boolean> {
+    if (this.roomBuilder != null) {
+      return this.roomBuilder.canDeactivate();
+    } else {
+      return true;
+    }
   }
 
   ngOnInit() {}

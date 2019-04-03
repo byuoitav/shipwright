@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, HostListener } from "@angular/core";
 import { StringsService } from "src/app/services/strings.service";
 import { DataService } from "src/app/services/data.service";
 import { ActivatedRoute } from "@angular/router";
@@ -10,15 +10,19 @@ import {
   Preset,
   Panel,
   DeviceType,
-  IOConfiguration
+  IOConfiguration,
+  DBResponse
 } from "src/app/objects/database";
+import { ComponentCanDeactivate } from "src/app/pending-changes.guard";
+import { Observable } from "rxjs";
+import { APIService } from "src/app/services/api.service";
 
 @Component({
   selector: "builder",
   templateUrl: "./builder.component.html",
   styleUrls: ["./builder.component.scss"]
 })
-export class BuilderComponent implements OnInit {
+export class BuilderComponent implements OnInit, ComponentCanDeactivate {
   roomID: string;
   room: Room;
   devicesInRoom: Device[] = [];
@@ -33,13 +37,23 @@ export class BuilderComponent implements OnInit {
 
   tvSizes: string[] = ["\"43", "\"55", "\"65", "\"75"];
 
-  tempDevices: Device[] = [];
+  baseDevices: Device[] = [];
+  baseUIConfig: UIConfig = new UIConfig();
+  @HostListener("window:beforeunload", ["$event"])
+  canDeactivate(): boolean | Observable<boolean> {
+    if (this.PageDataHasChanged()) {
+      return false;
+    }
+
+    return true;
+  }
 
   constructor(
     public text: StringsService,
     public data: DataService,
     private route: ActivatedRoute,
-    public modal: ModalService
+    public modal: ModalService,
+    public api: APIService
   ) {
     this.route.params.subscribe(params => {
       this.roomID = params["roomID"];
@@ -53,7 +67,11 @@ export class BuilderComponent implements OnInit {
       }
     });
 
-    window.onbeforeunload = function() {};
+    // window.onbeforeunload = () => {
+    //   if (this.PageDataHasChanged()) {
+    //     window.confirm("You have unsaved changes, would you still like to leave the page?");
+    //   }
+    // };
   }
 
   ngOnInit() {}
@@ -62,6 +80,7 @@ export class BuilderComponent implements OnInit {
     this.room = this.data.GetRoom(this.roomID);
 
     this.devicesInRoom = this.data.roomToDevicesMap.get(this.roomID);
+    this.baseDevices = this.devicesInRoom;
 
     this.filteredDevices = this.devicesInRoom;
 
@@ -69,6 +88,7 @@ export class BuilderComponent implements OnInit {
     if (this.config == null) {
       this.config = new UIConfig();
     }
+    this.baseUIConfig = this.config;
 
     this.FillMissingUIConfigInfo();
 
@@ -241,6 +261,15 @@ export class BuilderComponent implements OnInit {
     this.devicesInRoom.sort(this.text.SortDevicesAlphaNum);
   }
 
+  AddNewPreset(hostname: string) {
+    const preset = new Preset();
+    preset.name = "Preset " + (this.config.presets.length + 1);
+    preset.icon = "tv";
+    this.config.presets.push(preset);
+
+    this.SetPresetOnPanel(preset, hostname);
+  }
+
   GetValidDropZones(device: Device): string[] {
     const dropZones: string[] = [];
 
@@ -274,6 +303,7 @@ export class BuilderComponent implements OnInit {
       // presetList.sort();
       console.log(this.config);
     }
+
   }
 
   RemoveItemFromPresetList(presetList: string[], deviceName: string) {
@@ -282,11 +312,125 @@ export class BuilderComponent implements OnInit {
     }
   }
 
+  UpdateUIPathOnPanels(preset: Preset) {
+    for (const panel of this.config.panels) {
+      if (panel.preset === preset.name) {
+        if (panel.uiPath == null || panel.uiPath.length === 0) {
+          if (preset.displays.length > 1) {
+            panel.uiPath = "/cherry";
+          } else {
+            panel.uiPath = "/blueberry";
+          }
+        }
+      }
+    }
+  }
+
   SetPresetOnPanel(preset: Preset, hostname: string) {
+    let panelExists = false;
     for (const panel of this.config.panels) {
       if (panel.hostname === hostname) {
         panel.preset = preset.name;
+        panelExists = true;
       }
     }
+    if (!panelExists) {
+      const p = new Panel();
+      p.hostname = hostname;
+      p.preset = preset.name;
+      p.features = [];
+      if (preset.displays.length > 1) {
+        p.uiPath = "/cherry";
+      } else {
+        p.uiPath = "/blueberry";
+      }
+      this.config.panels.push(p);
+    }
+  }
+
+  GetDeviceIcon(device: Device) {
+    for (const io of this.config.inputConfiguration) {
+      if (io.name === device.name) {
+        return io.icon;
+      }
+    }
+    for (const io of this.config.outputConfiguration) {
+      if (io.name === device.name) {
+        return io.icon;
+      }
+    }
+
+    return this.text.DefaultIcons[device.type.id];
+  }
+
+  SavePageData() {
+    let submissionCount = 0;
+    const results: DBResponse[] = [];
+    for (const newDev of this.devicesInRoom) {
+      console.log(newDev);
+      let present = false;
+      for (const oldDev of this.baseDevices) {
+        console.log("oldDev is %s", oldDev.id);
+        if (oldDev.id === newDev.id) {
+          present = true;
+          if (!oldDev.Equals(newDev)) {
+            submissionCount++;
+            console.log("updating %s", newDev.id);
+            this.api.UpdateDevice(oldDev.id, newDev).then((result) => {
+              results.push(result);
+            });
+          }
+        }
+      }
+      if (!present) {
+        submissionCount++;
+        console.log("adding %s", newDev.id);
+        this.api.AddDevice(newDev).then((result) => {
+          results.push(result);
+        });
+      }
+    }
+
+    // if (!this.baseUIConfig.Equals(this.config)) {
+      console.log("uiconfig not equal");
+      if (this.baseUIConfig.id == null || this.baseUIConfig.id.length === 0) {
+        submissionCount++;
+        this.api.AddUIConfig(this.config).then((result) => {
+          results.push(result);
+        });
+      } else {
+        submissionCount++;
+        this.api.UpdateUIConfig(this.baseUIConfig.id, this.config).then((result) => {
+          results.push(result);
+        });
+      }
+    // }
+  }
+
+  public PageDataHasChanged(): boolean {
+    for (const baseDev of this.baseDevices) {
+      let found = false;
+      for (const dev of this.devicesInRoom) {
+        if (dev.id === baseDev.id) {
+          found = true;
+          if (!baseDev.Equals(dev)) {
+            // device was changed in some way
+            return true;
+          }
+        }
+      }
+      if (!found) {
+        // device in the starting list was not found in the modified list
+        return true;
+      }
+    }
+
+    if (!this.baseUIConfig.Equals(this.config)) {
+      // uiconfig is different in some way
+      return true;
+    }
+
+    // apparently nothing has changed
+    return false;
   }
 }

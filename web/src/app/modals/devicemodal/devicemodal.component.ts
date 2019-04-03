@@ -3,7 +3,7 @@ import { StringsService } from "src/app/services/strings.service";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { DataService } from "src/app/services/data.service";
 import { Device, DeviceType, Port } from "src/app/objects/database";
-import { APIService } from 'src/app/services/api.service';
+import { APIService } from "src/app/services/api.service";
 
 @Component({
   selector: "device-modal",
@@ -14,7 +14,11 @@ export class DeviceModalComponent implements OnInit {
   RoleList = [];
   UnappliedRoles = [];
   CurrentType: DeviceType = new DeviceType();
-  rawIP: string = "";
+  rawIP = "";
+
+  devicesInRoom: Device[] = [];
+  sourceDevices: string[] = [];
+  destinationDevices: string[] = [];
 
   constructor(
     public text: StringsService,
@@ -30,6 +34,9 @@ export class DeviceModalComponent implements OnInit {
     this.api.GetDeviceRawIPAddress(this.data.address).then((addr) => {
       this.rawIP = addr as string;
     });
+
+    this.devicesInRoom = this.dataService.roomToDevicesMap.get(this.data.id.substr(0, this.data.id.lastIndexOf("-")));
+    this.SetSourceAndDestinationDevices();
   }
 
   ngOnInit() {
@@ -90,5 +97,17 @@ export class DeviceModalComponent implements OnInit {
 
   IsAnInPort(port: Port): boolean {
     return port.tags.includes("in");
+  }
+
+  SetSourceAndDestinationDevices() {
+    for (const dev of this.devicesInRoom) {
+      const type = this.dataService.deviceTypeMap.get(dev.type.id);
+      if (type.source) {
+        this.sourceDevices.push(dev.id);
+      }
+      if (type.destination) {
+        this.destinationDevices.push(dev.id);
+      }
+    }
   }
 }

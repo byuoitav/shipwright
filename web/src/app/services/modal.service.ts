@@ -60,7 +60,7 @@ export class ModalService {
     this.dialog.open(DeviceModalComponent, { data: device });
   }
 
-  OpenNotifyModal(resp: DBResponse) {
+  OpenNotifyModal(resp: DBResponse[]) {
     this.dialog.open(NotifyModalComponent, { data: resp });
   }
 
