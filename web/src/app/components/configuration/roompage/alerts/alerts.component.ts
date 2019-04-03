@@ -236,7 +236,7 @@ export class AlertsComponent implements OnInit {
       this.roomIssue.notes =
         this.data.currentUsername +
         " (" +
-        now.toLocaleTimeString() +
+        now.toLocaleString() +
         ") | " +
         this.tempNotes;
       // this.roomIssue.notesLog.push(noteToAdd);

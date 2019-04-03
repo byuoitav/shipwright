@@ -66,7 +66,7 @@ export class DataService {
   issueEmitter: EventEmitter<RoomIssue>;
 
   notifier: NotifierService;
-  notificationsEnabled = true;
+  notificationsEnabled;
 
   currentUsername: string;
 
@@ -86,10 +86,11 @@ export class DataService {
     }
     this.issueEmitter = new EventEmitter<RoomIssue>();
     this.notifier = notify;
-    this.notificationsEnabled = Boolean(this.cookies.get("notifications"));
-    if (this.notificationsEnabled == null) {
+    if (!this.cookies.check("notifications")) {
       // NOTIFCATIONS ENABLED DEFAULT
       this.notificationsEnabled = true;
+    } else {
+      this.notificationsEnabled = JSON.parse(this.cookies.get("notifications"));
     }
     this.LoadData();
 

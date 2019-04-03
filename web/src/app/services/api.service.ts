@@ -63,9 +63,8 @@ export class APIService {
     const oldTheme = this.theme + "-theme";
     const newTheme = name + "-theme";
 
-
     this.theme = name;
-    this.cookies.set("theme", name);
+    this.cookies.set("theme", name, 365);
 
     this.themeSwitched.emit([oldTheme, newTheme]);
 
