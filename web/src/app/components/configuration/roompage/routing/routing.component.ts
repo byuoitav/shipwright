@@ -1,8 +1,10 @@
 import { Component, OnInit, Input } from "@angular/core";
+import { MatDialog } from "@angular/material";
 import cytoscape from "cytoscape";
 
 import { Room } from "src/app/objects/database";
 import { APIService } from "src/app/services/api.service";
+import { DeviceModalComponent } from "src/app/modals/devicemodal/devicemodal.component";
 
 enum RoutingType {
   VIDEO
@@ -24,7 +26,7 @@ export class RoutingComponent implements OnInit {
   room: Room;
   cy: any;
 
-  constructor(private api: APIService) {}
+  constructor(private api: APIService, private dialog: MatDialog) {}
 
   async ngOnInit() {
     this.room = await this.api.GetRoom(this.roomID);
@@ -109,8 +111,23 @@ export class RoutingComponent implements OnInit {
 
     this.cy.on("tap", "node", event => {
       const node = event.target;
-      console.log("node", node.id());
+      this.openDeviceModal(node.id());
     });
+  }
+
+  openDeviceModal(id: string) {
+    const device = this.room.devices.find(d => d.id === id);
+    if (!device) {
+      return;
+    }
+
+    console.log("opening modal for device", device);
+    const ref = this.dialog.open(DeviceModalComponent, {
+      width: "40vw",
+      data: device
+    });
+
+    ref.componentInstance.setTab(2);
   }
 
   graph(routingType: RoutingType): any {

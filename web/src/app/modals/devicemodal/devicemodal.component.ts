@@ -15,6 +15,7 @@ export class DeviceModalComponent implements OnInit {
   UnappliedRoles = [];
   CurrentType: DeviceType = new DeviceType();
   rawIP = "";
+  tabIndex = 0;
 
   devicesInRoom: Device[] = [];
   sourceDevices: string[] = [];
@@ -31,11 +32,13 @@ export class DeviceModalComponent implements OnInit {
     this.UpdateRoleLists();
     this.CurrentType = this.dataService.deviceTypeMap.get(this.data.type.id);
     this.FixMe();
-    this.api.GetDeviceRawIPAddress(this.data.address).then((addr) => {
+    this.api.GetDeviceRawIPAddress(this.data.address).then(addr => {
       this.rawIP = addr as string;
     });
 
-    this.devicesInRoom = this.dataService.roomToDevicesMap.get(this.data.id.substr(0, this.data.id.lastIndexOf("-")));
+    this.devicesInRoom = this.dataService.roomToDevicesMap.get(
+      this.data.id.substr(0, this.data.id.lastIndexOf("-"))
+    );
     this.SetSourceAndDestinationDevices();
   }
 
@@ -109,5 +112,9 @@ export class DeviceModalComponent implements OnInit {
         this.destinationDevices.push(dev.id);
       }
     }
+  }
+
+  setTab(tab: number) {
+    this.tabIndex = tab;
   }
 }
