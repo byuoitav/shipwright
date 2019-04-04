@@ -84,6 +84,7 @@ import { DeviceComponent } from "./components/configuration/devicelist/device/de
 import { RoutingComponent } from "./components/configuration/roompage/routing/routing.component";
 import { InformationComponent } from "./components/information/information.component";
 import { PendingChangesGuard } from "./pending-changes.guard";
+import { OverviewComponent } from "./components/configuration/roompage/overview/overview.component";
 
 @NgModule({
   declarations: [
@@ -118,7 +119,8 @@ import { PendingChangesGuard } from "./pending-changes.guard";
     ResponseModalComponent,
     MaintenanceModalComponent,
     RoutingComponent,
-    InformationComponent
+    InformationComponent,
+    OverviewComponent
   ],
   imports: [
     BrowserModule,

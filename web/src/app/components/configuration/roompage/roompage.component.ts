@@ -42,18 +42,15 @@ export class RoomPageComponent implements OnInit, CanDeactivate<ComponentCanDeac
     }
     this.route.params.subscribe(params => {
       this.roomID = params["roomID"];
+      this.selectedTab = +params["tab"] - 1;
 
       if (this.data.finished) {
         this.room = this.data.GetRoom(this.roomID);
-        if (this.NotADump()) {
           this.devices = this.data.roomToDevicesMap.get(this.roomID);
-        }
       } else {
         this.data.loaded.subscribe(() => {
           this.room = this.data.GetRoom(this.roomID);
-          if (this.NotADump()) {
             this.devices = this.data.roomToDevicesMap.get(this.roomID);
-          }
         });
       }
     });
@@ -77,20 +74,12 @@ export class RoomPageComponent implements OnInit, CanDeactivate<ComponentCanDeac
   }
 
   TabChange(tabIndex: number) {
-    if (tabIndex === 0) {
-      this.urlParams.set("tab", "alerts");
-      window.location.pathname =
-        window.location.pathname + "?" + this.urlParams.toString();
-    }
-    if (tabIndex === 1) {
-      this.urlParams.set("tab", "builder");
-      window.location.pathname =
-        window.location.pathname + "?" + this.urlParams.toString();
-    }
-    if (tabIndex === 2) {
-      this.urlParams.set("tab", "routing");
-      window.location.pathname =
-        window.location.pathname + "?" + this.urlParams.toString();
-    }
+    const currentURL = window.location.pathname;
+    const newURL = currentURL.substr(0, (currentURL.length - 1)) + (tabIndex + 1);
+    window.history.replaceState(
+      null,
+      this.text.WebsiteTitle,
+      newURL
+    );
   }
 }

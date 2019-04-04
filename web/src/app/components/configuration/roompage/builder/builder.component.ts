@@ -367,10 +367,10 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
     let submissionCount = 0;
     const results: DBResponse[] = [];
     for (const newDev of this.devicesInRoom) {
-      console.log(newDev);
+      // console.log(newDev);
       let present = false;
       for (const oldDev of this.baseDevices) {
-        console.log("oldDev is %s", oldDev.id);
+        // console.log("oldDev is %s", oldDev.id);
         if (oldDev.id === newDev.id) {
           present = true;
           if (!oldDev.Equals(newDev)) {

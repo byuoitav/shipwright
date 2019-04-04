@@ -60,3 +60,28 @@ a {
         color: white;
     }
 }
+
+// .row {
+//     display: flex;
+//     flex-flow: row wrap;
+//     justify-content: space-evenly;
+//     align-content: space-around;
+//     flex-grow: 1 1 auto;
+//     &.centered {
+//         justify-content: center;
+//         padding: 20px;
+//     }
+//     &.left {
+//         justify-content: flex-start;
+//         padding: 10px;
+//     }
+// }
+.device-card {
+    // max-height: 20%;
+    width: 15vw;
+    margin: 15px;
+}
+
+.fill-remaining-space {
+    flex: 1 1 auto;
+}

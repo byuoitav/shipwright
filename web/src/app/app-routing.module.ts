@@ -44,7 +44,7 @@ const routes: Routes = [
     component: RoomListComponent
   },
   {
-    path: "configuration/:roomID/roompage",
+    path: "configuration/:roomID/roompage/:tab",
     component: RoomPageComponent,
     canDeactivate: [PendingChangesGuard]
   }
