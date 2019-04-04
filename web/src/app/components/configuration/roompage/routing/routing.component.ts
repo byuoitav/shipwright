@@ -8,6 +8,12 @@ enum RoutingType {
   VIDEO
 }
 
+enum NodeType {
+  SOURCE,
+  SWITCH,
+  OUTPUT
+}
+
 @Component({
   selector: "routing",
   templateUrl: "./routing.component.html",
@@ -28,6 +34,18 @@ export class RoutingComponent implements OnInit {
     this.cy = cytoscape({
       container: document.getElementById("cy"),
       elements: this.graph(RoutingType.VIDEO),
+      layout: {
+        name: "breadthfirst",
+        directed: true,
+        padding: 20,
+        circle: false,
+        grid: true,
+        avoidOverlap: true,
+        animate: true,
+        animationDuration: 500,
+        nodeDimensionsIncludeLabels: true
+      },
+      selectionType: "single",
       style: [
         {
           selector: "node",
@@ -35,6 +53,29 @@ export class RoutingComponent implements OnInit {
             content: "data(name)",
             "text-valign": "center",
             "text-halign": "center"
+          }
+        },
+        {
+          selector: "node[type = 0]", // source
+          css: {
+            shape: "triangle"
+          }
+        },
+        {
+          selector: "node[type = 1]", // switch
+          css: {
+            shape: "rectangle",
+            width: "label",
+            height: "label",
+            padding: function(ele) {
+              return ele.incomers().length * 3;
+            }
+          }
+        },
+        {
+          selector: "node[type = 2]", // output
+          css: {
+            shape: "octagon"
           }
         },
         {
@@ -48,15 +89,27 @@ export class RoutingComponent implements OnInit {
           selector: "edge",
           css: {
             "curve-style": "bezier",
-            "target-arrow-shape": "triangle"
+            "target-arrow-shape": "triangle-backcurve",
+            "arrow-scale": 2,
+            "target-endpoint": "outside-to-node-or-label",
+
+            "source-distance-from-node": "0px",
+            "source-label": "data(sourceport)",
+            "source-text-offset": "60",
+            "source-text-rotation": "autorotate",
+
+            "target-distance-from-node": "3px",
+            "target-label": "data(targetport)",
+            "target-text-offset": "40",
+            "target-text-rotation": "autorotate"
           }
         }
-      ],
-      layout: {
-        name: "breadthfirst",
-        directed: true,
-        padding: 10
-      }
+      ]
+    });
+
+    this.cy.on("tap", "node", event => {
+      const node = event.target;
+      console.log("node", node.id());
     });
   }
 
@@ -84,70 +137,67 @@ export class RoutingComponent implements OnInit {
       val
         .filter(v => !map.has(v))
         .forEach(v => {
-          elements.nodes.push({
-            data: {
-              id: v,
-              name: v
-            }
-          });
+          const dev = this.room.devices.find(d => d.id === v);
+          if (dev) {
+            elements.nodes.push({
+              data: {
+                id: v,
+                name: v,
+                type: NodeType.SOURCE
+              },
+              grabbable: false,
+              selectable: true
+            });
+          }
         });
     }
 
     // create dest nodes/edges
     for (const [dest, sources] of map) {
       // create parent node for dest
-      elements.nodes.push({
-        data: {
-          id: dest,
-          name: dest
-        }
-      });
-
       const dev = this.room.devices.find(d => d.id === dest);
-      if (!dev) {
-        continue;
-      }
-
-      // create port nodes for dest
-      for (const port of dev.ports) {
+      if (dev) {
         elements.nodes.push({
           data: {
-            id: dev.id + ":" + port.id,
-            parent: dev.id,
-            name: port.id
-          }
+            id: dest,
+            name: dest,
+            type: dev.roles.some(r => r.id.toLowerCase().includes("out"))
+              ? NodeType.OUTPUT
+              : NodeType.SWITCH
+          },
+          grabbable: false,
+          selectable: true
         });
-      }
 
-      // create port edges going from source --> dest
-      for (const source of sources) {
-        const destport = dev.ports.find(p => p.sourceDevice === source);
-        if (!destport) {
-          continue;
-        }
+        // create port edges going from source --> dest
+        for (const source of sources) {
+          let destportid = "";
+          const destport = dev.ports.find(p => p.sourceDevice === source);
+          if (destport) {
+            destportid = destport.friendlyName;
+          }
 
-        // if the source devices has a port pointing to dest, then link it
-        const srcdev = this.room.devices.find(d => d.id === source);
-        if (!srcdev) {
-          continue;
-        }
+          let srcportid = "";
+          const srcdev = this.room.devices.find(d => d.id === source);
+          if (srcdev) {
+            const srcport = srcdev.ports.find(
+              p => p.destinationDevice === dest
+            );
 
-        const srcport = srcdev.ports.find(p => p.destinationDevice === dev.id);
-        if (srcport) {
-          elements.edges.push({
-            data: {
-              id: source + ":" + dev.id,
-              source: source + ":" + srcport.id,
-              target: dev.id + ":" + destport.id
+            if (srcport) {
+              srcportid = srcport.friendlyName;
             }
-          });
-        } else {
+          }
+
           elements.edges.push({
             data: {
-              id: source + ":" + dev.id,
+              id: source + ":" + dest,
               source: source,
-              target: dev.id + ":" + destport.id
-            }
+              target: dest,
+              targetport: destportid,
+              sourceport: srcportid
+            },
+            selectable: true
           });
         }
       }
