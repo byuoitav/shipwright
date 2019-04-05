@@ -95,14 +95,14 @@ export class RoutingComponent implements OnInit {
             "arrow-scale": 2,
             "target-endpoint": "outside-to-node-or-label",
 
-            "source-distance-from-node": "0px",
+            "source-distance-from-node": "1px",
             "source-label": "data(sourceport)",
-            "source-text-offset": "60",
+            "source-text-offset": "50",
             "source-text-rotation": "autorotate",
 
             "target-distance-from-node": "3px",
             "target-label": "data(targetport)",
-            "target-text-offset": "40",
+            "target-text-offset": "50",
             "target-text-rotation": "autorotate"
           }
         }
@@ -123,8 +123,16 @@ export class RoutingComponent implements OnInit {
 
     console.log("opening modal for device", device);
     const ref = this.dialog.open(DeviceModalComponent, {
-      width: "40vw",
+      width: "50vw",
       data: device
+    });
+
+    ref.afterClosed().subscribe(async changes => {
+      if (changes) {
+        // reload the graph
+        this.room = await this.api.GetRoom(this.roomID);
+        this.cy.add(this.graph(RoutingType.VIDEO));
+      }
     });
 
     ref.componentInstance.setTab(2);
