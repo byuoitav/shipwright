@@ -2,7 +2,7 @@
     <h3 class="mat-h3">Getting building information...</h3>
 </div>
 <div *ngIf="data.finished" class="container">
-    <section class="row">
+    <section class="row top">
         <mat-form-field class="filters">
             <mat-label>Filters</mat-label>
             <mat-chip-list #filterList>
@@ -14,6 +14,7 @@
             </mat-chip-list>
 
         </mat-form-field>
+        <button mat-raised-button color="primary" (click)="CreateNewBuilding()">Add New <mat-icon>add</mat-icon></button>
     </section>
     <section class="container">
         <building *ngFor="let building of filteredBuildings" [building]="building"></building>

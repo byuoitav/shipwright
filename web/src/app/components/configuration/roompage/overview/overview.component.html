@@ -3,7 +3,7 @@
 
 </section>
 
-<section *ngIf="deviceList.length > 0">
+<section *ngIf="deviceList?.length > 0">
     <device-list [deviceList]="deviceList"></device-list>
     <!-- <mat-card *ngFor="let device of deviceList" class="device-card">
         <mat-card-header>
