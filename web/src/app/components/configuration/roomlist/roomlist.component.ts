@@ -1,33 +1,34 @@
-import { Component, OnInit } from '@angular/core';
-import { StringsService } from 'src/app/services/strings.service';
-import { ActivatedRoute } from '@angular/router';
-import { DataService } from 'src/app/services/data.service';
-import { Room } from 'src/app/objects/database';
+import { Component, OnInit } from "@angular/core";
+import { StringsService } from "src/app/services/strings.service";
+import { ActivatedRoute } from "@angular/router";
+import { DataService } from "src/app/services/data.service";
+import { Room } from "src/app/objects/database";
+import { ModalService } from "src/app/services/modal.service";
 
 @Component({
-  selector: 'room-list',
-  templateUrl: './roomlist.component.html',
-  styleUrls: ['./roomlist.component.scss']
+  selector: "room-list",
+  templateUrl: "./roomlist.component.html",
+  styleUrls: ["./roomlist.component.scss"]
 })
 export class RoomListComponent implements OnInit {
   buildingID: string;
   roomList: Room[] = [];
   roomSearch: string;
   filteredRooms: Room[] = [];
-  selectedDesignation: string = "";
+  selectedDesignation = "";
   filterQueries: string[] = [];
 
-  constructor(public text: StringsService, private route: ActivatedRoute, public data: DataService) {
+  constructor(public text: StringsService, private route: ActivatedRoute, public data: DataService, public modal: ModalService) {
     this.route.params.subscribe(params => {
       this.buildingID = params["buildingID"];
     });
 
-    if(this.data.finished) {
+    if (this.data.finished) {
       this.GetRooms();
     } else {
       this.data.loaded.subscribe(() => {
         this.GetRooms();
-      })
+      });
     }
   }
 
@@ -37,6 +38,9 @@ export class RoomListComponent implements OnInit {
   private GetRooms() {
     this.roomList = this.data.buildingToRoomsMap.get(this.buildingID);
     this.filteredRooms = this.roomList;
+
+    console.log(this.roomList);
+    console.log(this.filteredRooms);
   }
 
   GoBack() {
@@ -80,5 +84,16 @@ export class RoomListComponent implements OnInit {
     }
 
     return designations;
+  }
+
+  CreateNewRoom() {
+    const newRoom = new Room();
+    newRoom.isNew = true;
+    newRoom.id = this.buildingID + "-";
+
+    this.modal.OpenRoomModal(newRoom);
+    this.modal.roomDone.subscribe((r) => {
+      this.roomList.push(r);
+    });
   }
 }

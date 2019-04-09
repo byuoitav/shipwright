@@ -29,6 +29,10 @@ export class BuildingListComponent implements OnInit {
   ngOnInit() {
   }
 
+  GoBack() {
+    window.history.back();
+  }
+
   FilterBuildings() {
     this.filteredBuildings = [];
 

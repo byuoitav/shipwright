@@ -1,14 +1,14 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { StringsService } from 'src/app/services/strings.service';
-import { ModalService } from 'src/app/services/modal.service';
-import { DataService } from 'src/app/services/data.service';
-import { Room } from 'src/app/objects/database';
-import { CombinedRoomState, StaticDevice } from 'src/app/objects/static';
+import { Component, OnInit, Input } from "@angular/core";
+import { StringsService } from "src/app/services/strings.service";
+import { ModalService } from "src/app/services/modal.service";
+import { DataService } from "src/app/services/data.service";
+import { Room } from "src/app/objects/database";
+import { CombinedRoomState, StaticDevice } from "src/app/objects/static";
 
 @Component({
-  selector: 'room',
-  templateUrl: './room.component.html',
-  styleUrls: ['./room.component.scss']
+  selector: "room",
+  templateUrl: "./room.component.html",
+  styleUrls: ["./room.component.scss"]
 })
 export class RoomComponent implements OnInit {
   @Input() room: Room = new Room();
@@ -27,7 +27,7 @@ export class RoomComponent implements OnInit {
       this.data.loaded.subscribe(() => {
         this.GetRoomState();
         this.UpdateCounts();
-      })
+      });
     }
 
     if (this.room.name == null || this.room.name.length === 0) {

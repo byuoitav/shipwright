@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, EventEmitter } from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { SettingsModalComponent } from "../modals/settings/settings.component";
 import { BuildingModalComponent } from "../modals/buildingmodal/buildingmodal.component";
@@ -26,7 +26,15 @@ import { HelpModalComponent } from "../modals/helpmodal/helpmodal.component";
   providedIn: "root"
 })
 export class ModalService {
-  constructor(private dialog: MatDialog, private api: APIService) {}
+  buildingDone: EventEmitter<Building>;
+  roomDone: EventEmitter<Room>;
+  deviceDone: EventEmitter<Device>;
+
+  constructor(private dialog: MatDialog, private api: APIService) {
+    this.buildingDone = new EventEmitter();
+    this.roomDone = new EventEmitter();
+    this.deviceDone = new EventEmitter();
+  }
 
   OpenSettingsModal() {
     this.dialog.open(SettingsModalComponent);
@@ -39,6 +47,7 @@ export class ModalService {
       .subscribe(resp => {
         if (resp != null) {
           // this.OpenNotifyModal(resp);
+          this.buildingDone.emit(building);
         }
       });
   }
@@ -49,13 +58,20 @@ export class ModalService {
       .afterClosed()
       .subscribe(resp => {
         if (resp != null) {
-          this.OpenNotifyModal(resp);
+          // this.OpenNotifyModal(resp);
+          this.roomDone.emit(room);
         }
       });
   }
 
   OpenDeviceModal(device: Device) {
-    this.dialog.open(DeviceModalComponent, { data: device });
+    this.dialog.open(DeviceModalComponent, { data: device })
+    .afterClosed()
+    .subscribe(resp => {
+      if (resp != null) {
+        this.deviceDone.emit(device);
+      }
+    });
   }
 
   OpenNotifyModal(resp: DBResponse[]) {

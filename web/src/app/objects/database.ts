@@ -92,7 +92,11 @@ export class RoomConfiguration {
   @JsonProperty("tags", [String], true)
   tags: string[] = Array<string>();
 
-  constructor() {}
+  constructor(id?: string) {
+    if (id != null) {
+      this.id = id;
+    }
+  }
 
   Equals(imposter: RoomConfiguration, logMismatch?: boolean): boolean {
     if (imposter == null) {
@@ -683,7 +687,9 @@ export class Room {
 
   isNew = false;
 
-  constructor() {}
+  constructor() {
+    this.configuration = new RoomConfiguration("Default");
+  }
 
   Equals(imposter: Room): boolean {
     if (imposter == null) { return false; }
