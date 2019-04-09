@@ -455,7 +455,7 @@ export class APIService {
 
       return response;
     } catch (e) {
-      throw new Error("error updating the device " + idToUpdate + ": " + e);
+      throw e;
     }
   }
 
