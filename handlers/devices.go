@@ -152,10 +152,9 @@ func GetDevicesByTypeAndRole(context echo.Context) error {
 
 // UpdateDevice updates a device in the database
 func UpdateDevice(context echo.Context) error {
-	log.L.Debugf("%s Starting UpdateDevice...")
-
 	// get information from the context
-	deviceID := context.Param("room")
+	deviceID := context.Param("device")
+	log.L.Infof("Received request to update device %s", deviceID)
 
 	var device structs.Device
 	err := context.Bind(&device)
