@@ -140,7 +140,7 @@
 </mat-tab-group>
 
 <mat-dialog-actions class="actions">
-  <activity-button [click]="saveDevice" type="mat-raised-button"
+  <activity-button [click]="saveDevice" type="mat-raised-button" (success)="close(true)"
     >Save</activity-button
   >
 </mat-dialog-actions>
