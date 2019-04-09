@@ -2,6 +2,8 @@ import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { NgModule } from "@angular/core";
 
+import { CookieService } from "ngx-cookie-service";
+
 import {
   MatSidenavModule,
   MatButtonModule,
@@ -32,7 +34,8 @@ import {
   MAT_DIALOG_DATA,
   MatSlideToggleModule,
   MatAutocompleteModule,
-  MatGridListModule
+  MatGridListModule,
+  MatTooltipModule
 } from "@angular/material";
 
 import { AppRoutingModule } from "./app-routing.module";
@@ -73,13 +76,16 @@ import { HelpModalComponent } from "./modals/helpmodal/helpmodal.component";
 import { DeviceStateComponent } from "./components/state/device-state/device-state.component";
 import { ResponseModalComponent } from "./modals/responsemodal/responsemodal.component";
 import { MaintenanceModalComponent } from "./modals/maintenancemodal/maintenancemodal.component";
-import { BuildingComponent } from './components/configuration/buildinglist/building/building.component';
-import { RoomComponent } from './components/configuration/roomlist/room/room.component';
-import { AlertsComponent } from './components/configuration/roompage/alerts/alerts.component';
-import { BuilderComponent } from './components/configuration/roompage/builder/builder.component';
-import { DeviceComponent } from './components/configuration/devicelist/device/device.component';
-import { RoutingComponent } from './components/configuration/roompage/routing/routing.component';
-import { InformationComponent } from './components/information/information.component';
+import { BuildingComponent } from "./components/configuration/buildinglist/building/building.component";
+import { RoomComponent } from "./components/configuration/roomlist/room/room.component";
+import { AlertsComponent } from "./components/configuration/roompage/alerts/alerts.component";
+import { BuilderComponent } from "./components/configuration/roompage/builder/builder.component";
+import { DeviceComponent } from "./components/configuration/devicelist/device/device.component";
+import { RoutingComponent } from "./components/configuration/roompage/routing/routing.component";
+import { InformationComponent } from "./components/information/information.component";
+import { PendingChangesGuard } from "./pending-changes.guard";
+import { OverviewComponent } from "./components/configuration/roompage/overview/overview.component";
+import { ActivityButtonComponent } from './components/activity-button/activity-button.component';
 
 @NgModule({
   declarations: [
@@ -114,7 +120,9 @@ import { InformationComponent } from './components/information/information.compo
     ResponseModalComponent,
     MaintenanceModalComponent,
     RoutingComponent,
-    InformationComponent
+    InformationComponent,
+    OverviewComponent,
+    ActivityButtonComponent
   ],
   imports: [
     BrowserModule,
@@ -149,6 +157,7 @@ import { InformationComponent } from './components/information/information.compo
     MatChipsModule,
     MatSlideToggleModule,
     MatAutocompleteModule,
+    MatTooltipModule,
     DndModule.forRoot(),
     NotifierModule.withConfig({
       theme: "material"
@@ -177,8 +186,10 @@ import { InformationComponent } from './components/information/information.compo
     ModalService,
     StringsService,
     DashPanelService,
+    CookieService,
     { provide: DateAdapter, useClass: NativeDateAdapter },
-    { provide: MAT_DIALOG_DATA, useValue: {} }
+    { provide: MAT_DIALOG_DATA, useValue: {} },
+    PendingChangesGuard
   ],
   bootstrap: [AppComponent]
 })

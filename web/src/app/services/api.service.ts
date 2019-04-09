@@ -21,6 +21,7 @@ import {
   ClassHalfHourBlock
 } from "../objects/alerts";
 import { StringsService } from "./strings.service";
+import { CookieService } from "ngx-cookie-service";
 
 @Injectable({
   providedIn: "root"
@@ -34,7 +35,11 @@ export class APIService {
 
   private headers: HttpHeaders;
 
-  constructor(private http: HttpClient, private text: StringsService) {
+  constructor(
+    public cookies: CookieService,
+    private http: HttpClient,
+    private text: StringsService
+  ) {
     this.themeSwitched = new EventEmitter<string[]>();
     this.converter = new JsonConvert();
     this.converter.ignorePrimitiveChecks = false;
@@ -51,24 +56,22 @@ export class APIService {
   }
 
   public refresh() {
-    window.location.reload(true);
+    window.location.reload();
   }
 
   public switchTheme(name: string) {
     const oldTheme = this.theme + "-theme";
     const newTheme = name + "-theme";
 
-    console.log("switching theme to ", name);
-
     this.theme = name;
-    this.urlParams.set("theme", name);
+    this.cookies.set("theme", name, 365);
 
     this.themeSwitched.emit([oldTheme, newTheme]);
 
     window.history.replaceState(
       null,
       this.text.WebsiteTitle,
-      window.location.pathname + "?" + this.urlParams.toString()
+      window.location.pathname
     );
   }
 
@@ -452,7 +455,7 @@ export class APIService {
 
       return response;
     } catch (e) {
-      throw new Error("error updating the device " + idToUpdate + ": " + e);
+      throw e;
     }
   }
 
@@ -481,6 +484,18 @@ export class APIService {
       return response;
     } catch (e) {
       throw new Error("error deleting the device " + deviceID + ": " + e);
+    }
+  }
+
+  public async GetDeviceRawIPAddress(hostname: string) {
+    try {
+      const data: any = await this.http
+        .get("devices/" + hostname + "/address", { headers: this.headers })
+        .toPromise();
+
+      return data;
+    } catch (e) {
+      throw new Error("error getting the IP address from the hostname: " + e);
     }
   }
 

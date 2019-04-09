@@ -12,11 +12,11 @@ $status-accent: mat-palette($mat-yellow);
 $status-warn: mat-palette($mat-red);
 $status: mat-light-theme($status-primary, $status-accent, $status-warn);
 .status-theme {
-    @include angular-material-theme($status);
+  @include angular-material-theme($status);
 }
 
 // dark theme :)
 $dark: mat-dark-theme($default-primary, $default-accent, $default-warn);
 .dark-theme {
-    @include angular-material-theme($dark);
+  @include angular-material-theme($dark);
 }

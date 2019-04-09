@@ -171,11 +171,10 @@ $save: #0046c8;
   &.action {
     padding: 10px;
   }
-  &.table {
-    align-items: baseline;
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
+}
+
+.issue-table {
+  margin-top: 5px;
 }
 
 .button {
@@ -243,12 +242,12 @@ $save: #0046c8;
 }
 
 .notes-log {
-  display: flex;
+  display: flex-grow;
   flex-direction: column-reverse;
   // justify-self: flex-end;
   max-height: 27vh;
   height: wrap;
-  overflow: hidden;
+  overflow: auto;
   padding: 5px;
   margin-top: 5px;
   width: 100%;
@@ -341,39 +340,31 @@ $save: #0046c8;
   * {
     transition: opacity 0.3s ease-in-out;
     opacity: 0;
-
     &.active {
       opacity: 1;
     }
   }
-
   button {
     transition: opacity 1.5s ease-in-out;
   }
-
   span {
     transition: opacity 1.5s ease-in-out;
   }
-
   &.success {
     background-color: #5cbb5c;
   }
-
   &.error {
     background-color: #d9534f;
   }
-
   ::ng-deep.mat-button-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
   }
-
   .spinner {
     position: absolute;
     top: 25%;
   }
-
   .mat-icon {
     position: absolute;
   }

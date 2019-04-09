@@ -1,0 +1,28 @@
+<section class="row centered">
+    <h1 class="mat-h1" *ngIf="room != null">{{room?.id}} Overview</h1>
+
+</section>
+
+<section *ngIf="deviceList?.length > 0">
+    <device-list [deviceList]="deviceList"></device-list>
+    <!-- <mat-card *ngFor="let device of deviceList" class="device-card">
+        <mat-card-header>
+            <div mat-card-avatar>
+                <mat-icon>{{text.DefaultIcons[device.type.id]}}</mat-icon>
+            </div>
+            <mat-card-title>{{device.name}}</mat-card-title>
+            <mat-card-subtitle>{{data.deviceTypeMap.get(device.type.id).displayName}}</mat-card-subtitle>
+            <span class="fill-remaining-space"></span>
+            <button mat-icon-button (click)="modal.OpenDeviceModal(device)">
+                  <mat-icon>more_horiz</mat-icon>
+                </button>
+        </mat-card-header>
+        <mat-divider></mat-divider>
+        <mat-card-content>
+          <section class="row left">
+            <h3 class="mat-h3">Hostname:</h3>
+            <h3 class="mat-h3">{{device.address}}</h3>
+          </section>
+        </mat-card-content>
+    </mat-card> -->
+</section>

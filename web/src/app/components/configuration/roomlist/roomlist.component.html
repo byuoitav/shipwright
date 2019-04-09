@@ -2,7 +2,7 @@
     <h3 class="mat-h3">Getting room information...</h3>
 </div>
 <div *ngIf="data.finished" class="container">
-    <section class="row">
+    <section class="row top">
         <button mat-stroked-button (click)="GoBack()" color="primary"><mat-icon>arrow_back</mat-icon>Back</button>
         <mat-form-field class="filters">
             <mat-label>Filters</mat-label>
@@ -15,6 +15,7 @@
             </mat-chip-list>
 
         </mat-form-field>
+        <button mat-raised-button color="primary" (click)="CreateNewRoom()">Add New <mat-icon>add</mat-icon></button>
     </section>
     <section class="container">
         <room *ngFor="let room of filteredRooms" [room]="room"></room>
