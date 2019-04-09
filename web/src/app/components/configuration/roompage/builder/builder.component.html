@@ -182,6 +182,8 @@
           Projector
         </button>
                             <button mat-menu-item [matMenuTriggerFor]="inputs">Inputs</button>
+
+                            <button mat-menu-item [matMenuTriggerFor]="temps">Templates</button>
                         </mat-menu>
 
                         <mat-menu #tvs>
@@ -203,6 +205,12 @@
           <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
           <span>{{ type.displayName }}</span>
         </button>
+                        </mat-menu>
+
+                        <mat-menu #temps>
+                            <button mat-menu-item *ngFor="let t of templates" (click)="AddTemplate(t)">
+                            {{t.id}}
+                          </button>
                         </mat-menu>
                     </div>
                     <!-- <div class="row buttons"> -->

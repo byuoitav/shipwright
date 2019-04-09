@@ -11,7 +11,8 @@ import {
   Panel,
   DeviceType,
   IOConfiguration,
-  DBResponse
+  DBResponse,
+  Template
 } from "src/app/objects/database";
 import { ComponentCanDeactivate } from "src/app/pending-changes.guard";
 import { Observable } from "rxjs";
@@ -34,6 +35,8 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
   projectorTypes: DeviceType[] = [];
   inputTypes: DeviceType[] = [];
   audioTypes: DeviceType[] = [];
+
+  templates: Template[] = [];
 
   tvSizes: string[] = ["\"43", "\"55", "\"65", "\"75"];
 
@@ -77,6 +80,10 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
   ngOnInit() {}
 
   private GetRoomInfo() {
+    console.log("DEREK");
+    this.templates = this.data.templateList;
+    console.log(this.templates);
+
     this.room = this.data.GetRoom(this.roomID);
 
     this.devicesInRoom = this.data.roomToDevicesMap.get(this.roomID);
@@ -96,6 +103,9 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
   }
 
   FillMissingUIConfigInfo() {
+    if (this.devicesInRoom == null || this.devicesInRoom.length === 0) {
+      return;
+    }
     // if missing output configuration
     if (this.config.outputConfiguration == null || this.config.outputConfiguration.length === 0) {
       this.config.outputConfiguration = [];
@@ -233,7 +243,7 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
     });
   }
 
-  AddNewDevice(typeID: string) {
+  AddNewDevice(typeID: string): Device {
     const type = this.data.deviceTypeMap.get(typeID);
     const device = new Device(type);
 
@@ -242,10 +252,13 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
     const numRegex = /[0-9]/;
     let num = 1;
 
+    if (this.devicesInRoom == null || this.devicesInRoom.length === 0) {
+      this.devicesInRoom = [];
+    }
+
     for (const dev of this.devicesInRoom) {
       const index = dev.name.search(numRegex);
       const prefix = dev.name.substring(0, index);
-
       if (prefix === device.name) {
         num++;
       }
@@ -259,6 +272,102 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
 
     this.devicesInRoom.push(device);
     this.devicesInRoom.sort(this.text.SortDevicesAlphaNum);
+
+    this.SearchDevices();
+
+    return device;
+  }
+
+  AddTemplate(template: Template) {
+    const templateUIConfig = JSON.parse(JSON.stringify(template.uiconfig));
+    // templateUIConfig.inputConfiguration = Object.assign({}, template.uiconfig.inputConfiguration);
+    // templateUIConfig.outputConfiguration = Object.assign({}, template.uiconfig.outputConfiguration);
+    // templateUIConfig.panels = Object.assign({}, template.uiconfig.panels);
+    // templateUIConfig.presets = Object.assign({}, template.uiconfig.presets);
+
+    for (const type of template.baseTypes) {
+      const dev = this.AddNewDevice(type);
+
+      if (this.data.deviceTypeMap.get(dev.type.id).output) {
+        let found = false;
+        for (const io of templateUIConfig.outputConfiguration) {
+          if (io.name === dev.name) {
+            found = true;
+          }
+        }
+        if (!found) {
+          templateUIConfig.outputConfiguration.push(new IOConfiguration(dev.name, this.text.DefaultIcons[dev.type.id]));
+        }
+      }
+      if (this.data.deviceTypeMap.get(dev.type.id).input) {
+        let found = false;
+        for (const io of templateUIConfig.inputConfiguration) {
+          if (io.name === dev.name) {
+            found = true;
+          }
+        }
+        if (!found) {
+          templateUIConfig.inputConfiguration.push(new IOConfiguration(dev.name, this.text.DefaultIcons[dev.type.id]));
+        }
+      }
+
+      let used = false;
+
+      for (let i = 0; i < templateUIConfig.presets.length; i++) {
+        const preset = templateUIConfig.presets[i];
+
+        if (used) {
+          break;
+        }
+        if (preset.displays.includes(dev.type.id) && !preset.displays.includes(dev.name)) {
+          preset.displays[preset.displays.indexOf(dev.type.id)] = dev.name;
+          used = true;
+        }
+        if (preset.audioDevices.includes(dev.type.id) && !preset.audioDevices.includes(dev.name)) {
+          preset.audioDevices[preset.audioDevices.indexOf(dev.type.id)] = dev.name;
+          used = true;
+        }
+        if (preset.independentAudioDevices.includes(dev.type.id) && !preset.independentAudioDevices.includes(dev.name)) {
+          preset.independentAudioDevices[preset.independentAudioDevices.indexOf(dev.type.id)] = dev.name;
+          used = true;
+        }
+        if (preset.inputs.includes(dev.type.id) && !preset.inputs.includes(dev.name)) {
+          preset.inputs[preset.inputs.indexOf(dev.type.id)] = dev.name;
+          used = true;
+        }
+      }
+
+      for (const panel of templateUIConfig.panels) {
+        if (used) {
+          break;
+        }
+        if (panel.hostname === dev.type.id && !used) {
+          panel.hostname = dev.id;
+          used = true;
+        }
+      }
+    }
+
+    for (let j = 0; j < templateUIConfig.presets.length; j++) {
+      const preset = templateUIConfig.presets[j];
+
+      const oldPresetName = preset.name;
+
+      preset.name = preset.name + " " + (this.config.presets.length + j + 1);
+
+      for (const panel of templateUIConfig.panels) {
+        if (panel.preset === oldPresetName) {
+          panel.preset = preset.name;
+        }
+      }
+    }
+
+    this.config.presets.push(...templateUIConfig.presets);
+    this.config.panels.push(...templateUIConfig.panels);
+    this.config.inputConfiguration.push(...templateUIConfig.inputConfiguration);
+    this.config.outputConfiguration.push(...templateUIConfig.outputConfiguration);
+
+    console.log(this.templates);
   }
 
   AddNewPreset(hostname: string) {
