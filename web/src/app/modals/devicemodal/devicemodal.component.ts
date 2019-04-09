@@ -118,8 +118,20 @@ export class DeviceModalComponent implements OnInit {
     this.tabIndex = tab;
   }
 
-  saveDevice = (): boolean => {
+  saveDevice = async (): Promise<boolean> => {
     console.log("saving device", this.data);
-    return true;
+    try {
+      const resp = await this.api.UpdateDevice(this.data.id, this.data);
+      if (resp.success) {
+        console.log("successfully updated device", resp);
+      } else {
+        console.error("failed to update device", resp);
+      }
+
+      return resp.success;
+    } catch (e) {
+      console.error("failed to update device:", e);
+      return false;
+    }
   };
 }
