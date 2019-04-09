@@ -827,7 +827,7 @@ class SignalPathConverter implements JsonCustomConvert<Map<string, string[]>> {
 
     for (const key of Object.keys(obj)) {
       if (key && obj[key]) {
-        map.set(key, obj[key]);
+        map.set(key, obj[key].filter(v => v)); // filter to remove empty values
       }
     }
 

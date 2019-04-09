@@ -134,4 +134,8 @@ export class DeviceModalComponent implements OnInit {
       return false;
     }
   };
+
+  close(result: any) {
+    this.dialogRef.close(result);
+  }
 }
