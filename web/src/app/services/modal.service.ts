@@ -21,8 +21,6 @@ import {
 } from "../objects/database";
 import { APIService } from "./api.service";
 import { HelpModalComponent } from "../modals/helpmodal/helpmodal.component";
-import { ResolveModalComponent } from "../modals/resolve/resolve.component";
-import { StaticRoom } from "../objects/static";
 
 @Injectable({
   providedIn: "root"
@@ -40,7 +38,7 @@ export class ModalService {
       .afterClosed()
       .subscribe(resp => {
         if (resp != null) {
-          this.OpenNotifyModal(resp);
+          // this.OpenNotifyModal(resp);
         }
       });
   }

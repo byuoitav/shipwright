@@ -25,6 +25,12 @@ export class BuildingModalComponent implements OnInit {
     });
   }
 
+  AddBuilding() {
+    this.api.AddBuilding(this.data).then(resp => {
+      this.dialogRef.close(resp);
+    });
+  }
+
   CloseModal() {
     this.dialogRef.close();
   }

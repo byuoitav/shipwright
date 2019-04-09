@@ -1,19 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-import { StringsService } from 'src/app/services/strings.service';
-import { DataService } from 'src/app/services/data.service';
-import { Building } from 'src/app/objects/database';
+import { Component, OnInit } from "@angular/core";
+import { StringsService } from "src/app/services/strings.service";
+import { DataService } from "src/app/services/data.service";
+import { Building } from "src/app/objects/database";
+import { ModalService } from "src/app/services/modal.service";
 
 @Component({
-  selector: 'building-list',
-  templateUrl: './buildinglist.component.html',
-  styleUrls: ['./buildinglist.component.scss']
+  selector: "building-list",
+  templateUrl: "./buildinglist.component.html",
+  styleUrls: ["./buildinglist.component.scss"]
 })
 export class BuildingListComponent implements OnInit {
   buildingList: Building[] = [];
   filteredBuildings: Building[] = [];
   filterQueries: string[] = [];
 
-  constructor(public text: StringsService, public data: DataService) {
+  constructor(public text: StringsService, public data: DataService, public modal: ModalService) {
     if (this.data.finished) {
       this.buildingList = this.data.allBuildings;
       this.filteredBuildings = this.buildingList;
@@ -21,7 +22,7 @@ export class BuildingListComponent implements OnInit {
       this.data.loaded.subscribe(() => {
         this.buildingList = this.data.allBuildings;
         this.filteredBuildings = this.buildingList;
-      })
+      });
     }
   }
 
@@ -53,4 +54,10 @@ export class BuildingListComponent implements OnInit {
     }
   }
 
+  CreateNewBuilding() {
+    const newBuilding = new Building();
+    newBuilding.isNew = true;
+
+    this.modal.OpenBuildingModal(newBuilding);
+  }
 }
