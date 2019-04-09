@@ -43,8 +43,8 @@ export class RoutingComponent implements OnInit {
         circle: false,
         grid: true,
         avoidOverlap: true,
-        animate: true,
-        animationDuration: 500,
+        animate: false,
+        animationDuration: 0,
         nodeDimensionsIncludeLabels: true
       },
       selectionType: "single",

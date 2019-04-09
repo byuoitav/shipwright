@@ -1,17 +1,23 @@
 .container {
-    display: flex;
-    flex-flow: column nowrap;
-    justify-content: space-evenly;
-    padding: 15px;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-evenly;
+  padding-top: 15px;
 }
 
 .row {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-between;
-    align-items: baseline;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: baseline;
 }
 
 .port-field {
-    width: 30%;
+  width: 30%;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }

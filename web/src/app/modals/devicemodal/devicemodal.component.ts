@@ -117,4 +117,9 @@ export class DeviceModalComponent implements OnInit {
   setTab(tab: number) {
     this.tabIndex = tab;
   }
+
+  saveDevice = (): boolean => {
+    console.log("saving device", this.data);
+    return true;
+  };
 }
