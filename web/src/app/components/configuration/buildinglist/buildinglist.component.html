@@ -3,6 +3,7 @@
 </div>
 <div *ngIf="data.finished" class="container">
     <section class="row top">
+        <button mat-stroked-button (click)="GoBack()" color="primary"><mat-icon>arrow_back</mat-icon>Back</button>
         <mat-form-field class="filters">
             <mat-label>Filters</mat-label>
             <mat-chip-list #filterList>

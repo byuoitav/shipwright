@@ -1,6 +1,5 @@
-$status-good: #00c853;
-$status-bad:#e53935;
-$status-warning:#ffd600;
+$save: #00c853;
+$cancel:#e53935;
 .column {
     display: flex;
     flex-flow: column nowrap;
@@ -20,10 +19,10 @@ mat-form-field {
 }
 
 .button {
-    &.submit {
-        color: $status-good;
+    &.save {
+        color: $save;
     }
-    &.close {
-        color: $status-bad;
+    &.cancel {
+        color: $cancel;
     }
 }
