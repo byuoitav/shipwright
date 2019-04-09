@@ -41,39 +41,58 @@ export class Building {
     }
     if (this.name !== imposter.name) {
       if (logMismatch) {
-        console.log("building names don't match: %s -- %s", this.name, imposter.name);
+        console.log(
+          "building names don't match: %s -- %s",
+          this.name,
+          imposter.name
+        );
       }
       return false;
     }
     if (this.description !== imposter.description) {
       if (logMismatch) {
-        console.log("building descriptions don't match: %s -- %s", this.description, imposter.description);
+        console.log(
+          "building descriptions don't match: %s -- %s",
+          this.description,
+          imposter.description
+        );
       }
       return false;
     }
     if (this.tags == null && imposter.tags != null) {
       if (logMismatch) {
-        console.log("host building has no tags, imposter building does: " + imposter.tags);
+        console.log(
+          "host building has no tags, imposter building does: " + imposter.tags
+        );
       }
       return false;
     }
     if (this.tags != null && imposter.tags == null) {
       if (logMismatch) {
-        console.log("imposter building has no tags, host building does: " + this.tags);
+        console.log(
+          "imposter building has no tags, host building does: " + this.tags
+        );
       }
       return false;
     }
     if (this.tags != null && imposter.tags != null) {
       if (this.tags.length !== imposter.tags.length) {
         if (logMismatch) {
-          console.log("building tags are different size arrays: %d -- %d", this.tags.length, imposter.tags.length);
+          console.log(
+            "building tags are different size arrays: %d -- %d",
+            this.tags.length,
+            imposter.tags.length
+          );
         }
         return false;
       }
       for (const tag of this.tags) {
         if (!imposter.tags.includes(tag)) {
           if (logMismatch) {
-            console.log("imposter building does not have the following tag: %s", tag);
+            console.log(
+              "imposter building does not have the following tag: %s",
+              tag
+            );
           }
           return false;
         }
@@ -107,33 +126,50 @@ export class RoomConfiguration {
     }
     if (this.id !== imposter.id) {
       if (logMismatch) {
-        console.log("room configuration IDs don't match: %s -- %s", this.id, imposter.id);
+        console.log(
+          "room configuration IDs don't match: %s -- %s",
+          this.id,
+          imposter.id
+        );
       }
       return false;
     }
     if (this.tags == null && imposter.tags != null) {
       if (logMismatch) {
-        console.log("host room configuration has no tags, imposter room configuration does: " + imposter.tags);
+        console.log(
+          "host room configuration has no tags, imposter room configuration does: " +
+            imposter.tags
+        );
       }
       return false;
     }
     if (this.tags != null && imposter.tags == null) {
       if (logMismatch) {
-        console.log("imposter room configuration has no tags, host room configuration does: " + this.tags);
+        console.log(
+          "imposter room configuration has no tags, host room configuration does: " +
+            this.tags
+        );
       }
       return false;
     }
     if (this.tags != null && imposter.tags != null) {
       if (this.tags.length !== imposter.tags.length) {
         if (logMismatch) {
-          console.log("room configuration tags are different size arrays: %d -- %d", this.tags.length, imposter.tags.length);
+          console.log(
+            "room configuration tags are different size arrays: %d -- %d",
+            this.tags.length,
+            imposter.tags.length
+          );
         }
         return false;
       }
       for (const tag of this.tags) {
         if (!imposter.tags.includes(tag)) {
           if (logMismatch) {
-            console.log("imposter room configuration does not have the following tag: %s", tag);
+            console.log(
+              "imposter room configuration does not have the following tag: %s",
+              tag
+            );
           }
           return false;
         }
@@ -172,13 +208,19 @@ export class Role {
     }
     if (this.description !== imposter.description) {
       if (logMismatch) {
-        console.log("role descriptions don't match: %s -- %s", this.description, imposter.description);
+        console.log(
+          "role descriptions don't match: %s -- %s",
+          this.description,
+          imposter.description
+        );
       }
       return false;
     }
     if (this.tags == null && imposter.tags != null) {
       if (logMismatch) {
-        console.log("host role has no tags, imposter role does: " + imposter.tags);
+        console.log(
+          "host role has no tags, imposter role does: " + imposter.tags
+        );
       }
       return false;
     }
@@ -191,14 +233,21 @@ export class Role {
     if (this.tags != null && imposter.tags != null) {
       if (this.tags.length !== imposter.tags.length) {
         if (logMismatch) {
-          console.log("role tags are different size arrays: %d -- %d", this.tags.length, imposter.tags.length);
+          console.log(
+            "role tags are different size arrays: %d -- %d",
+            this.tags.length,
+            imposter.tags.length
+          );
         }
         return false;
       }
       for (const tag of this.tags) {
         if (!imposter.tags.includes(tag)) {
           if (logMismatch) {
-            console.log("imposter role does not have the following tag: %s", tag);
+            console.log(
+              "imposter role does not have the following tag: %s",
+              tag
+            );
           }
           return false;
         }
@@ -246,31 +295,49 @@ export class Port {
     }
     if (this.friendlyName !== imposter.friendlyName) {
       if (logMismatch) {
-        console.log("port friendly names don't match: %s -- %s", this.friendlyName, imposter.friendlyName);
+        console.log(
+          "port friendly names don't match: %s -- %s",
+          this.friendlyName,
+          imposter.friendlyName
+        );
       }
       return false;
     }
     if (this.sourceDevice !== imposter.sourceDevice) {
       if (logMismatch) {
-        console.log("port source devices don't match: %s -- %s", this.sourceDevice, imposter.sourceDevice);
+        console.log(
+          "port source devices don't match: %s -- %s",
+          this.sourceDevice,
+          imposter.sourceDevice
+        );
       }
       return false;
     }
     if (this.destinationDevice !== imposter.destinationDevice) {
       if (logMismatch) {
-        console.log("port destination devices don't match: %s -- %s", this.destinationDevice, imposter.destinationDevice);
+        console.log(
+          "port destination devices don't match: %s -- %s",
+          this.destinationDevice,
+          imposter.destinationDevice
+        );
       }
       return false;
     }
     if (this.description !== imposter.description) {
       if (logMismatch) {
-        console.log("port descriptions don't match: %s -- %s", this.description, imposter.description);
+        console.log(
+          "port descriptions don't match: %s -- %s",
+          this.description,
+          imposter.description
+        );
       }
       return false;
     }
     if (this.tags == null && imposter.tags != null) {
       if (logMismatch) {
-        console.log("host port has no tags, imposter port does: " + imposter.tags);
+        console.log(
+          "host port has no tags, imposter port does: " + imposter.tags
+        );
       }
       return false;
     }
@@ -283,14 +350,21 @@ export class Port {
     if (this.tags != null && imposter.tags != null) {
       if (this.tags.length !== imposter.tags.length) {
         if (logMismatch) {
-          console.log("port tags are different size arrays: %d -- %d", this.tags.length, imposter.tags.length);
+          console.log(
+            "port tags are different size arrays: %d -- %d",
+            this.tags.length,
+            imposter.tags.length
+          );
         }
         return false;
       }
       for (const tag of this.tags) {
         if (!imposter.tags.includes(tag)) {
           if (logMismatch) {
-            console.log("imposter port does not have the following tag: %s", tag);
+            console.log(
+              "imposter port does not have the following tag: %s",
+              tag
+            );
           }
           return false;
         }
@@ -353,20 +427,32 @@ export class DeviceType {
     }
     if (this.displayName !== imposter.displayName) {
       if (logMismatch) {
-        console.log("port display names don't match: %s -- %s", this.displayName, imposter.displayName);
+        console.log(
+          "port display names don't match: %s -- %s",
+          this.displayName,
+          imposter.displayName
+        );
       }
       return false;
     }
     if (this.description !== imposter.description) {
       if (logMismatch) {
-        console.log("port descriptions don't match: %s -- %s", this.description, imposter.description);
+        console.log(
+          "port descriptions don't match: %s -- %s",
+          this.description,
+          imposter.description
+        );
       }
       return false;
     }
     if (this.input != null && imposter.input != null) {
       if (this.input !== imposter.input) {
         if (logMismatch) {
-          console.log("types are not both inputs: Host: %s -- Imposter: %s", this.input, imposter.input);
+          console.log(
+            "types are not both inputs: Host: %s -- Imposter: %s",
+            this.input,
+            imposter.input
+          );
         }
         return false;
       }
@@ -374,7 +460,11 @@ export class DeviceType {
     if (this.output != null && imposter.output != null) {
       if (this.output !== imposter.output) {
         if (logMismatch) {
-          console.log("types are not both outputs: Host: %s -- Imposter: %s", this.output, imposter.output);
+          console.log(
+            "types are not both outputs: Host: %s -- Imposter: %s",
+            this.output,
+            imposter.output
+          );
         }
         return false;
       }
@@ -382,7 +472,11 @@ export class DeviceType {
     if (this.source != null && imposter.source != null) {
       if (this.source !== imposter.source) {
         if (logMismatch) {
-          console.log("types are not both sources: Host: %s -- Imposter: %s", this.source, imposter.source);
+          console.log(
+            "types are not both sources: Host: %s -- Imposter: %s",
+            this.source,
+            imposter.source
+          );
         }
         return false;
       }
@@ -390,7 +484,11 @@ export class DeviceType {
     if (this.destination != null && imposter.destination != null) {
       if (this.destination !== imposter.destination) {
         if (logMismatch) {
-          console.log("types are not both destinations: Host: %s -- Imposter: %s", this.destination, imposter.destination);
+          console.log(
+            "types are not both destinations: Host: %s -- Imposter: %s",
+            this.destination,
+            imposter.destination
+          );
         }
         return false;
       }
@@ -398,20 +496,28 @@ export class DeviceType {
     // roles
     if (this.roles == null && imposter.roles != null) {
       if (logMismatch) {
-        console.log("host type has no roles, imposter type does: " + imposter.roles);
+        console.log(
+          "host type has no roles, imposter type does: " + imposter.roles
+        );
       }
       return false;
     }
     if (this.roles != null && imposter.roles == null) {
       if (logMismatch) {
-        console.log("imposter type has no roles, host type does: " + this.roles);
+        console.log(
+          "imposter type has no roles, host type does: " + this.roles
+        );
       }
       return false;
     }
     if (this.roles != null && imposter.roles != null) {
       if (this.roles.length !== imposter.roles.length) {
         if (logMismatch) {
-          console.log("type roles are different size arrays: %d -- %d", this.roles.length, imposter.roles.length);
+          console.log(
+            "type roles are different size arrays: %d -- %d",
+            this.roles.length,
+            imposter.roles.length
+          );
         }
         return false;
       }
@@ -422,7 +528,11 @@ export class DeviceType {
             found = true;
             if (!role.Equals(impRole)) {
               if (logMismatch) {
-                console.log("Role mismatch on type %s and type %s", this.id, imposter.id);
+                console.log(
+                  "Role mismatch on type %s and type %s",
+                  this.id,
+                  imposter.id
+                );
               }
               return false;
             }
@@ -430,7 +540,12 @@ export class DeviceType {
         }
         if (!found) {
           if (logMismatch) {
-            console.log("Role missing on type %s that is on type %s: %s", imposter.id, this.id, role.id);
+            console.log(
+              "Role missing on type %s that is on type %s: %s",
+              imposter.id,
+              this.id,
+              role.id
+            );
           }
           return false;
         }
@@ -439,20 +554,28 @@ export class DeviceType {
     // ports
     if (this.ports == null && imposter.ports != null) {
       if (logMismatch) {
-        console.log("host type has no ports, imposter type does: " + imposter.ports);
+        console.log(
+          "host type has no ports, imposter type does: " + imposter.ports
+        );
       }
       return false;
     }
     if (this.ports != null && imposter.ports == null) {
       if (logMismatch) {
-        console.log("imposter type has no ports, host type does: " + this.ports);
+        console.log(
+          "imposter type has no ports, host type does: " + this.ports
+        );
       }
       return false;
     }
     if (this.ports != null && imposter.ports != null) {
       if (this.ports.length !== imposter.ports.length) {
         if (logMismatch) {
-          console.log("type ports are different size arrays: %d -- %d", this.ports.length, imposter.ports.length);
+          console.log(
+            "type ports are different size arrays: %d -- %d",
+            this.ports.length,
+            imposter.ports.length
+          );
         }
         return false;
       }
@@ -463,7 +586,11 @@ export class DeviceType {
             found = true;
             if (!port.Equals(impPort)) {
               if (logMismatch) {
-                console.log("port mismatch on type %s and type %s", this.id, imposter.id);
+                console.log(
+                  "port mismatch on type %s and type %s",
+                  this.id,
+                  imposter.id
+                );
               }
               return false;
             }
@@ -471,7 +598,12 @@ export class DeviceType {
         }
         if (!found) {
           if (logMismatch) {
-            console.log("port missing on type %s that is on type %s: %s", imposter.id, this.id, port.id);
+            console.log(
+              "port missing on type %s that is on type %s: %s",
+              imposter.id,
+              this.id,
+              port.id
+            );
           }
           return false;
         }
@@ -480,7 +612,9 @@ export class DeviceType {
     // tags
     if (this.tags == null && imposter.tags != null) {
       if (logMismatch) {
-        console.log("host type has no tags, imposter type does: " + imposter.tags);
+        console.log(
+          "host type has no tags, imposter type does: " + imposter.tags
+        );
       }
       return false;
     }
@@ -493,14 +627,21 @@ export class DeviceType {
     if (this.tags != null && imposter.tags != null) {
       if (this.tags.length !== imposter.tags.length) {
         if (logMismatch) {
-          console.log("type tags are different size arrays: %d -- %d", this.tags.length, imposter.tags.length);
+          console.log(
+            "type tags are different size arrays: %d -- %d",
+            this.tags.length,
+            imposter.tags.length
+          );
         }
         return false;
       }
       for (const tag of this.tags) {
         if (!imposter.tags.includes(tag)) {
           if (logMismatch) {
-            console.log("imposter type does not have the following tag: %s", tag);
+            console.log(
+              "imposter type does not have the following tag: %s",
+              tag
+            );
           }
           return false;
         }
@@ -547,8 +688,6 @@ export class Device {
 
   constructor(baseType?: DeviceType) {
     if (baseType != null) {
-      this.type = new DeviceType();
-      this.type.id = baseType.id;
 
       this.roles = baseType.roles;
       this.ports = baseType.ports;
@@ -557,49 +696,91 @@ export class Device {
   }
 
   Equals(imposter: Device): boolean {
-    if (imposter == null) { return false; }
-    if (this.id !== imposter.id) { return false; }
-    if (this.name !== imposter.name) { return false; }
-    if (this.address !== imposter.address) { return false; }
-    if (this.description !== imposter.description) { return false; }
-    if (this.displayName !== imposter.displayName) { return false; }
-    if (this.type.id !== imposter.type.id) { return false; }
-    if (this.roles == null && imposter.roles != null) { return false; }
-    if (this.roles != null && imposter.roles == null) { return false; }
+    if (imposter == null) {
+      return false;
+    }
+    if (this.id !== imposter.id) {
+      return false;
+    }
+    if (this.name !== imposter.name) {
+      return false;
+    }
+    if (this.address !== imposter.address) {
+      return false;
+    }
+    if (this.description !== imposter.description) {
+      return false;
+    }
+    if (this.displayName !== imposter.displayName) {
+      return false;
+    }
+    if (this.type.id !== imposter.type.id) {
+      return false;
+    }
+    if (this.roles == null && imposter.roles != null) {
+      return false;
+    }
+    if (this.roles != null && imposter.roles == null) {
+      return false;
+    }
     if (this.roles != null && imposter.roles != null) {
-      if (this.roles.length !== imposter.roles.length) { return false; }
+      if (this.roles.length !== imposter.roles.length) {
+        return false;
+      }
       for (const role of this.roles) {
         let found = false;
         for (const impRole of imposter.roles) {
           if (role.id === impRole.id) {
             found = true;
-            if (!role.Equals(impRole)) { return false; }
+            if (!role.Equals(impRole)) {
+              return false;
+            }
           }
         }
-        if (!found) { return false; }
+        if (!found) {
+          return false;
+        }
       }
     }
-    if (this.ports == null && imposter.ports != null) { return false; }
-    if (this.ports != null && imposter.ports == null) { return false; }
+    if (this.ports == null && imposter.ports != null) {
+      return false;
+    }
+    if (this.ports != null && imposter.ports == null) {
+      return false;
+    }
     if (this.ports != null && imposter.ports != null) {
-      if (this.ports.length !== imposter.ports.length) { return false; }
+      if (this.ports.length !== imposter.ports.length) {
+        return false;
+      }
       for (const port of this.ports) {
         let found = false;
         for (const impPort of imposter.ports) {
           if (port.id === impPort.id) {
             found = true;
-            if (!port.Equals(impPort)) { return false; }
+            if (!port.Equals(impPort)) {
+              return false;
+            }
           }
         }
-        if (!found) { return false; }
+        if (!found) {
+          return false;
+        }
       }
     }
-    if (this.tags == null && imposter.tags != null) { return false; }
-    if (this.tags != null && imposter.tags == null) { return false; }
+    if (this.tags == null && imposter.tags != null) {
+      return false;
+    }
+    if (this.tags != null && imposter.tags == null) {
+      return false;
+    }
     if (this.tags != null && imposter.tags != null) {
-      if (this.tags.length !== imposter.tags.length) { return false; }
+      if (this.tags.length !== imposter.tags.length) {
+        return false;
+      }
       for (const tag of this.tags) {
-        if (!imposter.tags.includes(tag)) { return false; }
+        if (!imposter.tags.includes(tag)) {
+          return false;
+        }
       }
     }
     // after all of this I believe they are the same
@@ -618,9 +799,15 @@ export class Person {
   constructor() {}
 
   Equals(imposter: Person): boolean {
-    if (imposter == null) { return false; }
-    if (this.name !== imposter.name) { return false; }
-    if (this.id !== imposter.id) { return false; }
+    if (imposter == null) {
+      return false;
+    }
+    if (this.name !== imposter.name) {
+      return false;
+    }
+    if (this.id !== imposter.id) {
+      return false;
+    }
     // after all of this I believe they are the same
     return true;
   }
@@ -689,22 +876,43 @@ export class Room {
 
   constructor() {
     this.configuration = new RoomConfiguration("Default");
+    this.designation = "production";
   }
 
   Equals(imposter: Room): boolean {
-    if (imposter == null) { return false; }
-    if (this.id !== imposter.id) { return false; }
-    if (this.name !== imposter.name) { return false; }
-    if (this.description !== imposter.description) { return false; }
-    if (!this.configuration.Equals(imposter.configuration)) { return false; }
-    if (this.designation !== imposter.designation) { return false; }
+    if (imposter == null) {
+      return false;
+    }
+    if (this.id !== imposter.id) {
+      return false;
+    }
+    if (this.name !== imposter.name) {
+      return false;
+    }
+    if (this.description !== imposter.description) {
+      return false;
+    }
+    if (!this.configuration.Equals(imposter.configuration)) {
+      return false;
+    }
+    if (this.designation !== imposter.designation) {
+      return false;
+    }
     // if (this.devices.length !== imposter.devices.length) { return false; }
-    if (this.tags == null && imposter.tags != null) { return false; }
-    if (this.tags != null && imposter.tags == null) { return false; }
+    if (this.tags == null && imposter.tags != null) {
+      return false;
+    }
+    if (this.tags != null && imposter.tags == null) {
+      return false;
+    }
     if (this.tags != null && imposter.tags != null) {
-      if (this.tags.length !== imposter.tags.length) { return false; }
+      if (this.tags.length !== imposter.tags.length) {
+        return false;
+      }
       for (const tag of this.tags) {
-        if (!imposter.tags.includes(tag)) { return false; }
+        if (!imposter.tags.includes(tag)) {
+          return false;
+        }
       }
     }
     // after all of this I believe they are the same
@@ -730,9 +938,15 @@ export class IOConfiguration {
   }
 
   Equals(imposter: IOConfiguration): boolean {
-    if (imposter == null) { return false; }
-    if (this.name !== imposter.name) { return false; }
-    if (this.icon !== imposter.icon) { return false; }
+    if (imposter == null) {
+      return false;
+    }
+    if (this.name !== imposter.name) {
+      return false;
+    }
+    if (this.icon !== imposter.icon) {
+      return false;
+    }
     // after all of this I believe they are the same
     return true;
   }
@@ -752,17 +966,31 @@ export class AudioConfiguration {
   constructor() {}
 
   Equals(imposter: AudioConfiguration): boolean {
-    if (imposter == null) { return false; }
-    if (this.display !== imposter.display) { return false; }
-    if (this.audioDevices == null && imposter.audioDevices != null) { return false; }
-    if (this.audioDevices != null && imposter.audioDevices == null) { return false; }
+    if (imposter == null) {
+      return false;
+    }
+    if (this.display !== imposter.display) {
+      return false;
+    }
+    if (this.audioDevices == null && imposter.audioDevices != null) {
+      return false;
+    }
+    if (this.audioDevices != null && imposter.audioDevices == null) {
+      return false;
+    }
     if (this.audioDevices != null && imposter.audioDevices != null) {
-      if (this.audioDevices.length !== imposter.audioDevices.length) { return false; }
+      if (this.audioDevices.length !== imposter.audioDevices.length) {
+        return false;
+      }
       for (const audio of this.audioDevices) {
-        if (!imposter.audioDevices.includes(audio)) { return false; }
+        if (!imposter.audioDevices.includes(audio)) {
+          return false;
+        }
       }
     }
-    if (this.roomWide !== imposter.roomWide) { return false; }
+    if (this.roomWide !== imposter.roomWide) {
+      return false;
+    }
     // after all of this I believe they are the same
     return true;
   }
@@ -785,16 +1013,32 @@ export class Panel {
   constructor() {}
 
   Equals(imposter: Panel): boolean {
-    if (imposter == null) { return false; }
-    if (this.hostname !== imposter.hostname) { return false; }
-    if (this.uiPath !== imposter.uiPath) { return false; }
-    if (this.preset !== imposter.preset) { return false; }
-    if (this.features == null && imposter.features != null) { return false; }
-    if (this.features != null && imposter.features == null) { return false; }
+    if (imposter == null) {
+      return false;
+    }
+    if (this.hostname !== imposter.hostname) {
+      return false;
+    }
+    if (this.uiPath !== imposter.uiPath) {
+      return false;
+    }
+    if (this.preset !== imposter.preset) {
+      return false;
+    }
+    if (this.features == null && imposter.features != null) {
+      return false;
+    }
+    if (this.features != null && imposter.features == null) {
+      return false;
+    }
     if (this.features != null && imposter.features != null) {
-      if (this.features.length !== imposter.features.length) { return false; }
+      if (this.features.length !== imposter.features.length) {
+        return false;
+      }
       for (const feature of this.features) {
-        if (!imposter.features.includes(feature)) { return false; }
+        if (!imposter.features.includes(feature)) {
+          return false;
+        }
       }
     }
     // after all of this I believe they are the same
@@ -828,47 +1072,105 @@ export class Preset {
   constructor() {}
 
   Equals(imposter: Preset): boolean {
-    if (imposter == null) { return false; }
-    if (this.name !== imposter.name) { return false; }
-    if (this.icon !== imposter.icon) { return false; }
-    if (this.displays == null && imposter.displays != null) { return false; }
-    if (this.displays != null && imposter.displays == null) { return false; }
+    if (imposter == null) {
+      return false;
+    }
+    if (this.name !== imposter.name) {
+      return false;
+    }
+    if (this.icon !== imposter.icon) {
+      return false;
+    }
+    if (this.displays == null && imposter.displays != null) {
+      return false;
+    }
+    if (this.displays != null && imposter.displays == null) {
+      return false;
+    }
     if (this.displays != null && imposter.displays != null) {
-      if (this.displays.length !== imposter.displays.length) { return false; }
+      if (this.displays.length !== imposter.displays.length) {
+        return false;
+      }
       for (const display of this.displays) {
-        if (!imposter.displays.includes(display)) { return false; }
+        if (!imposter.displays.includes(display)) {
+          return false;
+        }
       }
     }
-    if (this.shareableDisplays == null && imposter.shareableDisplays != null) { return false; }
-    if (this.shareableDisplays != null && imposter.shareableDisplays == null) { return false; }
+    if (this.shareableDisplays == null && imposter.shareableDisplays != null) {
+      return false;
+    }
+    if (this.shareableDisplays != null && imposter.shareableDisplays == null) {
+      return false;
+    }
     if (this.shareableDisplays != null && imposter.shareableDisplays != null) {
-      if (this.shareableDisplays.length !== imposter.shareableDisplays.length) { return false; }
+      if (this.shareableDisplays.length !== imposter.shareableDisplays.length) {
+        return false;
+      }
       for (const display of this.shareableDisplays) {
-        if (!imposter.shareableDisplays.includes(display)) { return false; }
+        if (!imposter.shareableDisplays.includes(display)) {
+          return false;
+        }
       }
     }
-    if (this.audioDevices == null && imposter.audioDevices != null) { return false; }
-    if (this.audioDevices != null && imposter.audioDevices == null) { return false; }
+    if (this.audioDevices == null && imposter.audioDevices != null) {
+      return false;
+    }
+    if (this.audioDevices != null && imposter.audioDevices == null) {
+      return false;
+    }
     if (this.audioDevices != null && imposter.audioDevices != null) {
-      if (this.audioDevices.length !== imposter.audioDevices.length) { return false; }
+      if (this.audioDevices.length !== imposter.audioDevices.length) {
+        return false;
+      }
       for (const audio of this.audioDevices) {
-        if (!imposter.audioDevices.includes(audio)) { return false; }
+        if (!imposter.audioDevices.includes(audio)) {
+          return false;
+        }
       }
     }
-    if (this.inputs == null && imposter.inputs != null) { return false; }
-    if (this.inputs != null && imposter.inputs == null) { return false; }
+    if (this.inputs == null && imposter.inputs != null) {
+      return false;
+    }
+    if (this.inputs != null && imposter.inputs == null) {
+      return false;
+    }
     if (this.inputs != null && imposter.inputs != null) {
-      if (this.inputs.length !== imposter.inputs.length) { return false; }
+      if (this.inputs.length !== imposter.inputs.length) {
+        return false;
+      }
       for (const input of this.inputs) {
-        if (!imposter.inputs.includes(input)) { return false; }
+        if (!imposter.inputs.includes(input)) {
+          return false;
+        }
       }
     }
-    if (this.independentAudioDevices == null && imposter.independentAudioDevices != null) { return false; }
-    if (this.independentAudioDevices != null && imposter.independentAudioDevices == null) { return false; }
-    if (this.independentAudioDevices != null && imposter.independentAudioDevices != null) {
-      if (this.independentAudioDevices.length !== imposter.independentAudioDevices.length) { return false; }
+    if (
+      this.independentAudioDevices == null &&
+      imposter.independentAudioDevices != null
+    ) {
+      return false;
+    }
+    if (
+      this.independentAudioDevices != null &&
+      imposter.independentAudioDevices == null
+    ) {
+      return false;
+    }
+    if (
+      this.independentAudioDevices != null &&
+      imposter.independentAudioDevices != null
+    ) {
+      if (
+        this.independentAudioDevices.length !==
+        imposter.independentAudioDevices.length
+      ) {
+        return false;
+      }
       for (const audio of this.independentAudioDevices) {
-        if (!imposter.independentAudioDevices.includes(audio)) { return false; }
+        if (!imposter.independentAudioDevices.includes(audio)) {
+          return false;
+        }
       }
     }
     // after all of this I believe they are the same
@@ -905,89 +1207,184 @@ export class UIConfig {
   constructor() {}
 
   Equals(imposter: UIConfig): boolean {
-    if (imposter == null) { return false; }
-    if (this.id !== imposter.id) { return false; }
-    if (this.API == null && imposter.API != null) { return false; }
-    if (this.API != null && imposter.API == null) { return false; }
+    if (imposter == null) {
+      return false;
+    }
+    if (this.id !== imposter.id) {
+      return false;
+    }
+    if (this.API == null && imposter.API != null) {
+      return false;
+    }
+    if (this.API != null && imposter.API == null) {
+      return false;
+    }
     if (this.API != null && imposter.API != null) {
-      if (this.API.length !== imposter.API.length) { return false; }
+      if (this.API.length !== imposter.API.length) {
+        return false;
+      }
       for (const api of this.API) {
-        if (!imposter.API.includes(api)) { return false; }
+        if (!imposter.API.includes(api)) {
+          return false;
+        }
       }
     }
-    if (this.panels == null && imposter.panels != null) { return false; }
-    if (this.panels != null && imposter.panels == null) { return false; }
+    if (this.panels == null && imposter.panels != null) {
+      return false;
+    }
+    if (this.panels != null && imposter.panels == null) {
+      return false;
+    }
     if (this.panels != null && imposter.panels != null) {
-      if (this.panels.length !== imposter.panels.length) { return false; }
+      if (this.panels.length !== imposter.panels.length) {
+        return false;
+      }
       for (const panel of this.panels) {
         let found = false;
         for (const impPanel of imposter.panels) {
           if (panel.hostname === impPanel.hostname) {
             found = true;
-            if (!panel.Equals(impPanel)) { return false; }
+            if (!panel.Equals(impPanel)) {
+              return false;
+            }
           }
         }
-        if (!found) { return false; }
+        if (!found) {
+          return false;
+        }
       }
     }
-    if (this.presets == null && imposter.presets != null) { return false; }
-    if (this.presets != null && imposter.presets == null) { return false; }
+    if (this.presets == null && imposter.presets != null) {
+      return false;
+    }
+    if (this.presets != null && imposter.presets == null) {
+      return false;
+    }
     if (this.presets != null && imposter.presets != null) {
-      if (this.presets.length !== imposter.presets.length) { return false; }
+      if (this.presets.length !== imposter.presets.length) {
+        return false;
+      }
       for (const preset of this.presets) {
         let found = false;
         for (const impPreset of imposter.presets) {
           if (preset.name === impPreset.name) {
             found = true;
-            if (!preset.Equals(impPreset)) { return false; }
+            if (!preset.Equals(impPreset)) {
+              return false;
+            }
           }
         }
-        if (!found) { return false; }
+        if (!found) {
+          return false;
+        }
       }
     }
-    if (this.inputConfiguration == null && imposter.inputConfiguration != null) { return false; }
-    if (this.inputConfiguration != null && imposter.inputConfiguration == null) { return false; }
-    if (this.inputConfiguration != null && imposter.inputConfiguration != null) {
-      if (this.inputConfiguration.length !== imposter.inputConfiguration.length) { return false; }
+    if (
+      this.inputConfiguration == null &&
+      imposter.inputConfiguration != null
+    ) {
+      return false;
+    }
+    if (
+      this.inputConfiguration != null &&
+      imposter.inputConfiguration == null
+    ) {
+      return false;
+    }
+    if (
+      this.inputConfiguration != null &&
+      imposter.inputConfiguration != null
+    ) {
+      if (
+        this.inputConfiguration.length !== imposter.inputConfiguration.length
+      ) {
+        return false;
+      }
       for (const io of this.inputConfiguration) {
         let found = false;
         for (const impIO of imposter.inputConfiguration) {
           if (io.name === impIO.name) {
             found = true;
-            if (!io.Equals(impIO)) { return false; }
+            if (!io.Equals(impIO)) {
+              return false;
+            }
           }
         }
-        if (!found) { return false; }
+        if (!found) {
+          return false;
+        }
       }
     }
-    if (this.outputConfiguration == null && imposter.outputConfiguration != null) { return false; }
-    if (this.outputConfiguration != null && imposter.outputConfiguration == null) { return false; }
-    if (this.outputConfiguration != null && imposter.outputConfiguration != null) {
-      if (this.outputConfiguration.length !== imposter.outputConfiguration.length) { return false; }
+    if (
+      this.outputConfiguration == null &&
+      imposter.outputConfiguration != null
+    ) {
+      return false;
+    }
+    if (
+      this.outputConfiguration != null &&
+      imposter.outputConfiguration == null
+    ) {
+      return false;
+    }
+    if (
+      this.outputConfiguration != null &&
+      imposter.outputConfiguration != null
+    ) {
+      if (
+        this.outputConfiguration.length !== imposter.outputConfiguration.length
+      ) {
+        return false;
+      }
       for (const io of this.outputConfiguration) {
         let found = false;
         for (const impIO of imposter.outputConfiguration) {
           if (io.name === impIO.name) {
             found = true;
-            if (!io.Equals(impIO)) { return false; }
+            if (!io.Equals(impIO)) {
+              return false;
+            }
           }
         }
-        if (!found) { return false; }
+        if (!found) {
+          return false;
+        }
       }
     }
-    if (this.audioConfiguration == null && imposter.audioConfiguration != null) { return false; }
-    if (this.audioConfiguration != null && imposter.audioConfiguration == null) { return false; }
-    if (this.audioConfiguration != null && imposter.audioConfiguration != null) {
-      if (this.audioConfiguration.length !== imposter.audioConfiguration.length) { return false; }
+    if (
+      this.audioConfiguration == null &&
+      imposter.audioConfiguration != null
+    ) {
+      return false;
+    }
+    if (
+      this.audioConfiguration != null &&
+      imposter.audioConfiguration == null
+    ) {
+      return false;
+    }
+    if (
+      this.audioConfiguration != null &&
+      imposter.audioConfiguration != null
+    ) {
+      if (
+        this.audioConfiguration.length !== imposter.audioConfiguration.length
+      ) {
+        return false;
+      }
       for (const audio of this.audioConfiguration) {
         let found = false;
         for (const impAudio of imposter.audioConfiguration) {
           if (audio.display === impAudio.display) {
             found = true;
-            if (!audio.Equals(impAudio)) { return false; }
+            if (!audio.Equals(impAudio)) {
+              return false;
+            }
           }
         }
-        if (!found) { return false; }
+        if (!found) {
+          return false;
+        }
       }
     }
     // after all of this I believe they are the same
