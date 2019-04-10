@@ -1,146 +1,108 @@
 <mat-tab-group mat-stretch-tabs [(selectedIndex)]="tabIndex">
-  <mat-tab label="Info">
-    <div class="container">
-      <section class="row">
-        <!-- Device Name -->
-        <mat-form-field>
-          <mat-label>Device Name</mat-label>
-          <input matInput [type]="'text'" [(ngModel)]="data.name" />
-        </mat-form-field>
+    <mat-tab label="Info">
+        <div class="container">
+            <section class="row">
+                <!-- Device Name -->
+                <mat-form-field>
+                    <mat-label>Device Name</mat-label>
+                    <input matInput [type]="'text'" [(ngModel)]="data.device.name" />
+                </mat-form-field>
 
-        <!-- Display Name -->
-        <mat-form-field>
-          <mat-label>Display Name</mat-label>
-          <input matInput [type]="'text'" [(ngModel)]="data.displayName" />
-        </mat-form-field>
-      </section>
-      <section class="row">
-        <!-- Device Type -->
-        <mat-form-field>
-          <mat-label>Device Type</mat-label>
-          <mat-select
-            [(ngModel)]="data.type.id"
-            (selectionChange)="UpdateDeviceType()"
-          >
-            <mat-option
-              *ngFor="let type of dataService.deviceTypeList"
-              [value]="type.id"
-              >{{ type.id }}</mat-option
-            >
-          </mat-select>
-        </mat-form-field>
+                <!-- Display Name -->
+                <mat-form-field>
+                    <mat-label>Display Name</mat-label>
+                    <input matInput [type]="'text'" [(ngModel)]="data.device.displayName" />
+                </mat-form-field>
+            </section>
+            <section class="row">
+                <!-- Device Type -->
+                <mat-form-field>
+                    <mat-label>Device Type</mat-label>
+                    <mat-select [(ngModel)]="data.device.type.id" (selectionChange)="UpdateDeviceType()">
+                        <mat-option *ngFor="let type of dataService.deviceTypeList" [value]="type.id">{{ type.id }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
 
-        <!-- Address -->
-        <mat-form-field>
-          <mat-label>Address</mat-label>
-          <input matInput [type]="'text'" [(ngModel)]="data.address" />
-          <mat-hint>IP Address: {{ rawIP }}</mat-hint>
-        </mat-form-field>
-      </section>
-    </div>
-  </mat-tab>
+                <!-- Address -->
+                <mat-form-field>
+                    <mat-label>Address</mat-label>
+                    <input matInput [type]="'text'" [(ngModel)]="data.device.address" />
+                    <mat-hint>IP Address: {{ rawIP }}</mat-hint>
+                </mat-form-field>
+            </section>
+        </div>
+    </mat-tab>
 
-  <mat-tab label="Advanced">
-    <div class="container">
-      <section class="row">
-        <!-- Description -->
-        <mat-form-field>
-          <mat-label>Description</mat-label>
-          <input matInput [type]="'text'" [(ngModel)]="data.description" />
-        </mat-form-field>
+    <mat-tab label="Advanced">
+        <div class="container">
+            <section class="row">
+                <!-- Description -->
+                <mat-form-field>
+                    <mat-label>Description</mat-label>
+                    <input matInput [type]="'text'" [(ngModel)]="data.device.description" />
+                </mat-form-field>
 
-        <!-- Roles -->
-        <mat-form-field>
-          <mat-label>Roles</mat-label>
-          <mat-select
-            multiple
-            [(ngModel)]="data.roles"
-            (selectionChange)="UpdateRoleLists()"
-            (valueChange)="UpdateRoleLists()"
-          >
-            <mat-option *ngFor="let r of data.roles" [value]="r"
-              >{{ r.id }}
-            </mat-option>
-            <mat-option *ngFor="let r of UnappliedRoles" [value]="r"
-              >{{ r.id }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </section>
+                <!-- Roles -->
+                <mat-form-field>
+                    <mat-label>Roles</mat-label>
+                    <mat-select multiple [(ngModel)]="data.device.roles" (selectionChange)="UpdateRoleLists()" (valueChange)="UpdateRoleLists()">
+                        <mat-option *ngFor="let r of data.device.roles" [value]="r">{{ r.id }}
+                        </mat-option>
+                        <mat-option *ngFor="let r of UnappliedRoles" [value]="r">{{ r.id }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </section>
 
-      <section class="row">
-        <!-- Tags -->
-        <mat-form-field>
-          <mat-label>Tags</mat-label>
-          <mat-chip-list #deviceTags>
-            <mat-chip
-              *ngFor="let tag of data.tags"
-              [selectable]="true"
-              [removable]="true"
-              (removed)="text.RemoveTag(tag, data)"
-            >
-              {{ tag }}
-              <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
-            <input
-              matInput
-              type="text"
-              [matChipInputFor]="deviceTags"
-              [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes"
-              [matChipInputAddOnBlur]="true"
-              (matChipInputTokenEnd)="text.AddTag($event, data)"
-            />
-          </mat-chip-list>
-        </mat-form-field>
-      </section>
-    </div>
-  </mat-tab>
-  <mat-tab
-    label="Routing"
-    [disabled]="data.ports == null || data.ports.length == 0"
-  >
-    <section class="container">
-      <!-- Ports -->
-      <!-- <h3 class="mat-h3">Ports</h3> -->
-      <div *ngFor="let port of data.ports" class="row">
-        <!-- In Ports -->
-        <mat-form-field class="port-field">
-          <mat-label>Port ID</mat-label>
-          <input
-            matInput
-            [type]="'text'"
-            [(ngModel)]="port.id"
-            readonly="true"
-          />
-        </mat-form-field>
-        <mat-form-field class="port-field">
-          <mat-label>Friendly ID</mat-label>
-          <input matInput [type]="'text'" [(ngModel)]="port.friendlyName" />
-        </mat-form-field>
-        <mat-form-field class="port-field" *ngIf="IsAnInPort(port)">
-          <mat-label>Input</mat-label>
-          <mat-select matInput [(ngModel)]="port.sourceDevice">
-            <mat-option *ngFor="let dev of sourceDevices" [value]="dev"
-              >{{ dev.substr(dev.lastIndexOf("-") + 1) }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <!-- Out Ports -->
-        <mat-form-field class="port-field" *ngIf="!IsAnInPort(port)">
-          <mat-label>Output</mat-label>
-          <mat-select matInput [(ngModel)]="port.destinationDevice">
-            <mat-option *ngFor="let dev of destinationDevices" [value]="dev"
-              >{{ dev.substr(dev.lastIndexOf("-") + 1) }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-    </section>
-  </mat-tab>
+            <section class="row">
+                <!-- Tags -->
+                <mat-form-field>
+                    <mat-label>Tags</mat-label>
+                    <mat-chip-list #deviceTags>
+                        <mat-chip *ngFor="let tag of data.device.tags" [selectable]="true" [removable]="true" (removed)="text.RemoveTag(tag, data.device)">
+                            {{ tag }}
+                            <mat-icon matChipRemove>cancel</mat-icon>
+                        </mat-chip>
+                        <input matInput type="text" [matChipInputFor]="deviceTags" [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="text.AddTag($event, data.device)" />
+                    </mat-chip-list>
+                </mat-form-field>
+            </section>
+        </div>
+    </mat-tab>
+    <mat-tab label="Routing" [disabled]="data.device.ports == null || data.device.ports.length == 0">
+        <section class="container">
+            <!-- Ports -->
+            <!-- <h3 class="mat-h3">Ports</h3> -->
+            <div *ngFor="let port of data.device.ports" class="row">
+                <!-- In Ports -->
+                <mat-form-field class="port-field">
+                    <mat-label>Port ID</mat-label>
+                    <input matInput [type]="'text'" [(ngModel)]="port.id" readonly="true" />
+                </mat-form-field>
+                <mat-form-field class="port-field">
+                    <mat-label>Friendly ID</mat-label>
+                    <input matInput [type]="'text'" [(ngModel)]="port.friendlyName" />
+                </mat-form-field>
+                <mat-form-field class="port-field" *ngIf="IsAnInPort(port)">
+                    <mat-label>Input</mat-label>
+                    <mat-select matInput [(ngModel)]="port.sourceDevice">
+                        <mat-option *ngFor="let dev of sourceDevices" [value]="dev">{{ dev.substr(dev.lastIndexOf("-") + 1) }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <!-- Out Ports -->
+                <mat-form-field class="port-field" *ngIf="!IsAnInPort(port)">
+                    <mat-label>Output</mat-label>
+                    <mat-select matInput [(ngModel)]="port.destinationDevice">
+                        <mat-option *ngFor="let dev of destinationDevices" [value]="dev">{{ dev.substr(dev.lastIndexOf("-") + 1) }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </section>
+    </mat-tab>
 </mat-tab-group>
 
 <mat-dialog-actions class="actions">
-  <activity-button [click]="saveDevice" type="mat-raised-button" (success)="close(true)"
-    >Save</activity-button
-  >
+    <activity-button [click]="saveDevice" type="mat-raised-button" (success)="close(true)">Save</activity-button>
 </mat-dialog-actions>

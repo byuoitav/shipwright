@@ -64,8 +64,8 @@ export class ModalService {
       });
   }
 
-  OpenDeviceModal(device: Device) {
-    this.dialog.open(DeviceModalComponent, { data: device })
+  OpenDeviceModal(device: Device, deviceList: Device[]) {
+    this.dialog.open(DeviceModalComponent, { data: {device: device, devicesInRoom: deviceList} })
     .afterClosed()
     .subscribe(resp => {
       if (resp != null) {
