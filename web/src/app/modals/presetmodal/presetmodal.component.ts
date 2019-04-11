@@ -166,7 +166,7 @@ export class PresetModalComponent implements OnInit {
     }
   }
 
-  HasSharing(): boolean {
+  SharingEnabled(): boolean {
     if (this.data.currentPanels != null) {
       for (const p of this.data.currentPanels) {
         if (p.features.includes("share")) {
@@ -181,6 +181,10 @@ export class PresetModalComponent implements OnInit {
     const device = this.dataService.GetDevice(
       this.data.config.id + "-" + displayName
     );
+
+    if (device == null) {
+      return false;
+    }
 
     const dType = this.dataService.deviceTypeMap.get(device.type.id);
 
@@ -290,5 +294,15 @@ export class PresetModalComponent implements OnInit {
     } else {
       return aA > bA ? 1 : -1;
     }
+  }
+
+  RemovePreset() {
+    this.data.config.presets.splice(this.data.config.presets.indexOf(this.data.preset), 1);
+    for (const panel of this.data.config.panels) {
+      if (panel.preset === this.data.preset.name) {
+        panel.preset = "";
+      }
+    }
+    this.dialogRef.close();
   }
 }

@@ -273,6 +273,40 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
     this.devicesInRoom.push(device);
     this.devicesInRoom.sort(this.text.SortDevicesAlphaNum);
 
+    if (this.data.deviceTypeMap.get(device.type.id).output) {
+      let found = false;
+      for (const io of this.config.outputConfiguration) {
+        if (io.name === device.name) {
+          found = true;
+        }
+      }
+      if (!found) {
+        this.config.outputConfiguration.push(new IOConfiguration(device.name, this.text.DefaultIcons[device.type.id]));
+      }
+    }
+    if (this.data.deviceTypeMap.get(device.type.id).input) {
+      let found = false;
+      for (const io of this.config.inputConfiguration) {
+        if (io.name === device.name) {
+          found = true;
+        }
+      }
+      if (!found) {
+        this.config.inputConfiguration.push(new IOConfiguration(device.name, this.text.DefaultIcons[device.type.id]));
+      }
+    }
+    if (device.type.id === "Pi3") {
+      let found = false;
+      for (const panel of this.config.panels) {
+        if (panel.hostname === device.id) {
+          found = true;
+        }
+      }
+      if (!found) {
+        this.config.panels.push(new Panel(device.id));
+      }
+    }
+
     this.SearchDevices();
 
     return device;
@@ -280,36 +314,9 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
 
   AddTemplate(template: Template) {
     const templateUIConfig = JSON.parse(JSON.stringify(template.uiconfig));
-    // templateUIConfig.inputConfiguration = Object.assign({}, template.uiconfig.inputConfiguration);
-    // templateUIConfig.outputConfiguration = Object.assign({}, template.uiconfig.outputConfiguration);
-    // templateUIConfig.panels = Object.assign({}, template.uiconfig.panels);
-    // templateUIConfig.presets = Object.assign({}, template.uiconfig.presets);
 
     for (const type of template.baseTypes) {
       const dev = this.AddNewDevice(type);
-
-      if (this.data.deviceTypeMap.get(dev.type.id).output) {
-        let found = false;
-        for (const io of templateUIConfig.outputConfiguration) {
-          if (io.name === dev.name) {
-            found = true;
-          }
-        }
-        if (!found) {
-          templateUIConfig.outputConfiguration.push(new IOConfiguration(dev.name, this.text.DefaultIcons[dev.type.id]));
-        }
-      }
-      if (this.data.deviceTypeMap.get(dev.type.id).input) {
-        let found = false;
-        for (const io of templateUIConfig.inputConfiguration) {
-          if (io.name === dev.name) {
-            found = true;
-          }
-        }
-        if (!found) {
-          templateUIConfig.inputConfiguration.push(new IOConfiguration(dev.name, this.text.DefaultIcons[dev.type.id]));
-        }
-      }
 
       let used = false;
 
@@ -364,8 +371,6 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
 
     this.config.presets.push(...templateUIConfig.presets);
     this.config.panels.push(...templateUIConfig.panels);
-    this.config.inputConfiguration.push(...templateUIConfig.inputConfiguration);
-    this.config.outputConfiguration.push(...templateUIConfig.outputConfiguration);
 
     console.log(this.templates);
   }
@@ -541,5 +546,10 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
 
     // apparently nothing has changed
     return false;
+  }
+
+  RevertChanges() {
+    console.log("Devices in room", this.devicesInRoom);
+    console.log("Base Devices", this.baseDevices);
   }
 }

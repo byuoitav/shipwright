@@ -1011,7 +1011,11 @@ export class Panel {
   @JsonProperty("features", [String], true)
   features: string[] = Array<string>();
 
-  constructor() {}
+  constructor(id?: string) {
+    if (id !== null) {
+      this.hostname = id;
+    }
+  }
 
   Equals(imposter: Panel): boolean {
     if (imposter == null) {
