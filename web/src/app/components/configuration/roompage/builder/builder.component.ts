@@ -87,7 +87,7 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
     this.room = this.data.GetRoom(this.roomID);
 
     this.devicesInRoom = this.data.roomToDevicesMap.get(this.roomID);
-    this.baseDevices = this.devicesInRoom;
+    this.baseDevices.push(...this.devicesInRoom);
 
     this.filteredDevices = this.devicesInRoom;
 
@@ -95,7 +95,7 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
     if (this.config == null) {
       this.config = new UIConfig();
     }
-    this.baseUIConfig = this.config;
+    this.baseUIConfig = JSON.parse(JSON.stringify(this.config));
 
     this.FillMissingUIConfigInfo();
 
@@ -549,7 +549,11 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
   }
 
   RevertChanges() {
-    console.log("Devices in room", this.devicesInRoom);
-    console.log("Base Devices", this.baseDevices);
+    if (this.PageDataHasChanged()) {
+      this.devicesInRoom = [];
+      this.devicesInRoom.push(...this.baseDevices);
+      this.filteredDevices = this.devicesInRoom;
+      this.config = JSON.parse(JSON.stringify(this.baseUIConfig));
+    }
   }
 }
