@@ -38,7 +38,7 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
 
   templates: Template[] = [];
 
-  tvSizes: string[] = ["\"43", "\"55", "\"65", "\"75"];
+  tvSizes: string[] = [`"43`, `"55`, `"65`, `"75`];
 
   baseDevices: Device[] = [];
   baseUIConfig: UIConfig = new UIConfig();
@@ -80,6 +80,10 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
   ngOnInit() {}
 
   private GetRoomInfo() {
+    /*
+     *TODO
+     *Add missing ports to devices from device types
+     */
     console.log("DEREK");
     this.templates = this.data.templateList;
     console.log(this.templates);
@@ -107,23 +111,36 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
       return;
     }
     // if missing output configuration
-    if (this.config.outputConfiguration == null || this.config.outputConfiguration.length === 0) {
+    if (
+      this.config.outputConfiguration == null ||
+      this.config.outputConfiguration.length === 0
+    ) {
       this.config.outputConfiguration = [];
       for (const dev of this.devicesInRoom) {
         if (!this.config.outputConfiguration.some(io => io.name === dev.name)) {
-          if (this.data.DeviceHasRole(dev, "VideoOut") || this.data.DeviceHasRole(dev, "Microphone")) {
-            this.config.outputConfiguration.push(new IOConfiguration(dev.name, this.text.DefaultIcons[dev.type.id]));
+          if (
+            this.data.DeviceHasRole(dev, "VideoOut") ||
+            this.data.DeviceHasRole(dev, "Microphone")
+          ) {
+            this.config.outputConfiguration.push(
+              new IOConfiguration(dev.name, this.text.DefaultIcons[dev.type.id])
+            );
           }
         }
       }
     }
     // if missing input configuration
-    if (this.config.inputConfiguration == null || this.config.inputConfiguration.length === 0) {
+    if (
+      this.config.inputConfiguration == null ||
+      this.config.inputConfiguration.length === 0
+    ) {
       this.config.inputConfiguration = [];
       for (const dev of this.devicesInRoom) {
         if (!this.config.inputConfiguration.some(io => io.name === dev.name)) {
           if (this.data.deviceTypeMap.get(dev.type.id).input) {
-            this.config.inputConfiguration.push(new IOConfiguration(dev.name, this.text.DefaultIcons[dev.type.id]));
+            this.config.inputConfiguration.push(
+              new IOConfiguration(dev.name, this.text.DefaultIcons[dev.type.id])
+            );
           }
         }
       }
@@ -281,7 +298,12 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
         }
       }
       if (!found) {
-        this.config.outputConfiguration.push(new IOConfiguration(device.name, this.text.DefaultIcons[device.type.id]));
+        this.config.outputConfiguration.push(
+          new IOConfiguration(
+            device.name,
+            this.text.DefaultIcons[device.type.id]
+          )
+        );
       }
     }
     if (this.data.deviceTypeMap.get(device.type.id).input) {
@@ -292,7 +314,12 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
         }
       }
       if (!found) {
-        this.config.inputConfiguration.push(new IOConfiguration(device.name, this.text.DefaultIcons[device.type.id]));
+        this.config.inputConfiguration.push(
+          new IOConfiguration(
+            device.name,
+            this.text.DefaultIcons[device.type.id]
+          )
+        );
       }
     }
     if (device.type.id === "Pi3") {
@@ -326,19 +353,34 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
         if (used) {
           break;
         }
-        if (preset.displays.includes(dev.type.id) && !preset.displays.includes(dev.name)) {
+        if (
+          preset.displays.includes(dev.type.id) &&
+          !preset.displays.includes(dev.name)
+        ) {
           preset.displays[preset.displays.indexOf(dev.type.id)] = dev.name;
           used = true;
         }
-        if (preset.audioDevices.includes(dev.type.id) && !preset.audioDevices.includes(dev.name)) {
-          preset.audioDevices[preset.audioDevices.indexOf(dev.type.id)] = dev.name;
+        if (
+          preset.audioDevices.includes(dev.type.id) &&
+          !preset.audioDevices.includes(dev.name)
+        ) {
+          preset.audioDevices[preset.audioDevices.indexOf(dev.type.id)] =
+            dev.name;
           used = true;
         }
-        if (preset.independentAudioDevices.includes(dev.type.id) && !preset.independentAudioDevices.includes(dev.name)) {
-          preset.independentAudioDevices[preset.independentAudioDevices.indexOf(dev.type.id)] = dev.name;
+        if (
+          preset.independentAudioDevices.includes(dev.type.id) &&
+          !preset.independentAudioDevices.includes(dev.name)
+        ) {
+          preset.independentAudioDevices[
+            preset.independentAudioDevices.indexOf(dev.type.id)
+          ] = dev.name;
           used = true;
         }
-        if (preset.inputs.includes(dev.type.id) && !preset.inputs.includes(dev.name)) {
+        if (
+          preset.inputs.includes(dev.type.id) &&
+          !preset.inputs.includes(dev.name)
+        ) {
           preset.inputs[preset.inputs.indexOf(dev.type.id)] = dev.name;
           used = true;
         }
@@ -417,7 +459,6 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
       // presetList.sort();
       console.log(this.config);
     }
-
   }
 
   RemoveItemFromPresetList(presetList: string[], deviceName: string) {
@@ -478,6 +519,10 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
   }
 
   SavePageData() {
+    /*
+     * TODO
+     * Strip extra ports when saving devices
+     */
     let submissionCount = 0;
     const results: DBResponse[] = [];
     for (const newDev of this.devicesInRoom) {
@@ -490,7 +535,7 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
           if (!oldDev.Equals(newDev)) {
             submissionCount++;
             console.log("updating %s", newDev.id);
-            this.api.UpdateDevice(oldDev.id, newDev).then((result) => {
+            this.api.UpdateDevice(oldDev.id, newDev).then(result => {
               results.push(result);
             });
           }
@@ -499,25 +544,27 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
       if (!present) {
         submissionCount++;
         console.log("adding %s", newDev.id);
-        this.api.AddDevice(newDev).then((result) => {
+        this.api.AddDevice(newDev).then(result => {
           results.push(result);
         });
       }
     }
 
     // if (!this.baseUIConfig.Equals(this.config)) {
-      console.log("uiconfig not equal");
-      if (this.baseUIConfig.id == null || this.baseUIConfig.id.length === 0) {
-        submissionCount++;
-        this.api.AddUIConfig(this.config).then((result) => {
+    console.log("uiconfig not equal");
+    if (this.baseUIConfig.id == null || this.baseUIConfig.id.length === 0) {
+      submissionCount++;
+      this.api.AddUIConfig(this.config).then(result => {
+        results.push(result);
+      });
+    } else {
+      submissionCount++;
+      this.api
+        .UpdateUIConfig(this.baseUIConfig.id, this.config)
+        .then(result => {
           results.push(result);
         });
-      } else {
-        submissionCount++;
-        this.api.UpdateUIConfig(this.baseUIConfig.id, this.config).then((result) => {
-          results.push(result);
-        });
-      }
+    }
     // }
   }
 
