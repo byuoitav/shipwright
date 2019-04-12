@@ -7,9 +7,9 @@
                 <mat-card-title>{{ preset.name }}</mat-card-title>
                 <mat-card-subtitle>
                     <ng-container *ngFor="let panel of config?.panels">
-                        <ng-container *ngIf="panel.preset === preset.name">
+                        <span *ngIf="panel.preset === preset.name" dnd-draggable [dropZones]="['pi']" [dragData]="GetDeviceByID(panel.hostname)" [dragEnabled]="true">
                             {{ panel.hostname.split("-")[2] }}
-                        </ng-container>
+                        </span>
                     </ng-container>
                 </mat-card-subtitle>
                 <span class="fill-remaining-space"></span>
@@ -33,12 +33,12 @@
                         $event.dragData.name
                       )
                     ">
-                                        <div class="row card">
+                                        <div class="row card" matBadge="!" [matBadgeHidden]="PortsAreFine(out.name)" matBadgeColor="warn" matBadgeDescription="No ports set on this device" matBadgeSize="medium">
                                             <mat-icon (click)="modal.OpenIconModal(out)">{{ out.icon }}
                                             </mat-icon>
                                             <span (click)="
                           modal.OpenDeviceModal(GetDeviceByName(out.name), devicesInRoom)
-                        " matBadge="!" [matBadgeHidden]="PortsAreFine(out.name)" matBadgeColor="warn" matBadgeDescription="No ports set on this device">{{ out.name }}</span
+                        ">{{ out.name }}</span
                       >
                     </div>
                   </div>

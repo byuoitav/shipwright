@@ -169,6 +169,14 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
     }
   }
 
+  GetDeviceByID(id: string): Device {
+    for (const device of this.devicesInRoom) {
+      if (device.id === id) {
+        return device;
+      }
+    }
+  }
+
   PrepPresetModal(preset: Preset) {
     const currentPanels: Panel[] = [];
 
