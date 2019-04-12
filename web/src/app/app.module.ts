@@ -35,7 +35,8 @@ import {
   MatSlideToggleModule,
   MatAutocompleteModule,
   MatGridListModule,
-  MatTooltipModule
+  MatTooltipModule,
+  MatBadgeModule
 } from "@angular/material";
 
 import { AppRoutingModule } from "./app-routing.module";
@@ -85,7 +86,7 @@ import { RoutingComponent } from "./components/configuration/roompage/routing/ro
 import { InformationComponent } from "./components/information/information.component";
 import { PendingChangesGuard } from "./pending-changes.guard";
 import { OverviewComponent } from "./components/configuration/roompage/overview/overview.component";
-import { ActivityButtonComponent } from './components/activity-button/activity-button.component';
+import { ActivityButtonComponent } from "./components/activity-button/activity-button.component";
 
 @NgModule({
   declarations: [
@@ -162,7 +163,8 @@ import { ActivityButtonComponent } from './components/activity-button/activity-b
     NotifierModule.withConfig({
       theme: "material"
     }),
-    MatGridListModule
+    MatGridListModule,
+    MatBadgeModule
   ],
   entryComponents: [
     SettingsModalComponent,

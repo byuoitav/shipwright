@@ -38,7 +38,7 @@
                                             </mat-icon>
                                             <span (click)="
                           modal.OpenDeviceModal(GetDeviceByName(out.name), devicesInRoom)
-                        ">{{ out.name }}</span
+                        " matBadge="!" [matBadgeHidden]="PortsAreFine(out.name)" matBadgeColor="warn" matBadgeDescription="No ports set on this device">{{ out.name }}</span
                       >
                     </div>
                   </div>

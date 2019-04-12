@@ -556,4 +556,23 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
       this.config = JSON.parse(JSON.stringify(this.baseUIConfig));
     }
   }
+
+  PortsAreFine(deviceName: string): boolean {
+    for (const d of this.devicesInRoom) {
+      if (d.name === deviceName) {
+        if (d.ports == null || d.ports.length === 0) {
+          return true;
+        } else {
+          for (const p of d.ports) {
+            if (p.sourceDevice != null && p.sourceDevice.length > 0
+              && p.destinationDevice != null && p.destinationDevice.length > 0) {
+              return true;
+            }
+          }
+          // no ports are set
+          return false;
+        }
+      }
+    }
+  }
 }
