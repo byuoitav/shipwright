@@ -32,9 +32,12 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
 
   config: UIConfig = new UIConfig();
 
+  tvTypes: DeviceType[] = [];
   projectorTypes: DeviceType[] = [];
   inputTypes: DeviceType[] = [];
   audioTypes: DeviceType[] = [];
+  videoSwitcherTypes: DeviceType[] = [];
+  otherTypes: DeviceType[] = [];
 
   templates: Template[] = [];
 
@@ -91,7 +94,11 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
     this.room = this.data.GetRoom(this.roomID);
 
     this.devicesInRoom = this.data.roomToDevicesMap.get(this.roomID);
-    this.baseDevices.push(...this.devicesInRoom);
+    if (this.devicesInRoom != null && this.devicesInRoom.length > 0) {
+      this.baseDevices.push(...this.devicesInRoom);
+    } else {
+      this.baseDevices = [];
+    }
 
     this.filteredDevices = this.devicesInRoom;
 
@@ -100,6 +107,10 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
       this.config = new UIConfig();
     }
     this.baseUIConfig = JSON.parse(JSON.stringify(this.config));
+
+    if (this.baseUIConfig == null) {
+      this.baseUIConfig = new UIConfig(this.roomID);
+    }
 
     this.FillMissingUIConfigInfo();
 
@@ -159,8 +170,6 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
     }
   }
 
-  ChangeIcon(thing: any) {}
-
   GetDeviceByName(name: string): Device {
     for (let i = 0; i < this.devicesInRoom.length; i++) {
       if (this.devicesInRoom[i].name === name) {
@@ -173,6 +182,19 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
     for (const device of this.devicesInRoom) {
       if (device.id === id) {
         return device;
+      }
+    }
+  }
+
+  GetIOConfig(devName: string): IOConfiguration {
+    for (const io of this.config.inputConfiguration) {
+      if (io.name === devName) {
+        return io;
+      }
+    }
+    for (const io of this.config.outputConfiguration) {
+      if (io.name === devName) {
+        return io;
       }
     }
   }
@@ -190,21 +212,26 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
   }
 
   SetDeviceTypeLists() {
+    this.tvTypes = [];
     this.projectorTypes = [];
     this.inputTypes = [];
     this.audioTypes = [];
+    this.videoSwitcherTypes = [];
+    this.otherTypes = [];
 
     for (const type of this.data.deviceTypeList) {
-      if (type.tags.includes("projector")) {
+      if (type.tags.includes("tv")) {
+        this.tvTypes.push(type);
+      } else if (type.tags.includes("projector")) {
         this.projectorTypes.push(type);
-      }
-      if (type.input) {
+      } else if (type.input) {
         this.inputTypes.push(type);
-      }
-      for (const role of type.roles) {
-        if (role.id === "Microphone") {
-          this.audioTypes.push(type);
-        }
+      } else if (type.tags.includes("audio")) {
+        this.audioTypes.push(type);
+      } else if (type.tags.includes("video-switcher")) {
+        this.videoSwitcherTypes.push(type);
+      } else {
+        this.otherTypes.push(type);
       }
     }
   }
@@ -277,16 +304,16 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
     const numRegex = /[0-9]/;
     let num = 1;
 
-    if (this.devicesInRoom == null || this.devicesInRoom.length === 0) {
-      this.devicesInRoom = [];
-    }
-
-    for (const dev of this.devicesInRoom) {
-      const index = dev.name.search(numRegex);
-      const prefix = dev.name.substring(0, index);
-      if (prefix === device.name) {
-        num++;
+    if (this.devicesInRoom != null && this.devicesInRoom.length > 0) {
+      for (const dev of this.devicesInRoom) {
+        const index = dev.name.search(numRegex);
+        const prefix = dev.name.substring(0, index);
+        if (prefix === device.name) {
+          num++;
+        }
       }
+    } else {
+      this.devicesInRoom = [];
     }
 
     device.name = device.name + num;
@@ -294,6 +321,18 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
     device.id = this.roomID + "-" + device.name;
     device.address = device.id + ".byu.edu";
     device.displayName = this.text.DefaultDisplayNames[device.type.id];
+
+
+    if (device.ports != null && device.ports.length > 0) {
+      for (const port of device.ports) {
+        if (port.tags.includes("in")) {
+          port.destinationDevice = device.id;
+        }
+        if (port.tags.includes("out")) {
+          port.sourceDevice = device.id;
+        }
+      }
+    }
 
     this.devicesInRoom.push(device);
     this.devicesInRoom.sort(this.text.SortDevicesAlphaNum);

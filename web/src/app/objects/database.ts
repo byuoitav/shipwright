@@ -1209,7 +1209,11 @@ export class UIConfig {
   @JsonProperty("audioConfiguration", [AudioConfiguration], true)
   audioConfiguration: AudioConfiguration[] = Array<AudioConfiguration>();
 
-  constructor() {}
+  constructor(roomID?: string) {
+    if (roomID != null) {
+      this.id = roomID;
+    }
+  }
 
   Equals(imposter: UIConfig): boolean {
     if (imposter == null) {
