@@ -87,9 +87,7 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
      *TODO
      *Add missing ports to devices from device types
      */
-    console.log("DEREK");
     this.templates = this.data.templateList;
-    console.log(this.templates);
 
     this.room = this.data.GetRoom(this.roomID);
 
@@ -105,6 +103,7 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
     this.config = this.data.roomToUIConfigMap.get(this.roomID);
     if (this.config == null) {
       this.config = new UIConfig();
+      this.config.id = this.roomID;
     }
     this.baseUIConfig = JSON.parse(JSON.stringify(this.config));
 
@@ -113,7 +112,6 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
     }
 
     this.FillMissingUIConfigInfo();
-
     this.SetDeviceTypeLists();
   }
 
@@ -322,7 +320,6 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
     device.address = device.id + ".byu.edu";
     device.displayName = this.text.DefaultDisplayNames[device.type.id];
 
-
     if (device.ports != null && device.ports.length > 0) {
       for (const port of device.ports) {
         if (port.tags.includes("in")) {
@@ -388,7 +385,6 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
 
   AddTemplate(template: Template) {
     const templateUIConfig = JSON.parse(JSON.stringify(template.uiconfig));
-
     for (const type of template.baseTypes) {
       const dev = this.AddNewDevice(type);
 
@@ -443,7 +439,6 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
         }
       }
     }
-
     for (let j = 0; j < templateUIConfig.presets.length; j++) {
       const preset = templateUIConfig.presets[j];
 
@@ -457,11 +452,21 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
         }
       }
     }
-
     this.config.presets.push(...templateUIConfig.presets);
-    this.config.panels.push(...templateUIConfig.panels);
-
-    console.log(this.templates);
+    for (const tempPanel of templateUIConfig.panels) {
+      let found = false;
+      for (const panel of this.config.panels) {
+        if (panel.hostname === tempPanel.hostname) {
+          panel.preset = tempPanel.preset;
+          panel.uiPath = tempPanel.uiPath;
+          panel.features = tempPanel.features;
+          found = true;
+        }
+      }
+      if (!found) {
+        this.config.panels.push(tempPanel);
+      }
+    }
   }
 
   AddNewPreset(hostname: string) {
@@ -504,7 +509,6 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
     if (!presetList.includes(deviceName)) {
       presetList.push(deviceName);
       // presetList.sort();
-      console.log(this.config);
     }
   }
 
@@ -573,10 +577,8 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
     let submissionCount = 0;
     const results: DBResponse[] = [];
     for (const newDev of this.devicesInRoom) {
-      // console.log(newDev);
       let present = false;
       for (const oldDev of this.baseDevices) {
-        // console.log("oldDev is %s", oldDev.id);
         if (oldDev.id === newDev.id) {
           present = true;
           if (!oldDev.Equals(newDev)) {
@@ -596,7 +598,6 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
         });
       }
     }
-
     // if (!this.baseUIConfig.Equals(this.config)) {
     console.log("uiconfig not equal");
     if (this.baseUIConfig.id == null || this.baseUIConfig.id.length === 0) {
@@ -658,8 +659,12 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
           return true;
         } else {
           for (const p of d.ports) {
-            if (p.sourceDevice != null && p.sourceDevice.length > 0
-              && p.destinationDevice != null && p.destinationDevice.length > 0) {
+            if (
+              p.sourceDevice != null &&
+              p.sourceDevice.length > 0 &&
+              p.destinationDevice != null &&
+              p.destinationDevice.length > 0
+            ) {
               return true;
             }
           }

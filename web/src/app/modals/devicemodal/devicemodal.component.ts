@@ -35,7 +35,9 @@ export class DeviceModalComponent implements OnInit {
   ) {
     this.RoleList = data.device.roles;
     this.UpdateRoleLists();
-    this.CurrentType = this.dataService.deviceTypeMap.get(this.data.device.type.id);
+    this.CurrentType = this.dataService.deviceTypeMap.get(
+      this.data.device.type.id
+    );
     this.FixMe();
     this.api.GetDeviceRawIPAddress(this.data.device.address).then(addr => {
       if (addr != null) {
@@ -96,7 +98,9 @@ export class DeviceModalComponent implements OnInit {
 
   UpdateDeviceType() {
     if (this.data != null && this.data.device.type != null) {
-      this.CurrentType = this.dataService.deviceTypeMap.get(this.data.device.type.id);
+      this.CurrentType = this.dataService.deviceTypeMap.get(
+        this.data.device.type.id
+      );
 
       if (this.CurrentType != null && this.CurrentType.roles != null) {
         this.data.device.roles = this.CurrentType.roles;
@@ -129,7 +133,10 @@ export class DeviceModalComponent implements OnInit {
   saveDevice = async (): Promise<boolean> => {
     console.log("saving device", this.data);
     try {
-      const resp = await this.api.UpdateDevice(this.data.device.id, this.data.device);
+      const resp = await this.api.UpdateDevice(
+        this.data.device.id,
+        this.data.device
+      );
       if (resp.success) {
         console.log("successfully updated device", resp);
       } else {
