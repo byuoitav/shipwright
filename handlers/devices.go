@@ -261,15 +261,15 @@ func GetDeviceRawIPAddress(context echo.Context) error {
 	if err != nil {
 		msg := fmt.Sprintf("failed to resolve hostname address %s : %s", hostname, err.Error())
 		log.L.Errorf("%s %s", helpers.DevicesTag, msg)
-		return context.JSON(http.StatusInternalServerError, err)
+		// return context.JSON(http.StatusInternalServerError, err)
 	}
 
-	address := ""
+	address := "No IP address found"
 
 	if len(addrs) >= 1 {
 		address = addrs[0]
 	}
 
-	log.L.Debugf("%s Successfully got the IP address for %s!", helpers.DevicesTag, hostname)
+	log.L.Debugf("%s Returning a response for the IP address for %s!", helpers.DevicesTag, hostname)
 	return context.JSON(http.StatusOK, address)
 }
