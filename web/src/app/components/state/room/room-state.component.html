@@ -89,7 +89,7 @@
       <th mat-header-cell *matHeaderCellDef>Devices</th>
       <td mat-cell *matCellDef="let rs">
         <mat-chip-list class="chipList">
-          <mat-chip *ngFor="let ds of rs.deviceStates" [ngClass]="GetStyle(ds)">
+          <mat-chip *ngFor="let ds of rs.deviceStates" [ngClass]="GetStyle(ds)" (click)="modal.OpenDeviceModal(data.GetDevice(ds.deviceID))">
             {{ GetDeviceName(ds.deviceID) }}
             <ng-container *ngIf="HasBatteryCharge(ds)">
               <mat-icon
