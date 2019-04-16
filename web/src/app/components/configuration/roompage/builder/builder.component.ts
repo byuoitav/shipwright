@@ -12,7 +12,8 @@ import {
   DeviceType,
   IOConfiguration,
   DBResponse,
-  Template
+  Template,
+  Port
 } from "src/app/objects/database";
 import { ComponentCanDeactivate } from "src/app/pending-changes.guard";
 import { Observable } from "rxjs";
@@ -45,6 +46,8 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
 
   baseDevices: Device[] = [];
   baseUIConfig: UIConfig = new UIConfig();
+  newUIConfig = false;
+
   @HostListener("window:beforeunload", ["$event"])
   canDeactivate(): boolean | Observable<boolean> {
     if (this.PageDataHasChanged()) {
@@ -104,8 +107,9 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
     if (this.config == null) {
       this.config = new UIConfig();
       this.config.id = this.roomID;
+      this.newUIConfig = true;
     }
-    this.baseUIConfig = JSON.parse(JSON.stringify(this.config));
+    this.baseUIConfig = JSON.parse(JSON.stringify(this.config)) as UIConfig;
 
     if (this.baseUIConfig == null) {
       this.baseUIConfig = new UIConfig(this.roomID);
@@ -159,10 +163,12 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
   GetPresetUIPath(presetName: string, trim: boolean) {
     for (let i = 0; i < this.config.panels.length; i++) {
       if (this.config.panels[i].preset === presetName) {
-        if (!trim) {
-          return this.config.panels[i].uiPath;
-        } else {
-          return this.config.panels[i].uiPath.substr(1);
+        if (this.config.panels[i].uiPath !== null && this.config.panels[i].uiPath !== undefined) {
+          if (!trim) {
+            return this.config.panels[i].uiPath;
+          } else {
+            return this.config.panels[i].uiPath.substr(1);
+          }
         }
       }
     }
@@ -440,7 +446,14 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
       }
     }
     for (let j = 0; j < templateUIConfig.presets.length; j++) {
-      const preset = templateUIConfig.presets[j];
+      const preset: Preset = new Preset();
+      preset.name = templateUIConfig.presets[j].name;
+      preset.audioDevices = templateUIConfig.presets[j].audioDevices;
+      preset.displays = templateUIConfig.presets[j].displays;
+      preset.inputs = templateUIConfig.presets[j].inputs;
+      preset.icon = templateUIConfig.presets[j].icon;
+      preset.independentAudioDevices = templateUIConfig.presets[j].independentAudioDevices;
+      preset.shareableDisplays = templateUIConfig.presets[j].shareableDisplays;
 
       const oldPresetName = preset.name;
 
@@ -451,8 +464,10 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
           panel.preset = preset.name;
         }
       }
+
+      console.log(preset);
+      this.config.presets.push(preset);
     }
-    this.config.presets.push(...templateUIConfig.presets);
     for (const tempPanel of templateUIConfig.panels) {
       let found = false;
       for (const panel of this.config.panels) {
@@ -570,50 +585,81 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
   }
 
   SavePageData() {
-    /*
-     * TODO
-     * Strip extra ports when saving devices
-     */
-    let submissionCount = 0;
-    const results: DBResponse[] = [];
-    for (const newDev of this.devicesInRoom) {
-      let present = false;
-      for (const oldDev of this.baseDevices) {
-        if (oldDev.id === newDev.id) {
-          present = true;
-          if (!oldDev.Equals(newDev)) {
-            submissionCount++;
-            console.log("updating %s", newDev.id);
-            this.api.UpdateDevice(oldDev.id, newDev).then(result => {
-              results.push(result);
-            });
+    for (const device of this.devicesInRoom) {
+      let found = false;
+      for (const baseDev of this.baseDevices) {
+        if (device.id === baseDev.id) {
+          found = true;
+          if (!baseDev.Equals(device)) {
+            console.log("updating device %s", device.id);
+            this.RemoveExcessPorts(device);
+            this.api.UpdateDevice(baseDev.id, device);
           }
         }
       }
-      if (!present) {
-        submissionCount++;
-        console.log("adding %s", newDev.id);
-        this.api.AddDevice(newDev).then(result => {
-          results.push(result);
-        });
+      if (!found) {
+        console.log("adding device %s", device.id);
+        this.RemoveExcessPorts(device);
+        this.api.AddDevice(device);
       }
     }
-    // if (!this.baseUIConfig.Equals(this.config)) {
-    console.log("uiconfig not equal");
-    if (this.baseUIConfig.id == null || this.baseUIConfig.id.length === 0) {
-      submissionCount++;
-      this.api.AddUIConfig(this.config).then(result => {
-        results.push(result);
-      });
+
+    if (this.newUIConfig) {
+      console.log("adding ui config", this.config);
+      this.api.AddUIConfig(this.config);
     } else {
-      submissionCount++;
-      this.api
-        .UpdateUIConfig(this.baseUIConfig.id, this.config)
-        .then(result => {
-          results.push(result);
-        });
+      console.log("updating ui config", this.config);
+      this.api.UpdateUIConfig(this.config.id, this.config);
     }
+
+    this.baseDevices = [];
+    this.baseDevices.push(...this.devicesInRoom);
+
+    this.baseUIConfig = JSON.parse(JSON.stringify(this.config));
+    // /*
+    //  * TODO
+    //  * Strip extra ports when saving devices
+    //  */
+    // let submissionCount = 0;
+    // const results: DBResponse[] = [];
+    // for (const newDev of this.devicesInRoom) {
+    //   let present = false;
+    //   for (const oldDev of this.baseDevices) {
+    //     if (oldDev.id === newDev.id) {
+    //       present = true;
+    //       if (!oldDev.Equals(newDev)) {
+    //         submissionCount++;
+    //         console.log("updating %s", newDev.id);
+    //         this.api.UpdateDevice(oldDev.id, newDev).then(result => {
+    //           results.push(result);
+    //         });
+    //       }
+    //     }
+    //   }
+    //   if (!present) {
+    //     submissionCount++;
+    //     console.log("adding %s", newDev.id);
+    //     this.api.AddDevice(newDev).then(result => {
+    //       results.push(result);
+    //     });
+    //   }
     // }
+    // // if (!this.baseUIConfig.Equals(this.config)) {
+    // console.log("uiconfig not equal");
+    // if (this.baseUIConfig.id == null || this.baseUIConfig.id.length === 0) {
+    //   submissionCount++;
+    //   this.api.AddUIConfig(this.config).then(result => {
+    //     results.push(result);
+    //   });
+    // } else {
+    //   submissionCount++;
+    //   this.api
+    //     .UpdateUIConfig(this.baseUIConfig.id, this.config)
+    //     .then(result => {
+    //       results.push(result);
+    //     });
+    // }
+    // // }
   }
 
   public PageDataHasChanged(): boolean {
@@ -634,7 +680,7 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
       }
     }
 
-    if (!this.baseUIConfig.Equals(this.config)) {
+    if (!this.config.Equals(this.baseUIConfig)) {
       // uiconfig is different in some way
       return true;
     }
@@ -672,6 +718,49 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
           return false;
         }
       }
+    }
+  }
+
+  AddMissingPorts(device: Device) {
+    const type = this.data.deviceTypeMap.get(device.type.id);
+
+    if (type.ports != null && type.ports.length > 0) {
+      for (const typePort of type.ports) {
+        if (device.ports == null) {
+          device.ports = [];
+        }
+
+        let found = false;
+
+        for (const devPort of device.ports) {
+          if (devPort.id === typePort.id) {
+            found = true;
+          }
+        }
+
+        if (!found) {
+          device.ports.push(typePort);
+        }
+      }
+      device.ports.sort(this.text.SortAlphaNumByID);
+    }
+  }
+
+  RemoveExcessPorts(device: Device) {
+    if (device.ports !== null && device.ports.length > 0) {
+      const portsToKeep: Port[] = [];
+
+      for (const port of device.ports) {
+        if (port.sourceDevice !== null && port.sourceDevice !== undefined
+          && port.destinationDevice !== null && port.destinationDevice !== undefined) {
+          portsToKeep.push(port);
+        }
+      }
+
+      console.log(portsToKeep);
+
+      device.ports = portsToKeep;
+      device.ports.sort(this.text.SortAlphaNumByID);
     }
   }
 }

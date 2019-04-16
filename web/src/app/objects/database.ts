@@ -1002,10 +1002,10 @@ export class Panel {
   @JsonProperty("hostname", String)
   hostname: string = undefined;
 
-  @JsonProperty("uipath", String)
+  @JsonProperty("uipath", String, true)
   uiPath: string = undefined;
 
-  @JsonProperty("preset", String)
+  @JsonProperty("preset", String, true)
   preset: string = undefined;
 
   @JsonProperty("features", [String], true)

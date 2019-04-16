@@ -86,6 +86,7 @@
                 <mat-form-field class="port-field" *ngIf="IsAnInPort(port)">
                     <mat-label>Input</mat-label>
                     <mat-select matInput [(ngModel)]="port.sourceDevice">
+                        <mat-option [value]="null">None</mat-option>
                         <mat-option *ngFor="let dev of sourceDevices" [value]="dev">{{ dev.substr(dev.lastIndexOf("-") + 1) }}
                         </mat-option>
                     </mat-select>
@@ -94,6 +95,7 @@
                 <mat-form-field class="port-field" *ngIf="!IsAnInPort(port)">
                     <mat-label>Output</mat-label>
                     <mat-select matInput [(ngModel)]="port.destinationDevice">
+                        <mat-option [value]="null">None</mat-option>
                         <mat-option *ngFor="let dev of destinationDevices" [value]="dev">{{ dev.substr(dev.lastIndexOf("-") + 1) }}
                         </mat-option>
                     </mat-select>

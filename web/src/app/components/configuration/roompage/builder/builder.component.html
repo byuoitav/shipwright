@@ -82,13 +82,6 @@
                     </div>
                   </div>
                 </mat-list-item>
-                <!-- <mat-list-item *ngIf="preset?.inputs?.includes(in.name)" class="device-box mat-elevation-z2 spacing" dnd-draggable [dragEnabled]="true" [dropZones]="['input']" [dragData]="in" (onDragSuccess)="RemoveItemFromPresetList(preset.inputs, $event.dragData.name)">
-                      <div class="row card">
-                          <mat-icon mat-list-icon (click)="modal.OpenIconModal(in)">{{ in.icon }}</mat-icon>
-                          <span mat-line (click)="modal.OpenDeviceModal(GetDeviceByName(in.name))">{{in.name === "ChromeCast" ? "CC1" : in.name === "AppleTV" ? "ATV1" : in.name}}</span>
-                                            <mat-hint mat-line (click)="modal.OpenDeviceModal(GetDeviceByName(in.name))">{{GetDeviceByName(in.name).displayName}}</mat-hint>
-                                        </div>
-                                </mat-list-item> -->
                             </ng-container>
                         </mat-list>
                         </div>
@@ -163,90 +156,90 @@
                 ? "ATV1"
                 : device.name
             }}</span>
-                                            </div>
                                         </div>
-                        </div>
+                                    </div>
                     </div>
-                    <span class="fill-remaining-space"></span>
-                    <div class="menu" dir="rtl">
-                        <button mat-fab color="primary" [matMenuTriggerFor]="classes">
+                </div>
+                <span class="fill-remaining-space"></span>
+                <div class="menu" dir="rtl">
+                    <button mat-fab color="primary" [matMenuTriggerFor]="classes">
         <mat-icon>add</mat-icon>
       </button>
-                        <mat-menu #classes>
-                            <button mat-menu-item (click)="AddNewDevice('Pi3')">
+                    <mat-menu #classes>
+                        <button mat-menu-item (click)="AddNewDevice('Pi3')">
           <mat-icon>{{ text.DefaultIcons["Pi3"] }}</mat-icon>
           <span>Pi</span>
         </button>
-                            <button mat-menu-item [matMenuTriggerFor]="tvs">
+                        <button mat-menu-item [matMenuTriggerFor]="tvs">
           TVs
         </button>
-                            <button mat-menu-item [matMenuTriggerFor]="projectors">
+                        <button mat-menu-item [matMenuTriggerFor]="projectors">
           Projector
         </button>
-                            <button mat-menu-item [matMenuTriggerFor]="inputs">Inputs</button>
+                        <button mat-menu-item [matMenuTriggerFor]="inputs">Inputs</button>
 
-                            <button mat-menu-item [matMenuTriggerFor]="audioDevices">Audio Devices</button>
+                        <button mat-menu-item [matMenuTriggerFor]="audioDevices">Audio Devices</button>
 
-                            <button mat-menu-item [matMenuTriggerFor]="videoSwitchers">Video Switchers</button>
+                        <button mat-menu-item [matMenuTriggerFor]="videoSwitchers">Video Switchers</button>
 
-                            <button mat-menu-item [matMenuTriggerFor]="others">Other</button>
+                        <button mat-menu-item [matMenuTriggerFor]="others">Other</button>
 
-                            <button mat-menu-item [matMenuTriggerFor]="temps">Templates</button>
-                        </mat-menu>
+                        <button mat-menu-item [matMenuTriggerFor]="temps">Templates</button>
+                    </mat-menu>
 
-                        <mat-menu #tvs>
-                            <button mat-menu-item *ngFor="let type of tvTypes" (click)="AddNewDevice(type.id)">
+                    <mat-menu #tvs>
+                        <button mat-menu-item *ngFor="let type of tvTypes" (click)="AddNewDevice(type.id)">
                           <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
                           <span>{{ type.displayName }}</span>
                         </button>
-                        </mat-menu>
+                    </mat-menu>
 
-                        <mat-menu #projectors>
-                            <button mat-menu-item *ngFor="let type of projectorTypes" (click)="AddNewDevice(type.id)">
+                    <mat-menu #projectors>
+                        <button mat-menu-item *ngFor="let type of projectorTypes" (click)="AddNewDevice(type.id)">
           <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
           <span>{{ type.displayName }}</span>
         </button>
-                        </mat-menu>
+                    </mat-menu>
 
-                        <mat-menu #inputs>
-                            <button mat-menu-item *ngFor="let type of inputTypes" (click)="AddNewDevice(type.id)">
+                    <mat-menu #inputs>
+                        <button mat-menu-item *ngFor="let type of inputTypes" (click)="AddNewDevice(type.id)">
           <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
           <span>{{ type.displayName }}</span>
         </button>
-                        </mat-menu>
+                    </mat-menu>
 
-                        <mat-menu #audioDevices>
-                            <button mat-menu-item *ngFor="let type of audioTypes" (click)="AddNewDevice(type.id)">
+                    <mat-menu #audioDevices>
+                        <button mat-menu-item *ngFor="let type of audioTypes" (click)="AddNewDevice(type.id)">
                             <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
                             <span>{{ type.displayName }}</span>
                           </button>
-                        </mat-menu>
+                    </mat-menu>
 
-                        <mat-menu #videoSwitchers>
-                            <button mat-menu-item *ngFor="let type of videoSwitcherTypes" (click)="AddNewDevice(type.id)">
+                    <mat-menu #videoSwitchers>
+                        <button mat-menu-item *ngFor="let type of videoSwitcherTypes" (click)="AddNewDevice(type.id)">
                             <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
                             <span>{{ type.displayName }}</span>
                           </button>
-                        </mat-menu>
+                    </mat-menu>
 
-                        <mat-menu #others>
-                            <button mat-menu-item *ngFor="let type of otherTypes" (click)="AddNewDevice(type.id)">
+                    <mat-menu #others>
+                        <button mat-menu-item *ngFor="let type of otherTypes" (click)="AddNewDevice(type.id)">
                             <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
                             <span>{{ type.displayName }}</span>
                           </button>
-                        </mat-menu>
+                    </mat-menu>
 
-                        <mat-menu #temps>
-                            <button mat-menu-item *ngFor="let t of templates" (click)="AddTemplate(t)">
+                    <mat-menu #temps>
+                        <button mat-menu-item *ngFor="let t of templates" (click)="AddTemplate(t)">
                             {{t.id}}
                           </button>
-                        </mat-menu>
-                    </div>
-                    <!-- <div class="row buttons"> -->
-                    <button mat-raised-button class="button save" (click)="SavePageData()">Save Changes</button>
-                    <button mat-raised-button class="button undo" color="accent" (click)="RevertChanges()">
+                    </mat-menu>
+                </div>
+                <!-- <div class="row buttons"> -->
+                <button mat-raised-button class="button save" (click)="SavePageData()">Save Changes</button>
+                <button mat-raised-button class="button undo" color="accent" (click)="RevertChanges()">
       Scrap Changes
     </button>
-                    <!-- </div> -->
-                    </aside>
-                </div>
+                <!-- </div> -->
+                </aside>
+</div>

@@ -185,5 +185,22 @@ export class StringsService {
         return aA > bA ? 1 : -1;
     }
   }
+
+  public SortAlphaNumByID(a: any, b: any) {
+    // Sort the array first alphabetically and then numerically.
+    const reA: RegExp = /[^a-zA-Z]/g;
+    const reN: RegExp = /[^0-9]/g;
+
+    const aA = a.id.replace(reA, "");
+    const bA = b.id.replace(reA, "");
+
+    if (aA === bA) {
+        const aN = parseInt(a.id.replace(reN, ""), 10);
+        const bN = parseInt(b.id.replace(reN, ""), 10);
+        return aN === bN ? 0 : aN > bN ? 1 : -1;
+    } else {
+        return aA > bA ? 1 : -1;
+    }
+  }
 }
 

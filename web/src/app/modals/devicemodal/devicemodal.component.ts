@@ -33,6 +33,7 @@ export class DeviceModalComponent implements OnInit {
     public dataService: DataService,
     private api: APIService
   ) {
+    console.log(this.data);
     this.RoleList = data.device.roles;
     this.UpdateRoleLists();
     this.CurrentType = this.dataService.deviceTypeMap.get(
@@ -65,6 +66,7 @@ export class DeviceModalComponent implements OnInit {
   }
 
   FixMe() {
+    this.AddMissingPorts(this.data.device);
     for (const port of this.data.device.ports) {
       if (port.tags == null || port.tags.length === 0) {
         for (const typePort of this.CurrentType.ports) {
@@ -80,19 +82,21 @@ export class DeviceModalComponent implements OnInit {
 
   UpdateRoleLists() {
     this.UnappliedRoles = [];
-    this.RoleList.forEach(role => {
+    for (const role of this.RoleList) {
       let PushToAddList = true;
 
-      this.data.device.roles.forEach(dRole => {
-        if (role.id === dRole.id) {
-          PushToAddList = false;
-        }
-      });
+      if (this.data.device.roles != null) {
+        this.data.device.roles.forEach(dRole => {
+          if (role.id === dRole.id) {
+            PushToAddList = false;
+          }
+        });
+      }
 
       if (PushToAddList) {
         this.UnappliedRoles.push(role);
       }
-    });
+    }
   }
 
   GetDeviceRoleList() {
@@ -135,6 +139,7 @@ export class DeviceModalComponent implements OnInit {
   }
 
   saveDevice = async (): Promise<boolean> => {
+    this.RemoveExcessPorts(this.data.device);
     console.log("saving device", this.data);
     try {
       const resp = await this.api.UpdateDevice(
@@ -156,5 +161,47 @@ export class DeviceModalComponent implements OnInit {
 
   close(result: any) {
     this.dialogRef.close(result);
+  }
+
+  AddMissingPorts(device: Device) {
+    const type = this.dataService.deviceTypeMap.get(device.type.id);
+
+    if (type.ports != null && type.ports.length > 0) {
+      for (const typePort of type.ports) {
+        if (device.ports == null) {
+          device.ports = [];
+        }
+
+        let found = false;
+
+        for (const devPort of device.ports) {
+          if (devPort.id === typePort.id) {
+            found = true;
+          }
+        }
+
+        if (!found) {
+          device.ports.push(typePort);
+          device.ports.sort(this.text.SortAlphaNumByID);
+        }
+      }
+    }
+  }
+
+  RemoveExcessPorts(device: Device) {
+    if (device.ports !== null && device.ports.length > 0) {
+      const portsToKeep: Port[] = [];
+
+      for (const port of device.ports) {
+        if (port.sourceDevice !== null && port.sourceDevice !== undefined
+          && port.destinationDevice !== null && port.destinationDevice !== undefined) {
+          portsToKeep.push(port);
+        }
+      }
+
+      console.log(portsToKeep);
+
+      device.ports = portsToKeep;
+    }
   }
 }
