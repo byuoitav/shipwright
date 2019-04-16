@@ -13,7 +13,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-// Test is a test function for something...
+// UpdateStaticRoom updates a static room
 func UpdateStaticRoom(context echo.Context) error {
 	roomID := context.Param("room")
 
@@ -248,7 +248,13 @@ func GetRoomDesignations(context echo.Context) error {
 // GetRoomClassSchedule gets the class schedule for a room
 func GetRoomClassSchedule(context echo.Context) error {
 	roomID := context.Param("roomID")
+	loc, er := time.LoadLocation("America/Denver")
+	if er != nil {
+		log.L.Errorf("Couldn't load location: %s", er.Error())
+		return context.JSON(http.StatusInternalServerError, er)
+	}
 	t := time.Now()
+	t = t.In(loc)
 	t6 := t.Add(time.Hour * 6)
 
 	var toReturn []structs.ClassHalfHourBlock

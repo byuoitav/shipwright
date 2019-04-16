@@ -2,6 +2,8 @@ import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { NgModule } from "@angular/core";
 
+import { CookieService } from "ngx-cookie-service";
+
 import {
   MatSidenavModule,
   MatButtonModule,
@@ -32,7 +34,9 @@ import {
   MAT_DIALOG_DATA,
   MatSlideToggleModule,
   MatAutocompleteModule,
-  MatGridListModule
+  MatGridListModule,
+  MatTooltipModule,
+  MatBadgeModule
 } from "@angular/material";
 
 import { AppRoutingModule } from "./app-routing.module";
@@ -61,14 +65,9 @@ import { DashPanelComponent } from "./components/dashboard/dashpanel/dashpanel.c
 import { AlertTableComponent } from "./components/dashboard/alerttable/alerttable.component";
 import { BatteryReportComponent } from "./components/dashboard/batteryreport/batteryreport.component";
 import { BuildingListComponent } from "./components/configuration/buildinglist/buildinglist.component";
-import { BuildingComponent } from "./components/configuration/building/building.component";
 import { RoomListComponent } from "./components/configuration/roomlist/roomlist.component";
-import { RoomComponent } from "./components/configuration/room/room.component";
 import { RoomPageComponent } from "./components/configuration/roompage/roompage.component";
-import { SummaryComponent } from "./components/configuration/summary/summary.component";
-import { BuilderComponent } from "./components/configuration/builder/builder.component";
 import { DeviceListComponent } from "./components/configuration/devicelist/devicelist.component";
-import { DeviceComponent } from "./components/configuration/device/device.component";
 import { DashPanelDirective } from "./components/dashboard/dashpanel/dashpanel.directive";
 import { CampusStateComponent } from "./components/state/campus/campus-state.component";
 import { RoomStateComponent } from "./components/state/room/room-state.component";
@@ -78,6 +77,16 @@ import { HelpModalComponent } from "./modals/helpmodal/helpmodal.component";
 import { DeviceStateComponent } from "./components/state/device-state/device-state.component";
 import { ResponseModalComponent } from "./modals/responsemodal/responsemodal.component";
 import { MaintenanceModalComponent } from "./modals/maintenancemodal/maintenancemodal.component";
+import { BuildingComponent } from "./components/configuration/buildinglist/building/building.component";
+import { RoomComponent } from "./components/configuration/roomlist/room/room.component";
+import { AlertsComponent } from "./components/configuration/roompage/alerts/alerts.component";
+import { BuilderComponent } from "./components/configuration/roompage/builder/builder.component";
+import { DeviceComponent } from "./components/configuration/devicelist/device/device.component";
+import { RoutingComponent } from "./components/configuration/roompage/routing/routing.component";
+import { InformationComponent } from "./components/information/information.component";
+import { PendingChangesGuard } from "./pending-changes.guard";
+import { OverviewComponent } from "./components/configuration/roompage/overview/overview.component";
+import { ActivityButtonComponent } from "./components/activity-button/activity-button.component";
 
 @NgModule({
   declarations: [
@@ -92,7 +101,7 @@ import { MaintenanceModalComponent } from "./modals/maintenancemodal/maintenance
     RoomListComponent,
     RoomComponent,
     RoomPageComponent,
-    SummaryComponent,
+    AlertsComponent,
     BuilderComponent,
     DeviceListComponent,
     DeviceComponent,
@@ -110,7 +119,11 @@ import { MaintenanceModalComponent } from "./modals/maintenancemodal/maintenance
     HelpModalComponent,
     DeviceStateComponent,
     ResponseModalComponent,
-    MaintenanceModalComponent
+    MaintenanceModalComponent,
+    RoutingComponent,
+    InformationComponent,
+    OverviewComponent,
+    ActivityButtonComponent
   ],
   imports: [
     BrowserModule,
@@ -145,11 +158,13 @@ import { MaintenanceModalComponent } from "./modals/maintenancemodal/maintenance
     MatChipsModule,
     MatSlideToggleModule,
     MatAutocompleteModule,
+    MatTooltipModule,
     DndModule.forRoot(),
     NotifierModule.withConfig({
       theme: "material"
     }),
-    MatGridListModule
+    MatGridListModule,
+    MatBadgeModule
   ],
   entryComponents: [
     SettingsModalComponent,
@@ -173,8 +188,10 @@ import { MaintenanceModalComponent } from "./modals/maintenancemodal/maintenance
     ModalService,
     StringsService,
     DashPanelService,
+    CookieService,
     { provide: DateAdapter, useClass: NativeDateAdapter },
-    { provide: MAT_DIALOG_DATA, useValue: {} }
+    { provide: MAT_DIALOG_DATA, useValue: {} },
+    PendingChangesGuard
   ],
   bootstrap: [AppComponent]
 })

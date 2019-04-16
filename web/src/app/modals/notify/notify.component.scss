@@ -1,5 +1,6 @@
 $good: #00c853;
 $bad: #e53935;
+$warning:#ffd600;
 .success {
     background-color: $good;
     color: white;
@@ -7,6 +8,10 @@ $bad: #e53935;
 
 .failure {
     background-color: $bad;
+}
+
+.mixed {
+    background-color: $warning;
 }
 
 .success-icon {

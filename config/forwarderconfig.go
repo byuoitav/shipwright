@@ -22,6 +22,7 @@ const (
 	ELKSTATIC     = "elkstatic"
 	ELKTIMESERIES = "elktimeseries"
 	COUCH         = "couch"
+	WEBSOCKET     = "websocket"
 
 	//Rotation Intervals
 

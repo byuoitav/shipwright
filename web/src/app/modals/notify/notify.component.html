@@ -2,19 +2,22 @@
     notify works!
     </p> -->
 
-    <mat-toolbar [ngClass]="data.success ? 'success' : 'failure'">
-        <span>{{data.objectID}} - {{data.action}}</span>
-        <span class="fill-remaining-space"></span>
-        <button mat-icon-button (click)="dialogRef.close()"><mat-icon>close</mat-icon></button>
+<mat-toolbar [ngClass]="overallStatus">
+    <span>{{objectTitle}} - {{responseActions.toString()}}</span>
+    <span class="fill-remaining-space"></span>
+    <button mat-icon-button (click)="dialogRef.close()"><mat-icon>close</mat-icon></button>
 
-    </mat-toolbar>
-    <section *ngIf="data.success" class="row">
+</mat-toolbar>
+<ng-container *ngFor="let resp of this.data">
+    <section *ngIf="resp.success" class="row">
         <mat-icon class="success-icon">check</mat-icon>
-        <span>{{data.message}}</span>
+        <span>{{resp.message}}</span>
     </section>
-    <section *ngIf="!data.success" class="row">
+    <section *ngIf="!resp.success" class="row">
         <mat-icon class="failure-icon">error</mat-icon>
-        <span>{{data.error}}</span>
+        <span>{{resp.error}}</span>
     </section>
-    <section>
-    </section>
+</ng-container>
+
+<section>
+</section>

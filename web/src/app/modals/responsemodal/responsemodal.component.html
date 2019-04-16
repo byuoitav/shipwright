@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Sending people to {{ data?.roomID }}</h1>
+<h1 mat-dialog-title>Sending people to {{ data?.issue?.roomID }}</h1>
 <div mat-dialog-content class="content">
   <mat-form-field>
     <input
@@ -11,7 +11,7 @@
   <mat-form-field>
     <mat-chip-list #chipList>
       <mat-chip
-        *ngFor="let person of selectedResponders"
+        *ngFor="let person of response?.responders"
         (removed)="removeResponder(person)"
         selectable
         removable
@@ -46,5 +46,22 @@
 </div>
 <div mat-dialog-actions align="end">
   <button (click)="onNoClick()" mat-button>Cancel</button>
-  <button (click)="onNoClick()" mat-button>Send</button>
+  <button
+    class="resolve"
+    [class.success]="resolved"
+    [class.error]="error"
+    [disabled]="!validForm()"
+    (click)="resolve()"
+    mat-button
+  >
+    <span [class.active]="!resolving && !resolved && !error">Send</span>
+    <mat-spinner
+      class="spinner"
+      [class.active]="resolving && !resolved && !error"
+      diameter="20"
+    >
+    </mat-spinner>
+    <mat-icon [class.active]="resolved">check</mat-icon>
+    <mat-icon [class.active]="error">close</mat-icon>
+  </button>
 </div>

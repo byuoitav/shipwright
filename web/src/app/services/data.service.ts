@@ -21,6 +21,7 @@ import {
 } from "../objects/static";
 import { StringsService } from "./strings.service";
 import { NotifierService } from "angular-notifier";
+import { CookieService } from "ngx-cookie-service";
 
 @Injectable({
   providedIn: "root"
@@ -60,11 +61,12 @@ export class DataService {
   increment: number = Math.ceil(this.totalCompletion / 19);
 
   settingsChanged: EventEmitter<any>;
-  panelCount = 1;
+  panelCount: number;
 
   issueEmitter: EventEmitter<RoomIssue>;
 
   notifier: NotifierService;
+  notificationsEnabled;
 
   currentUsername: string;
 
@@ -72,14 +74,28 @@ export class DataService {
     public api: APIService,
     private socket: SocketService,
     private text: StringsService,
+    public cookies: CookieService,
     notify: NotifierService
   ) {
     this.loaded = new EventEmitter<boolean>();
     this.settingsChanged = new EventEmitter<number>();
+    this.panelCount = +this.cookies.get("panelCount");
+    if (this.panelCount == null) {
+      // PANEL COUNT DEFAULT
+      this.panelCount = 1;
+    }
     this.issueEmitter = new EventEmitter<RoomIssue>();
     this.notifier = notify;
+    if (!this.cookies.check("notifications")) {
+      // NOTIFCATIONS ENABLED DEFAULT
+      this.notificationsEnabled = true;
+    } else {
+      this.notificationsEnabled = JSON.parse(this.cookies.get("notifications"));
+    }
     this.LoadData();
+
     this.ListenForIssues();
+    this.updateDevices();
   }
 
   private async LoadData() {
@@ -270,7 +286,7 @@ export class DataService {
   }
 
   private ListenForIssues() {
-    this.socket.listener.subscribe(issue => {
+    this.socket.issues.subscribe(issue => {
       if (!issue.resolved) {
         this.roomIssuesMap.set(issue.roomID, [issue]);
       }
@@ -289,7 +305,7 @@ export class DataService {
         if (matchingIssue == null) {
           if (issue.resolved) {
             // this.notifier.notify( "warning", "New Room Issue received for " + issue.roomID + " but already resolved" );
-          } else {
+          } else if (this.notificationsEnabled) {
             this.notifier.notify(
               "error",
               "New Room Issue [" +
@@ -305,7 +321,7 @@ export class DataService {
           const index = this.roomIssueList.indexOf(matchingIssue);
 
           if (index > -1) {
-            if (issue.resolved) {
+            if (issue.resolved && this.notificationsEnabled) {
               this.notifier.notify(
                 "success",
                 "Room Issue for " + issue.roomID + " resolved."
@@ -318,6 +334,18 @@ export class DataService {
         }
 
         this.issueEmitter.emit(issue);
+      }
+    });
+  }
+
+  private updateDevices() {
+    this.socket.devices.subscribe(device => {
+      const idx = this.staticDeviceList.findIndex(
+        d => d.deviceID === device.deviceID
+      );
+
+      if (idx >= 0) {
+        this.staticDeviceList[idx] = device;
       }
     });
   }

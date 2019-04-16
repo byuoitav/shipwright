@@ -5,38 +5,7 @@ import {
   JsonCustomConvert
 } from "json2typescript";
 import { RoomIssue, Alert } from "./alerts";
-
-@JsonConverter
-class DateConverter implements JsonCustomConvert<Date> {
-  serialize(date: Date): any {
-    function pad(n) {
-      return n < 10 ? "0" + n : n;
-    }
-
-    return (
-      date.getUTCFullYear() +
-      "-" +
-      pad(date.getUTCMonth() + 1) +
-      "-" +
-      pad(date.getUTCDate()) +
-      "T" +
-      pad(date.getUTCHours()) +
-      ":" +
-      pad(date.getUTCMinutes()) +
-      ":" +
-      pad(date.getUTCSeconds()) +
-      "Z"
-    );
-  }
-
-  deserialize(date: any): Date {
-    if (date == null) {
-      return undefined;
-    }
-
-    return new Date(date);
-  }
-}
+import { DateConverter } from "./date";
 
 @JsonObject("StaticDevice")
 export class StaticDevice {

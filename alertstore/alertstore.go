@@ -239,16 +239,16 @@ func (a *alertStore) run() {
 
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
 func (a *alertStore) editIssueInformation(issue structs.RoomIssue) *nerr.E {
-
 	//check to see if it exists
 	v, err := alertcache.GetAlertCache("default").GetIssue(issue.RoomIssueID)
 	if err != nil {
 		if err.Type == alertcache.NotFound {
 			log.L.Errorf("Trying to edit room issue that doesn't exist: %v", issue.RoomIssueID)
 			return nerr.Create("Trying to edit room issue that doesn't exist", "bad-id")
-		} else {
-			log.L.Errorf("Couldn't get room issue %v from cache %v", issue.RoomIssueID, err.Error())
 		}
+
+		log.L.Errorf("Couldn't get room issue %v from cache %v", issue.RoomIssueID, err.Error())
+		return err
 	}
 
 	//v is our deal, we need to combine
@@ -688,28 +688,22 @@ func combineIssues(n, o structs.RoomIssue) (structs.RoomIssue, bool) {
 		changes = true
 	}
 
-	for _, newResponse := range n.RoomIssueResponses {
-		foundMatch := false
-
-		for _, oldResponse := range o.RoomIssueResponses {
-			if len(newResponse.Responders) == len(oldResponse.Responders) && structs.HasAllPeople(newResponse.Responders, oldResponse.Responders...) {
-				if newResponse.HelpSentAt == oldResponse.HelpSentAt {
-					if newResponse.HelpArrivedAt == oldResponse.HelpArrivedAt {
-						foundMatch = true
-						break
-					}
-				}
-			}
-		}
-
-		if !foundMatch {
-			o.RoomIssueResponses = append(o.RoomIssueResponses, newResponse)
-		}
-	}
-
-	if len(n.RoomIssueResponses) > 0 && (len(n.RoomIssueResponses) != len(o.RoomIssueResponses)) {
+	if len(n.RoomIssueResponses) != len(o.RoomIssueResponses) {
+		// TODO add logic for if one changed (i don't know if we actually need that)
+		// so now changes is only true if the number of room issue responses changed, not if an invidual one changed
+		// the old stuff doesn't work because it adds the lists together and then checks if they have different length
 		o.RoomIssueResponses = n.RoomIssueResponses
 		changes = true
+	}
+
+	for i := range o.RoomIssueResponses {
+		// matching ones should be at the same index
+		if o.RoomIssueResponses[i].HelpSentAt != n.RoomIssueResponses[i].HelpSentAt ||
+			o.RoomIssueResponses[i].HelpArrivedAt != n.RoomIssueResponses[i].HelpArrivedAt ||
+			!structs.HasAllPeople(o.RoomIssueResponses[i].Responders, n.RoomIssueResponses[i].Responders...) {
+			o.RoomIssueResponses[i] = n.RoomIssueResponses[i]
+			changes = true
+		}
 	}
 
 	return o, changes
