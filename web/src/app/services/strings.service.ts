@@ -48,6 +48,10 @@ export class StringsService {
     "ShureULXD": "RCV",
     "SonyPHZ10": "D",
     "SonyXBR": "D",
+    "SonyXBR 43\"": "D",
+    "SonyXBR 55\"": "D",
+    "SonyXBR 65\"": "D",
+    "SonyXBR 75\"": "D",
     "SonyVPL": "D",
     "Shure Microphone": "MIC",
     "VideoCard": "D",
@@ -60,6 +64,10 @@ export class StringsService {
     "via-connect-pro": "VIA",
     "Pi3": "Pi",
     "SonyXBR": "Flatpanel",
+    "SonyXBR 43\"": "Flatpanel",
+    "SonyXBR 55\"": "Flatpanel",
+    "SonyXBR 65\"": "Flatpanel",
+    "SonyXBR 75\"": "Flatpanel",
     "Computer": "PC",
     "ADCP Sony VPL": "Projector"
   };
@@ -90,6 +98,10 @@ export class StringsService {
     "SonyPHZ10": "videocam",
     "SonyVPL": "videocam",
     "SonyXBR": "tv",
+    "SonyXBR 43\"": "tv",
+    "SonyXBR 55\"": "tv",
+    "SonyXBR 65\"": "tv",
+    "SonyXBR 75\"": "tv",
     "VideoCard": "add_to_queue",
     "non-controllable": "settings_input_hdmi",
     "via-connect-pro": "settings_input_antenna",
@@ -158,6 +170,23 @@ export class StringsService {
   }
 
   public SortDevicesAlphaNum(a: Device, b: Device) {
+    // Sort the array first alphabetically and then numerically.
+    const reA: RegExp = /[^a-zA-Z]/g;
+    const reN: RegExp = /[^0-9]/g;
+
+    const aA = a.id.replace(reA, "");
+    const bA = b.id.replace(reA, "");
+
+    if (aA === bA) {
+        const aN = parseInt(a.id.replace(reN, ""), 10);
+        const bN = parseInt(b.id.replace(reN, ""), 10);
+        return aN === bN ? 0 : aN > bN ? 1 : -1;
+    } else {
+        return aA > bA ? 1 : -1;
+    }
+  }
+
+  public SortAlphaNumByID(a: any, b: any) {
     // Sort the array first alphabetically and then numerically.
     const reA: RegExp = /[^a-zA-Z]/g;
     const reN: RegExp = /[^0-9]/g;

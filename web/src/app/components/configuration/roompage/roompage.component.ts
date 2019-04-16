@@ -18,13 +18,6 @@ export class RoomPageComponent implements OnInit, CanDeactivate<ComponentCanDeac
   devices: Device[] = [];
 
   selectedTab = 2;
-  urlParams: URLSearchParams;
-
-  tabMap = {
-    alerts: 0,
-    builder: 1,
-    routing: 2
-  };
 
   @ViewChild("builder") roomBuilder: BuilderComponent;
 
@@ -33,13 +26,6 @@ export class RoomPageComponent implements OnInit, CanDeactivate<ComponentCanDeac
     private route: ActivatedRoute,
     public data: DataService
   ) {
-    this.urlParams = new URLSearchParams(window.location.search);
-
-    if (this.urlParams.has("tab")) {
-      this.selectedTab = this.tabMap[this.urlParams.get("tab")];
-    } else {
-      // this.TabChange(this.selectedTab);
-    }
     this.route.params.subscribe(params => {
       this.roomID = params["roomID"];
       this.selectedTab = +params["tab"] - 1;
@@ -56,21 +42,14 @@ export class RoomPageComponent implements OnInit, CanDeactivate<ComponentCanDeac
     });
   }
 
+  ngOnInit() {}
+
   canDeactivate(): boolean | Observable<boolean> {
     if (this.roomBuilder != null) {
       return this.roomBuilder.canDeactivate();
     } else {
       return true;
     }
-  }
-
-  ngOnInit() {}
-
-  NotADump(): boolean {
-    if (this.room == null) {
-      return false;
-    }
-    return this.room.configuration.id !== "DMPS";
   }
 
   TabChange(tabIndex: number) {

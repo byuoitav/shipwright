@@ -4,6 +4,8 @@ import { MatTableDataSource, MatPaginator, MatSort } from "@angular/material";
 import { CombinedRoomState, StaticDevice } from "src/app/objects/static";
 import { StringsService } from "src/app/services/strings.service";
 import { PageEvent } from "@angular/material";
+import { ModalService } from "src/app/services/modal.service";
+import { SocketService } from "../../../services/socket.service";
 
 @Component({
   selector: "room-state",
@@ -25,7 +27,7 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
   // MatPaginator Output
   pageEvent: PageEvent;
 
-  constructor(public data: DataService, public text: StringsService) {}
+  constructor(public data: DataService, public text: StringsService, public modal: ModalService, private socket: SocketService) {}
 
   ngOnInit() {}
 
@@ -73,13 +75,32 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
         });
       }
     }
-
+    // refresh data each time a static device updates
+    this.socket.devices.subscribe((device) => {
+      for (const rs of this.roomList) {
+        for (let ds of rs.deviceStates) {
+          if (ds.deviceID === device.deviceID) {
+            ds = device as StaticDevice;
+          }
+        }
+      }
+    });
     this.filteredRoomList = this.roomList;
     this.SetDataSource();
   }
 
   SetDataSource() {
     this.dataSource.data = this.filteredRoomList;
+    // refresh data each time a static device updates
+    this.socket.devices.subscribe((device) => {
+      for (const rs of this.roomList) {
+        for (let ds of rs.deviceStates) {
+          if (ds.deviceID === device.deviceID) {
+            ds = device as StaticDevice;
+          }
+        }
+      }
+    });
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;

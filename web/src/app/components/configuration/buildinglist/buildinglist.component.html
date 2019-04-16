@@ -15,7 +15,7 @@
             </mat-chip-list>
 
         </mat-form-field>
-        <button mat-raised-button color="primary" (click)="CreateNewBuilding()">Add New <mat-icon>add</mat-icon></button>
+        <button mat-raised-button color="primary" (click)="CreateNewBuilding()">Add New Building<mat-icon>add</mat-icon></button>
     </section>
     <section class="container">
         <building *ngFor="let building of filteredBuildings" [building]="building"></building>

@@ -5,6 +5,11 @@ import { DataService } from "src/app/services/data.service";
 import { Device, DeviceType, Port } from "src/app/objects/database";
 import { APIService } from "src/app/services/api.service";
 
+export class DeviceModalData {
+  device: Device;
+  devicesInRoom: Device[];
+}
+
 @Component({
   selector: "device-modal",
   templateUrl: "./devicemodal.component.html",
@@ -14,7 +19,7 @@ export class DeviceModalComponent implements OnInit {
   RoleList = [];
   UnappliedRoles = [];
   CurrentType: DeviceType = new DeviceType();
-  rawIP = "";
+  rawIP = "Not set in QIP";
   tabIndex = 0;
 
   devicesInRoom: Device[] = [];
@@ -24,21 +29,31 @@ export class DeviceModalComponent implements OnInit {
   constructor(
     public text: StringsService,
     public dialogRef: MatDialogRef<DeviceModalComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: Device,
+    @Inject(MAT_DIALOG_DATA) public data: DeviceModalData,
     public dataService: DataService,
     private api: APIService
   ) {
-    this.RoleList = data.roles;
+    console.log(this.data);
+    this.RoleList = data.device.roles;
     this.UpdateRoleLists();
-    this.CurrentType = this.dataService.deviceTypeMap.get(this.data.type.id);
+    this.CurrentType = this.dataService.deviceTypeMap.get(
+      this.data.device.type.id
+    );
     this.FixMe();
-    this.api.GetDeviceRawIPAddress(this.data.address).then(addr => {
-      this.rawIP = addr as string;
+    this.api.GetDeviceRawIPAddress(this.data.device.address).then(addr => {
+      if (addr != null) {
+        this.rawIP = addr as string;
+      }
     });
 
-    this.devicesInRoom = this.dataService.roomToDevicesMap.get(
-      this.data.id.substr(0, this.data.id.lastIndexOf("-"))
-    );
+    if (this.data.devicesInRoom != null) {
+      this.devicesInRoom = this.data.devicesInRoom;
+    } else {
+      this.devicesInRoom = this.dataService.roomToDevicesMap.get(
+        this.data.device.id.substr(0, this.data.device.id.lastIndexOf("-"))
+      );
+    }
+
     this.SetSourceAndDestinationDevices();
   }
 
@@ -51,7 +66,8 @@ export class DeviceModalComponent implements OnInit {
   }
 
   FixMe() {
-    for (const port of this.data.ports) {
+    this.AddMissingPorts(this.data.device);
+    for (const port of this.data.device.ports) {
       if (port.tags == null || port.tags.length === 0) {
         for (const typePort of this.CurrentType.ports) {
           if (typePort.id === port.id) {
@@ -66,19 +82,21 @@ export class DeviceModalComponent implements OnInit {
 
   UpdateRoleLists() {
     this.UnappliedRoles = [];
-    this.RoleList.forEach(role => {
+    for (const role of this.RoleList) {
       let PushToAddList = true;
 
-      this.data.roles.forEach(dRole => {
-        if (role.id === dRole.id) {
-          PushToAddList = false;
-        }
-      });
+      if (this.data.device.roles != null) {
+        this.data.device.roles.forEach(dRole => {
+          if (role.id === dRole.id) {
+            PushToAddList = false;
+          }
+        });
+      }
 
       if (PushToAddList) {
         this.UnappliedRoles.push(role);
       }
-    });
+    }
   }
 
   GetDeviceRoleList() {
@@ -87,11 +105,13 @@ export class DeviceModalComponent implements OnInit {
   }
 
   UpdateDeviceType() {
-    if (this.data != null && this.data.type != null) {
-      this.CurrentType = this.dataService.deviceTypeMap.get(this.data.type.id);
+    if (this.data != null && this.data.device.type != null) {
+      this.CurrentType = this.dataService.deviceTypeMap.get(
+        this.data.device.type.id
+      );
 
       if (this.CurrentType != null && this.CurrentType.roles != null) {
-        this.data.roles = this.CurrentType.roles;
+        this.data.device.roles = this.CurrentType.roles;
       }
 
       this.UpdateRoleLists();
@@ -119,9 +139,13 @@ export class DeviceModalComponent implements OnInit {
   }
 
   saveDevice = async (): Promise<boolean> => {
+    this.RemoveExcessPorts(this.data.device);
     console.log("saving device", this.data);
     try {
-      const resp = await this.api.UpdateDevice(this.data.id, this.data);
+      const resp = await this.api.UpdateDevice(
+        this.data.device.id,
+        this.data.device
+      );
       if (resp.success) {
         console.log("successfully updated device", resp);
       } else {
@@ -134,4 +158,50 @@ export class DeviceModalComponent implements OnInit {
       return false;
     }
   };
+
+  close(result: any) {
+    this.dialogRef.close(result);
+  }
+
+  AddMissingPorts(device: Device) {
+    const type = this.dataService.deviceTypeMap.get(device.type.id);
+
+    if (type.ports != null && type.ports.length > 0) {
+      for (const typePort of type.ports) {
+        if (device.ports == null) {
+          device.ports = [];
+        }
+
+        let found = false;
+
+        for (const devPort of device.ports) {
+          if (devPort.id === typePort.id) {
+            found = true;
+          }
+        }
+
+        if (!found) {
+          device.ports.push(typePort);
+          device.ports.sort(this.text.SortAlphaNumByID);
+        }
+      }
+    }
+  }
+
+  RemoveExcessPorts(device: Device) {
+    if (device.ports !== null && device.ports.length > 0) {
+      const portsToKeep: Port[] = [];
+
+      for (const port of device.ports) {
+        if (port.sourceDevice !== null && port.sourceDevice !== undefined
+          && port.destinationDevice !== null && port.destinationDevice !== undefined) {
+          portsToKeep.push(port);
+        }
+      }
+
+      console.log(portsToKeep);
+
+      device.ports = portsToKeep;
+    }
+  }
 }

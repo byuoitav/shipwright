@@ -18,7 +18,12 @@ export class RoomListComponent implements OnInit {
   selectedDesignation = "";
   filterQueries: string[] = [];
 
-  constructor(public text: StringsService, private route: ActivatedRoute, public data: DataService, public modal: ModalService) {
+  constructor(
+    public text: StringsService,
+    private route: ActivatedRoute,
+    public data: DataService,
+    public modal: ModalService
+  ) {
     this.route.params.subscribe(params => {
       this.buildingID = params["buildingID"];
     });
@@ -32,8 +37,7 @@ export class RoomListComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   private GetRooms() {
     this.roomList = this.data.buildingToRoomsMap.get(this.buildingID);
@@ -56,18 +60,27 @@ export class RoomListComponent implements OnInit {
     }
 
     for (const room of this.roomList) {
-        for (const query of this.filterQueries) {
-          if (room.id.toLowerCase().includes(query.toLowerCase()) && !this.filteredRooms.includes(room)) {
+      for (const query of this.filterQueries) {
+        if (
+          room.id.toLowerCase().includes(query.toLowerCase()) &&
+          !this.filteredRooms.includes(room)
+        ) {
+          this.filteredRooms.push(room);
+        }
+        if (
+          room.designation.toLowerCase().includes(query.toLowerCase()) &&
+          !this.filteredRooms.includes(room)
+        ) {
+          this.filteredRooms.push(room);
+        }
+        for (const tag of room.tags) {
+          if (
+            tag.toLowerCase().includes(query.toLowerCase()) &&
+            !this.filteredRooms.includes(room)
+          ) {
             this.filteredRooms.push(room);
           }
-          if (room.designation.toLowerCase().includes(query.toLowerCase()) && !this.filteredRooms.includes(room)) {
-            this.filteredRooms.push(room);
-          }
-          for (const tag of room.tags) {
-            if (tag.toLowerCase().includes(query.toLowerCase()) && !this.filteredRooms.includes(room)) {
-              this.filteredRooms.push(room);
-            }
-          }
+        }
       }
     }
   }
@@ -92,7 +105,7 @@ export class RoomListComponent implements OnInit {
     newRoom.id = this.buildingID + "-";
 
     this.modal.OpenRoomModal(newRoom);
-    this.modal.roomDone.subscribe((r) => {
+    this.modal.roomDone.subscribe(r => {
       this.roomList.push(r);
     });
   }

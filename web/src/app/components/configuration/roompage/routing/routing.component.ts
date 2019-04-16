@@ -121,17 +121,20 @@ export class RoutingComponent implements OnInit {
       return;
     }
 
-    console.log("opening modal for device", device);
     const ref = this.dialog.open(DeviceModalComponent, {
       width: "50vw",
       data: device
     });
 
-    ref.afterClosed().subscribe(async changes => {
-      if (changes) {
+    ref.afterClosed().subscribe(async result => {
+      if (result) {
+        console.log("changes saved, updating routing graph");
+
         // reload the graph
         this.room = await this.api.GetRoom(this.roomID);
-        this.cy.add(this.graph(RoutingType.VIDEO));
+
+        this.cy.json({ elements: this.graph(RoutingType.VIDEO) });
+        this.cy.fit();
       }
     });
 
@@ -227,8 +230,6 @@ export class RoutingComponent implements OnInit {
         }
       }
     }
-
-    console.log("elements", elements);
 
     return elements;
   }
