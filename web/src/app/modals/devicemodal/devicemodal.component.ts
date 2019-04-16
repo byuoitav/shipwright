@@ -45,10 +45,14 @@ export class DeviceModalComponent implements OnInit {
       }
     });
 
-    this.devicesInRoom = this.data.devicesInRoom;
-    // this.devicesInRoom = this.dataService.roomToDevicesMap.get(
-    //   this.data.device.id.substr(0, this.data.device.id.lastIndexOf("-"))
-    // );
+    if (this.data.devicesInRoom != null) {
+      this.devicesInRoom = this.data.devicesInRoom;
+    } else {
+      this.devicesInRoom = this.dataService.roomToDevicesMap.get(
+        this.data.device.id.substr(0, this.data.device.id.lastIndexOf("-"))
+      );
+    }
+
     this.SetSourceAndDestinationDevices();
   }
 
