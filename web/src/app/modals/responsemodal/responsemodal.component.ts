@@ -103,7 +103,7 @@ export class ResponseModalComponent implements OnInit {
 
     // reset the input
     if (this.respondersInput) {
-      this.respondersInput._inputElement.value = "";
+      // this.respondersInput._inputElement.value = "";
     }
     if (this.isMatChipInputEvent(event) && event.input) {
       event.input.value = "";
