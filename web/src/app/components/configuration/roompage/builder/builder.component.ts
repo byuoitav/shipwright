@@ -163,7 +163,10 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
   GetPresetUIPath(presetName: string, trim: boolean) {
     for (let i = 0; i < this.config.panels.length; i++) {
       if (this.config.panels[i].preset === presetName) {
-        if (this.config.panels[i].uiPath !== null && this.config.panels[i].uiPath !== undefined) {
+        if (
+          this.config.panels[i].uiPath !== null &&
+          this.config.panels[i].uiPath !== undefined
+        ) {
           if (!trim) {
             return this.config.panels[i].uiPath;
           } else {
@@ -452,7 +455,8 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
       preset.displays = templateUIConfig.presets[j].displays;
       preset.inputs = templateUIConfig.presets[j].inputs;
       preset.icon = templateUIConfig.presets[j].icon;
-      preset.independentAudioDevices = templateUIConfig.presets[j].independentAudioDevices;
+      preset.independentAudioDevices =
+        templateUIConfig.presets[j].independentAudioDevices;
       preset.shareableDisplays = templateUIConfig.presets[j].shareableDisplays;
 
       const oldPresetName = preset.name;
@@ -663,20 +667,26 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
   }
 
   public PageDataHasChanged(): boolean {
-    for (const baseDev of this.baseDevices) {
-      let found = false;
-      for (const dev of this.devicesInRoom) {
-        if (dev.id === baseDev.id) {
-          found = true;
-          if (!baseDev.Equals(dev)) {
-            // device was changed in some way
-            return true;
+    if (this.baseDevices === null || this.baseDevices.length === 0) {
+      if (this.devicesInRoom.length > 0) {
+        return true;
+      }
+    } else {
+      for (const baseDev of this.baseDevices) {
+        let found = false;
+        for (const dev of this.devicesInRoom) {
+          if (dev.id === baseDev.id) {
+            found = true;
+            if (!baseDev.Equals(dev)) {
+              // device was changed in some way
+              return true;
+            }
           }
         }
-      }
-      if (!found) {
-        // device in the starting list was not found in the modified list
-        return true;
+        if (!found) {
+          // device in the starting list was not found in the modified list
+          return true;
+        }
       }
     }
 
@@ -684,7 +694,8 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
       // uiconfig is different in some way
       return true;
     }
-
+    console.log(this.config);
+    console.log(this.baseUIConfig);
     // apparently nothing has changed
     return false;
   }
@@ -751,8 +762,12 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
       const portsToKeep: Port[] = [];
 
       for (const port of device.ports) {
-        if (port.sourceDevice !== null && port.sourceDevice !== undefined
-          && port.destinationDevice !== null && port.destinationDevice !== undefined) {
+        if (
+          port.sourceDevice !== null &&
+          port.sourceDevice !== undefined &&
+          port.destinationDevice !== null &&
+          port.destinationDevice !== undefined
+        ) {
           portsToKeep.push(port);
         }
       }
