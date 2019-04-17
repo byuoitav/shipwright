@@ -17,5 +17,9 @@
         <mat-tab label="Routing">
             <routing [roomID]="roomID"></routing>
         </mat-tab>
+        <mat-tab label="Parts List">
+            <partslist [deviceList]="devices" [room]="room" [roomid]="room.id"></partslist>
+        </mat-tab>
+
     </mat-tab-group>
 </div>
