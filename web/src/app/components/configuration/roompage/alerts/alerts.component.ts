@@ -75,7 +75,7 @@ export class AlertsComponent implements OnInit {
     this.deviceList = this.data.roomToDevicesMap.get(this.roomID);
     this.filteredDevices = this.deviceList;
     this.filteredResponders = this.data.possibleResponders;
-    await this.SetupSchedule();
+    //await this.SetupSchedule();
 
     this.roomIssue = this.data.GetRoomIssue(this.roomID);
     if (this.roomIssue == null || this.roomIssue === undefined) {
@@ -106,10 +106,10 @@ export class AlertsComponent implements OnInit {
   }
 
   async SetupSchedule() {
-    await this.api.GetClassSchedule(this.roomID).then(result => {
-      this.classSchedule = result;
-      this.scheduleData = new MatTableDataSource(this.classSchedule);
-    });
+    // await this.api.GetClassSchedule(this.roomID).then(result => {
+    //   this.classSchedule = result;
+    //   this.scheduleData = new MatTableDataSource(this.classSchedule);
+    // });
   }
 
   SearchDevices() {
