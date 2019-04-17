@@ -79,9 +79,9 @@ export class ModalService {
     this.dialog.open(NotifyModalComponent, { data: resp });
   }
 
-  OpenPresetModal(preset: Preset, cps: Panel[], config: UIConfig) {
+  OpenPresetModal(preset: Preset, cps: Panel[], config: UIConfig, deviceList?: Device[]) {
     this.dialog.open(PresetModalComponent, {
-      data: { preset: preset, currentPanels: cps, config: config }
+      data: { preset: preset, currentPanels: cps, config: config, devicesInRoom: deviceList }
     });
   }
 

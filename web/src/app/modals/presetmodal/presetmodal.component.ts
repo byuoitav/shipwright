@@ -8,13 +8,15 @@ import {
   Panel,
   UIConfig,
   IOConfiguration,
-  DeviceType
+  DeviceType,
+  Device
 } from "src/app/objects/database";
 
 export interface UIInfo {
   preset: Preset;
   currentPanels: Panel[];
   config: UIConfig;
+  devicesInRoom?: Device[];
 }
 
 @Component({

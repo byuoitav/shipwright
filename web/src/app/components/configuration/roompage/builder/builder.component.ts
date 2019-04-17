@@ -215,7 +215,7 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
       }
     }
 
-    this.modal.OpenPresetModal(preset, currentPanels, this.config);
+    this.modal.OpenPresetModal(preset, currentPanels, this.config, this.devicesInRoom);
   }
 
   SetDeviceTypeLists() {
