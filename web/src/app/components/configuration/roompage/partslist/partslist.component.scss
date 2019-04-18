@@ -18,8 +18,43 @@
     max-height: 20%;
     width: 15vw;
     margin: 15px;
+    border: solid 1px blue;
 }
 
 .fill-remaining-space {
     flex: 1 1 auto;
 }
+
+.mat-column-device {
+    padding-left: 20px;
+}
+
+.mat-column-type {
+    padding-left: 20px;
+}
+
+.mat-column-address {
+    padding-left: 20px;
+}
+
+.mat-column-ipaddress {
+    padding-left: 20px;
+}
+
+.container {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-evenly;
+    padding-top: 15px;
+  }
+  
+  .port-row {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  
+  .port-field {
+    width: 30%;
+  }

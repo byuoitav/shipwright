@@ -5,7 +5,7 @@
         <!-- Device Name -->
         <mat-form-field>
           <mat-label>Device Name</mat-label>
-          <input matInput [type]="'text'" [(ngModel)]="data.device.name" />
+          <input matInput [type]="'text'" [(ngModel)]="device.name" />
         </mat-form-field>
 
         <!-- Display Name -->
@@ -14,7 +14,7 @@
           <input
             matInput
             [type]="'text'"
-            [(ngModel)]="data.device.displayName"
+            [(ngModel)]="device.displayName"
           />
         </mat-form-field>
       </section>
@@ -23,7 +23,7 @@
         <mat-form-field>
           <mat-label>Device Type</mat-label>
           <mat-select
-            [(ngModel)]="data.device.type.id"
+            [(ngModel)]="device.type.id"
             (selectionChange)="UpdateDeviceType()"
           >
             <mat-option
@@ -37,7 +37,7 @@
         <!-- Address -->
         <mat-form-field>
           <mat-label>Address</mat-label>
-          <input matInput [type]="'text'" [(ngModel)]="data.device.address" />
+          <input matInput [type]="'text'" [(ngModel)]="device.address" />
           <mat-hint>IP Address: {{ rawIP }}</mat-hint>
         </mat-form-field>
       </section>
@@ -53,7 +53,7 @@
           <input
             matInput
             [type]="'text'"
-            [(ngModel)]="data.device.description"
+            [(ngModel)]="device.description"
           />
         </mat-form-field>
 
@@ -62,11 +62,11 @@
           <mat-label>Roles</mat-label>
           <mat-select
             multiple
-            [(ngModel)]="data.device.roles"
+            [(ngModel)]="device.roles"
             (selectionChange)="UpdateRoleLists()"
             (valueChange)="UpdateRoleLists()"
           >
-            <mat-option *ngFor="let r of data.device.roles" [value]="r"
+            <mat-option *ngFor="let r of device.roles" [value]="r"
               >{{ r.id }}
             </mat-option>
             <mat-option *ngFor="let r of UnappliedRoles" [value]="r"
@@ -82,10 +82,10 @@
           <mat-label>Tags</mat-label>
           <mat-chip-list #deviceTags>
             <mat-chip
-              *ngFor="let tag of data.device.tags"
+              *ngFor="let tag of device.tags"
               [selectable]="true"
               [removable]="true"
-              (removed)="text.RemoveTag(tag, data.device)"
+              (removed)="text.RemoveTag(tag, device)"
             >
               {{ tag }}
               <mat-icon matChipRemove>cancel</mat-icon>
@@ -96,7 +96,7 @@
               [matChipInputFor]="deviceTags"
               [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes"
               [matChipInputAddOnBlur]="true"
-              (matChipInputTokenEnd)="text.AddTag($event, data.device)"
+              (matChipInputTokenEnd)="text.AddTag($event, device)"
             />
           </mat-chip-list>
         </mat-form-field>
@@ -105,12 +105,12 @@
   </mat-tab>
   <mat-tab
     label="Routing"
-    [disabled]="data.device.ports == null || data.device.ports.length == 0"
+    [disabled]="device.ports == null || device.ports.length == 0"
   >
     <section class="container">
       <!-- Ports -->
       <!-- <h3 class="mat-h3">Ports</h3> -->
-      <div *ngFor="let port of data.device.ports" class="row">
+      <div *ngFor="let port of device.ports" class="row">
         <!-- In Ports -->
         <mat-form-field class="port-field">
           <mat-label>Port ID</mat-label>
@@ -123,11 +123,11 @@
         </mat-form-field>
         <mat-form-field class="port-field">
           <mat-label>Friendly ID</mat-label>
-          <input matInput [type]="'text'" [(ngModel)]="port.friendlyName" />
+          <input matInput [type]="'text'" [(ngModel)]="port.friendlyName" readonly="readOnly"/>
         </mat-form-field>
         <mat-form-field class="port-field" *ngIf="IsAnInPort(port)">
           <mat-label>Input</mat-label>
-          <mat-select matInput [(ngModel)]="port.sourceDevice">
+          <mat-select matInput [(ngModel)]="port.sourceDevice" readonly="readOnly">
             <mat-option [value]="null">None</mat-option>
             <mat-option *ngFor="let dev of sourceDevices" [value]="dev"
               >{{ dev.substr(dev.lastIndexOf("-") + 1) }}
