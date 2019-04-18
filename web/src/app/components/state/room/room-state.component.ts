@@ -83,10 +83,8 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
           if (rs.deviceStates != null) {
             for (const ds of rs.deviceStates) {
               if (ds.deviceID === device.deviceID) {
-                console.log("THERES A CHANGE COMING!!!!!!!!!!!");
                 const index = rs.deviceStates.indexOf(ds, 0);
                 rs.deviceStates[index] = device;
-                console.log("Changed to:", ds);
                 break;
               }
             }
