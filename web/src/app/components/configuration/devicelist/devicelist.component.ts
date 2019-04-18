@@ -26,4 +26,24 @@ export class DeviceListComponent implements OnInit {
   GoBack() {
     window.history.back();
   }
+
+  IsAControlProcessor(device: Device): boolean {
+    return (device.type.id === "Pi3");
+  }
+
+  IsADisplay(device: Device): boolean {
+    return this.data.deviceTypeMap.get(device.type.id).tags.includes("display");
+  }
+
+  IsAnInput(device: Device): boolean {
+    return this.data.deviceTypeMap.get(device.type.id).input;
+  }
+
+  IsASwitcher(device: Device): boolean {
+    return this.data.deviceTypeMap.get(device.type.id).tags.includes("video-switcher");
+  }
+
+  IsAnAudioDevice(device: Device): boolean {
+    return this.data.deviceTypeMap.get(device.type.id).tags.includes("audio");
+  }
 }

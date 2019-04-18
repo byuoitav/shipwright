@@ -2,8 +2,60 @@
     <!-- <section class="row">
         <button mat-stroked-button (click)="GoBack()" color="primary"><mat-icon>arrow_back</mat-icon>Back</button>
     </section> -->
-    <section class="row">
-        <device *ngFor="let device of deviceList" [device]="device"></device>
-    </section>
+    <!-- <section class="row"> -->
+    <mat-accordion class="list">
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>Control Processors</mat-panel-title>
+            </mat-expansion-panel-header>
+            <section class="row">
+                <ng-container *ngFor="let device of deviceList">
+                    <device *ngIf="IsAControlProcessor(device)" [device]="device"></device>
+                </ng-container>
+            </section>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>Displays</mat-panel-title>
+            </mat-expansion-panel-header>
+            <section class="row">
+                <ng-container *ngFor="let device of deviceList">
+                    <device *ngIf="IsADisplay(device)" [device]="device"></device>
+                </ng-container>
+            </section>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>Inputs</mat-panel-title>
+            </mat-expansion-panel-header>
+            <section class="row">
+                <ng-container *ngFor="let device of deviceList">
+                    <device *ngIf="IsAnInput(device)" [device]="device"></device>
+                </ng-container>
+            </section>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>Switchers</mat-panel-title>
+            </mat-expansion-panel-header>
+            <section class="row">
+                <ng-container *ngFor="let device of deviceList">
+                    <device *ngIf="IsASwitcher(device)" [device]="device"></device>
+                </ng-container>
+            </section>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>Audio Devices</mat-panel-title>
+            </mat-expansion-panel-header>
+            <section class="row">
+                <ng-container *ngFor="let device of deviceList">
+                    <device *ngIf="IsAnAudioDevice(device)" [device]="device"></device>
+                </ng-container>
+            </section>
+        </mat-expansion-panel>
+    </mat-accordion>
+
+    <!-- </section> -->
 
 </div>
