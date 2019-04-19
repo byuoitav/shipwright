@@ -25,3 +25,13 @@ func GetTemplates() ([]structs.Template, *nerr.E) {
 
 	return templateList, nil
 }
+
+// GetAttributeSets gets a list of standard sets of attributes that are mapped to device type ids
+func GetAttributeSets() (map[string][]structs.AttributeSet, *nerr.E) {
+	attributes, err := db.GetDB().GetAttributeSets()
+	if err != nil {
+		return attributes, nerr.Translate(err).Add("failed to get the attribute sets")
+	}
+
+	return attributes, nil
+}
