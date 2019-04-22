@@ -112,7 +112,10 @@ func GetClosureCodes(context echo.Context) error {
 	codes, err := servicenow.GetResolutionActions()
 	if err != nil {
 		log.L.Errorf("failed to get closure codes: %s", err.Error())
-		return context.JSON(http.StatusInternalServerError, err)
+		//return context.JSON(http.StatusInternalServerError, err)
+		//complete and total hack - please comment these next two lines out in the future
+		actualCodes := []string{"Auto-resolved", "Answered", "Other"}
+		return context.JSON(http.StatusOK, actualCodes)
 	}
 
 	var actualCodes []string
