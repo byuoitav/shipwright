@@ -1,6 +1,7 @@
 package memorycache
 
 import (
+	"strings"
 	"sync"
 	"time"
 
@@ -263,4 +264,59 @@ func (c *Memorycache) GetAllRoomRecords() ([]sd.StaticRoom, *nerr.E) {
 			}
 		}
 	}
+}
+
+func (c *Memorycache) RemoveDevice(id string) *nerr.E {
+	c.devicelock.Lock()
+	manager, ok := c.deviceCache[id]
+	if !ok {
+		return nil
+	}
+
+	manager.KillChannel <- true
+
+	delete(c.deviceCache, id)
+	c.devicelock.Unlock()
+	return nil
+}
+
+func (c *Memorycache) RemoveRoom(id string) *nerr.E {
+
+	c.roomlock.Lock()
+	manager, ok := c.roomCache[id]
+	if !ok {
+		return nil
+	}
+
+	manager.KillChannel <- true
+
+	delete(c.roomCache, id)
+
+	c.roomlock.Unlock()
+	return nil
+}
+
+func (c *Memorycache) NukeRoom(id string) ([]string, *nerr.E) {
+	er := c.RemoveRoom(id)
+	if er != nil {
+		return []string{}, er.Addf("Couldn't nuke room")
+	}
+
+	toDelete := []string{}
+	c.devicelock.RLock()
+	for k := range c.deviceCache {
+		if strings.HasPrefix(k, id) {
+			toDelete = append(toDelete, k)
+		}
+	}
+	c.devicelock.RUnlock()
+
+	for i := range toDelete {
+		er = c.RemoveDevice(toDelete[i])
+		if er != nil {
+			return []string{}, er.Addf("Couldn't nuke room")
+		}
+	}
+
+	return toDelete, nil
 }

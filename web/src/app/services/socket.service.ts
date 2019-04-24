@@ -52,6 +52,7 @@ export class SocketService {
 
     this.socket.onMessage(msg => {
       const data = JSON.parse(msg.data);
+      // console.log("Websocket data:", data);
       if (this.isRoomIssue(data)) {
         const a = jsonConvert.deserializeObject(data, RoomIssue);
         this.issues.emit(a);

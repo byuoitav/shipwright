@@ -1,0 +1,92 @@
+<section class="row centered">
+    <h1 class="mat-h1" *ngIf="room != null"> {{room?.id}} Parts List Test </h1>
+
+</section>
+
+<section *ngIf="deviceList?.length > 0">
+    <table mat-table [dataSource]="dataSource" matSort>
+        <ng-container matColumnDef="device">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Device</th>
+          <td mat-cell *matCellDef="let ds">
+            {{ ds.id }}
+          </td>
+        </ng-container>
+    
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+          <td mat-cell *matCellDef="let ds">{{ ds.type.id }}</td>
+        </ng-container>
+    
+        <ng-container matColumnDef="address">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Address</th>
+          <td mat-cell *matCellDef="let ds">
+            {{ ds.address }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="ipaddress">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>IP Address</th>
+            <td mat-cell *matCellDef="let ds">
+              {{ ds.address }}
+            </td>
+          </ng-container>
+    
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      </table>
+    
+    <!-- <device-list [deviceList]="deviceList"></device-list> -->
+    <div *ngFor="let device of deviceList" class="row">
+        <mat-card *ngIf="device.ports?.length > 0" class="device-card"> 
+      
+            <mat-card-header>
+                <mat-card-title>{{ device.name }}</mat-card-title>
+            </mat-card-header>
+            <mat-divider></mat-divider>
+            <mat-card-content>
+                <section class="container">
+                    <!-- Ports -->
+                    <!-- <h3 class="mat-h3">Ports</h3> -->
+                    <ng-container *ngFor="let port of device.ports" >
+                      <div *ngIf="port.sourceDevice?.length > 0 && port.destinationDevice?.length > 0" class="port-row">
+                        <!-- In Ports -->
+                        <mat-form-field class="port-field">
+                          <mat-label>Port ID</mat-label>
+                          <input
+                            matInput
+                            [type]="'text'"
+                            [(ngModel)]="port.id"
+                            readonly="true"
+                          />
+                        </mat-form-field>
+                        <mat-form-field class="port-field">
+                          <mat-label>Friendly ID</mat-label>
+                          <input matInput [type]="'text'" [(ngModel)]="port.friendlyName" readonly="true"/>
+                        </mat-form-field>
+                        <mat-form-field class="port-field" *ngIf="IsAnInPort(port)">
+                          <mat-label>Input</mat-label>
+                          <mat-select matInput [(ngModel)]="port.sourceDevice" [disabled]="true">
+                            <mat-option [value]="null">None</mat-option>
+                            <mat-option *ngFor="let dev of sourceDevices" [value]="dev"
+                              >{{ dev.substr(dev.lastIndexOf("-") + 1) }}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                        <!-- Out Ports -->
+                        <mat-form-field class="port-field" *ngIf="!IsAnInPort(port)">
+                          <mat-label>Output</mat-label>
+                          <mat-select matInput [(ngModel)]="port.destinationDevice" [disabled]="true">
+                            <mat-option [value]="null">None</mat-option>
+                            <mat-option *ngFor="let dev of destinationDevices" [value]="dev"
+                              >{{ dev.substr(dev.lastIndexOf("-") + 1) }}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                    </ng-container>
+                  </section>
+            </mat-card-content>
+          </mat-card>
+        </div>
+    
+</section>

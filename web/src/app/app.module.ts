@@ -86,6 +86,7 @@ import { RoutingComponent } from "./components/configuration/roompage/routing/ro
 import { InformationComponent } from "./components/information/information.component";
 import { PendingChangesGuard } from "./pending-changes.guard";
 import { OverviewComponent } from "./components/configuration/roompage/overview/overview.component";
+import { PartsListComponent } from "./components/configuration/roompage/partslist/partslist.component";
 import { ActivityButtonComponent } from "./components/activity-button/activity-button.component";
 
 @NgModule({
@@ -121,6 +122,7 @@ import { ActivityButtonComponent } from "./components/activity-button/activity-b
     ResponseModalComponent,
     MaintenanceModalComponent,
     RoutingComponent,
+    PartsListComponent,
     InformationComponent,
     OverviewComponent,
     ActivityButtonComponent

@@ -75,32 +75,31 @@ export class RoomStateComponent implements OnInit, AfterViewInit {
         });
       }
     }
+    this.filteredRoomList = this.roomList;
     // refresh data each time a static device updates
     this.socket.devices.subscribe((device) => {
-      for (const rs of this.roomList) {
-        for (let ds of rs.deviceStates) {
-          if (ds.deviceID === device.deviceID) {
-            ds = device as StaticDevice;
+      if (this.roomList != null) {
+        for (const rs of this.roomList) {
+          if (rs.deviceStates != null) {
+            for (const ds of rs.deviceStates) {
+              if (ds.deviceID === device.deviceID) {
+                const index = rs.deviceStates.indexOf(ds, 0);
+                rs.deviceStates[index] = device;
+                break;
+              }
+            }
           }
         }
       }
+      this.filteredRoomList = this.roomList;
+      this.FilterRooms();
     });
-    this.filteredRoomList = this.roomList;
     this.SetDataSource();
   }
 
   SetDataSource() {
     this.dataSource.data = this.filteredRoomList;
     // refresh data each time a static device updates
-    this.socket.devices.subscribe((device) => {
-      for (const rs of this.roomList) {
-        for (let ds of rs.deviceStates) {
-          if (ds.deviceID === device.deviceID) {
-            ds = device as StaticDevice;
-          }
-        }
-      }
-    });
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;

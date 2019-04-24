@@ -4,6 +4,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	sd "github.com/byuoitav/common/state/statedefinition"
 	"github.com/byuoitav/shipwright/state/cache/shared"
@@ -15,6 +16,7 @@ DeviceItemManager handles managing access to a single device in a cache. Changes
 type DeviceItemManager struct {
 	WriteRequests chan DeviceTransactionRequest //channel to buffer changes to the device.
 	ReadRequests  chan chan sd.StaticDevice
+	KillChannel   chan bool
 }
 
 //DeviceTransactionRequest is submitted to read/write a the device being managed by this manager
@@ -78,6 +80,11 @@ func StartDeviceManager(m DeviceItemManager, device sd.StaticDevice) {
 
 	for {
 		select {
+
+		case <-m.KillChannel:
+			log.L.Infof("Killing device manager for %v", device.DeviceID)
+			return
+
 		case write := <-m.WriteRequests:
 			if write.ResponseChan == nil {
 				continue
