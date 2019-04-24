@@ -11,7 +11,8 @@ import {
   Person,
   Role,
   UIConfig,
-  Template
+  Template,
+  MenuTree
 } from "../objects/database";
 import { StaticDevice, CombinedRoomState, StaticRoom } from "../objects/static";
 import {
@@ -865,6 +866,26 @@ export class APIService {
       }
 
       throw new Error("error trying to set room to maintenance mode: " + e);
+    }
+  }
+
+  public async GetMenuTree() {
+    try {
+      const data = await this.http
+        .get("options/attributes", { headers: this.headers })
+        .toPromise();
+
+      console.log(data);
+      const tree = this.converter.deserializeObject(data, MenuTree);
+
+      return tree;
+    } catch (e) {
+      if (e.status === 200) {
+        console.log(e.error.text);
+        return e.error.text;
+      }
+
+      throw new Error("error trying to get the attribute presets: " + e);
     }
   }
 }

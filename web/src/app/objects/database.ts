@@ -2,7 +2,7 @@ import {
   JsonObject,
   JsonProperty,
   JsonCustomConvert,
-  JsonConverter
+  JsonConverter,
 } from "json2typescript";
 
 @JsonObject("Building")
@@ -684,15 +684,24 @@ export class Device {
   @JsonProperty("tags", [String], true)
   tags: string[] = Array<string>();
 
+  attributes: Map<string, any> = undefined;
+
   isNew = false;
 
-  constructor(baseType?: DeviceType) {
+  constructor(baseType?: DeviceType, preset?: AttributeSet) {
     if (baseType != null) {
       this.type = new DeviceType();
       this.type.id = baseType.id;
       this.roles = baseType.roles;
       this.ports = baseType.ports;
       this.tags.concat(baseType.tags);
+    }
+
+    if (preset != null) {
+      this.attributes = new Map<string, any>();
+      for (const [k, v] of preset.attributes) {
+        this.attributes.set(k, v);
+      }
     }
   }
 
@@ -816,7 +825,7 @@ export class Person {
 
 @JsonConverter
 class SignalPathConverter implements JsonCustomConvert<Map<string, string[]>> {
-  serialize(map: Map<string, string[]>): any {
+  serialize(map: Map<string, string[]>) {
     return undefined;
   }
 
@@ -828,7 +837,35 @@ class SignalPathConverter implements JsonCustomConvert<Map<string, string[]>> {
 
     for (const key of Object.keys(obj)) {
       if (key && obj[key]) {
-        map.set(key, obj[key].filter(v => v)); // filter to remove empty values
+        map.set(key, obj[key].filter((v: any) => v)); // filter to remove empty values
+      }
+    }
+
+    return map;
+  }
+}
+
+@JsonConverter
+class MapConverter implements JsonCustomConvert<Map<string, any>> {
+  serialize(map: Map<string, any>) {
+    const obj: Object = Object.create(null);
+
+    for (const [key, value] of map) {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  deserialize(obj: any): Map<string, any> {
+    if (obj[""]) {
+      delete obj[""];
+    }
+    const map = new Map<string, any>();
+
+    for (const key of Object.keys(obj)) {
+      if (key && obj[key]) {
+        map.set(key, obj[key]);
       }
     }
 
@@ -1439,4 +1476,37 @@ export class DBResponse {
   error: string = undefined;
 
   constructor() {}
+}
+
+@JsonObject("AttributeSet")
+export class AttributeSet {
+  @JsonProperty("name", String, true)
+  name: string = undefined;
+
+  @JsonProperty("device-type", String, true)
+  deviceType: string = undefined;
+
+  @JsonProperty("attributes", MapConverter, true)
+  attributes: Map<string, any> = undefined;
+}
+
+@JsonObject("Group")
+export class Group {
+  @JsonProperty("name", String, true)
+  name: string = undefined;
+
+  @JsonProperty("icon", String, true)
+  icon: string = undefined;
+
+  @JsonProperty("sub-groups", [Group], true)
+  subgroups: Group[] = Array<Group>();
+
+  @JsonProperty("presets", [AttributeSet], true)
+  presets: AttributeSet[] = Array<AttributeSet>();
+}
+
+@JsonObject("MenuTree")
+export class MenuTree {
+  @JsonProperty("groups", [Group], true)
+  groups: Group[] = Array<Group>();
 }

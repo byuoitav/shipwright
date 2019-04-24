@@ -9,7 +9,8 @@ import {
   Person,
   Role,
   RoomConfiguration,
-  Template
+  Template,
+  MenuTree
 } from "../objects/database";
 import { RoomIssue } from "../objects/alerts";
 import { SocketService } from "./socket.service";
@@ -58,7 +59,7 @@ export class DataService {
   finished = false;
   completedOperations = 0;
   totalCompletion = 100;
-  increment: number = Math.ceil(this.totalCompletion / 19);
+  increment: number = Math.ceil(this.totalCompletion / 20);
 
   settingsChanged: EventEmitter<any>;
   panelCount: number;
@@ -67,6 +68,8 @@ export class DataService {
 
   notifier: NotifierService;
   notificationsEnabled;
+
+  menuTree: MenuTree;
 
   currentUsername: string;
 
@@ -118,6 +121,7 @@ export class DataService {
     await this.GetBuildingStatusList(); //    17
     await this.GetClosureCodes(); //          18
     await this.SetPossibleResponders(); //    19
+    await this.GetMenuTree(); //            20
     this.finished = true;
     this.loaded.emit(true);
   }
@@ -521,6 +525,14 @@ export class DataService {
     await this.api.GetPossibleResponders().then(response => {
       this.possibleResponders = response;
       this.completedOperations += this.increment;
+    });
+  }
+
+  async GetMenuTree() {
+    await this.api.GetMenuTree().then(response => {
+      this.menuTree = response;
+      this.completedOperations += this.increment;
+      console.log(this.menuTree);
     });
   }
 }

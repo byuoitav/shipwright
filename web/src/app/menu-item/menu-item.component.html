@@ -1,0 +1,14 @@
+<mat-menu #childMenu="matMenu">
+    <span *ngFor="let child of subNodes">
+    <button mat-menu-item [matMenuTriggerFor]="menu.childMenu">
+      <mat-icon *ngIf="child.icon != null && child.icon.length > 0">{{child.icon}}</mat-icon>
+      <span>{{child.name}}</span>
+    </button>
+    <app-menu-item #menu [subNodes]="child.subgroups" [leafNodes]="child.presets" [callback]="callback"></app-menu-item>
+    </span>
+    <span *ngFor="let child of leafNodes">
+    <button mat-menu-item (click)="menuClicked(child)">
+      <span>{{child.name}}</span>
+    </button>
+    </span>
+</mat-menu>
