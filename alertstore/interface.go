@@ -31,7 +31,7 @@ func GetAllIssues() ([]structs.RoomIssue, *nerr.E) {
 
 //UpdateRoomIssue  .
 func UpdateRoomIssue(i structs.RoomIssue) *nerr.E {
-	return store.editIssueInformation(i)
+	return store.setRoomIssueInfo(i)
 }
 
 //ResolveIssue  .

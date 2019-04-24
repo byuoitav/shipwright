@@ -127,6 +127,8 @@ func main() {
 	readconfig.GET("/rooms/designations", handlers.GetRoomDesignations)
 	readconfig.GET("/rooms/:roomID/schedule", handlers.GetRoomClassSchedule)
 
+	writeconfig.DELETE("/rooms/:roomID/nuke", handlers.NukeRoom)
+
 	// Device Endpoints
 	writeconfig.POST("/devices/:device", handlers.AddDevice)
 	writeconfig.POST("/devices", handlers.AddMultipleDevices)
