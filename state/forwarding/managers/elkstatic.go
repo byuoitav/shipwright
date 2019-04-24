@@ -14,6 +14,7 @@ type ElkStaticDeviceForwarder struct {
 	ElkStaticForwarder
 	update          bool
 	incomingChannel chan sd.StaticDevice
+	deleteChannel   chan string
 	buffer          map[string]elk.ElkBulkUpdateItem
 }
 
@@ -22,6 +23,7 @@ type ElkStaticRoomForwarder struct {
 	ElkStaticForwarder
 	update          bool
 	incomingChannel chan sd.StaticRoom
+	deleteChannel   chan string
 	buffer          map[string]elk.ElkBulkUpdateItem
 }
 
@@ -88,6 +90,16 @@ func (e *ElkStaticRoomForwarder) Send(toSend interface{}) error {
 	return nil
 }
 
+func (e *ElkStaticRoomForwarder) Delete(id string) error {
+	e.deleteChannel <- id
+	return nil
+}
+
+func (e *ElkStaticDeviceForwarder) Delete(id string) error {
+	e.deleteChannel <- id
+	return nil
+}
+
 //GetDefaultElkStaticRoomForwarder returns a regular static room forwarder with a buffer size of 10000
 func GetDefaultElkStaticRoomForwarder(URL string, index func() string, interval time.Duration, update bool) *ElkStaticRoomForwarder {
 	toReturn := &ElkStaticRoomForwarder{
@@ -121,6 +133,8 @@ func (e *ElkStaticDeviceForwarder) start() {
 
 		case event := <-e.incomingChannel:
 			e.bufferevent(event)
+		case id := <-e.deleteChannel:
+			e.deleteRecord(id)
 		}
 	}
 }
@@ -140,6 +154,8 @@ func (e *ElkStaticRoomForwarder) start() {
 
 		case event := <-e.incomingChannel:
 			e.bufferevent(event)
+		case id := <-e.deleteChannel:
+			e.deleteRecord(id)
 		}
 	}
 }
@@ -169,6 +185,36 @@ func (e *ElkStaticDeviceForwarder) bufferevent(event sd.StaticDevice) {
 		e.buffer[event.DeviceID] = v
 	}
 
+}
+
+func (e *ElkStaticDeviceForwarder) deleteRecord(id string) {
+	if len(id) < 1 {
+		return
+	}
+
+	Header := elk.HeaderIndex{
+		Index: e.index(),
+		Type:  "av-device",
+		ID:    id,
+	}
+	e.buffer[id] = elk.ElkBulkUpdateItem{
+		Delete: elk.ElkDeleteHeader{Header: Header},
+	}
+}
+
+func (e *ElkStaticRoomForwarder) deleteRecord(id string) {
+	if len(id) < 1 {
+		return
+	}
+
+	Header := elk.HeaderIndex{
+		Index: e.index(),
+		Type:  "av-room",
+		ID:    id,
+	}
+	e.buffer[id] = elk.ElkBulkUpdateItem{
+		Delete: elk.ElkDeleteHeader{Header: Header},
+	}
 }
 
 func (e *ElkStaticRoomForwarder) bufferevent(event sd.StaticRoom) {

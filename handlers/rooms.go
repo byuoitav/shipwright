@@ -311,3 +311,14 @@ func GetRoomClassSchedule(context echo.Context) error {
 
 	return context.JSON(http.StatusOK, toReturn)
 }
+
+func NukeRoom(context echo.Context) error {
+	roomID := context.Param("roomID")
+	err := helpers.NukeRoom(roomID)
+	if err != nil {
+		return context.String(http.StatusInternalServerError, err.Error())
+	}
+
+	return context.String(http.StatusOK, "ok")
+
+}
