@@ -9,7 +9,6 @@ import (
 	sd "github.com/byuoitav/common/state/statedefinition"
 	"github.com/byuoitav/common/structs"
 	"github.com/byuoitav/shipwright/helpers"
-	schedule "github.com/byuoitav/wso2services/classschedules/registar"
 	"github.com/labstack/echo"
 )
 
@@ -248,67 +247,14 @@ func GetRoomDesignations(context echo.Context) error {
 // GetRoomClassSchedule gets the class schedule for a room
 func GetRoomClassSchedule(context echo.Context) error {
 	roomID := context.Param("roomID")
-	loc, er := time.LoadLocation("America/Denver")
-	if er != nil {
-		log.L.Errorf("Couldn't load location: %s", er.Error())
-		return context.JSON(http.StatusInternalServerError, er)
-	}
-	t := time.Now()
-	t = t.In(loc)
-	t6 := t.Add(time.Hour * 6)
 
-	var toReturn []structs.ClassHalfHourBlock
+	//find sunday
+	monday := getsunday()
 
-	classes, err := schedule.GetClassScheduleForTimeBlock(roomID, t, t6)
+	classes, err := schedule.GetClassScheduleForTimeBlock(roomID, now, end)
 	if err != nil {
-		err.Addf("failed to get schedule for %s at %s", roomID, t.String())
-		return context.JSON(http.StatusInternalServerError, err)
+		log.L.Infof("failed: %s", err.Error())
 	}
-
-	log.L.Infof("classes: %+v", classes)
-
-	// iterate through the twelve blocks that we want to make
-	// for i := (time.Minute * 0); i < (time.Hour * 6); i += (time.Minute * 30) {
-	for i := 0; i < 12; i++ {
-		blockHour := t.Add(time.Hour * time.Duration(i/2)).Hour()
-
-		var blockMin int
-		if i%2 == 0 {
-			blockMin = 00
-		} else {
-			blockMin = 30
-		}
-
-		block := structs.ClassHalfHourBlock{
-			BlockStart: fmt.Sprintf("%d:%02d", blockHour, blockMin),
-			ClassName:  "--",
-			ClassTime:  "--",
-			Teacher: structs.Person{
-				Name: "--",
-				ID:   "--",
-			},
-			Days: "--",
-		}
-
-		for _, class := range classes {
-			if blockHour >= class.StartTime.Hour() && blockHour <= class.EndTime.Hour() {
-				if blockHour == class.EndTime.Hour() && blockMin >= class.EndTime.Add(time.Minute*5).Minute() {
-					continue
-				}
-				block.ClassName = fmt.Sprintf("%s %s", class.DeptName, class.CatalogNumber)
-				block.ClassTime = class.ClassTime
-				block.Days = class.Days
-				block.Teacher.Name = class.InstructorName
-				block.ClassStartTime = class.StartTime
-				block.ClassEndTime = class.EndTime
-
-				break
-			}
-		}
-
-		toReturn = append(toReturn, block)
-	}
-
 	return context.JSON(http.StatusOK, toReturn)
 }
 
@@ -324,5 +270,9 @@ func NukeRoom(context echo.Context) error {
 	log.L.Infof("Nulclear Launch %v connected", roomID)
 
 	return context.String(http.StatusOK, "ok")
+
+}
+
+func getsunday() time.Time {
 
 }
