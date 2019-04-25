@@ -9,6 +9,7 @@ import (
 	sd "github.com/byuoitav/common/state/statedefinition"
 	"github.com/byuoitav/common/structs"
 	"github.com/byuoitav/shipwright/helpers"
+	schedule "github.com/byuoitav/wso2services/classschedules/registar"
 	"github.com/labstack/echo"
 )
 
@@ -249,13 +250,13 @@ func GetRoomClassSchedule(context echo.Context) error {
 	roomID := context.Param("roomID")
 
 	//find sunday
-	monday := getsunday()
+	sunday := getsunday()
 
-	classes, err := schedule.GetClassScheduleForTimeBlock(roomID, now, end)
+	classes, err := schedule.GetClassScheduleForTimeBlock(roomID, sunday, sunday)
 	if err != nil {
 		log.L.Infof("failed: %s", err.Error())
 	}
-	return context.JSON(http.StatusOK, toReturn)
+	return context.JSON(http.StatusOK, classes)
 }
 
 func NukeRoom(context echo.Context) error {
@@ -274,5 +275,6 @@ func NukeRoom(context echo.Context) error {
 }
 
 func getsunday() time.Time {
+	return time.Time{}
 
 }
