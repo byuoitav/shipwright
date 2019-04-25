@@ -25,6 +25,7 @@ import { ActivatedRoute } from "@angular/router";
 import { DataService } from "src/app/services/data.service";
 import { RoomIssue, Alert } from "src/app/objects/alerts";
 import { DashPanelTypes } from "src/app/services/dashpanel.service";
+import { timestamp, min } from 'rxjs/operators';
 
 @Component({
   selector: "app-alert-table",
@@ -62,9 +63,9 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
   issueData: MatTableDataSource<RoomIssue>;
 
   issueColumns: string[] = [
+    "severity",
     "icon",
     "roomID",
-    "severity",
     "count",
     "types",
     "incident"
@@ -143,6 +144,7 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
           this.convertDashPanelTypeToSeverity(this.chosenSeverity)
         )
       );
+      this.GetIssueAge(this.data.GetRoomIssue("BNSN-W005"));
     }
 
     this.data.issueEmitter.subscribe(changedIssue => {
@@ -225,6 +227,43 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
     }
 
     return answer;
+  }
+
+  GetIssueAge(issue: RoomIssue) {
+    // loop through each alert
+    let oldestalert = new Date();
+    // find oldest start time
+    for (const alert of issue.alerts) {
+      if (alert.startTime < oldestalert) {
+        oldestalert = alert.startTime;
+      }
+    }
+    const todaysdate = new Date();
+    const difference = todaysdate.valueOf() - oldestalert.valueOf();
+    // const seconds = ( difference / 1000) % 60 ;
+    // calculate age
+    const minutes = Math.floor(( difference / (1000 * 60)) % 60);
+    const hours   = Math.floor(( difference / (1000 * 60 * 60)) % 24);
+    const days = Math.floor((difference / (1000 * 60 * 60 * 24)));
+    // format age 1d 2h 3m
+    const issueage = days.toString() + "D " + hours.toString() + "H " + minutes.toString() + "M";
+    // return age
+    return issueage;
+  }
+
+  GetIssuecolor(issue: RoomIssue) {
+    // find oldest start time
+    const severitytypes = ["Critical", "Warning", "Low"];
+    let classname = "";
+    for (const sev of severitytypes) {
+      for (const severity of issue.activeAlertSeverities) {
+        if (severity === sev) {
+          classname += sev + "-";
+        }
+      }
+    }
+    classname += "indicator";
+    return classname;
   }
 
   OnDefaultTheme(): boolean {

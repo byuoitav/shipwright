@@ -1,4 +1,12 @@
 <table mat-table [dataSource]="issueData" matSort multiTemplateDataRows class="container mat-elevation-z0">
+    <ng-container matColumnDef="severity">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="activeAlertSeverities"></th>
+        <td mat-cell *matCellDef="let issue" [ngClass]="GetIssuecolor(issue)" (click)="ExpandRow(issue)">
+            <!-- <div *ngFor="let sev of issue.activeAlertSeverities" [ngClass]="sev + '-indicator'" (click)="ExpandRow(issue)">
+            </div> -->
+        </td>
+    </ng-container>
+
     <ng-container matColumnDef="icon">
         <th mat-header-cell *matHeaderCellDef mat-sort-header="systemType">
             System Type
@@ -17,14 +25,6 @@
         </td>
     </ng-container>
 
-    <ng-container matColumnDef="severity">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="activeAlertSeverities">Severity</th>
-        <td mat-cell *matCellDef="let issue" (click)="ExpandRow(issue)">
-            <span *ngFor="let sev of issue.activeAlertSeverities" [ngClass]="sev + '-severity'" (click)="ExpandRow(issue)">{{ text.Title(sev) }}<br
-      /></span>
-        </td>
-    </ng-container>
-
     <ng-container matColumnDef="count">
         <th mat-header-cell *matHeaderCellDef class="centered">Active/Total</th>
         <td mat-cell *matCellDef="let issue" (click)="ExpandRow(issue)" class="centered">
@@ -40,11 +40,9 @@
     </ng-container>
 
     <ng-container matColumnDef="incident">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Incident ID</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Incident Age</th>
         <td mat-cell *matCellDef="let issue">
-            <div (click)="ServiceNowRedirect(issue.incidentID)" class="fake-hyperlink">
-                {{ issue.incidentID }}
-            </div>
+            {{ GetIssueAge(issue) }}
         </td>
     </ng-container>
     <!--

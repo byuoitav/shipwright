@@ -53,15 +53,6 @@
                       <div *ngIf="port.sourceDevice?.length > 0 && port.destinationDevice?.length > 0" class="port-row">
                         <!-- In Ports -->
                         <mat-form-field class="port-field">
-                          <mat-label>Port ID</mat-label>
-                          <input
-                            matInput
-                            [type]="'text'"
-                            [(ngModel)]="port.id"
-                            readonly="true"
-                          />
-                        </mat-form-field>
-                        <mat-form-field class="port-field">
                           <mat-label>Friendly ID</mat-label>
                           <input matInput [type]="'text'" [(ngModel)]="port.friendlyName" readonly="true"/>
                         </mat-form-field>
