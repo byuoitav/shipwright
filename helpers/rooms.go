@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/byuoitav/common/db"
 	"github.com/byuoitav/common/inputgraph"
@@ -11,7 +12,12 @@ import (
 	"github.com/byuoitav/common/nerr"
 	sd "github.com/byuoitav/common/state/statedefinition"
 	"github.com/byuoitav/common/structs"
+	"github.com/byuoitav/shipwright/alertstore"
+	"github.com/byuoitav/shipwright/alertstore/alertcache"
+	"github.com/byuoitav/shipwright/config"
 	cache "github.com/byuoitav/shipwright/state/cache"
+	"github.com/byuoitav/shipwright/state/forwarding"
+	"github.com/byuoitav/shipwright/state/forwarding/managers"
 )
 
 type RoomWithGraph struct {
@@ -249,4 +255,53 @@ func getPICSRooms() ([]structs.Room, *nerr.E) {
 	}
 
 	return rooms, nil
+}
+
+func NukeRoom(id string) *nerr.E {
+
+	//resolve any outstanding issues
+	_, err := alertstore.GetRoomIssue(id)
+	if err != nil && err.Type != alertcache.NotFound {
+		return err.Addf("Couldn't nuke room %v", id)
+	}
+	if err == nil {
+		//we need to resolve it
+		err := alertstore.ResolveIssue(structs.ResolutionInfo{
+			Code:       "removed",
+			Notes:      "Room was removed",
+			ResolvedAt: time.Now(),
+		}, id)
+		if err != nil {
+			return err.Addf("Couldn't nuke room %v", id)
+		}
+	}
+
+	//not we can go nuke it from the cache
+	devs, err := cache.GetCache("default").NukeRoom(id)
+	if err != nil {
+		return err.Addf("Couldn't nuke room %v", id)
+	}
+
+	//nuke from ELK
+	list := forwarding.GetManagersForType("default", config.DEVICE, config.ALL)
+
+	for j := range list {
+		if v, ok := list[j].(*managers.ElkStaticDeviceForwarder); ok {
+			for i := range devs {
+				v.Delete(devs[i])
+			}
+		}
+	}
+
+	rmlist := forwarding.GetManagersForType("default", config.ROOM, config.ALL)
+
+	for j := range rmlist {
+		if v, ok := rmlist[j].(*managers.ElkStaticRoomForwarder); ok {
+			for i := range devs {
+				v.Delete(devs[i])
+			}
+		}
+	}
+
+	return nil
 }

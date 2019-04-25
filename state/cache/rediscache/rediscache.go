@@ -3,6 +3,7 @@ package rediscache
 import (
 	"encoding/gob"
 	"encoding/json"
+	"fmt"
 	"sync"
 	"time"
 
@@ -230,6 +231,44 @@ func (rc *RedisCache) GetAllRoomRecords() ([]sd.StaticRoom, *nerr.E) {
 	}
 
 	return toReturn, nil
+}
+
+func (rc *RedisCache) RemoveDevice(id string) *nerr.E {
+	v := rc.getDeviceMu(id)
+	v.Lock()
+	defer v.Unlock()
+
+	return nerr.Translate(rc.devclient.Del(id).Err()).Addf("Couldn't remove device %v", id)
+}
+
+func (rc *RedisCache) RemoveRoom(id string) *nerr.E {
+
+	v := rc.getRoomMu(id)
+	v.Lock()
+	defer v.Unlock()
+
+	return nerr.Translate(rc.roomclient.Del(id).Err()).Addf("Couldn't remove room %v", id)
+}
+
+func (rc *RedisCache) NukeRoom(id string) ([]string, *nerr.E) {
+	keys, err := rc.devclient.Keys(fmt.Sprintf("%s*", id)).Result()
+	if err != nil {
+		return []string{}, nerr.Translate(err).Addf("Couldn't nuke room")
+	}
+
+	er := rc.RemoveRoom(id)
+	if er != nil {
+		return []string{}, er.Addf("Couldn't nuke room")
+	}
+
+	for i := range keys {
+		er = rc.RemoveDevice(keys[i])
+		if er != nil {
+			return []string{}, er.Addf("Couldn't nuke room")
+		}
+	}
+
+	return keys, nil
 }
 
 func (rc *RedisCache) StoreDeviceEvent(toSave sd.State) (bool, sd.StaticDevice, *nerr.E) {

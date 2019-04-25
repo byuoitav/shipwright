@@ -4,6 +4,11 @@ import { DataService } from "src/app/services/data.service";
 import { ActivatedRoute } from "@angular/router";
 import { Device } from "src/app/objects/database";
 
+class DeviceCategory {
+  title: string;
+  tag: string;
+}
+
 @Component({
   selector: "device-list",
   templateUrl: "./devicelist.component.html",
@@ -12,6 +17,28 @@ import { Device } from "src/app/objects/database";
 export class DeviceListComponent implements OnInit {
   roomID: string;
   @Input() deviceList: Device[] = [];
+  deviceCategories: DeviceCategory[] = [
+    {
+      title: "Control Processors",
+      tag: "pi"
+    },
+    {
+      title: "Displays",
+      tag: "display"
+    },
+    {
+      title: "Inputs",
+      tag: "input"
+    },
+    {
+      title: "Switchers",
+      tag: "video-switcher"
+    },
+    {
+      title: "Audio Devices",
+      tag: "audio"
+    }
+  ];
 
   constructor(public text: StringsService, private route: ActivatedRoute, public data: DataService) {
     this.route.params.subscribe(params => {
@@ -27,23 +54,20 @@ export class DeviceListComponent implements OnInit {
     window.history.back();
   }
 
-  IsAControlProcessor(device: Device): boolean {
-    return (device.type.id === "Pi3");
+  DeviceIsInCategory(device: Device, tag: string): boolean {
+    return this.data.deviceTypeMap.get(device.type.id).tags.includes(tag);
   }
 
-  IsADisplay(device: Device): boolean {
-    return this.data.deviceTypeMap.get(device.type.id).tags.includes("display");
-  }
+  GetCategoryCount(tag: string): number {
+    let count = 0;
+    if (this.deviceList != null && this.deviceList.length > 0) {
+      for (const device of this.deviceList) {
+        if (this.data.deviceTypeMap.get(device.type.id).tags.includes(tag)) {
+          count++;
+        }
+      }
+    }
 
-  IsAnInput(device: Device): boolean {
-    return this.data.deviceTypeMap.get(device.type.id).input;
-  }
-
-  IsASwitcher(device: Device): boolean {
-    return this.data.deviceTypeMap.get(device.type.id).tags.includes("video-switcher");
-  }
-
-  IsAnAudioDevice(device: Device): boolean {
-    return this.data.deviceTypeMap.get(device.type.id).tags.includes("audio");
+    return count;
   }
 }

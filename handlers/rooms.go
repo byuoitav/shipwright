@@ -311,3 +311,18 @@ func GetRoomClassSchedule(context echo.Context) error {
 
 	return context.JSON(http.StatusOK, toReturn)
 }
+
+func NukeRoom(context echo.Context) error {
+	roomID := context.Param("roomID")
+
+	log.L.Infof("Nulclear Launch Detected %v", roomID)
+	err := helpers.NukeRoom(roomID)
+	if err != nil {
+		return context.String(http.StatusInternalServerError, err.Error())
+	}
+
+	log.L.Infof("Nulclear Launch %v connected", roomID)
+
+	return context.String(http.StatusOK, "ok")
+
+}
