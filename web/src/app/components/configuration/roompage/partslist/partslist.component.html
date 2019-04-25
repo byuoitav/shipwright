@@ -1,46 +1,48 @@
 <section class="row centered">
-    <h1 class="mat-h1" *ngIf="room != null"> {{room?.id}} Parts List Test </h1>
-
+    <h1 class="mat-h1" *ngIf="room != null"> {{room?.id}} Parts List</h1>
 </section>
 
 <section *ngIf="deviceList?.length > 0">
+  <section class="row centered" >
     <table mat-table [dataSource]="dataSource" matSort>
-        <ng-container matColumnDef="device">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Device</th>
-          <td mat-cell *matCellDef="let ds">
-            {{ ds.id }}
-          </td>
-        </ng-container>
-    
-        <ng-container matColumnDef="type">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
-          <td mat-cell *matCellDef="let ds">{{ ds.type.id }}</td>
-        </ng-container>
-    
-        <ng-container matColumnDef="address">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Address</th>
-          <td mat-cell *matCellDef="let ds">
-            {{ ds.address }}
-          </td>
-        </ng-container>
+      <ng-container matColumnDef="device">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Device</th>
+        <td mat-cell *matCellDef="let ds">
+          {{ ds.id }}
+        </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+        <td mat-cell *matCellDef="let ds">{{ ds.type.id }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="address">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Address</th>
+        <td mat-cell *matCellDef="let ds">
+          {{ ds.address }}
+        </td>
+      </ng-container>
 
-        <ng-container matColumnDef="ipaddress">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>IP Address</th>
-            <td mat-cell *matCellDef="let ds">
-              {{ ds.address }}
-            </td>
-          </ng-container>
-    
-        <tr mat-header-row *matHeaderRowDef="columns"></tr>
-        <tr mat-row *matRowDef="let row; columns: columns"></tr>
-      </table>
+      <ng-container matColumnDef="ipaddress">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>IP Address</th>
+          <td mat-cell *matCellDef="let ds">
+            {{ ipaddressmap[ds.address] }}
+          </td>
+        </ng-container>
+  
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    </table>
+  </section>
     
     <!-- <device-list [deviceList]="deviceList"></device-list> -->
     <div *ngFor="let device of deviceList" class="row">
+       
         <mat-card *ngIf="device.ports?.length > 0" class="device-card"> 
       
             <mat-card-header>
-                <mat-card-title>{{ device.name }}</mat-card-title>
+                <mat-card-title >{{ device.id }}</mat-card-title>
             </mat-card-header>
             <mat-divider></mat-divider>
             <mat-card-content>

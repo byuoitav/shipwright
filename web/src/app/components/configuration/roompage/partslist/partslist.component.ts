@@ -5,6 +5,7 @@ import { StringsService } from "src/app/services/strings.service";
 import { ModalService } from "src/app/services/modal.service";
 import { MatTableDataSource } from "@angular/material";
 import { CombinedRoomState } from "src/app/objects/static";
+import { APIService } from "src/app/services/api.service";
 
 @Component({
   selector: "partslist",
@@ -19,13 +20,15 @@ export class PartsListComponent implements OnInit {
   sourceDevices: string[] = [];
   columns = ["device", "type", "address", "ipaddress"];
   destinationDevices: string[] = [];
+  ipaddressmap = {};
 
-  constructor(public data: DataService, public text: StringsService, public modal: ModalService) {
+  constructor(public data: DataService, public text: StringsService, public modal: ModalService, private api: APIService) {
   }
 
   ngOnInit() {
   }
 
+// tslint:disable-next-line: use-life-cycle-interface
   ngAfterViewInit() {
     if (this.data.finished) {
       this.SetDataSourceFirstTime();
@@ -37,46 +40,20 @@ export class PartsListComponent implements OnInit {
   }
 
   SetDataSourceFirstTime() {
-    console.log("Setting the data source for the first time");
-    console.log(this.room.id);
-    let test = this.data.roomToDevicesMap.get(this.room.id);
-    console.log("---------", test);
-    // this.roomList.sort((a, b) => a.roomID.localeCompare(b.roomID));
-
-    // for (const room of this.roomList) {
-    //   if (room.deviceStates) {
-    //     room.deviceStates.sort((a, b) => {
-    //       let aDT = a.deviceType ? a.deviceType : "";
-    //       let bDT = b.deviceType ? b.deviceType : "";
-    //       const aID = a.deviceID ? a.deviceID : "";
-    //       const bID = b.deviceID ? b.deviceID : "";
-
-    //       if (
-    //         aDT.toLowerCase() === "dmps" ||
-    //         aDT.toLowerCase() === "control-processor"
-    //       ) {
-    //         aDT = "aaa";
-    //       }
-
-    //       if (
-    //         bDT.toLowerCase() === "dmps" ||
-    //         bDT.toLowerCase() === "control-processor"
-    //       ) {
-    //         bDT = "aaa";
-    //       }
-
-    //       if (aDT === bDT) {
-    //         return aID.localeCompare(bID);
-    //       }
-
-    //       return aDT.localeCompare(bDT);
-    //     });
-    //   }
-    // }
-    // this.filteredRoomList = this.roomList;
-    test = this.deviceList;
+    let devices = this.data.roomToDevicesMap.get(this.room.id);
+    for (const ds of devices) {
+      console.log(ds.address);
+      let rawIP = "Not in QIP";
+      this.api.GetDeviceRawIPAddress(ds.address).then(addr => {
+        console.log("response:", addr);
+        if (addr != null) {
+          rawIP = addr;
+        }
+        this.ipaddressmap[ds.address] = rawIP;
+      });
+    }
+    devices = this.deviceList;
     this.SetSourceAndDestinationDevices();
-    console.log(test);
     this.SetDataSource();
   }
 
@@ -93,7 +70,6 @@ export class PartsListComponent implements OnInit {
   IsAnInPort(port: Port): boolean {
     return port.tags.includes("in");
   }
-
   SetSourceAndDestinationDevices() {
     for (const dev of this.deviceList) {
       const type = this.data.deviceTypeMap.get(dev.type.id);
