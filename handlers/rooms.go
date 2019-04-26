@@ -250,9 +250,9 @@ func GetRoomClassSchedule(context echo.Context) error {
 	roomID := context.Param("roomID")
 
 	//find sunday
-	sunday := getsunday()
+	sunday := getsunday(time.Now())
 
-	classes, err := schedule.GetClassScheduleForTimeBlock(roomID, sunday, sunday)
+	classes, err := schedule.GetClassScheduleForTimeBlock(roomID, sunday, sunday.AddDate(0, 0, 7))
 	if err != nil {
 		log.L.Infof("failed: %s", err.Error())
 	}
@@ -274,7 +274,9 @@ func NukeRoom(context echo.Context) error {
 
 }
 
-func getsunday() time.Time {
-	return time.Time{}
-
+func getsunday(t time.Time) time.Time {
+	for t.Weekday() != time.Sunday {
+		t = t.AddDate(0, 0, -1)
+	}
+	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
 }
