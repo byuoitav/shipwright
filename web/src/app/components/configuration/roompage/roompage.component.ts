@@ -12,7 +12,7 @@ import { ComponentCanDeactivate } from "src/app/pending-changes.guard";
   templateUrl: "./roompage.component.html",
   styleUrls: ["./roompage.component.scss"]
 })
-export class RoomPageComponent implements OnInit, CanDeactivate<ComponentCanDeactivate> {
+export class RoomPageComponent implements OnInit {
   roomID: string;
   room: Room;
   devices: Device[] = [];
@@ -44,13 +44,13 @@ export class RoomPageComponent implements OnInit, CanDeactivate<ComponentCanDeac
 
   ngOnInit() {}
 
-  canDeactivate(): boolean | Observable<boolean> {
-    if (this.roomBuilder != null) {
-      return this.roomBuilder.canDeactivate();
-    } else {
-      return true;
-    }
-  }
+  // canDeactivate(): boolean | Observable<boolean> {
+  //   if (this.roomBuilder != null) {
+  //     return this.roomBuilder.canDeactivate();
+  //   } else {
+  //     return true;
+  //   }
+  // }
 
   TabChange(tabIndex: number) {
     const currentURL = window.location.pathname;

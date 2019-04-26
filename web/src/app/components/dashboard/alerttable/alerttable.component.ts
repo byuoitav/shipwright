@@ -25,7 +25,6 @@ import { ActivatedRoute } from "@angular/router";
 import { DataService } from "src/app/services/data.service";
 import { RoomIssue, Alert } from "src/app/objects/alerts";
 import { DashPanelTypes } from "src/app/services/dashpanel.service";
-import { timestamp, min } from 'rxjs/operators';
 
 @Component({
   selector: "app-alert-table",
@@ -63,9 +62,9 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
   issueData: MatTableDataSource<RoomIssue>;
 
   issueColumns: string[] = [
-    "severity",
     "icon",
     "roomID",
+    "severity",
     "count",
     "types",
     "incident"
@@ -215,15 +214,19 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
     return time.toISOString() === zero;
   }
 
-  GetReadableTimestamp(time: Date): string {
-    const diff = time.valueOf() - new Date().valueOf();
-    const duration = Math.abs(Math.trunc((diff / (1000 * 60 * 60)) % 24));
+  GetReadableTimestamp(time: Date, withTime: boolean): string {
+    const diff = new Date().valueOf() - time.valueOf();
+    // const duration = Math.abs(Math.trunc((diff / (1000 * 60 * 60)) % 24));
     let answer;
 
-    if (duration >= 1 && duration < 2) {
-      answer = duration + " hour ago (" + time.toLocaleTimeString() + ")";
+    const minutes = Math.abs(Math.floor(( diff / (1000 * 60)) % 60));
+    const hours   = Math.abs(Math.floor(( diff / (1000 * 60 * 60)) % 24));
+    const days = Math.abs(Math.floor((diff / (1000 * 60 * 60 * 24))));
+    // format age 1d 2h 3m
+    if (withTime) {
+      answer = days.toString() + "d " + hours.toString() + "h " + minutes.toString() + "m ago (" + time.toLocaleTimeString() + ")";
     } else {
-      answer = duration + " hours ago (" + time.toLocaleTimeString() + ")";
+      answer = days.toString() + "d " + hours.toString() + "h " + minutes.toString() + "m";
     }
 
     return answer;
@@ -238,17 +241,7 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
         oldestalert = alert.startTime;
       }
     }
-    const todaysdate = new Date();
-    const difference = todaysdate.valueOf() - oldestalert.valueOf();
-    // const seconds = ( difference / 1000) % 60 ;
-    // calculate age
-    const minutes = Math.floor(( difference / (1000 * 60)) % 60);
-    const hours   = Math.floor(( difference / (1000 * 60 * 60)) % 24);
-    const days = Math.floor((difference / (1000 * 60 * 60 * 24)));
-    // format age 1d 2h 3m
-    const issueage = days.toString() + "D " + hours.toString() + "H " + minutes.toString() + "M";
-    // return age
-    return issueage;
+    return this.GetReadableTimestamp(oldestalert, false);
   }
 
   GetIssuecolor(issue: RoomIssue) {

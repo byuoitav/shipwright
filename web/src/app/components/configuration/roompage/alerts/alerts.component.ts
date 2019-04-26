@@ -46,6 +46,13 @@ export class AlertsComponent implements OnInit {
     "days"
   ];
 
+  responseData: MatTableDataSource<RoomIssueResponse>;
+  responseColumns: string[] = [
+    "sent",
+    "arrived",
+    "responders"
+  ];
+
   helpArrivedSent = false;
   helpArrivedError = false;
   helpArrivedSuccess = false;
@@ -80,7 +87,7 @@ export class AlertsComponent implements OnInit {
     this.deviceList = this.data.roomToDevicesMap.get(this.roomID);
     this.filteredDevices = this.deviceList;
     this.filteredResponders = this.data.possibleResponders;
-    await this.SetupSchedule();
+    // await this.SetupSchedule();
 
     this.roomIssue = this.data.GetRoomIssue(this.roomID);
     if (this.roomIssue == null || this.roomIssue === undefined) {
@@ -91,6 +98,8 @@ export class AlertsComponent implements OnInit {
     if (this.roomIssue.roomIssueResponses == null) {
       this.roomIssue.roomIssueResponses = [];
     }
+
+    this.responseData = new MatTableDataSource(this.roomIssue.roomIssueResponses);
 
     this.data.issueEmitter.subscribe(changedIssue => {
       if (
@@ -343,12 +352,13 @@ export class AlertsComponent implements OnInit {
     });
   }
 
-  openRespond() {
+  openRespond(arrive: boolean) {
     const ref = this.dialog.open(ResponseModalComponent, {
       width: "25vw",
       data: {
         issue: this.roomIssue,
-        responders: this.data.possibleResponders
+        responders: this.data.possibleResponders,
+        arrive: arrive
       }
     });
   }
@@ -391,6 +401,24 @@ export class AlertsComponent implements OnInit {
       setTimeout(() => {
         this.resetHelpArrived();
       }, 2000);
+    }
+  }
+
+  FinishResponse(): boolean {
+    if (this.roomIssue.roomIssueResponses == null || this.roomIssue.roomIssueResponses.length === 0) {
+      return false;
+    }
+
+    const lastResponse = this.roomIssue.roomIssueResponses[this.roomIssue.roomIssueResponses.length - 1];
+
+    if (lastResponse.helpSentAt != null && !lastResponse.SentIsZero()) {
+      if (lastResponse.helpArrivedAt != null && !lastResponse.ArrivedIsZero()) {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return false;
     }
   }
 }

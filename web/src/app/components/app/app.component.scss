@@ -1,6 +1,6 @@
 $matToolbarHeight: 64px;
 $wideSideNavWidth: 14em;
-$thinSideNavWidth: 4.2em;
+$thinSideNavWidth: 4em;
 $buttonHeight: 6vh;
 .base {
     position: absolute;
@@ -95,8 +95,8 @@ $sidenavHeight: calc(100% - #{$matToolbarHeight});
     width: 8ch;
 }
 
-@media print { 
-    .noprint { 
-       visibility: hidden; 
-    } 
- } 
+@media print {
+    .noprint {
+        visibility: hidden;
+    }
+}

@@ -73,6 +73,8 @@ export class DataService {
 
   currentUsername: string;
 
+  mobile = false;
+
   constructor(
     public api: APIService,
     private socket: SocketService,
@@ -80,6 +82,9 @@ export class DataService {
     public cookies: CookieService,
     notify: NotifierService
   ) {
+    if (window.screen.width <= 768) {
+      this.mobile = true;
+    }
     this.loaded = new EventEmitter<boolean>();
     this.settingsChanged = new EventEmitter<number>();
     this.panelCount = +this.cookies.get("panelCount");

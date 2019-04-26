@@ -1,11 +1,12 @@
 <div class="base" [ngClass]="api?.theme + '-theme'">
     <mat-toolbar color="primary">
-        <span class="website-title">{{ text.WebsiteTitle }}</span>
+        <span class="website-title" *ngIf="!data.mobile">{{ text.WebsiteTitle }}</span>
+        <span class="website-title" *ngIf="data.mobile">{{ text.MobileTitle }}</span>
 
         <span class="fill-remaining-space"></span>
 
         <button mat-button class="hr" (click)="modal.OpenHelpModal()">
-      <mat-icon>add</mat-icon> Help Request
+      <mat-icon>add</mat-icon> Help Request <!--<ng-container *ngIf="!data.mobile">Request</ng-container>-->
     </button>
 
         <button mat-icon-button [matMenuTriggerFor]="options" class="username">

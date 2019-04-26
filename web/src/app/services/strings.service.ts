@@ -14,6 +14,7 @@ export const TIMECLOCK_ICON = "schedule";
 
 export class StringsService {
   public WebsiteTitle = "BYU OIT AV Monitoring";
+  public MobileTitle = "SMEE";
 
   public Sharing = {
     true: "Sharing enabled",

@@ -4,21 +4,63 @@
     </section> -->
     <!-- <section class="row"> -->
     <mat-accordion class="list">
-        <ng-container *ngFor="let category of deviceCategories">
-            <mat-expansion-panel [hideToggle]="true" [expanded]="false">
+        <ng-container *ngFor="let category of deviceCategories; let i = index;">
+            <mat-expansion-panel [expanded]="step === i" (opened)="setStep(i)">
                 <mat-expansion-panel-header>
                     <mat-panel-title>{{category.title}}</mat-panel-title>
-                    <!-- <mat-panel-description>Total: {{GetCategoryCount(category.tag)}}</mat-panel-description> -->
+                    <mat-panel-description>Total: {{GetCategoryCount(category.tag)}}</mat-panel-description>
                 </mat-expansion-panel-header>
+                <!-- <mat-divider></mat-divider> -->
+                <section class="row left">
+                    <ng-container *ngFor="let device of deviceList">
+                        <device *ngIf="DeviceIsInCategory(device, category.tag)" [device]="device"></device>
+                    </ng-container>
+                </section>
+                <mat-action-row *ngIf="i === 0 && deviceCategories.length != 1">
+                    <button mat-button color="primary" (click)="nextStep()">Next</button>
+                </mat-action-row>
+                <mat-action-row *ngIf="i > 0 && i < deviceCategories.length-1 && deviceCategories.length != 1">
+                    <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                    <button mat-button color="primary" (click)="nextStep()">Next</button>
+                </mat-action-row>
+                <mat-action-row *ngIf="i === deviceCategories.length-1 && deviceCategories.length != 1">
+                    <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                    <button mat-button color="primary" (click)="nextStep()">End</button>
+                </mat-action-row>
             </mat-expansion-panel>
-            <section class="row">
-                <ng-container *ngFor="let device of deviceList">
-                    <device *ngIf="DeviceIsInCategory(device, category.tag)" [device]="device"></device>
-                </ng-container>
-            </section>
+
         </ng-container>
     </mat-accordion>
 
     <!-- </section> -->
+
+    <!-- <section *ngFor="let category of deviceCategories">
+        <section class="row left">
+            <h2 class="mat-h2">{{category.title}}</h2>
+
+        </section>
+        <mat-divider></mat-divider>
+
+        <section class="row left">
+            <ng-container *ngFor="let device of deviceList">
+                <device *ngIf="DeviceIsInCategory(device, category.tag)" [device]="device"></device>
+            </ng-container>
+        </section>
+    </section> -->
+
+    <!-- <mat-card class="list" *ngFor="let category of deviceCategories">
+        <mat-card-header>
+            <mat-card-title>{{category.title}}</mat-card-title>
+        </mat-card-header>
+        <mat-divider></mat-divider>
+        <mat-card-content>
+            <section class="row left">
+                <ng-container *ngFor="let device of deviceList">
+                    <device *ngIf="DeviceIsInCategory(device, category.tag)" [device]="device"></device>
+                </ng-container>
+            </section>
+        </mat-card-content>
+    </mat-card> -->
+
 
 </div>
