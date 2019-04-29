@@ -28,7 +28,7 @@ export class PartsListComponent implements OnInit {
   ngOnInit() {
   }
 
-// tslint:disable-next-line: use-life-cycle-interface
+  // tslint:disable-next-line: use-life-cycle-interface
   ngAfterViewInit() {
     if (this.data.finished) {
       this.SetDataSourceFirstTime();
@@ -40,6 +40,7 @@ export class PartsListComponent implements OnInit {
   }
 
   SetDataSourceFirstTime() {
+    console.log("ROOM: ", this.room);
     let devices = this.data.roomToDevicesMap.get(this.room.id);
     for (const ds of devices) {
       console.log(ds.address);

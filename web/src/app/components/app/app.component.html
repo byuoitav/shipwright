@@ -1,5 +1,5 @@
 <div class="base" [ngClass]="api?.theme + '-theme'">
-    <mat-toolbar color="primary">
+    <mat-toolbar color="primary" class="noprint">
         <span class="website-title" *ngIf="!data.mobile">{{ text.WebsiteTitle }}</span>
         <span class="website-title" *ngIf="data.mobile">{{ text.MobileTitle }}</span>
 
@@ -27,7 +27,7 @@
       </button>
         </mat-menu>
     </mat-toolbar>
-    <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav-container class="sidenav-container ">
         <mat-sidenav #sidenav mode="side" opened class="sidenav" [class.wide]="wideSidenav()">
             <button mat-flat-button color="" routerLink="/dashboard" routerLinkActive="mat-accent" queryParamsHandling="merge">
         <mat-icon>dashboard</mat-icon>

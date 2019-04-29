@@ -56,6 +56,14 @@
                           <mat-label>Friendly ID</mat-label>
                           <input matInput [type]="'text'" [(ngModel)]="port.friendlyName" readonly="true"/>
                         </mat-form-field>
+                        <mat-form-field class="port-field" *ngIf="IsAnInPort(port)">
+                          <mat-label>Input</mat-label>
+                          <mat-select matInput [(ngModel)]="port.sourceDevice" readonly="readOnly" [disabled]="true">
+                              <mat-option [value]="null">None</mat-option>
+                              <mat-option *ngFor="let dev of sourceDevices" [value]="dev">{{ dev.substr(dev.lastIndexOf("-") + 1) }}
+                              </mat-option>
+                          </mat-select>
+                      </mat-form-field>
                         <!-- Out Ports -->
                         <mat-form-field class="port-field" *ngIf="!IsAnInPort(port)">
                           <mat-label>Output</mat-label>
