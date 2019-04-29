@@ -88,7 +88,7 @@ import { PendingChangesGuard } from "./pending-changes.guard";
 import { OverviewComponent } from "./components/configuration/roompage/overview/overview.component";
 import { PartsListComponent } from "./components/configuration/roompage/partslist/partslist.component";
 import { ActivityButtonComponent } from "./components/activity-button/activity-button.component";
-import { MenuItemComponent } from './menu-item/menu-item.component';
+import { MenuItemComponent } from "./menu-item/menu-item.component";
 
 @NgModule({
   declarations: [

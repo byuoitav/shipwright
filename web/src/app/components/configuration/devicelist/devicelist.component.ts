@@ -40,6 +40,8 @@ export class DeviceListComponent implements OnInit {
     }
   ];
 
+  step = 0;
+
   constructor(public text: StringsService, private route: ActivatedRoute, public data: DataService) {
     this.route.params.subscribe(params => {
       this.roomID = params["roomID"];
@@ -69,5 +71,17 @@ export class DeviceListComponent implements OnInit {
     }
 
     return count;
+  }
+
+  setStep(index: number) {
+    this.step = index;
+  }
+
+  nextStep() {
+    this.step++;
+  }
+
+  prevStep() {
+    this.step--;
   }
 }

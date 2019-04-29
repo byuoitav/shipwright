@@ -78,7 +78,8 @@ a {
 // }
 .device-card {
     // max-height: 20%;
-    width: 15vw;
+    min-width: 100px;
+    width: 250px;
     margin: 15px;
 }
 

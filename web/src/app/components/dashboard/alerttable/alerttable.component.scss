@@ -42,37 +42,40 @@ button {
     display: flex;
 }
 
-// .Critical-severity {
-//     background-color: #f44336;
-//     // color: #9e9e9e;
-//     width: 80px;
-//     cursor: default;
-// }
+.Critical-severity {
+    color: #f44336;
+    // color: #9e9e9e;
+    width: 80px;
+    cursor: default;
+}
 
-// .Warning-severity {
-//     background-color: #fb8c00;
-//     // color: #9e9e9e;
-//     width: 80px;
-//     cursor: default;
-// }
+.Warning-severity {
+    color: #fb8c00;
+    // color: #9e9e9e;
+    width: 80px;
+    cursor: default;
+}
 
-// .Low-severity {
-//     background-color: #ffd600;
-//     width: 80px;
-//     cursor: default;
-// }
+.Low-severity {
+    color: #ffd600;
+    width: 80px;
+    cursor: default;
+}
 
 .Critical-Warning-Low-indicator {
-    background: linear-gradient(to right, #f44336 33%,  #fb8c00 33%,  #ffd600 33%);
+    background: linear-gradient(to right, #f44336 33%, #fb8c00 33%, #ffd600 33%);
 }
+
 .Critical-Warning-indicator {
-    background: linear-gradient(to right, #f44336 50%,  #fb8c00 50%);
+    background: linear-gradient(to right, #f44336 50%, #fb8c00 50%);
 }
+
 .Critical-Low-indicator {
-    background: linear-gradient(to right, #f44336 50%,  #ffd600 50%);
+    background: linear-gradient(to right, #f44336 50%, #ffd600 50%);
 }
+
 .Warning-Low-indicator {
-    background: linear-gradient(to right, #fb8c00  50%,  #ffd600 50%);
+    background: linear-gradient(to right, #fb8c00 50%, #ffd600 50%);
 }
 
 .Critical-indicator {
