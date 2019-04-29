@@ -162,6 +162,7 @@ export class ResponseModalComponent implements OnInit {
     this.response.helpSentAt.setHours(parseInt(split[0], 10));
     this.response.helpSentAt.setMinutes(parseInt(split[1], 10));
 
+    console.log(this.data.issue.roomIssueResponses);
     this.data.issue.roomIssueResponses.push(this.response);
 
     try {
