@@ -5,6 +5,34 @@ import {
   JsonConverter,
 } from "json2typescript";
 
+@JsonConverter
+class MapConverter implements JsonCustomConvert<Map<string, any>> {
+  serialize(map: Map<string, any>) {
+    const obj: Object = Object.create(null);
+
+    for (const [key, value] of map) {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  deserialize(obj: any): Map<string, any> {
+    if (obj[""]) {
+      delete obj[""];
+    }
+    const map = new Map<string, any>();
+
+    for (const key of Object.keys(obj)) {
+      if (key && obj[key]) {
+        map.set(key, obj[key]);
+      }
+    }
+
+    return map;
+  }
+}
+
 @JsonObject("Building")
 export class Building {
   @JsonProperty("_id", String, true)
@@ -684,6 +712,7 @@ export class Device {
   @JsonProperty("tags", [String], true)
   tags: string[] = Array<string>();
 
+  @JsonProperty("attributes", MapConverter, true)
   attributes: Map<string, any> = undefined;
 
   isNew = false;
@@ -845,33 +874,7 @@ class SignalPathConverter implements JsonCustomConvert<Map<string, string[]>> {
   }
 }
 
-@JsonConverter
-class MapConverter implements JsonCustomConvert<Map<string, any>> {
-  serialize(map: Map<string, any>) {
-    const obj: Object = Object.create(null);
 
-    for (const [key, value] of map) {
-      obj[key] = value;
-    }
-
-    return obj;
-  }
-
-  deserialize(obj: any): Map<string, any> {
-    if (obj[""]) {
-      delete obj[""];
-    }
-    const map = new Map<string, any>();
-
-    for (const key of Object.keys(obj)) {
-      if (key && obj[key]) {
-        map.set(key, obj[key]);
-      }
-    }
-
-    return map;
-  }
-}
 
 @JsonObject("SignalPaths")
 export class SignalPaths {

@@ -55,6 +55,7 @@ export class OverviewComponent implements OnInit {
       }
     }
 
+    device.isNew = true;
     this.deviceList.push(device);
     this.deviceList.sort(this.text.SortDevicesAlphaNum);
 
