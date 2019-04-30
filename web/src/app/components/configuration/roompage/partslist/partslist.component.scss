@@ -46,7 +46,7 @@
     justify-content: space-evenly;
     padding-top: 15px;
 }
-  
+
 .port-row {
     display: flex;
     flex-flow: row nowrap;
@@ -57,6 +57,19 @@
 .port-field {
     width: 30%;
 }
+
 .mat-card-header {
     text-align: center;
+}
+
+.mat-column-device-name {
+    width: 100px;
+}
+
+.mat-column-port-name {
+    width: 100px;
+}
+
+.mat-column-connection {
+    width: 100px;
 }

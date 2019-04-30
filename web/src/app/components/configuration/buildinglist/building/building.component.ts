@@ -37,8 +37,8 @@ export class BuildingComponent implements OnInit {
   }
 
   GetImage(): string {
-    // return "assets/images/" + this.building.id + ".jpg"
-    return "https://couchdb-dev.avs.byu.edu:5984/buildings/" + this.building.id + "/" + this.building.id + ".jpg";
+    return "assets/images/" + this.building.id + ".jpg";
+    // return "https://couchdb-dev.avs.byu.edu:5984/buildings/" + this.building.id + "/" + this.building.id + ".jpg";
   }
 
   GetBuildingState() {

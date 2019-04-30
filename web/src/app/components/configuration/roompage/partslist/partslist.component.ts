@@ -1,26 +1,34 @@
-import { Component, OnInit, Input } from "@angular/core";
+import { Component, OnInit, Input, AfterViewInit } from "@angular/core";
 import { Device, Room, Port } from "src/app/objects/database";
 import { DataService } from "src/app/services/data.service";
 import { StringsService } from "src/app/services/strings.service";
 import { ModalService } from "src/app/services/modal.service";
 import { MatTableDataSource } from "@angular/material";
-import { CombinedRoomState } from "src/app/objects/static";
 import { APIService } from "src/app/services/api.service";
+
+
+export class PortTableItem {
+  deviceName: string;
+  port: Port;
+}
 
 @Component({
   selector: "partslist",
   templateUrl: "./partslist.component.html",
   styleUrls: ["./partslist.component.scss"]
 })
-export class PartsListComponent implements OnInit {
+export class PartsListComponent implements OnInit, AfterViewInit {
   @Input() deviceList: Device[] = [];
   @Input() room: Room;
   @Input() roomid: string;
   dataSource = new MatTableDataSource<Device>([]);
+  portData = new MatTableDataSource<PortTableItem>([]);
   sourceDevices: string[] = [];
   columns = ["device", "type", "address", "ipaddress"];
   destinationDevices: string[] = [];
   ipaddressmap = {};
+  portColumns = ["device-name", "port-name", "connection"];
+  portDataList: PortTableItem[];
 
   constructor(public data: DataService, public text: StringsService, public modal: ModalService, private api: APIService) {
   }
@@ -28,7 +36,6 @@ export class PartsListComponent implements OnInit {
   ngOnInit() {
   }
 
-  // tslint:disable-next-line: use-life-cycle-interface
   ngAfterViewInit() {
     if (this.data.finished) {
       this.SetDataSourceFirstTime();
@@ -54,7 +61,7 @@ export class PartsListComponent implements OnInit {
       });
     }
     devices = this.deviceList;
-    this.SetSourceAndDestinationDevices();
+    this.SetPortTableData();
     this.SetDataSource();
   }
 
@@ -62,6 +69,7 @@ export class PartsListComponent implements OnInit {
     console.log("Setting the data source");
 
     this.dataSource.data = this.deviceList;
+    this.portData.data = this.portDataList;
     // refresh data each time a static device updates
     setTimeout(() => {
       // this.dataSource.paginator = this.paginator;
@@ -83,4 +91,42 @@ export class PartsListComponent implements OnInit {
     }
   }
 
+  SetPortTableData() {
+    this.portDataList = [];
+    for (const device of this.deviceList) {
+      this.RemoveExcessPorts(device);
+      if (device.ports != null && device.ports.length > 0) {
+        for (const port of device.ports) {
+          const p = new PortTableItem();
+          p.deviceName = device.name;
+          p.port = port;
+
+          console.log(p);
+          this.portDataList.push(p);
+        }
+      }
+    }
+  }
+
+  RemoveExcessPorts(device: Device) {
+    if (device.ports !== null && device.ports.length > 0) {
+      const portsToKeep: Port[] = [];
+
+      for (const port of device.ports) {
+        if (
+          port.sourceDevice !== null &&
+          port.sourceDevice !== undefined &&
+          port.destinationDevice !== null &&
+          port.destinationDevice !== undefined
+        ) {
+          portsToKeep.push(port);
+        }
+      }
+
+      console.log(portsToKeep);
+
+      device.ports = portsToKeep;
+      device.ports.sort(this.text.SortAlphaNumByID);
+    }
+  }
 }

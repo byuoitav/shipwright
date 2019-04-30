@@ -14,7 +14,6 @@ import {
   Template,
   Port
 } from "src/app/objects/database";
-import { Observable } from "rxjs";
 import { APIService } from "src/app/services/api.service";
 
 @Component({
@@ -210,18 +209,20 @@ export class BuilderComponent implements OnInit {
     this.otherTypes = [];
 
     for (const type of this.data.deviceTypeList) {
-      if (type.tags.includes("tv")) {
-        this.tvTypes.push(type);
-      } else if (type.tags.includes("projector")) {
-        this.projectorTypes.push(type);
-      } else if (type.input) {
-        this.inputTypes.push(type);
-      } else if (type.tags.includes("audio")) {
-        this.audioTypes.push(type);
-      } else if (type.tags.includes("video-switcher")) {
-        this.videoSwitcherTypes.push(type);
-      } else {
-        this.otherTypes.push(type);
+      if (!type.tags.includes("legacy")) {
+        if (type.tags.includes("tv")) {
+          this.tvTypes.push(type);
+        } else if (type.tags.includes("projector")) {
+          this.projectorTypes.push(type);
+        } else if (type.input) {
+          this.inputTypes.push(type);
+        } else if (type.tags.includes("audio")) {
+          this.audioTypes.push(type);
+        } else if (type.tags.includes("video-switcher")) {
+          this.videoSwitcherTypes.push(type);
+        } else {
+          this.otherTypes.push(type);
+        }
       }
     }
   }

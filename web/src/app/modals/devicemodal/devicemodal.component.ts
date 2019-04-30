@@ -220,4 +220,23 @@ export class DeviceModalComponent implements OnInit {
       device.ports = portsToKeep;
     }
   }
+
+  PortsAreFine(): boolean {
+    if (this.device.ports == null || this.device.ports.length === 0) {
+      return true;
+    } else {
+      for (const p of this.device.ports) {
+        if (
+          p.sourceDevice != null &&
+          p.sourceDevice.length > 0 &&
+          p.destinationDevice != null &&
+          p.destinationDevice.length > 0
+        ) {
+          return true;
+        }
+      }
+      // no ports are set
+      return false;
+    }
+  }
 }
