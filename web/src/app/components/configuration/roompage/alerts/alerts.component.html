@@ -42,36 +42,39 @@
                 </mat-card-header>
                 <mat-divider></mat-divider>
                 <mat-card-content class="action-content">
-                    <ng-container *ngIf="roomIssue.roomIssueResponses == null || roomIssue.roomIssueResponses.length == 0">
-                        <span>No one has been sent to address this issue.</span>
-                    </ng-container>
-                    <section *ngIf="roomIssue.roomIssueResponses != null && roomIssue.roomIssueResponses.length > 0">
-                        <table class="visits" mat-table [dataSource]="roomIssue.roomIssueResponses">
-                            <ng-container matColumnDef="sent">
-                                <th mat-header-cell *matHeaderCellDef>Sent At</th>
-                                <td mat-cell *matCellDef="let response">
-                                    <span *ngIf="response.helpSentAt != null && !response.SentIsZero()">{{response.helpSentAt.toLocaleTimeString()}}</span>
-                                </td>
-                            </ng-container>
-                            <ng-container matColumnDef="arrived">
-                                <th mat-header-cell *matHeaderCellDef>Arrived At</th>
-                                <td mat-cell *matCellDef="let response">
-                                    <span *ngIf="response.helpArrivedAt != null && !response.ArrivedIsZero()">{{response.helpArrivedAt.toLocaleTimeString()}}</span>
-                                </td>
-                            </ng-container>
-                            <ng-container matColumnDef="responders">
-                                <th mat-header-cell *matHeaderCellDef>Responders</th>
-                                <td mat-cell *matCellDef="let response">
-                                    <ng-container *ngIf="response.responders != null && response.responders.length > 0">
-                                        <span *ngFor="let person of response.responders">{{person.name}}</span>
-                                    </ng-container>
-                                </td>
-                            </ng-container>
+                    <ng-container *ngIf="roomIssue != null">
+                        <ng-container *ngIf="roomIssue?.roomIssueResponses == null || roomIssue?.roomIssueResponses.length == 0">
+                            <span>No one has been sent to address this issue.</span>
+                        </ng-container>
+                        <section *ngIf="roomIssue?.roomIssueResponses != null && roomIssue?.roomIssueResponses.length > 0">
+                            <table class="visits" mat-table [dataSource]="roomIssue?.roomIssueResponses">
+                                <ng-container matColumnDef="sent">
+                                    <th mat-header-cell *matHeaderCellDef>Sent At</th>
+                                    <td mat-cell *matCellDef="let response">
+                                        <span *ngIf="response.helpSentAt != null && !response.SentIsZero()">{{response.helpSentAt.toLocaleTimeString()}}</span>
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="arrived">
+                                    <th mat-header-cell *matHeaderCellDef>Arrived At</th>
+                                    <td mat-cell *matCellDef="let response">
+                                        <span *ngIf="response.helpArrivedAt != null && !response.ArrivedIsZero()">{{response.helpArrivedAt.toLocaleTimeString()}}</span>
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="responders">
+                                    <th mat-header-cell *matHeaderCellDef>Responders</th>
+                                    <td mat-cell *matCellDef="let response">
+                                        <ng-container *ngIf="response.responders != null && response.responders.length > 0">
+                                            <span *ngFor="let person of response.responders">{{person.name}}</span>
+                                        </ng-container>
+                                    </td>
+                                </ng-container>
 
-                            <tr mat-header-row *matHeaderRowDef="responseColumns; sticky: true"></tr>
-                            <tr mat-row *matRowDef="let response; columns: responseColumns"></tr>
-                        </table>
-                    </section>
+                                <tr mat-header-row *matHeaderRowDef="responseColumns; sticky: true"></tr>
+                                <tr mat-row *matRowDef="let response; columns: responseColumns"></tr>
+                            </table>
+                        </section>
+                    </ng-container>
+
                 </mat-card-content>
                 <mat-divider></mat-divider>
                 <mat-card-actions>
@@ -88,7 +91,7 @@
                 </mat-card-header>
                 <mat-divider></mat-divider>
                 <mat-card-content class="action-content">
-                    <section class="notes-row">
+                    <section class="notes-row" *ngIf="roomIssue != null">
                         <div class="notes-column">
                             <mat-form-field class="notes" appearance="outline">
                                 <textarea matInput placeholder="Add New Note" [matAutosizeMinRows]="5" [matTextareaAutosize]="true" [(ngModel)]="tempNotes" (keyup)="$event.keyCode == 13 ? AddNote() : null"></textarea>

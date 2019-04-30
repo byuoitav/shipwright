@@ -405,7 +405,7 @@ export class AlertsComponent implements OnInit {
   }
 
   FinishResponse(): boolean {
-    if (this.roomIssue.roomIssueResponses == null || this.roomIssue.roomIssueResponses.length === 0) {
+    if (this.roomIssue == null || this.roomIssue.roomIssueResponses == null || this.roomIssue.roomIssueResponses.length === 0) {
       return false;
     }
 
