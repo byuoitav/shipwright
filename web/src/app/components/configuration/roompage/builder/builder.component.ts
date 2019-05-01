@@ -11,12 +11,9 @@ import {
   Panel,
   DeviceType,
   IOConfiguration,
-  DBResponse,
   Template,
   Port
 } from "src/app/objects/database";
-import { ComponentCanDeactivate } from "src/app/pending-changes.guard";
-import { Observable } from "rxjs";
 import { APIService } from "src/app/services/api.service";
 
 @Component({
@@ -24,7 +21,7 @@ import { APIService } from "src/app/services/api.service";
   templateUrl: "./builder.component.html",
   styleUrls: ["./builder.component.scss"]
 })
-export class BuilderComponent implements OnInit, ComponentCanDeactivate {
+export class BuilderComponent implements OnInit {
   roomID: string;
   room: Room;
   devicesInRoom: Device[] = [];
@@ -48,15 +45,6 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
   baseUIConfig: UIConfig = new UIConfig();
   newUIConfig = false;
 
-  @HostListener("window:beforeunload", ["$event"])
-  canDeactivate(): boolean | Observable<boolean> {
-    if (this.PageDataHasChanged()) {
-      return false;
-    }
-
-    return true;
-  }
-
   constructor(
     public text: StringsService,
     public data: DataService,
@@ -75,12 +63,6 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
         });
       }
     });
-
-    // window.onbeforeunload = () => {
-    //   if (this.PageDataHasChanged()) {
-    //     window.confirm("You have unsaved changes, would you still like to leave the page?");
-    //   }
-    // };
   }
 
   ngOnInit() {}
@@ -227,18 +209,20 @@ export class BuilderComponent implements OnInit, ComponentCanDeactivate {
     this.otherTypes = [];
 
     for (const type of this.data.deviceTypeList) {
-      if (type.tags.includes("tv")) {
-        this.tvTypes.push(type);
-      } else if (type.tags.includes("projector")) {
-        this.projectorTypes.push(type);
-      } else if (type.input) {
-        this.inputTypes.push(type);
-      } else if (type.tags.includes("audio")) {
-        this.audioTypes.push(type);
-      } else if (type.tags.includes("video-switcher")) {
-        this.videoSwitcherTypes.push(type);
-      } else {
-        this.otherTypes.push(type);
+      if (!type.tags.includes("legacy")) {
+        if (type.tags.includes("tv")) {
+          this.tvTypes.push(type);
+        } else if (type.tags.includes("projector")) {
+          this.projectorTypes.push(type);
+        } else if (type.input) {
+          this.inputTypes.push(type);
+        } else if (type.tags.includes("audio")) {
+          this.audioTypes.push(type);
+        } else if (type.tags.includes("video-switcher")) {
+          this.videoSwitcherTypes.push(type);
+        } else {
+          this.otherTypes.push(type);
+        }
       }
     }
   }

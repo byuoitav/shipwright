@@ -15,3 +15,12 @@ html {
 .mat-tab-body-wrapper {
     flex-grow: 1;
 }
+
+@media print {
+    .noprint {
+        display: none;
+    }
+    .printable {
+        display: block;
+    }
+}

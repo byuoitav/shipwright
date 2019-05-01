@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, Input } from "@angular/core";
 import { StringsService } from "src/app/services/strings.service";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { DataService } from "src/app/services/data.service";
-import { Device, DeviceType, Port } from "src/app/objects/database";
+import { Device, DeviceType, Port, DBResponse } from "src/app/objects/database";
 import { APIService } from "src/app/services/api.service";
 
 export class DeviceModalData {
@@ -146,14 +146,26 @@ export class DeviceModalComponent implements OnInit {
     this.RemoveExcessPorts(this.device);
     console.log("saving device", this.data);
     try {
-      const resp = await this.api.UpdateDevice(
-        this.device.id,
-        this.device
-      );
-      if (resp.success) {
-        console.log("successfully updated device", resp);
+      let resp: DBResponse;
+      if (!this.device.isNew) {
+        resp = await this.api.UpdateDevice(
+          this.device.id,
+          this.device
+        );
+        if (resp.success) {
+          console.log("successfully updated device", resp);
+        } else {
+          console.error("failed to update device", resp);
+        }
       } else {
-        console.error("failed to update device", resp);
+        resp = await this.api.AddDevice(this.device);
+
+        if (resp.success) {
+          console.log("successfully added device", resp);
+          this.device.isNew = false;
+        } else {
+          console.error("failed to add device", resp);
+        }
       }
 
       return resp.success;
@@ -206,6 +218,25 @@ export class DeviceModalComponent implements OnInit {
       console.log(portsToKeep);
 
       device.ports = portsToKeep;
+    }
+  }
+
+  PortsAreFine(): boolean {
+    if (this.device.ports == null || this.device.ports.length === 0) {
+      return true;
+    } else {
+      for (const p of this.device.ports) {
+        if (
+          p.sourceDevice != null &&
+          p.sourceDevice.length > 0 &&
+          p.destinationDevice != null &&
+          p.destinationDevice.length > 0
+        ) {
+          return true;
+        }
+      }
+      // no ports are set
+      return false;
     }
   }
 }

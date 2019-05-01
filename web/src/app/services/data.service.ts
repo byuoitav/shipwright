@@ -9,7 +9,8 @@ import {
   Person,
   Role,
   RoomConfiguration,
-  Template
+  Template,
+  MenuTree
 } from "../objects/database";
 import { RoomIssue } from "../objects/alerts";
 import { SocketService } from "./socket.service";
@@ -58,7 +59,7 @@ export class DataService {
   finished = false;
   completedOperations = 0;
   totalCompletion = 100;
-  increment: number = Math.ceil(this.totalCompletion / 19);
+  increment: number = Math.ceil(this.totalCompletion / 20);
 
   settingsChanged: EventEmitter<any>;
   panelCount: number;
@@ -68,7 +69,11 @@ export class DataService {
   notifier: NotifierService;
   notificationsEnabled;
 
+  menuTree: MenuTree;
+
   currentUsername: string;
+
+  mobile = false;
 
   constructor(
     public api: APIService,
@@ -77,6 +82,9 @@ export class DataService {
     public cookies: CookieService,
     notify: NotifierService
   ) {
+    if (window.screen.width <= 768) {
+      this.mobile = true;
+    }
     this.loaded = new EventEmitter<boolean>();
     this.settingsChanged = new EventEmitter<number>();
     this.panelCount = +this.cookies.get("panelCount");
@@ -99,6 +107,8 @@ export class DataService {
   }
 
   private async LoadData() {
+    await this.GetStaticDevices(); //         15
+    await this.GetCombinedRoomState(); //     16
     await this.GetCurrentUsername(); //       1
     await this.GetAllBuildings(); //          2
     await this.GetAllRooms(); //              3
@@ -113,11 +123,10 @@ export class DataService {
     await this.SetRoomToDevicesMap(); //      12
     await this.GetIconList(); //              13
     await this.GetStoredRoomIssues(); //      14
-    await this.GetStaticDevices(); //         15
-    await this.GetCombinedRoomState(); //     16
     await this.GetBuildingStatusList(); //    17
     await this.GetClosureCodes(); //          18
     await this.SetPossibleResponders(); //    19
+    await this.GetMenuTree(); //            20
     this.finished = true;
     this.loaded.emit(true);
   }
@@ -162,7 +171,7 @@ export class DataService {
     this.deviceTypeList = [];
     this.deviceTypeMap.clear();
 
-    await this.api.GetDeviceTypes().then(types => {
+    this.api.GetDeviceTypes().then(types => {
       this.deviceTypeList = types;
 
       for (const type of this.deviceTypeList) {
@@ -175,7 +184,7 @@ export class DataService {
   private async GetAllRoomConfigurations() {
     this.roomConfigurations = [];
 
-    await this.api.GetRoomConfigurations().then(configurations => {
+    this.api.GetRoomConfigurations().then(configurations => {
       this.roomConfigurations = configurations;
       this.completedOperations += this.increment;
     });
@@ -194,7 +203,7 @@ export class DataService {
     this.allUIConfigs = [];
     this.roomToUIConfigMap.clear();
 
-    await this.api.GetAllUIConfigs().then(configs => {
+    this.api.GetAllUIConfigs().then(configs => {
       this.allUIConfigs = configs;
 
       for (const config of this.allUIConfigs) {
@@ -353,21 +362,21 @@ export class DataService {
   private async GetClosureCodes() {
     this.closureCodes = [];
 
-    await this.api.GetClosureCodes().then(codes => {
+    this.api.GetClosureCodes().then(codes => {
       this.closureCodes = codes as string[];
       this.completedOperations += this.increment;
     });
   }
 
   private async GetStaticDevices() {
-    await this.api.GetAllStaticDeviceRecords().then(records => {
+    this.api.GetAllStaticDeviceRecords().then(records => {
       this.staticDeviceList = records;
       this.completedOperations += this.increment;
     });
   }
 
   private async GetCombinedRoomState() {
-    await this.api.GetAllCombinedRoomStates().then(records => {
+    this.api.GetAllCombinedRoomStates().then(records => {
       this.combinedRoomStateList = records;
       this.completedOperations += this.increment;
     });
@@ -521,6 +530,14 @@ export class DataService {
     await this.api.GetPossibleResponders().then(response => {
       this.possibleResponders = response;
       this.completedOperations += this.increment;
+    });
+  }
+
+  async GetMenuTree() {
+    await this.api.GetMenuTree().then(response => {
+      this.menuTree = response;
+      this.completedOperations += this.increment;
+      console.log(this.menuTree);
     });
   }
 }

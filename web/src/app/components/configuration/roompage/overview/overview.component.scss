@@ -20,14 +20,31 @@
     margin: 15px;
 }
 
+.detail-card {
+    height: 260px;
+    width: 325px;
+    max-width: 70vw;
+    max-height: 60vw;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
 .fill-remaining-space {
     flex: 1 1 auto;
 }
 
 .room-details {
     display: flex;
-    flex-flow: row nowrap;
+    flex-flow: row wrap;
     justify-content: space-evenly;
+    padding: 10px;
+}
+
+.images {
+    height: 225px;
+    width: 325px;
+    max-width: 70vw;
+    max-height: 52.5vw;
 }
 
 .attribute-column {

@@ -1,14 +1,19 @@
-<!-- <section class="row centered">
+<section class="row centered">
     <h1 class="mat-h1" *ngIf="room != null">{{room?.id}} Overview</h1>
 
 </section>
 
-<section *ngIf="deviceList?.length > 0">
+<!-- <section *ngIf="deviceList?.length > 0">
     <device-list [deviceList]="deviceList"></device-list>
 </section> -->
-<mat-toolbar color="warn">{{room?.id}} Overview</mat-toolbar>
+<!-- <mat-toolbar color="warn">{{room?.id}} Overview</mat-toolbar> -->
+<!-- <mat-expansion-panel [hideToggle]="true" [expanded]="false">
+    <mat-expansion-panel-header>
+        <mat-panel-title>{{room?.id}} Overview</mat-panel-title>
+    </mat-expansion-panel-header>
+</mat-expansion-panel> -->
 <section class="room-details">
-    <mat-card>
+    <mat-card class="detail-card">
         <mat-card-header>
             <mat-card-title>
                 Notes
@@ -16,12 +21,12 @@
         </mat-card-header>
         <mat-divider></mat-divider>
         <mat-card-content>
-            <mat-form-field>
-                <textarea matInput [(ngModel)]="room.description" placeholder="Room description"></textarea>
+            <mat-form-field appearance="outline">
+                <textarea matInput [(ngModel)]="room.description" placeholder="Room description" [matAutosizeMinRows]="4" [matTextareaAutosize]="true"></textarea>
             </mat-form-field>
         </mat-card-content>
     </mat-card>
-    <mat-card>
+    <mat-card class="detail-card">
         <mat-card-header>
             <mat-card-title>
                 Pictures
@@ -29,10 +34,10 @@
         </mat-card-header>
         <mat-divider></mat-divider>
         <mat-card-content>
-            <img src="https://st3.depositphotos.com/1177973/12633/i/950/depositphotos_126334676-stock-photo-funny-dogs-taking-selfie.jpg" height="250" width="325">
+            <img src="https://st3.depositphotos.com/1177973/12633/i/950/depositphotos_126334676-stock-photo-funny-dogs-taking-selfie.jpg" class="images">
         </mat-card-content>
     </mat-card>
-    <mat-card>
+    <mat-card class="detail-card">
         <mat-card-header>
             <mat-card-title>
                 Infrastructure
@@ -51,6 +56,8 @@
 <section *ngIf="deviceList?.length > 0">
     <device-list [deviceList]="deviceList"></device-list>
 </section>
-<div class="add-button">
-    <button mat-fab color="primary"><mat-icon>add</mat-icon></button>
+<div class="add-button" dir="rtl">
+    <button *ngIf="!data.mobile" mat-fab color="primary" [matMenuTriggerFor]="menu.childMenu"><mat-icon>add</mat-icon></button>
+    <button *ngIf="data.mobile" mat-mini-fab color="primary" [matMenuTriggerFor]="menu.childMenu"><mat-icon>add</mat-icon></button>
+    <app-menu-item #menu [subNodes]="data.menuTree.groups" [callback]="callbackFunc"></app-menu-item>
 </div>
