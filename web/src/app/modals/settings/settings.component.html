@@ -17,19 +17,18 @@
       }}</mat-option>
     </mat-select>
   </mat-form-field>
-  <div class="panel-input">
-    <mat-label>Notifications Enabled</mat-label>
-    <div align="right">
-      <mat-slide-toggle
-        (change)="UpdateTheme($event.checked)"
-        [checked]="api?.theme === 'dark'"
-        class="slider"
-      >
-      </mat-slide-toggle>
-    </div>
-  </div>
-  <div class="panel-input">
+  <div class="panel-input" align="right">
     <mat-label>Dark Theme</mat-label>
+    <mat-slide-toggle
+      (change)="UpdateTheme($event.checked)"
+      [checked]="api?.theme === 'dark'"
+      class="slider"
+      align="right"
+    >
+    </mat-slide-toggle>
+  </div>
+  <div class="panel-input" align="right">
+    <mat-label>Notifications Enabled</mat-label>
     <mat-slide-toggle
       (change)="UpdateNotifications($event.checked)"
       [checked]="data?.notificationsEnabled == true"

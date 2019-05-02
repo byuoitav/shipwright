@@ -6,7 +6,6 @@ import { ModalService } from "src/app/services/modal.service";
 import { MatTableDataSource } from "@angular/material";
 import { APIService } from "src/app/services/api.service";
 
-
 export class PortTableItem {
   deviceName: string;
   port: Port;
@@ -30,11 +29,14 @@ export class PartsListComponent implements OnInit, AfterViewInit {
   portColumns = ["device-name", "port-name", "connection"];
   portDataList: PortTableItem[];
 
-  constructor(public data: DataService, public text: StringsService, public modal: ModalService, private api: APIService) {
-  }
+  constructor(
+    public data: DataService,
+    public text: StringsService,
+    public modal: ModalService,
+    private api: APIService
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   ngAfterViewInit() {
     if (this.data.finished) {
@@ -128,5 +130,25 @@ export class PartsListComponent implements OnInit, AfterViewInit {
       device.ports = portsToKeep;
       device.ports.sort(this.text.SortAlphaNumByID);
     }
+  }
+
+  printWithCss() {
+    // Get the HTML of div
+    const title = document.title;
+    const divElements = document.getElementById("printme").innerHTML;
+    const printWindow = window.open("", "_blank", "");
+    // open the window
+    printWindow.document.open();
+    // write the html to the new window, link to css file
+    printWindow.document.write(
+      "<html><head><title>" +
+        title +
+        '</title> /*<link rel="stylesheet" type="text/css" href="/Css/site-print.css">*/</head><body>'
+    );
+    printWindow.document.write(divElements);
+    printWindow.document.write("</body></html>");
+    printWindow.focus();
+    // printWindow.print();
+    // printWindow.close();
   }
 }
