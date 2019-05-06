@@ -936,6 +936,9 @@ export class Room {
   @JsonProperty("signal-paths", SignalPaths, true)
   signalPaths: SignalPaths = undefined;
 
+  @JsonProperty("attributes", MapConverter, true)
+  attributes: Map<string, any> = undefined;
+
   isNew = false;
 
   constructor() {

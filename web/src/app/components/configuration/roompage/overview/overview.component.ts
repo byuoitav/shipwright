@@ -1,8 +1,9 @@
 import { Component, OnInit, Input } from "@angular/core";
-import { Device, Room, AttributeSet } from "src/app/objects/database";
+import { Device, Room, AttributeSet, DBResponse } from "src/app/objects/database";
 import { DataService } from "src/app/services/data.service";
 import { StringsService } from "src/app/services/strings.service";
 import { ModalService } from "src/app/services/modal.service";
+import { APIService } from "src/app/services/api.service";
 
 @Component({
   selector: "room-overview",
@@ -12,6 +13,8 @@ import { ModalService } from "src/app/services/modal.service";
 export class OverviewComponent implements OnInit {
   @Input() deviceList: Device[] = [];
   @Input() room: Room;
+
+  roomOptions = ["Podium", "MMC", "Ceiling Box", "Cabinet Rack", "Closet Rack"];
 
   callbackFunc = (preset: AttributeSet) => {
     // console.log(preset);
@@ -65,9 +68,51 @@ export class OverviewComponent implements OnInit {
     this.modal.OpenDeviceModal(device, this.deviceList);
   };
 
-  constructor(public data: DataService, public text: StringsService, public modal: ModalService) { }
+  constructor(public data: DataService, public text: StringsService, public modal: ModalService, public api: APIService) { }
 
   ngOnInit() {
   }
 
+  ModifyRoomAttributes(attribute: string, checked: boolean) {
+    if (this.room.attributes.has(attribute) && !checked) {
+      this.room.attributes.delete(attribute);
+    } else if (!this.room.attributes.has(attribute) && checked) {
+      this.room.attributes.set(attribute, checked);
+    }
+  }
+
+  saveRoom = async (): Promise<boolean> => {
+    if (this.room.name == null || this.room.name.length === 0) {
+      this.room.name = this.room.id;
+    }
+    console.log("saving room", this.room);
+    try {
+      let resp: DBResponse;
+      if (!this.room.isNew) {
+        resp = await this.api.UpdateRoom(
+          this.room.id,
+          this.room
+        );
+        if (resp.success) {
+          console.log("successfully updated room", resp);
+        } else {
+          console.error("failed to update room", resp);
+        }
+      } else {
+        resp = await this.api.AddRoom(this.room);
+
+        if (resp.success) {
+          console.log("successfully added room", resp);
+          this.room.isNew = false;
+        } else {
+          console.error("failed to add room", resp);
+        }
+      }
+
+      return resp.success;
+    } catch (e) {
+      console.error("failed to update room:", e);
+      return false;
+    }
+  };
 }

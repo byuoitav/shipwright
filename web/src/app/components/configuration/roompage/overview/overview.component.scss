@@ -57,6 +57,21 @@
 
 .add-button {
     position: absolute;
-    bottom: 30px;
-    right: 30px;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    padding-right: 20px;
+}
+
+.attribute {
+    width: 40%;
+}
+
+.fab {
+    margin-bottom: 15px;
+    &.save {
+        background-color: #00c853;
+    }
 }
