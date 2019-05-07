@@ -29,7 +29,7 @@ export class StringsService {
   };
 
   public DefaultDeviceNames = {
-    "ADCP Sony VPL": "D",
+    //"ADCP Sony VPL": "D",
     "Amplifier": "AMP",
     "AppleTV": "AppleTV",
     "Aruba48PortNetworkSwitch": "NS",
@@ -127,7 +127,7 @@ export class StringsService {
   };
 
   DefaultIcons = {
-    "ADCP Sony VPL": "videocam",
+    //"ADCP Sony VPL": "videocam",
     "Amplifier": "equalizer",
     "AppleTV": "airplay",
     "Aruba48PortNetworkSwitch": "settings_ethernet",

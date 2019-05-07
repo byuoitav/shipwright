@@ -2,7 +2,7 @@ import {
   JsonObject,
   JsonProperty,
   JsonCustomConvert,
-  JsonConverter,
+  JsonConverter
 } from "json2typescript";
 
 @JsonConverter
@@ -897,8 +897,6 @@ class SignalPathConverter implements JsonCustomConvert<Map<string, string[]>> {
   }
 }
 
-
-
 @JsonObject("SignalPaths")
 export class SignalPaths {
   @JsonProperty("video", SignalPathConverter, true)
@@ -1521,7 +1519,7 @@ export class AttributeSet {
 
 @JsonObject("Group")
 export class Group {
-  @JsonProperty("name", String, true)
+  @JsonProperty("_id", String, true)
   name: string = undefined;
 
   @JsonProperty("icon", String, true)
