@@ -156,7 +156,11 @@ func main() {
 	// Options Endpoints
 	readconfig.GET("/options/icons", handlers.GetIcons)
 	readconfig.GET("/options/templates", handlers.GetTemplates)
-	readconfig.GET("/options/attributes", handlers.GetAttributeSets)
+	readconfig.GET("/options/menutree", handlers.GetMenuTree)
+
+	// Attributes Endpoints
+	readconfig.GET("/attributes", handlers.GetAllAttributeGroups)
+	readconfig.GET("/attributes/:groupID", handlers.GetAttributeGroup)
 
 	// Auth Endpoints
 	readconfig.GET("/users/current/username", handlers.GetUsername)
