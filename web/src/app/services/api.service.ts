@@ -872,7 +872,7 @@ export class APIService {
   public async GetMenuTree() {
     try {
       const data = await this.http
-        .get("options/attributes", { headers: this.headers })
+        .get("options/menutree", { headers: this.headers })
         .toPromise();
 
       console.log(data);
