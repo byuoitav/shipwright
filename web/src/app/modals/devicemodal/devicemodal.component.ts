@@ -127,13 +127,15 @@ export class DeviceModalComponent implements OnInit {
   }
 
   SetSourceAndDestinationDevices() {
-    for (const dev of this.devicesInRoom) {
-      const type = this.dataService.deviceTypeMap.get(dev.type.id);
-      if (type.source) {
-        this.sourceDevices.push(dev.id);
-      }
-      if (type.destination) {
-        this.destinationDevices.push(dev.id);
+    if (this.devicesInRoom != null) {
+      for (const dev of this.devicesInRoom) {
+        const type = this.dataService.deviceTypeMap.get(dev.type.id);
+        if (type.source) {
+          this.sourceDevices.push(dev.id);
+        }
+        if (type.destination) {
+          this.destinationDevices.push(dev.id);
+        }
       }
     }
   }
