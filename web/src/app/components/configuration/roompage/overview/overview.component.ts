@@ -81,7 +81,7 @@ export class OverviewComponent implements OnInit {
     }
   }
 
-  saveRoom = async (): Promise<boolean> => {
+  async saveRoom(): Promise<boolean> {
     if (this.room.name == null || this.room.name.length === 0) {
       this.room.name = this.room.id;
     }
