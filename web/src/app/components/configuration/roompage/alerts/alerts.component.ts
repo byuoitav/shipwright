@@ -421,4 +421,21 @@ export class AlertsComponent implements OnInit {
       return false;
     }
   }
+
+  RedirectToPi(endpoint: string, deviceID?: string) {
+    let hostname = "";
+
+    if (deviceID != null) {
+      hostname = deviceID + ".byu.edu";
+    } else {
+      for (const device of this.deviceList) {
+        if (device.type.id === "Pi3") {
+          hostname = device.id + ".byu.edu";
+          break;
+        }
+      }
+    }
+
+    window.open("http://" + hostname + endpoint, "_blank");
+  }
 }

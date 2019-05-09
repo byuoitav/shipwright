@@ -26,10 +26,19 @@
                     </mat-card-title>
                 </mat-card-header>
                 <mat-divider></mat-divider>
-                <mat-card-content class="action-content"></mat-card-content>
+                <mat-card-content class="action-content">
+                    <section class="row action">
+                        <button mat-raised-button (click)="RedirectToPi(':10000/dashboard')" color="primary">Z-Pattern</button>
+
+                    </section>
+                    <section class="row action">
+                        <button mat-raised-button (click)="RedirectToPi(':8888')" color="primary">Control UI</button>
+
+                    </section>
+                </mat-card-content>
                 <mat-divider></mat-divider>
                 <mat-card-actions>
-                    <button mat-raised-button color="warn" (click)="modal.OpenMaintenanceModal(roomID)">Maintenance <mat-icon>bug_report</mat-icon></button>
+                    <button mat-raised-button class="maintenance" (click)="modal.OpenMaintenanceModal(roomID)">Maintenance <mat-icon>bug_report</mat-icon></button>
                     <button mat-raised-button class="resolver" *ngIf="isResolvable()" (click)="openResolve()">Resolve Alerts <mat-icon>done</mat-icon></button>
                 </mat-card-actions>
             </mat-card>
@@ -115,7 +124,7 @@
                 <mat-card-actions></mat-card-actions>
             </mat-card>
 
-            <mat-card #schedule class="action-card">
+            <!-- <mat-card #schedule class="action-card">
                 <mat-card-header>
                     <mat-card-title>
                         Schedule
@@ -123,9 +132,9 @@
                 </mat-card-header>
                 <mat-divider></mat-divider>
                 <mat-card-content class="action-content"></mat-card-content>
-                <!-- <mat-divider></mat-divider> -->
+                <mat-divider></mat-divider>
                 <mat-card-actions></mat-card-actions>
-            </mat-card>
+            </mat-card> -->
         </section>
     </section>
 

@@ -58,6 +58,7 @@
                         <mat-option [value]="null">None</mat-option>
                         <mat-option *ngFor="let dev of sourceDevices" [value]="dev">{{ dev.substr(dev.lastIndexOf("-") + 1) }}
                         </mat-option>
+
                     </mat-select>
                 </mat-form-field>
                 <!-- Out Ports -->
@@ -67,6 +68,7 @@
                         <mat-option [value]="null">None</mat-option>
                         <mat-option *ngFor="let dev of destinationDevices" [value]="dev">{{ dev.substr(dev.lastIndexOf("-") + 1) }}
                         </mat-option>
+
                     </mat-select>
                 </mat-form-field>
             </div>
@@ -97,9 +99,9 @@
                 </mat-form-field>
             </section>
 
-            <section class="row">
+            <section class="row full">
                 <!-- Tags -->
-                <mat-form-field class="device-field">
+                <mat-form-field class="tags">
                     <mat-label>Tags</mat-label>
                     <mat-chip-list #deviceTags>
                         <mat-chip *ngFor="let tag of device.tags" [selectable]="true" [removable]="true" (removed)="text.RemoveTag(tag, device)">
@@ -109,6 +111,22 @@
                         <input matInput type="text" [matChipInputFor]="deviceTags" [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="text.AddTag($event, device)" />
                     </mat-chip-list>
                 </mat-form-field>
+            </section>
+
+            <section class="row full">
+                <mat-expansion-panel>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>Attributes</mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <section *ngFor="let attribute of device.attributes | keyvalue" class="row">
+                        <mat-form-field class="device-field">
+                            <input matInput type="text" [(ngModel)]="attribute.key">
+                        </mat-form-field>
+                        <mat-form-field class="device-field">
+                            <input matInput type="text" [(ngModel)]="attribute.value">
+                        </mat-form-field>
+                    </section>
+                </mat-expansion-panel>
             </section>
         </div>
     </mat-tab>

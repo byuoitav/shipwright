@@ -373,24 +373,27 @@ var translationMap = map[string]string{
 	"D":  "display",
 	"CP": "control-processor",
 
-	"DSP":   "digital-signal-processor",
-	"DMPS":  "dmps",
-	"PC":    "computer",
-	"SW":    "video-switcher",
-	"MICJK": "microphone-jack",
-	"SP":    "scheduling-panel",
-	"MIC":   "microphone",
-	"DS":    "divider-sensor",
-	"GW":    "gateway",
-	"VIA":   "via",
-	"HDMI":  "hdmi",
-	"RX":    "receiver",
-	"TX":    "transmitter",
-	"RCV":   "microphone-reciever",
-	"EN":    "encoder",
-	"LIN":   "line-in",
-	"OF":    "overflow",
-	"MEDIA": "media",
+	"DSP":     "digital-signal-processor",
+	"DMPS":    "dmps",
+	"PC":      "computer",
+	"SW":      "video-switcher",
+	"MICJK":   "microphone-jack",
+	"SP":      "scheduling-panel",
+	"MIC":     "microphone",
+	"DS":      "divider-sensor",
+	"GW":      "gateway",
+	"VIA":     "via",
+	"HDMI":    "hdmi",
+	"RX":      "receiver",
+	"TX":      "transmitter",
+	"RCV":     "microphone-reciever",
+	"EN":      "encoder",
+	"LIN":     "line-in",
+	"OF":      "overflow",
+	"MEDIA":   "media",
+	"TECLITE": "tec-lite",
+	"CUSTOM":  "custom",
+	"SD":      "tec-sd",
 }
 
 func GetDeviceTypeByID(id string) string {
@@ -406,7 +409,7 @@ func GetDeviceTypeByID(id string) string {
 			val, ok := translationMap[split[2][:pos]]
 			if !ok {
 				log.L.Warnf("Invalid device type: %v", split[2][:pos])
-				return ""
+				return "unknown"
 			}
 			return val
 		}

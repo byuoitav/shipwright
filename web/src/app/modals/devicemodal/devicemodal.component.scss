@@ -3,6 +3,28 @@
     flex-flow: column nowrap;
     justify-content: space-evenly;
     padding-top: 15px;
+    max-height: 60vh;
+    overflow-y: auto;
+    /* width */
+    &::-webkit-scrollbar {
+        width: 5px;
+    }
+    /* Track */
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    &:hover {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
 }
 
 .row {
@@ -10,6 +32,9 @@
     flex-flow: row nowrap;
     justify-content: space-between;
     align-items: baseline;
+    &.full {
+        justify-content: space-evenly;
+    }
 }
 
 .port-field {
@@ -25,4 +50,10 @@
 .device-field {
     margin-left: 5px;
     margin-right: 5px;
+}
+
+.tags {
+    width: 97%;
+    // margin-left: 5px;
+    // margin-right: 5px;
 }

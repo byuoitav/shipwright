@@ -2,7 +2,7 @@ import {
   JsonObject,
   JsonProperty,
   JsonCustomConvert,
-  JsonConverter,
+  JsonConverter
 } from "json2typescript";
 
 @JsonConverter
@@ -221,6 +221,14 @@ export class Role {
 
   constructor() {}
 
+  copy(): Role {
+    const copy = new Role();
+    copy.id = this.id;
+    copy.description = this.description;
+    copy.tags = this.tags.slice();
+    return copy;
+  }
+
   Equals(imposter: Role, logMismatch?: boolean): boolean {
     if (imposter == null) {
       if (logMismatch) {
@@ -307,6 +315,17 @@ export class Port {
   tags: string[] = Array<string>();
 
   constructor() {}
+
+  copy(): Port {
+    const copy = new Port();
+    copy.id = this.id;
+    copy.friendlyName = this.friendlyName;
+    copy.sourceDevice = this.sourceDevice;
+    copy.destinationDevice = this.destinationDevice;
+    copy.description = this.description;
+    copy.tags = this.tags.slice();
+    return copy;
+  }
 
   Equals(imposter: Port, logMismatch?: boolean): boolean {
     if (imposter == null) {
@@ -721,8 +740,12 @@ export class Device {
     if (baseType != null) {
       this.type = new DeviceType();
       this.type.id = baseType.id;
-      this.roles = baseType.roles;
-      this.ports = baseType.ports;
+      for (const r of baseType.roles) {
+        this.roles.push(r.copy());
+      }
+      for (const p of baseType.ports) {
+        this.ports.push(p.copy());
+      }
       this.tags.concat(baseType.tags);
     }
 
@@ -874,8 +897,6 @@ class SignalPathConverter implements JsonCustomConvert<Map<string, string[]>> {
   }
 }
 
-
-
 @JsonObject("SignalPaths")
 export class SignalPaths {
   @JsonProperty("video", SignalPathConverter, true)
@@ -912,6 +933,9 @@ export class Room {
 
   @JsonProperty("signal-paths", SignalPaths, true)
   signalPaths: SignalPaths = undefined;
+
+  @JsonProperty("attributes", MapConverter, true)
+  attributes: Map<string, any> = undefined;
 
   isNew = false;
 

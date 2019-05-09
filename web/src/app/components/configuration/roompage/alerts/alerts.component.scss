@@ -199,6 +199,10 @@ $save: #0046c8;
     background-color: $resolve;
 }
 
+.maintenance {
+    background-color: #0288d1;
+}
+
 .cardrow {
     display: flex;
     flex-flow: row nowrap;
@@ -214,7 +218,9 @@ $save: #0046c8;
 
 .action-content {
     min-height: 20vh;
-    max-height: 40vh;
+    // max-height: 40vh;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .time {

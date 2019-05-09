@@ -14,6 +14,8 @@
 </mat-expansion-panel> -->
 <section class="room-details">
     <mat-card class="detail-card">
+
+
         <mat-card-header>
             <mat-card-title>
                 Notes
@@ -21,7 +23,7 @@
         </mat-card-header>
         <mat-divider></mat-divider>
         <mat-card-content>
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" style="width: 100%;">
                 <textarea matInput [(ngModel)]="room.description" placeholder="Room description" [matAutosizeMinRows]="4" [matTextareaAutosize]="true"></textarea>
             </mat-form-field>
         </mat-card-content>
@@ -45,11 +47,12 @@
         </mat-card-header>
         <mat-divider></mat-divider>
         <mat-card-content>
-            <div class="attribute-column">
-                <mat-checkbox>Podium</mat-checkbox>
-                <mat-checkbox>MMC</mat-checkbox>
-                <mat-checkbox>Ceiling Box</mat-checkbox>
-            </div>
+            <section class="row left">
+                <ng-container *ngFor="let option of roomOptions">
+                    <mat-checkbox class="attribute" [value]="option" (change)="ModifyRoomAttributes(option, $event.checked)" [checked]="room.attributes?.has(option)" color="primary">{{option}}</mat-checkbox>
+                </ng-container>
+            </section>
+
         </mat-card-content>
     </mat-card>
 </section>
@@ -57,7 +60,10 @@
     <device-list [deviceList]="deviceList"></device-list>
 </section>
 <div class="add-button" dir="rtl">
-    <button *ngIf="!data.mobile" mat-fab color="primary" [matMenuTriggerFor]="menu.childMenu"><mat-icon>add</mat-icon></button>
-    <button *ngIf="data.mobile" mat-mini-fab color="primary" [matMenuTriggerFor]="menu.childMenu"><mat-icon>add</mat-icon></button>
+    <button (click)="saveRoom()" class="fab save" mat-mini-fab>
+        <mat-icon>save</mat-icon>
+    </button>
+    <button class="fab" *ngIf="!data.mobile" mat-fab color="primary" [matMenuTriggerFor]="menu.childMenu"><mat-icon>add</mat-icon></button>
+    <button class="fab" *ngIf="data.mobile" mat-mini-fab color="primary" [matMenuTriggerFor]="menu.childMenu"><mat-icon>add</mat-icon></button>
     <app-menu-item #menu [subNodes]="data.menuTree.groups" [callback]="callbackFunc"></app-menu-item>
 </div>
