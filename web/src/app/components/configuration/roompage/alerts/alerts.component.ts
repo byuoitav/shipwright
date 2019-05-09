@@ -427,7 +427,7 @@ export class AlertsComponent implements OnInit {
 
     if (deviceID != null) {
       hostname = deviceID + ".byu.edu";
-    } else {
+    } else if (this.deviceList != null) {
       for (const device of this.deviceList) {
         if (device.type.id === "Pi3") {
           hostname = device.id + ".byu.edu";
@@ -436,6 +436,8 @@ export class AlertsComponent implements OnInit {
       }
     }
 
-    window.open("http://" + hostname + endpoint, "_blank");
+    if (hostname.length > 0) {
+      window.open("http://" + hostname + endpoint, "_blank");
+    }
   }
 }
