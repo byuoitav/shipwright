@@ -73,7 +73,14 @@ export class OverviewComponent implements OnInit {
   ngOnInit() {
   }
 
+  GoBack() {
+    window.history.back();
+  }
+
   ModifyRoomAttributes(attribute: string, checked: boolean) {
+    if (this.room.attributes == null) {
+      this.room.attributes = new Map<string, any>();
+    }
     if (this.room.attributes.has(attribute) && !checked) {
       this.room.attributes.delete(attribute);
     } else if (!this.room.attributes.has(attribute) && checked) {
@@ -114,5 +121,5 @@ export class OverviewComponent implements OnInit {
       console.error("failed to update room:", e);
       return false;
     }
-  };
+  }
 }
