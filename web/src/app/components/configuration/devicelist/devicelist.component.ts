@@ -46,6 +46,7 @@ export class DeviceListComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.roomID = params["roomID"];
       this.deviceList = this.data.roomToDevicesMap.get(this.roomID);
+      this.deviceList.sort(this.text.SortDevicesAlphaNum);
     });
    }
 

@@ -8,6 +8,7 @@
     </span>
     <span *ngFor="let child of leafNodes">
     <button mat-menu-item (click)="menuClicked(child)">
+        <mat-icon *ngIf="child.deviceIcon != null && child.deviceIcon.length > 0">{{child.deviceIcon}}</mat-icon>
       <span>{{child.name}}</span>
     </button>
     </span>

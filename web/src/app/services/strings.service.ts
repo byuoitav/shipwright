@@ -29,7 +29,7 @@ export class StringsService {
   };
 
   public DefaultDeviceNames = {
-    //"ADCP Sony VPL": "D",
+    "ADCP Sony VPL": "D",
     "Amplifier": "AMP",
     "AppleTV": "AppleTV",
     "Aruba48PortNetworkSwitch": "NS",
@@ -127,7 +127,7 @@ export class StringsService {
   };
 
   DefaultIcons = {
-    //"ADCP Sony VPL": "videocam",
+    "ADCP Sony VPL": "videocam",
     "Amplifier": "equalizer",
     "AppleTV": "airplay",
     "Aruba48PortNetworkSwitch": "settings_ethernet",
@@ -166,10 +166,6 @@ export class StringsService {
     "ShureULXD": "router",
     "SonyPHZ10": "videocam",
     "SonyXBR": "tv",
-    "SonyXBR 43\"": "tv",
-    "SonyXBR 55\"": "tv",
-    "SonyXBR 65\"": "tv",
-    "SonyXBR 75\"": "tv",
     "SonyVPL": "videocam",
     "Speaker": "surround_sound",
     "Shure Microphone": "mic",

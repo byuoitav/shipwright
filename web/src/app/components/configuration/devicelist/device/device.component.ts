@@ -43,9 +43,13 @@ export class DeviceComponent implements OnInit, OnChanges {
 
   GetRawIP() {
     if (this.device != null) {
-      this.api.GetDeviceRawIPAddress(this.device.address).then(addr => {
-        this.rawIP = addr as string;
-      });
+      if (this.device.address !== "0.0.0.0") {
+        this.api.GetDeviceRawIPAddress(this.device.address).then(addr => {
+          this.rawIP = addr as string;
+        });
+      } else {
+        this.rawIP = this.device.address;
+      }
     }
   }
 }
