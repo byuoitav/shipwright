@@ -70,6 +70,9 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 		a.Workers = 1
 	}
 
+	prev, _ := log.GetLevel()
+	log.SetLevel("info")
+
 	log.L.Infof("Starting action manager with %d workers", a.Workers)
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -78,6 +81,8 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 	for i := range a.Config.Actions {
 		a.ManageAction(a.Config.Actions[i])
 	}
+
+	log.SetLevel(prev)
 
 	for i := 0; i < a.Workers/2; i++ {
 		a.wg.Add(1)
