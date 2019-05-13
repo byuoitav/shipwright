@@ -1,29 +1,22 @@
-<h1 class="mat-h1">{{device.name}} Device Info</h1>
+<h1 class="mat-h1">{{ device.name }} Device Info</h1>
 <mat-divider></mat-divider>
 <mat-tab-group mat-stretch-tabs [(selectedIndex)]="tabIndex">
     <mat-tab label="Info">
         <div class="container">
             <section class="row">
-                <!-- Device Name -->
-                <!-- <mat-form-field class="device-field">
-                    <mat-label>Device Name</mat-label>
-                    <input matInput [type]="'text'" [(ngModel)]="device.name" />
-                </mat-form-field> -->
-
                 <!-- Display Name -->
                 <mat-form-field class="device-field">
                     <mat-label>Display Name</mat-label>
                     <input matInput [type]="'text'" [(ngModel)]="device.displayName" />
                 </mat-form-field>
-            </section>
-            <section class="row">
+
                 <!-- Description -->
                 <mat-form-field class="device-field">
                     <mat-label>Description</mat-label>
                     <input matInput [type]="'text'" [(ngModel)]="device.description" />
                 </mat-form-field>
-
-
+            </section>
+            <section class="row">
                 <!-- Address -->
                 <mat-form-field class="device-field">
                     <mat-label>Address</mat-label>
@@ -36,8 +29,8 @@
     <mat-tab *ngIf="device.ports != null && device.ports.length > 0">
         <ng-template mat-tab-label>
             <span matBadge="!" matBadgeOverlap="false" [matBadgeHidden]="PortsAreFine()" matBadgeColor="warn" matBadgeDescription="No ports set on this device" matBadgeSize="medium">
-                Routing
-            </span>
+        Routing
+      </span>
         </ng-template>
         <section class="container">
             <!-- Ports -->
@@ -58,7 +51,6 @@
                         <mat-option [value]="null">None</mat-option>
                         <mat-option *ngFor="let dev of sourceDevices" [value]="dev">{{ dev.substr(dev.lastIndexOf("-") + 1) }}
                         </mat-option>
-
                     </mat-select>
                 </mat-form-field>
                 <!-- Out Ports -->
@@ -68,7 +60,6 @@
                         <mat-option [value]="null">None</mat-option>
                         <mat-option *ngFor="let dev of destinationDevices" [value]="dev">{{ dev.substr(dev.lastIndexOf("-") + 1) }}
                         </mat-option>
-
                     </mat-select>
                 </mat-form-field>
             </div>
@@ -118,22 +109,35 @@
                     <mat-expansion-panel-header>
                         <mat-panel-title>Attributes</mat-panel-title>
                     </mat-expansion-panel-header>
-                    <section *ngFor="let attribute of device.attributes | keyvalue" class="row">
+                    <section *ngFor="let attribute of (device.attributes | keyvalue)" class="row">
                         <mat-form-field class="device-field">
-                            <input matInput type="text" [(ngModel)]="attribute.key">
+                            <input matInput type="text" [(ngModel)]="attribute.key" />
                         </mat-form-field>
                         <mat-form-field class="device-field">
-                            <input matInput type="text" [(ngModel)]="attribute.value">
+                            <input matInput type="text" [ngModel]="attribute.value" (change)="
+                  device.attributes.set(attribute.key, $event.target.value)
+                " />
                         </mat-form-field>
+                        <button mat-icon-button color="warn" (click)="RemoveAttribute(attribute.key)"><mat-icon>close</mat-icon></button>
+                    </section>
+                    <section class="row">
+                        <mat-form-field class="device-field">
+                            <input matInput type="text" [(ngModel)]="newAttrKey" />
+                        </mat-form-field>
+                        <mat-form-field class="device-field">
+                            <input matInput type="text" [(ngModel)]="newAttrVal" />
+                        </mat-form-field>
+                        <button [disabled]="device?.attributes?.has(this.newAttrKey)" (click)="AddAttribute()" mat-icon-button color="primary"><mat-icon>add</mat-icon></button>
                     </section>
                 </mat-expansion-panel>
             </section>
         </div>
     </mat-tab>
-
 </mat-tab-group>
+<mat-divider></mat-divider>
 <ng-container>
     <mat-dialog-actions class="actions">
+        <activity-button *ngIf="!device.isNew" [click]="deleteDevice" type="mat-stroked-button" style="margin-right: 10px; color: red;" (success)="close('deleted')">Delete</activity-button>
         <activity-button [click]="saveDevice" type="mat-raised-button" (success)="close(true)">Save</activity-button>
     </mat-dialog-actions>
 </ng-container>

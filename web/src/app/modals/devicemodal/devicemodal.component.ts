@@ -28,6 +28,9 @@ export class DeviceModalComponent implements OnInit {
   @Input() readOnly: boolean;
   destinationDevices: string[] = [];
 
+  newAttrKey: string;
+  newAttrVal: string;
+
   constructor(
     public text: StringsService,
     public dialogRef: MatDialogRef<DeviceModalComponent>,
@@ -177,6 +180,28 @@ export class DeviceModalComponent implements OnInit {
     }
   };
 
+  deleteDevice = async (): Promise<boolean> => {
+    this.RemoveExcessPorts(this.device);
+    console.log("deleting device", this.data);
+    try {
+      if (!this.device.isNew) {
+        let resp: DBResponse;
+        resp = await this.api.DeleteDevice(
+          this.device.id
+        );
+        if (resp.success) {
+          console.log("successfully deleted device", resp);
+        } else {
+          console.error("failed to delete device", resp);
+        }
+        return resp.success;
+      }
+    } catch (e) {
+      console.error("failed to delete device:", e);
+      return false;
+    }
+  };
+
   close(result: any) {
     this.dialogRef.close(result);
   }
@@ -239,6 +264,28 @@ export class DeviceModalComponent implements OnInit {
       }
       // no ports are set
       return false;
+    }
+  }
+
+  AddAttribute() {
+    if (this.device.attributes == null) {
+      this.device.attributes = new Map<string, any>();
+    }
+
+    if (this.newAttrKey != null && this.newAttrVal != null) {
+      if (this.newAttrKey.length > 0 && this.newAttrVal.length > 0) {
+        this.device.attributes.set(this.newAttrKey, this.newAttrVal);
+        this.newAttrKey = "";
+        this.newAttrVal = "";
+      }
+    }
+  }
+
+  RemoveAttribute(key: string) {
+    if (this.device.attributes != null) {
+      if (this.device.attributes.has(key)) {
+        this.device.attributes.delete(key);
+      }
     }
   }
 }

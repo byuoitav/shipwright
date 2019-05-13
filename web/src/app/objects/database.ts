@@ -1513,6 +1513,12 @@ export class AttributeSet {
   @JsonProperty("device-type", String, true)
   deviceType: string = undefined;
 
+  @JsonProperty("device-name", String, true)
+  deviceName: string = undefined;
+
+  @JsonProperty("device-icon", String, true)
+  deviceIcon: string = undefined;
+
   @JsonProperty("attributes", MapConverter, true)
   attributes: Map<string, any> = undefined;
 }

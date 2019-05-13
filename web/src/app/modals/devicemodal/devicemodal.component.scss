@@ -3,6 +3,7 @@
     flex-flow: column nowrap;
     justify-content: space-evenly;
     padding-top: 15px;
+    padding-bottom: 15px;
     max-height: 60vh;
     overflow-y: auto;
     /* width */
@@ -34,6 +35,8 @@
     align-items: baseline;
     &.full {
         justify-content: space-evenly;
+        padding-left: 5px;
+        padding-right: 5px;
     }
 }
 

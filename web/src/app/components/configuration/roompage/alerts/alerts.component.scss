@@ -173,6 +173,12 @@ $save: #0046c8;
         justify-content: space-between;
         align-items: flex-start;
     }
+    &.big {
+        flex-flow: row wrap;
+        justify-content: space-evenly;
+        height: 100%;
+        align-items: center;
+    }
 }
 
 .issue-table {
@@ -193,6 +199,11 @@ $save: #0046c8;
     &.cancel {
         color: $cancel;
     }
+}
+
+.big-boy {
+    width: 40%;
+    height: 40%;
 }
 
 .resolver {
@@ -218,6 +229,7 @@ $save: #0046c8;
 
 .action-content {
     min-height: 20vh;
+    height: 20vh;
     // max-height: 40vh;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -252,7 +264,8 @@ $save: #0046c8;
 
 .notes-column {
     padding: 5px;
-    // min-height: 30vh;
+    min-height: 23vh;
+    height: 23vh;
     width: 17vw;
     display: flex;
     flex-direction: column;
@@ -263,7 +276,7 @@ $save: #0046c8;
     display: flex-grow;
     flex-direction: column-reverse;
     // justify-self: flex-end;
-    // max-height: 27vh;
+    max-height: 27vh;
     height: wrap;
     overflow: auto;
     padding: 5px;

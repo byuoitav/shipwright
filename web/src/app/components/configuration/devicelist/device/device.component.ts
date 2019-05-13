@@ -13,13 +13,14 @@ import { APIService } from "src/app/services/api.service";
 export class DeviceComponent implements OnInit, OnChanges {
   @Input() device: Device;
   rawIP = "";
+  devicesInRoom: Device[] = [];
 
   constructor(public text: StringsService, public modal: ModalService, public data: DataService, public api: APIService) {
     if (this.data.finished) {
-      this.GetRawIP();
+      this.doSetup();
     } else {
       this.data.loaded.subscribe(() => {
-        this.GetRawIP();
+        this.doSetup();
       });
     }
   }
@@ -29,11 +30,19 @@ export class DeviceComponent implements OnInit, OnChanges {
 
   ngOnChanges() {
     if (this.data.finished) {
-      this.GetRawIP();
+      this.doSetup();
     } else {
       this.data.loaded.subscribe(() => {
-        this.GetRawIP();
+        this.doSetup();
       });
+    }
+  }
+
+  doSetup() {
+    if (this.device != null) {
+      this.GetRawIP();
+      const roomID = this.device.id.substr(0, this.device.id.lastIndexOf("-"));
+      this.devicesInRoom = this.data.roomToDevicesMap.get(roomID);
     }
   }
 
@@ -43,9 +52,13 @@ export class DeviceComponent implements OnInit, OnChanges {
 
   GetRawIP() {
     if (this.device != null) {
-      this.api.GetDeviceRawIPAddress(this.device.address).then(addr => {
-        this.rawIP = addr as string;
-      });
+      if (this.device.address !== "0.0.0.0") {
+        this.api.GetDeviceRawIPAddress(this.device.address).then(addr => {
+          this.rawIP = addr as string;
+        });
+      } else {
+        this.rawIP = this.device.address;
+      }
     }
   }
 }
