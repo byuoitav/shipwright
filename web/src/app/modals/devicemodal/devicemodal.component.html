@@ -137,6 +137,7 @@
 <mat-divider></mat-divider>
 <ng-container>
     <mat-dialog-actions class="actions">
+        <activity-button *ngIf="!device.isNew" [click]="deleteDevice" type="mat-stroked-button" style="margin-right: 10px; color: red;" (success)="close('deleted')">Delete</activity-button>
         <activity-button [click]="saveDevice" type="mat-raised-button" (success)="close(true)">Save</activity-button>
     </mat-dialog-actions>
 </ng-container>

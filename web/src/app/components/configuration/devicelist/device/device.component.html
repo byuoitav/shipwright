@@ -6,11 +6,11 @@
         <mat-card-title>{{device.name}}</mat-card-title>
         <mat-card-subtitle>{{data.deviceTypeMap.get(device.type.id).displayName}}</mat-card-subtitle>
         <span class="fill-remaining-space"></span>
-        <button mat-icon-button (click)="modal.OpenDeviceModal(device)">
+        <button mat-icon-button (click)="modal.OpenDeviceModal(device, devicesInRoom)">
               <mat-icon>more_horiz</mat-icon>
             </button>
     </mat-card-header>
-    <mat-divider></mat-divider>
+    <!-- <mat-divider></mat-divider>
     <mat-card-content>
         <mat-list>
             <mat-list-item>
@@ -23,5 +23,5 @@
             </mat-list-item>
 
         </mat-list>
-    </mat-card-content>
+    </mat-card-content> -->
 </mat-card>

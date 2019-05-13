@@ -70,6 +70,9 @@ export class ModalService {
     .afterClosed()
     .subscribe(resp => {
       if (resp != null) {
+        if (resp === "deleted") {
+          deviceList.splice(deviceList.indexOf(device), 1);
+        }
         this.deviceDone.emit(device);
       }
     });

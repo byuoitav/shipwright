@@ -130,13 +130,15 @@ export class DeviceModalComponent implements OnInit {
   }
 
   SetSourceAndDestinationDevices() {
-    for (const dev of this.devicesInRoom) {
-      const type = this.dataService.deviceTypeMap.get(dev.type.id);
-      if (type.source) {
-        this.sourceDevices.push(dev.id);
-      }
-      if (type.destination) {
-        this.destinationDevices.push(dev.id);
+    if (this.devicesInRoom != null) {
+      for (const dev of this.devicesInRoom) {
+        const type = this.dataService.deviceTypeMap.get(dev.type.id);
+        if (type.source) {
+          this.sourceDevices.push(dev.id);
+        }
+        if (type.destination) {
+          this.destinationDevices.push(dev.id);
+        }
       }
     }
   }
@@ -174,6 +176,28 @@ export class DeviceModalComponent implements OnInit {
       return resp.success;
     } catch (e) {
       console.error("failed to update device:", e);
+      return false;
+    }
+  };
+
+  deleteDevice = async (): Promise<boolean> => {
+    this.RemoveExcessPorts(this.device);
+    console.log("deleting device", this.data);
+    try {
+      if (!this.device.isNew) {
+        let resp: DBResponse;
+        resp = await this.api.DeleteDevice(
+          this.device.id
+        );
+        if (resp.success) {
+          console.log("successfully deleted device", resp);
+        } else {
+          console.error("failed to delete device", resp);
+        }
+        return resp.success;
+      }
+    } catch (e) {
+      console.error("failed to delete device:", e);
       return false;
     }
   };

@@ -264,7 +264,8 @@ $save: #0046c8;
 
 .notes-column {
     padding: 5px;
-    // min-height: 30vh;
+    min-height: 23vh;
+    height: 23vh;
     width: 17vw;
     display: flex;
     flex-direction: column;
@@ -275,7 +276,7 @@ $save: #0046c8;
     display: flex-grow;
     flex-direction: column-reverse;
     // justify-self: flex-end;
-    // max-height: 27vh;
+    max-height: 27vh;
     height: wrap;
     overflow: auto;
     padding: 5px;
