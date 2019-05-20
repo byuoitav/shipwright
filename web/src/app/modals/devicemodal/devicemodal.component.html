@@ -34,7 +34,6 @@
         </ng-template>
         <section class="container">
             <!-- Ports -->
-            <!-- <h3 class="mat-h3">Ports</h3> -->
             <div *ngFor="let port of device.ports" class="row">
                 <!-- In Ports -->
                 <mat-form-field class="port-field">
@@ -53,7 +52,6 @@
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-                <!-- Out Ports -->
                 <mat-form-field class="port-field" *ngIf="!IsAnInPort(port)">
                     <mat-label>Output</mat-label>
                     <mat-select matInput [(ngModel)]="port.destinationDevice">
@@ -64,6 +62,7 @@
                 </mat-form-field>
             </div>
         </section>
+
     </mat-tab>
     <mat-tab label="Advanced">
         <div class="container">

@@ -4,8 +4,6 @@ import { ActivatedRoute, CanDeactivate } from "@angular/router";
 import { DataService } from "src/app/services/data.service";
 import { Room, Device } from "src/app/objects/database";
 import { BuilderComponent } from "./builder/builder.component";
-import { Observable } from "rxjs";
-import { ComponentCanDeactivate } from "src/app/pending-changes.guard";
 
 @Component({
   selector: "room-page",
@@ -17,7 +15,7 @@ export class RoomPageComponent implements OnInit {
   room: Room;
   devices: Device[] = [];
 
-  selectedTab = 2;
+  selectedTab = 0;
 
   @ViewChild("builder") roomBuilder: BuilderComponent;
 

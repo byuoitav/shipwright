@@ -248,68 +248,15 @@ func GetRoomDesignations(context echo.Context) error {
 // GetRoomClassSchedule gets the class schedule for a room
 func GetRoomClassSchedule(context echo.Context) error {
 	roomID := context.Param("roomID")
-	loc, er := time.LoadLocation("America/Denver")
-	if er != nil {
-		log.L.Errorf("Couldn't load location: %s", er.Error())
-		return context.JSON(http.StatusInternalServerError, er)
-	}
-	t := time.Now()
-	t = t.In(loc)
-	t6 := t.Add(time.Hour * 6)
 
-	var toReturn []structs.ClassHalfHourBlock
+	//find sunday
+	sunday := getsunday(time.Now())
 
-	classes, err := schedule.GetClassScheduleForTimeBlock(roomID, t, t6)
+	classes, err := schedule.GetClassScheduleForTimeBlock(roomID, sunday, sunday.AddDate(0, 0, 7))
 	if err != nil {
-		err.Addf("failed to get schedule for %s at %s", roomID, t.String())
-		return context.JSON(http.StatusInternalServerError, err)
+		log.L.Infof("failed: %s", err.Error())
 	}
-
-	log.L.Infof("classes: %+v", classes)
-
-	// iterate through the twelve blocks that we want to make
-	// for i := (time.Minute * 0); i < (time.Hour * 6); i += (time.Minute * 30) {
-	for i := 0; i < 12; i++ {
-		blockHour := t.Add(time.Hour * time.Duration(i/2)).Hour()
-
-		var blockMin int
-		if i%2 == 0 {
-			blockMin = 00
-		} else {
-			blockMin = 30
-		}
-
-		block := structs.ClassHalfHourBlock{
-			BlockStart: fmt.Sprintf("%d:%02d", blockHour, blockMin),
-			ClassName:  "--",
-			ClassTime:  "--",
-			Teacher: structs.Person{
-				Name: "--",
-				ID:   "--",
-			},
-			Days: "--",
-		}
-
-		for _, class := range classes {
-			if blockHour >= class.StartTime.Hour() && blockHour <= class.EndTime.Hour() {
-				if blockHour == class.EndTime.Hour() && blockMin >= class.EndTime.Add(time.Minute*5).Minute() {
-					continue
-				}
-				block.ClassName = fmt.Sprintf("%s %s", class.DeptName, class.CatalogNumber)
-				block.ClassTime = class.ClassTime
-				block.Days = class.Days
-				block.Teacher.Name = class.InstructorName
-				block.ClassStartTime = class.StartTime
-				block.ClassEndTime = class.EndTime
-
-				break
-			}
-		}
-
-		toReturn = append(toReturn, block)
-	}
-
-	return context.JSON(http.StatusOK, toReturn)
+	return context.JSON(http.StatusOK, classes)
 }
 
 func NukeRoom(context echo.Context) error {
@@ -325,4 +272,11 @@ func NukeRoom(context echo.Context) error {
 
 	return context.String(http.StatusOK, "ok")
 
+}
+
+func getsunday(t time.Time) time.Time {
+	for t.Weekday() != time.Sunday {
+		t = t.AddDate(0, 0, -1)
+	}
+	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
 }

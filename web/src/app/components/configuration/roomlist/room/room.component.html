@@ -1,5 +1,5 @@
 <mat-card>
-    <a routerLink="/configuration/{{room?.id}}/roompage/{{data.roomToDevicesMap.get(room?.id) == null ? 3 : 1}}">
+    <a routerLink="/configuration/{{room?.id}}/roompage/1">
         <mat-card-header>
             <mat-icon mat-card-avatar>{{text.SystemTypeIcon[state?.staticRoom.systemType]}}</mat-icon>
             <mat-card-title>{{room.id}}</mat-card-title>
@@ -8,7 +8,7 @@
 
     </a>
     <mat-card-content>
-        <a class="row" routerLink="/configuration/{{room?.id}}/roompage/{{data.roomToDevicesMap.get(room?.id) == null ? 3 : 1}}">
+        <a class="row" routerLink="/configuration/{{room?.id}}/roompage/1">
             <ng-container>
                 <ng-container *ngFor="let device of state?.deviceStates">
                     <button mat-icon-button *ngIf="IsADisplay(device)" [ngClass]="DisplayIsOn(device) ? 'display on' : 'display icon'"><mat-icon>{{GetDisplayIcon(device.deviceID)}}</mat-icon></button>
@@ -20,7 +20,7 @@
     <mat-card-actions>
         <mat-action-row>
             <div class="row buttons">
-                <a routerLink="/configuration/{{room?.id}}/roompage/{{data.roomToDevicesMap.get(room?.id) == null ? 3 : 1}}" class="row">
+                <a routerLink="/configuration/{{room?.id}}/roompage/1" class="row">
                     <mat-icon class="good">check_circle</mat-icon>
                     <span class="count">{{goodDeviceCount}}</span>
                     <mat-icon class="bad">cancel</mat-icon>
