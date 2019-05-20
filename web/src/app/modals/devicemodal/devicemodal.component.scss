@@ -1,11 +1,11 @@
 .container {
     display: flex;
     flex-flow: column nowrap;
-    justify-content: space-evenly;
+    justify-content: flex-start;
     padding-top: 15px;
     padding-bottom: 15px;
     max-height: 60vh;
-    overflow-y: auto;
+    overflow-y: hidden;
     /* width */
     &::-webkit-scrollbar {
         width: 5px;
