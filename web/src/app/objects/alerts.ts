@@ -3,7 +3,7 @@ import {
   JsonProperty,
   JsonConverter,
   JsonCustomConvert,
-  Any
+  Any,
 } from "json2typescript";
 import { Person } from "src/app/objects/database";
 import { DateConverter } from "./date";
@@ -192,26 +192,62 @@ export class RoomIssue {
   }
 }
 
-@JsonObject("ClassHalfHourBlock")
-export class ClassHalfHourBlock {
-  @JsonProperty("block-start", String, true)
-  blockStart: string = undefined;
+@JsonObject("ClassSchedule")
+export class ClassSchedule {
+  @JsonProperty("dept_name", String, true)
+  deptName: string = undefined;
 
-  @JsonProperty("class-name", String, true)
-  className: string = undefined;
+  @JsonProperty("catalog_number", String, true)
+  ctgName: string = undefined;
 
-  @JsonProperty("class-time", String, true)
+  @JsonProperty("catalog_suffix", Any, true)
+  ctgSuffix: any = undefined;
+
+  @JsonProperty("lab_quiz_section", Any, true)
+  labQuizSection: any = undefined;
+
+  @JsonProperty("honors", Any, true)
+  honors: any = undefined;
+
+  @JsonProperty("serv_learning", Any, true)
+  servLearning: any = undefined;
+
+  @JsonProperty("credit_hours", Number, true)
+  creditHours: number = 0;
+
+  @JsonProperty("section_type", Any, true)
+  sectionType: any = undefined;
+
+  @JsonProperty("class_time", String, true)
   classTime: string = undefined;
-
-  @JsonProperty("teacher", Person, true)
-  teacher: Person = undefined;
 
   @JsonProperty("days", String, true)
   days: string = undefined;
 
-  @JsonProperty("class-start-time", DateConverter, true)
-  classStartTime: Date = undefined;
+  @JsonProperty("instructor_name", String, true)
+  instrName: string = undefined;
 
-  @JsonProperty("class-end-time", DateConverter, true)
-  classEndTime: Date = undefined;
+  @JsonProperty("section_size", Number, true)
+  secSize: number = 0;
+
+  @JsonProperty("total_enr", Number, true)
+  totalEnr: number = 0;
+
+  @JsonProperty("sched_type", String, true)
+  schedType: string = undefined;
+
+  @JsonProperty("assign_to", Any, true)
+  assignTo: any = undefined;
+
+  @JsonProperty("start_date", Any, true)
+  startDate: any = undefined;
+
+  @JsonProperty("end_date", Any, true)
+  endDate: any = undefined;
+
+  @JsonProperty("start_time", DateConverter, true)
+  startTime: Date = undefined;
+
+  @JsonProperty("end_time", DateConverter, true)
+  endTime: Date = undefined;
 }

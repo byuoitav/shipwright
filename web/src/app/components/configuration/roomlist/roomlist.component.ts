@@ -107,6 +107,7 @@ export class RoomListComponent implements OnInit {
     this.modal.OpenRoomModal(newRoom);
     this.modal.roomDone.subscribe(r => {
       this.roomList.push(r);
+      this.roomList.sort(this.text.SortAlphaNumByID);
     });
   }
 }

@@ -61,7 +61,10 @@ export class BuildingListComponent implements OnInit {
   CreateNewBuilding() {
     const newBuilding = new Building();
     newBuilding.isNew = true;
-
     this.modal.OpenBuildingModal(newBuilding);
+    this.modal.buildingDone.subscribe((b) => {
+      this.filteredBuildings.push(b);
+      this.filteredBuildings.sort(this.text.SortAlphaNumByID);
+    });
   }
 }

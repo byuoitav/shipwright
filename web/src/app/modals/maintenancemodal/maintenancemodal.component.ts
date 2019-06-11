@@ -4,6 +4,7 @@ import { DataService } from "src/app/services/data.service";
 import { StringsService } from "src/app/services/strings.service";
 import { FormControl } from "@angular/forms";
 import { StaticRoom } from "src/app/objects/static";
+import { APIService } from 'src/app/services/api.service';
 
 @Component({
   selector: "app-maintenancemodal",
@@ -19,6 +20,7 @@ export class MaintenanceModalComponent {
     public dialogRef: MatDialogRef<MaintenanceModalComponent>,
     public text: StringsService,
     public dataService: DataService,
+    public api: APIService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.endTime = this.toDefaultMaintenanceEndTime(
@@ -43,7 +45,20 @@ export class MaintenanceModalComponent {
       this.staticRoom.MaintenenceModeEndTime = this.endDate.value;
     }
 
-    this.staticRoom.MaintenenceMode = setMM;
+    this.api.SetMaintenanceMode(this.staticRoom.roomID, this.staticRoom);
+
+    // this.staticRoom.MaintenenceMode = setMM;
+    
+    // let issue = this.dataService.GetRoomIssue(this.staticRoom.roomID)
+    // if (issue != null) {
+    //   if (issue.issueTags.includes("maintenance") && !setMM) {
+    //     issue.issueTags.splice(issue.issueTags.indexOf("maintenance"), 1);
+    //   }
+    //   else if (setMM && !issue.issueTags.includes("maintenance")) {
+    //     issue.issueTags.push("maintenance");
+    //   }
+    // }
+    // console.log(issue);
 
     this.dialogRef.close(this.staticRoom);
   }
