@@ -19,7 +19,7 @@ import {
   RoomIssue,
   Alert,
   ResolutionInfo,
-  ClassHalfHourBlock
+  ClassSchedule
 } from "../objects/alerts";
 import { StringsService } from "./strings.service";
 import { CookieService } from "ngx-cookie-service";
@@ -839,7 +839,7 @@ export class APIService {
 
       const schedule = this.converter.deserializeArray(
         data,
-        ClassHalfHourBlock
+        ClassSchedule
       );
       return schedule;
     } catch (e) {
