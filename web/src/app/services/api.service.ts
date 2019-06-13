@@ -888,4 +888,18 @@ export class APIService {
       throw new Error("error trying to get the attribute presets: " + e);
     }
   }
+  
+  public async GetPictures(roomID: string) {
+    try {
+
+      console.log("can you hear me")
+      const data: any = await this.http
+      .get("rooms/"+ roomID +"/attachments", { headers: this.headers }).toPromise();
+      console.log("here is the data", data);
+      return data;
+    } catch (e) {
+      throw new Error("error getting the list of pictures: " + e);
+    }
+    
+  }
 }

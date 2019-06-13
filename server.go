@@ -126,6 +126,7 @@ func main() {
 	readconfig.GET("/rooms/configurations", handlers.GetRoomConfigurations)
 	readconfig.GET("/rooms/designations", handlers.GetRoomDesignations)
 	readconfig.GET("/rooms/:roomID/schedule", handlers.GetRoomClassSchedule)
+	readconfig.GET("/rooms/:roomID/attachments", handlers.GetRoomAttachments)
 
 	writeconfig.DELETE("/rooms/:roomID/nuke", handlers.NukeRoom)
 

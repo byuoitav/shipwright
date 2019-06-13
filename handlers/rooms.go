@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/byuoitav/common/db"
 	"github.com/byuoitav/common/log"
 	sd "github.com/byuoitav/common/state/statedefinition"
 	"github.com/byuoitav/common/structs"
@@ -279,4 +280,16 @@ func getsunday(t time.Time) time.Time {
 		t = t.AddDate(0, 0, -1)
 	}
 	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
+}
+
+func GetRoomAttachments(ectx echo.Context) error {
+	roomID := ectx.Param("roomID")
+	log.L.Infof("are we here?\n")
+	attachments, err := db.GetDB().GetRoomAttachments(roomID)
+
+	if err != nil {
+		return ectx.JSON(http.StatusInternalServerError, err)
+	}
+
+	return ectx.JSON(http.StatusOK, attachments)
 }
