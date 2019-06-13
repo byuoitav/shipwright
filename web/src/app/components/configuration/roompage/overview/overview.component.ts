@@ -122,4 +122,14 @@ export class OverviewComponent implements OnInit {
       return false;
     }
   }
+
+  async getPictures(): Promise<string[]> {
+    let pics: string[] = [];
+    
+    await this.api.GetPictures(this.room.id).then((response)=> {
+      pics = response as string[];
+    })
+    console.log("Here are the pics", pics);
+    return pics;
+  }
 }
