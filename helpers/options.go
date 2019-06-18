@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"github.com/byuoitav/common/db"
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/structs"
 )
@@ -24,4 +25,31 @@ func GetTemplates() ([]structs.Template, *nerr.E) {
 	}
 
 	return templateList, nil
+}
+
+// GetMenuTree returns the fully built out menu tree
+func GetMenuTree() (structs.MenuTree, *nerr.E) {
+	groups, ne := GetAllAttributeGroups()
+	if ne != nil {
+		log.L.Errorf("failed to get all attributes when building the menu tree: %s", ne.String())
+		return structs.MenuTree{}, nil
+	}
+
+	order, err := db.GetDB().GetMenuTree()
+	if err != nil {
+		log.L.Errorf("failed to get menu tree: %s", err.Error())
+		return structs.MenuTree{}, nil
+	}
+
+	var toReturn structs.MenuTree
+
+	for _, id := range order {
+		for _, group := range groups {
+			if group.ID == id {
+				toReturn.Groups = append(toReturn.Groups, group)
+			}
+		}
+	}
+
+	return toReturn, nil
 }

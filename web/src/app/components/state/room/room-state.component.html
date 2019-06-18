@@ -1,67 +1,134 @@
 <div *ngIf="!data.finished" class="placeholder">
-    <h3 class="mat-h3">Getting room states...</h3>
+  <h3 class="mat-h3">Getting room states...</h3>
 </div>
 <div *ngIf="data.finished" class="mat-elevation-z8">
-    <mat-form-field class="filters">
-        <mat-label>Filters</mat-label>
-        <mat-chip-list #filterList>
-            <mat-chip *ngFor="let query of filterQueries" [selectable]=true [removable]=true (removed)="text.RemoveChip(query, filterQueries); FilterRooms()">
-                {{query}}
-                <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
-            <input type="text" matInput [matChipInputFor]="filterList" [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes" [matChipInputAddOnBlur]=true (matChipInputTokenEnd)="text.AddChip($event, filterQueries); FilterRooms()">
+  <mat-form-field class="filters">
+    <mat-label>Filters</mat-label>
+    <mat-chip-list #filterList>
+      <mat-chip
+        *ngFor="let query of filterQueries"
+        [selectable]="true"
+        [removable]="true"
+        (removed)="text.RemoveChip(query, filterQueries); FilterRooms()"
+      >
+        {{ query }}
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+      <input
+        type="text"
+        matInput
+        [matChipInputFor]="filterList"
+        [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes"
+        [matChipInputAddOnBlur]="true"
+        (matChipInputTokenEnd)="
+          text.AddChip($event, filterQueries); FilterRooms()
+        "
+      />
+    </mat-chip-list>
+  </mat-form-field>
+  <span class="button-row">
+    <button
+      mat-raised-button
+      color="primary"
+      class="button-filter"
+      (click)="activeAlerts()"
+    >
+      Active Alerts
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      class="button-filter"
+      (click)="lowMic()"
+    >
+      Low Mic's
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      class="button-filter"
+      (click)="warnMic()"
+    >
+      Warning Mic's
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      class="button-filter"
+      (click)="inUse()"
+    >
+      System in use
+    </button>
+  </span>
+  <table mat-table [dataSource]="dataSource" matSort>
+    <ng-container matColumnDef="type">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>System Type</th>
+      <td mat-cell *matCellDef="let rs">
+        <mat-icon>{{
+          text.SystemTypeIcon[rs.staticRoom.systemType[0]]
+        }}</mat-icon>
+      </td>
+    </ng-container>
+
+    <!-- {{text.SystemTypeIcon[rs.staticRoom.systemType[0]}} -->
+    <!-- {{data.GetRoomIssue(rs.roomID).systemType}} -->
+
+    <ng-container matColumnDef="roomID">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Room ID</th>
+      <td mat-cell *matCellDef="let rs">{{ rs.roomID }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="alerts">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header># of Alerts</th>
+      <td mat-cell *matCellDef="let rs">
+        {{ rs.activeAlertCount }}/{{ rs.totalAlertCount }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="devices">
+      <th mat-header-cell *matHeaderCellDef>Devices</th>
+      <td mat-cell *matCellDef="let rs">
+        <mat-chip-list class="chipList">
+          <mat-chip *ngFor="let ds of rs.deviceStates" [ngClass]="GetStyle(ds)" (click)="modal.OpenDeviceModal(data.GetDevice(ds.deviceID))">
+            {{ GetDeviceName(ds.deviceID) }}
+            <ng-container *ngIf="HasBatteryCharge(ds)">
+              <mat-icon
+                *ngIf="ds.batteryChargeMinutes >= 300"
+                class="mic-good icon"
+                title="{{ ds.batteryChargeMinutes }} minutes"
+                >battery_full</mat-icon
+              >
+              <mat-icon
+                *ngIf="
+                  ds.batteryChargeMinutes < 300 && ds.batteryChargeMinutes >= 90
+                "
+                class="mic-okay icon"
+                title="{{ ds.batteryChargeMinutes }} minutes"
+                >battery_full</mat-icon
+              >
+              <mat-icon
+                *ngIf="
+                  90 > ds.batteryChargeMinutes && ds.batteryChargeMinutes >= 0
+                "
+                class="mic-bad icon"
+                title="{{ ds.batteryChargeMinutes }} minutes"
+                >battery_full</mat-icon
+              >
+            </ng-container>
+          </mat-chip>
         </mat-chip-list>
-    </mat-form-field>
-    <span class="button-row">
-        <button mat-raised-button color="primary" class="button-filter" (click)="activeAlerts()">Active Alerts</button>
-        <button mat-raised-button color="primary" class="button-filter" (click)="lowMic()">Low Mic's</button>
-        <button mat-raised-button color="primary" class="button-filter" (click)="warnMic()">Warning Mic's</button>
-        <button mat-raised-button color="primary" class="button-filter" (click)="inUse()">System in use</button>
-    </span>
-    <table mat-table [dataSource]="dataSource" matSort>
-        <ng-container matColumnDef="type">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>System Type</th>
-            <td mat-cell *matCellDef="let rs">
-                <mat-icon>{{text.SystemTypeIcon[rs.staticRoom.systemType[0]]}}</mat-icon>
-            </td>
-        </ng-container>
+      </td>
+    </ng-container>
 
-        <!-- {{text.SystemTypeIcon[rs.staticRoom.systemType[0]}} -->
-        <!-- {{data.GetRoomIssue(rs.roomID).systemType}} -->
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+  </table>
 
-        <ng-container matColumnDef="roomID">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Room ID</th>
-            <td mat-cell *matCellDef="let rs"> {{rs.roomID}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="alerts">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header># of Alerts</th>
-            <td mat-cell *matCellDef="let rs"> {{rs.activeAlertCount}}/{{rs.totalAlertCount}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="devices">
-            <th mat-header-cell *matHeaderCellDef>Devices</th>
-            <td mat-cell *matCellDef="let rs">
-                <mat-chip-list class="chipList">
-                    <mat-chip *ngFor="let ds of rs.deviceStates" [ngClass]="GetStyle(ds)" >
-                        {{GetDeviceName(ds.deviceID)}}                        
-                        <ng-container *ngIf="HasBatteryCharge(ds)">
-                            <mat-icon *ngIf="ds.batteryChargeMinutes >= 300" class="mic-good icon" title="{{ds.batteryChargeMinutes}} minutes">battery_full</mat-icon>
-                            <mat-icon *ngIf="ds.batteryChargeMinutes < 300 && ds.batteryChargeMinutes >= 90" class="mic-okay icon" title="{{ds.batteryChargeMinutes}} minutes">battery_full</mat-icon>
-                            <mat-icon *ngIf="90 > ds.batteryChargeMinutes && ds.batteryChargeMinutes >= 0" class="mic-bad icon" title="{{ds.batteryChargeMinutes}} minutes">battery_full</mat-icon>
-                        </ng-container>
-                    </mat-chip>
-                </mat-chip-list>
-            </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="columns"></tr>
-        <tr mat-row *matRowDef="let row; columns: columns;"></tr>
-    </table>
-
-    <mat-paginator [length]="length"
-              [pageSize]="pageSize"
-              [pageSizeOptions]="pageSizeOptions"
-              (page)="pageEvent = $event">
-    </mat-paginator>
+  <mat-paginator
+    [length]="length"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="pageSizeOptions"
+    (page)="pageEvent = $event"
+  >
+  </mat-paginator>
 </div>

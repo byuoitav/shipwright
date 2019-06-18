@@ -18,6 +18,7 @@ type ActionManager struct {
 	Config      *ActionConfig
 	Workers     int
 	EventStream chan events.Event
+	EventCache  string
 
 	matchActionsMu sync.RWMutex
 	matchActions   []*Action
@@ -48,6 +49,7 @@ func DefaultActionManager() *ActionManager {
 			Config:      DefaultConfig(),
 			Workers:     1000,
 			EventStream: make(chan events.Event, 10000),
+			EventCache:  "default",
 		}
 	})
 
@@ -68,6 +70,9 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 		a.Workers = 1
 	}
 
+	prev, _ := log.GetLevel()
+	log.SetLevel("info")
+
 	log.L.Infof("Starting action manager with %d workers", a.Workers)
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -76,6 +81,8 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 	for i := range a.Config.Actions {
 		a.ManageAction(a.Config.Actions[i])
 	}
+
+	log.SetLevel(prev)
 
 	for i := 0; i < a.Workers/2; i++ {
 		a.wg.Add(1)
@@ -112,8 +119,10 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 						return
 					}
 
-					//get the cache and submit for persistence
-					cache.GetCache("default").StoreAndForwardEvent(event)
+					if len(a.EventCache) > 0 {
+						//get the cache and submit for persistence
+						cache.GetCache(a.EventCache).StoreAndForwardEvent(event)
+					}
 
 					// a new context for this action
 					actx := actionctx.PutEvent(ctx, event)

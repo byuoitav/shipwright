@@ -1,0 +1,74 @@
+<section class="row centered">
+  <h1 class="mat-h1" *ngIf="room != null">{{ room?.id }} Parts List</h1>
+</section>
+
+<section *ngIf="deviceList?.length > 0" id="printme">
+  <section class="row">
+    <table mat-table [dataSource]="dataSource" matSort>
+      <ng-container matColumnDef="device">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Device</th>
+        <td mat-cell *matCellDef="let ds">
+          {{ ds.id.substr(ds.id.lastIndexOf("-") + 1) }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+        <td mat-cell *matCellDef="let ds">{{ ds.type.id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="address">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Address</th>
+        <td mat-cell *matCellDef="let ds">
+          {{ ds.address }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="ipaddress">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>IP Address</th>
+        <td mat-cell *matCellDef="let ds">
+          {{ ipaddressmap[ds.address] }}
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    </table>
+
+    <table mat-table [dataSource]="portData">
+      <ng-container matColumnDef="device-name">
+        <th mat-header-cell *matHeaderCellDef>Device</th>
+        <td mat-cell *matCellDef="let pd">{{ pd.deviceName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="port-name">
+        <th mat-header-cell *matHeaderCellDef>Port</th>
+        <td mat-cell *matCellDef="let pd">{{ pd.port.friendlyName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="connection">
+        <th mat-header-cell *matHeaderCellDef>Connect</th>
+        <td mat-cell *matCellDef="let pd">
+          <ng-container *ngIf="IsAnInPort(pd.port)">
+            {{
+              pd.port.sourceDevice.substr(
+                pd.port.sourceDevice.lastIndexOf("-") + 1
+              )
+            }}
+          </ng-container>
+          <ng-container *ngIf="!IsAnInPort(pd.port)">
+            {{
+              pd.port.destinationDevice.substr(
+                pd.port.destinationDevice.lastIndexOf("-") + 1
+              )
+            }}
+          </ng-container>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="portColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: portColumns"></tr>
+    </table>
+  </section>
+</section>
+<button (click)="printWithCss()"></button>

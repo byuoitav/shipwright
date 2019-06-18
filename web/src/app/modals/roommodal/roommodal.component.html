@@ -6,10 +6,10 @@
             <input matInput type="text" [(ngModel)]="data.id" required>
         </mat-form-field>
         <!-- NAME -->
-        <mat-form-field #roomName>
+        <!-- <mat-form-field #roomName>
             <mat-label>Name</mat-label>
             <input matInput type="text" [(ngModel)]="data.name" required>
-        </mat-form-field>
+        </mat-form-field> -->
         <!-- DESCRIPTION -->
         <mat-form-field #roomDescription>
             <mat-label>Description</mat-label>
@@ -44,9 +44,16 @@
         </mat-form-field>
     </section>
     <!-- BUTTONS -->
-    <div class="row">
-        <button mat-button class="button submit" (click)="UpdateRoom()">{{data.isNew ? "ADD" : "UPDATE"}}</button>
-        <!-- <button mat-button class="button delete" (click)="DeleteRoom()" [disabled]="!data.roomExists">DELETE</button> -->
-        <button mat-button class="button close" (click)="CloseModal()">CLOSE</button>
-    </div>
+    <!-- <section class="row">
+        <button mat-button class="button save" (click)="AddRoom()" *ngIf="data.isNew">Add</button>
+        <button mat-button class="button save" (click)="UpdateRoom()" *ngIf="!data.isNew">Update</button>
+        <button mat-button class="button cancel" (click)="CloseModal()">Cancel</button>
+    </section> -->
+
+    <ng-container>
+        <mat-dialog-actions class="actions">
+            <activity-button *ngIf="!data.isNew" [click]="deleteRoom" type="mat-stroked-button" style="margin-right: 10px; color: red;" (success)="close('deleted')">Delete</activity-button>
+            <activity-button [click]="saveRoom" type="mat-raised-button" (success)="close(true)">Save</activity-button>
+        </mat-dialog-actions>
+    </ng-container>
 </div>

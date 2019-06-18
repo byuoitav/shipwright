@@ -1,13 +1,25 @@
-<!-- Commented for now. Will return when we work on these other things -->
+<section *ngIf="!data.finished" class="info-header">
+    <h3 class="mat-h3">Currently updating room information...</h3>
+</section>
+<div *ngIf="data.finished" id="wrapper">
+    <mat-tab-group id="tab-group" mat-stretch-tabs class="full mat-elevation-z0" [selectedIndex]="selectedTab" (selectedTabChange)="TabChange($event.index)">
 
-<mat-tab-group mat-stretch-tabs class="full mat-elevation-z0" [selectedIndex]="selectedTab">
-    <mat-tab label="Alerts">
-        <alerts></alerts>
-    </mat-tab>
-    <mat-tab label="Builder">
-        <builder></builder>
-    </mat-tab>
-    <mat-tab label="Routing">
-        <routing></routing>
-    </mat-tab>
-</mat-tab-group>
+        <mat-tab label="Overview">
+            <room-overview [deviceList]="devices" [room]="room"></room-overview>
+        </mat-tab>
+        <mat-tab label="Alerts">
+            <alerts></alerts>
+        </mat-tab>
+
+        <mat-tab label="Builder">
+            <builder></builder>
+        </mat-tab>
+        <mat-tab label="Routing">
+            <routing [roomID]="roomID"></routing>
+        </mat-tab>
+        <mat-tab label="Parts List">
+            <partslist [deviceList]="devices" [room]="room" [roomid]="room?.id"></partslist>
+        </mat-tab>
+
+    </mat-tab-group>
+</div>

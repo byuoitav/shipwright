@@ -134,6 +134,7 @@ func (a *alertStore) setRoomIssueInfo(issue structs.RoomIssue) *nerr.E {
 
 	//otherwise we ship it in to be processed
 	log.L.Infof("Editing the room issue info for %v", issue.RoomIssueID)
+	log.L.Infof("IncidentIDS: %v", issue.IncidentID)
 
 	a.issueEditChannel <- issue
 	return nil
@@ -677,6 +678,7 @@ func combineIssues(n, o structs.RoomIssue) (structs.RoomIssue, bool) {
 		changes = true
 	}
 
+	log.L.Infof("Old Incidents: %v. New Incidents: %v", o.IncidentID, n.IncidentID)
 	if len(n.IncidentID) > 0 && (len(n.IncidentID) != len(o.IncidentID) || !structs.ContainsAllTags(o.IncidentID, n.IncidentID...)) {
 		o.IncidentID = n.IncidentID
 		changes = true
@@ -694,6 +696,16 @@ func combineIssues(n, o structs.RoomIssue) (structs.RoomIssue, bool) {
 		// the old stuff doesn't work because it adds the lists together and then checks if they have different length
 		o.RoomIssueResponses = n.RoomIssueResponses
 		changes = true
+	}
+
+	for i := range o.RoomIssueResponses {
+		// matching ones should be at the same index
+		if o.RoomIssueResponses[i].HelpSentAt != n.RoomIssueResponses[i].HelpSentAt ||
+			o.RoomIssueResponses[i].HelpArrivedAt != n.RoomIssueResponses[i].HelpArrivedAt ||
+			!structs.HasAllPeople(o.RoomIssueResponses[i].Responders, n.RoomIssueResponses[i].Responders...) {
+			o.RoomIssueResponses[i] = n.RoomIssueResponses[i]
+			changes = true
+		}
 	}
 
 	return o, changes

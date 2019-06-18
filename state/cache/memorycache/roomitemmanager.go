@@ -3,6 +3,7 @@ package memorycache
 import (
 	"time"
 
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	sd "github.com/byuoitav/common/state/statedefinition"
 )
@@ -13,6 +14,7 @@ Room Item Manager handles managing access to a single room in a cache. Changes t
 type RoomItemManager struct {
 	WriteRequests chan RoomTransactionRequest //channel to buffer changes to the room.
 	ReadRequests  chan chan sd.StaticRoom
+	KillChannel   chan bool
 }
 
 //RoomTransactionRequest is submitted to read/write a the room being managed by this manager
@@ -53,6 +55,9 @@ func StartRoomManager(m RoomItemManager, room sd.StaticRoom) {
 
 	for {
 		select {
+		case <-m.KillChannel:
+			log.L.Infof("Killing room manager for %v", room.RoomID)
+			return
 		case write := <-m.WriteRequests:
 
 			if write.MergeRoom.RoomID != room.RoomID {

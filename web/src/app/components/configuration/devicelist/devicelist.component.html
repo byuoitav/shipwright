@@ -1,9 +1,7 @@
 <div *ngIf="data.finished" class="container">
     <section class="row">
-        <button mat-stroked-button (click)="GoBack()" color="primary"><mat-icon>arrow_back</mat-icon>Back</button>
+        <ng-container *ngFor="let device of deviceList">
+            <device [device]="device" [devicesInRoom]="deviceList"></device>
+        </ng-container>
     </section>
-    <section class="container">
-        <device *ngFor="let device of deviceList" [device]="device"></device>
-    </section>
-
 </div>

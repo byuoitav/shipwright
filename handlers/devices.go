@@ -152,10 +152,9 @@ func GetDevicesByTypeAndRole(context echo.Context) error {
 
 // UpdateDevice updates a device in the database
 func UpdateDevice(context echo.Context) error {
-	log.L.Debugf("%s Starting UpdateDevice...")
-
 	// get information from the context
-	deviceID := context.Param("room")
+	deviceID := context.Param("device")
+	log.L.Infof("Received request to update device %s", deviceID)
 
 	var device structs.Device
 	err := context.Bind(&device)
@@ -262,15 +261,15 @@ func GetDeviceRawIPAddress(context echo.Context) error {
 	if err != nil {
 		msg := fmt.Sprintf("failed to resolve hostname address %s : %s", hostname, err.Error())
 		log.L.Errorf("%s %s", helpers.DevicesTag, msg)
-		return context.JSON(http.StatusInternalServerError, err)
+		// return context.JSON(http.StatusInternalServerError, err)
 	}
 
-	address := ""
+	address := "No IP address found"
 
 	if len(addrs) >= 1 {
 		address = addrs[0]
 	}
 
-	log.L.Debugf("%s Successfully got the IP address for %s!", helpers.DevicesTag, hostname)
+	log.L.Debugf("%s Returning a response for the IP address for %s!", helpers.DevicesTag, hostname)
 	return context.JSON(http.StatusOK, address)
 }

@@ -1,8 +1,8 @@
 package alertcache
 
 import (
-	"bytes"
 	"encoding/gob"
+	"encoding/json"
 	"time"
 
 	"github.com/byuoitav/common/log"
@@ -34,9 +34,8 @@ func getRedisAlertCache(c aconfig.CacheConfig) AlertCache {
 		c: redis.NewClient(&redis.Options{
 			Addr:        addr,
 			PoolSize:    500,
-			PoolTimeout: 10 * time.Second,
-			Password:    pass,
-			DB:          c.Redis.Database,
+			PoolTimeout: 10 * time.Second, Password: pass,
+			DB: c.Redis.Database,
 		}),
 	}
 	_, err := toReturn.c.Ping().Result()
@@ -62,10 +61,7 @@ func (r *RedisAlertCache) GetIssue(id string) (structs.RoomIssue, *nerr.E) {
 		log.L.Errorf("Error accessing redis cache: %v", err.Error())
 		return tmp, nerr.Translate(err).Addf("Couldn't access redis cache")
 	} else {
-		buf := bytes.NewBuffer(by)
-		dec := gob.NewDecoder(buf)
-
-		err = dec.Decode(&tmp)
+		err := json.Unmarshal(by, &tmp)
 		if err != nil {
 			log.L.Errorf("Error decoding device from cache record: %v", err.Error())
 			return tmp, nerr.Translate(err).Addf("Bad data in redis cluster: %s: %s", err.Error(), by)
@@ -80,15 +76,13 @@ func (r *RedisAlertCache) GetIssue(id string) (structs.RoomIssue, *nerr.E) {
 func (r *RedisAlertCache) PutIssue(a structs.RoomIssue) *nerr.E {
 	log.L.Debugf("Putting issue %v to redis cache", a.RoomIssueID)
 
-	var al bytes.Buffer
-	enc := gob.NewEncoder(&al)
-	err := enc.Encode(a)
+	b, err := json.Marshal(a)
 	if err != nil {
 		log.L.Errorf("%v", err.Error())
 		return nerr.Translate(err).Addf("Couldn't put issue in redis cache: Couldn't encode alert: %v", err.Error())
 	}
 
-	err = r.c.Set(a.RoomIssueID, al.Bytes(), 0).Err()
+	err = r.c.Set(a.RoomIssueID, b, 0).Err()
 	if err != nil {
 		return nerr.Translate(err).Addf("Couldn't put issue in reids cache: Couldn't access redis cache")
 	}
@@ -127,10 +121,8 @@ func (r *RedisAlertCache) GetAllIssues() ([]structs.RoomIssue, *nerr.E) {
 
 	for i := range result {
 		var tmp structs.RoomIssue
-		buf := bytes.NewBuffer([]byte(result[i].(string)))
-		dec := gob.NewDecoder(buf)
-		er = dec.Decode(&tmp)
 
+		er := json.Unmarshal([]byte(result[i].(string)), &tmp)
 		if er != nil {
 			log.L.Debugf("Discarding event: %v. It was probably an index", result[i].(string))
 			continue

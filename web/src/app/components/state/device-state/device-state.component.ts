@@ -8,6 +8,7 @@ import {
 } from "@angular/material";
 
 import { DataService } from "../../../services/data.service";
+import { SocketService } from "../../../services/socket.service";
 import { StaticDevice } from "../../../objects/static";
 
 enum FilterType {
@@ -98,7 +99,7 @@ export class DeviceStateComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(private data: DataService) {}
+  constructor(private data: DataService, private socket: SocketService) {}
 
   ngOnInit() {
     if (this.data.loaded) {
@@ -134,6 +135,11 @@ export class DeviceStateComponent implements OnInit {
         ...["deviceID", "deviceType", "power", "input", "lastHeartbeat"]
       );
     }
+
+    // refresh data each time a static device updates
+    this.socket.devices.subscribe(() => {
+      this.dataSource.data = this.data.staticDeviceList;
+    });
   }
 
   addFilter(ftype: FilterType, key: string, val: string) {

@@ -11,16 +11,18 @@ import {
   Person,
   Role,
   UIConfig,
-  Template
+  Template,
+  MenuTree
 } from "../objects/database";
 import { StaticDevice, CombinedRoomState, StaticRoom } from "../objects/static";
 import {
   RoomIssue,
   Alert,
   ResolutionInfo,
-  ClassHalfHourBlock
+  ClassSchedule
 } from "../objects/alerts";
 import { StringsService } from "./strings.service";
+import { CookieService } from "ngx-cookie-service";
 
 @Injectable({
   providedIn: "root"
@@ -34,7 +36,11 @@ export class APIService {
 
   private headers: HttpHeaders;
 
-  constructor(private http: HttpClient, private text: StringsService) {
+  constructor(
+    public cookies: CookieService,
+    private http: HttpClient,
+    private text: StringsService
+  ) {
     this.themeSwitched = new EventEmitter<string[]>();
     this.converter = new JsonConvert();
     this.converter.ignorePrimitiveChecks = false;
@@ -51,24 +57,22 @@ export class APIService {
   }
 
   public refresh() {
-    window.location.reload(true);
+    window.location.reload();
   }
 
   public switchTheme(name: string) {
     const oldTheme = this.theme + "-theme";
     const newTheme = name + "-theme";
 
-    console.log("switching theme to ", name);
-
     this.theme = name;
-    this.urlParams.set("theme", name);
+    this.cookies.set("theme", name, 365);
 
     this.themeSwitched.emit([oldTheme, newTheme]);
 
     window.history.replaceState(
       null,
       this.text.WebsiteTitle,
-      window.location.pathname + "?" + this.urlParams.toString()
+      window.location.pathname
     );
   }
 
@@ -452,7 +456,7 @@ export class APIService {
 
       return response;
     } catch (e) {
-      throw new Error("error updating the device " + idToUpdate + ": " + e);
+      throw e;
     }
   }
 
@@ -481,6 +485,18 @@ export class APIService {
       return response;
     } catch (e) {
       throw new Error("error deleting the device " + deviceID + ": " + e);
+    }
+  }
+
+  public async GetDeviceRawIPAddress(hostname: string) {
+    try {
+      const data: any = await this.http
+        .get("devices/" + hostname + "/address", { headers: this.headers })
+        .toPromise();
+
+      return data;
+    } catch (e) {
+      throw new Error("error getting the IP address from the hostname: " + e);
     }
   }
 
@@ -823,7 +839,7 @@ export class APIService {
 
       const schedule = this.converter.deserializeArray(
         data,
-        ClassHalfHourBlock
+        ClassSchedule
       );
       return schedule;
     } catch (e) {
@@ -851,5 +867,38 @@ export class APIService {
 
       throw new Error("error trying to set room to maintenance mode: " + e);
     }
+  }
+
+  public async GetMenuTree() {
+    try {
+      const data = await this.http
+        .get("options/menutree", { headers: this.headers })
+        .toPromise();
+
+      console.log(data);
+      const tree = this.converter.deserializeObject(data, MenuTree);
+
+      return tree;
+    } catch (e) {
+      if (e.status === 200) {
+        console.log(e.error.text);
+        return e.error.text;
+      }
+
+      throw new Error("error trying to get the attribute presets: " + e);
+    }
+  }
+  
+  public async GetPictures(roomID: string) {
+    try {
+
+      console.log("can you hear me")
+      const data: any = await this.http.get("rooms/"+ roomID +"/attachments", { headers: this.headers }).toPromise();
+      console.log("here is the data", data);
+      return data;
+    } catch (e) {
+      throw new Error("error getting the list of pictures: " + e);
+    }
+    
   }
 }

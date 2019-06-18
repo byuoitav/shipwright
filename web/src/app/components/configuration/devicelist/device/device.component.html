@@ -1,18 +1,27 @@
-<mat-card>
-    <a>
-        <mat-card-header>
-            <mat-icon mat-card-avatar>{{GetDeviceIcon()}}</mat-icon>
-            <mat-card-title>{{device.name}}</mat-card-title>
-            <mat-card-subtitle>{{device.description}}</mat-card-subtitle>
-        </mat-card-header>
+<mat-card class="device-card">
+    <mat-card-header>
+        <div mat-card-avatar>
+            <mat-icon>{{text.DefaultIcons[device.type.id]}}</mat-icon>
+        </div>
+        <mat-card-title>{{device.name}}</mat-card-title>
+        <mat-card-subtitle>{{data.deviceTypeMap.get(device.type.id).displayName}}</mat-card-subtitle>
+        <span class="fill-remaining-space"></span>
+        <button mat-icon-button (click)="modal.OpenDeviceModal(device, devicesInRoom)">
+              <mat-icon>more_horiz</mat-icon>
+            </button>
+    </mat-card-header>
+    <!-- <mat-divider></mat-divider>
+    <mat-card-content>
+        <mat-list>
+            <mat-list-item>
+                <mat-label>IP Address:</mat-label>
+                <span>{{rawIP}}</span>
+            </mat-list-item>
+            <mat-list-item>
+                <mat-label>Description:</mat-label>
+                <span>{{device.description}}</span>
+            </mat-list-item>
 
-    </a>
-    <mat-card-actions>
-        <mat-action-row>
-            <div class="row buttons">
-                <button mat-icon-button class="edit" (click)="modal.OpenDeviceModal(device)"><mat-icon>more_horiz</mat-icon></button>
-            </div>
-        </mat-action-row>
-    </mat-card-actions>
-
+        </mat-list>
+    </mat-card-content> -->
 </mat-card>

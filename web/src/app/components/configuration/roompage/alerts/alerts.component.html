@@ -1,13 +1,13 @@
 <div class="base">
     <section class="row" *ngIf="roomIssue == null">
         <section *ngIf="!data.finished" class="info-header">
-            <h3 class="mat-h3">Currently updating room issues...</h3>
+            <h3 class="mat-h3">Currently updating room information...</h3>
         </section>
     </section>
 
     <section class="container" *ngIf="data.finished">
         <section class="row" *ngIf="roomIssue != null">
-            <mat-card>
+            <mat-card class="full-width">
                 <mat-card-header>
                     <mat-card-title>Room Issues</mat-card-title>
                 </mat-card-header>
@@ -160,4 +160,133 @@
 
         <!-- </section> -->
     </section>
+=======
+                <mat-card-content class="issue-table">
+                    <app-alert-table [singleRoom]="true" [expIssue]="roomIssue"></app-alert-table>
+                </mat-card-content>
+            </mat-card>
+        </section>
+
+        <section class="row action">
+            <mat-card #actions class="action-card">
+                <mat-card-header>
+                    <mat-card-title>
+                        Actions
+                    </mat-card-title>
+                </mat-card-header>
+                <mat-divider></mat-divider>
+                <mat-card-content class="action-content">
+                    <section class="row big">
+                        <button class="big-boy" mat-raised-button (click)="RedirectToPi(':10000/dashboard')" color="primary">Z-Pattern</button>
+                        <button class="big-boy" mat-raised-button (click)="RedirectToPi(':8888')" color="primary">Control UI</button>
+                    </section>
+                    <!-- <section class="row action">
+                        
+
+                    </section> -->
+                </mat-card-content>
+                <mat-divider></mat-divider>
+                <mat-card-actions>
+                    <button mat-raised-button class="maintenance" (click)="modal.OpenMaintenanceModal(roomID)">Maintenance <mat-icon>build</mat-icon></button>
+                    <button mat-raised-button class="resolver" *ngIf="isResolvable()" (click)="openResolve()">Resolve Alerts <mat-icon>done</mat-icon></button>
+                </mat-card-actions>
+            </mat-card>
+
+            <mat-card #visits class="action-card">
+                <mat-card-header>
+                    <mat-card-title>
+                        Visits
+                    </mat-card-title>
+                </mat-card-header>
+                <mat-divider></mat-divider>
+                <mat-card-content class="action-content">
+                    <ng-container *ngIf="roomIssue != null">
+                        <ng-container *ngIf="roomIssue?.roomIssueResponses == null || roomIssue?.roomIssueResponses.length == 0">
+                            <span>No one has been sent to address this issue.</span>
+                        </ng-container>
+                        <section *ngIf="roomIssue?.roomIssueResponses != null && roomIssue?.roomIssueResponses.length > 0">
+                            <table class="visits" mat-table [dataSource]="roomIssue?.roomIssueResponses">
+                                <ng-container matColumnDef="sent">
+                                    <th mat-header-cell *matHeaderCellDef>Sent At</th>
+                                    <td mat-cell *matCellDef="let response">
+                                        <span *ngIf="response.helpSentAt != null && !response.SentIsZero()">{{response.helpSentAt.toLocaleTimeString()}}</span>
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="arrived">
+                                    <th mat-header-cell *matHeaderCellDef>Arrived At</th>
+                                    <td mat-cell *matCellDef="let response">
+                                        <span *ngIf="response.helpArrivedAt != null && !response.ArrivedIsZero()">{{response.helpArrivedAt.toLocaleTimeString()}}</span>
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="responders">
+                                    <th mat-header-cell *matHeaderCellDef>Responders</th>
+                                    <td mat-cell *matCellDef="let response">
+                                        <ng-container *ngIf="response.responders != null && response.responders.length > 0">
+                                            <span *ngFor="let person of response.responders">{{person.name}}</span>
+                                        </ng-container>
+                                    </td>
+                                </ng-container>
+
+                                <tr mat-header-row *matHeaderRowDef="responseColumns; sticky: true"></tr>
+                                <tr mat-row *matRowDef="let response; columns: responseColumns"></tr>
+                            </table>
+                        </section>
+                    </ng-container>
+
+                </mat-card-content>
+                <mat-divider></mat-divider>
+                <mat-card-actions>
+                    <button *ngIf="!FinishResponse()" mat-raised-button color="primary" (click)="openRespond(false)">Send Help <mat-icon>add</mat-icon></button>
+                    <button *ngIf="FinishResponse()" mat-raised-button color="primary" (click)="openRespond(true)">Help Arrived <mat-icon>add</mat-icon></button>
+                </mat-card-actions>
+            </mat-card>
+
+            <mat-card #notes class="action-card">
+                <mat-card-header>
+                    <mat-card-title>
+                        Notes
+                    </mat-card-title>
+                </mat-card-header>
+                <mat-divider></mat-divider>
+                <mat-card-content class="action-content">
+                    <section class="notes-row" *ngIf="roomIssue != null">
+                        <div class="notes-column">
+                            <mat-form-field class="notes" appearance="outline">
+                                <textarea matInput placeholder="Add New Note" [matAutosizeMinRows]="5" [matTextareaAutosize]="true" [(ngModel)]="tempNotes" (keyup)="$event.keyCode == 13 ? AddNote() : null"></textarea>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="notes-column">
+                            <mat-list class="notes-log" *ngIf="roomIssue.notesLog?.length > 0">
+                                <mat-list-item id="notesLog" *ngFor="let note of roomIssue.notesLog">
+                                    <mat-icon id="icon" mat-list-icon>label</mat-icon>
+                                    <p mat-line>{{ ExtractNoteInfo(note, false) }}</p>
+                                    <p mat-line class="timestamp">
+                                        {{ ExtractNoteInfo(note, true) }}
+                                    </p>
+                                </mat-list-item>
+                            </mat-list>
+                        </div>
+                    </section>
+                </mat-card-content>
+                <!-- <mat-divider></mat-divider> -->
+                <mat-card-actions></mat-card-actions>
+            </mat-card>
+
+            <!-- <mat-card #schedule class="action-card">
+                <mat-card-header>
+                    <mat-card-title>
+                        Schedule
+                    </mat-card-title>
+                </mat-card-header>
+                <mat-divider></mat-divider>
+                <mat-card-content class="action-content"></mat-card-content>
+                <mat-divider></mat-divider>
+                <mat-card-actions></mat-card-actions>
+            </mat-card> -->
+        </section>
+    </section>
+
+
+>>>>>>> stage
 </div>

@@ -19,6 +19,10 @@ type Cache interface {
 	StoreDeviceEvent(toSave sd.State) (bool, sd.StaticDevice, *nerr.E)
 	StoreAndForwardEvent(event events.Event) (bool, *nerr.E)
 
+	RemoveDevice(deviceID string) *nerr.E       //Removes a specific device record
+	RemoveRoom(roomID string) *nerr.E           //Removes a specific room record
+	NukeRoom(roomID string) ([]string, *nerr.E) //Removes a room and all of it's devices
+
 	GetCacheType() string
 	GetCacheName() string
 }

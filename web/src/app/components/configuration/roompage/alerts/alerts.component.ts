@@ -6,9 +6,10 @@ import { ModalService } from "src/app/services/modal.service";
 import {
   RoomIssue,
   ResolutionInfo,
-  ClassHalfHourBlock
+  ClassSchedule
 } from "src/app/objects/alerts";
 import { Device, Person } from "src/app/objects/database";
+import { RoomIssueResponse } from "src/app/objects/alerts";
 import { AlertTableComponent } from "../../../dashboard/alerttable/alerttable.component";
 import { APIService } from "src/app/services/api.service";
 import { MatDialog, MatTableDataSource } from "@angular/material";
@@ -35,8 +36,8 @@ export class AlertsComponent implements OnInit {
   sentTime: string;
   arrivedTime: string;
 
-  classSchedule: ClassHalfHourBlock[] = [];
-  scheduleData: MatTableDataSource<ClassHalfHourBlock>;
+  classSchedule: ClassSchedule[] = [];
+  scheduleData: MatTableDataSource<ClassSchedule>;
   scheduleColumns: string[] = [
     "block",
     "className",
@@ -44,6 +45,13 @@ export class AlertsComponent implements OnInit {
     "teacher",
     "days"
   ];
+
+  responseData: MatTableDataSource<RoomIssueResponse>;
+  responseColumns: string[] = ["sent", "arrived", "responders"];
+
+  helpArrivedSent = false;
+  helpArrivedError = false;
+  helpArrivedSuccess = false;
 
   @ViewChild(AlertTableComponent) table: AlertTableComponent;
 
@@ -75,7 +83,7 @@ export class AlertsComponent implements OnInit {
     this.deviceList = this.data.roomToDevicesMap.get(this.roomID);
     this.filteredDevices = this.deviceList;
     this.filteredResponders = this.data.possibleResponders;
-    //await this.SetupSchedule();
+    // await this.SetupSchedule();
 
     this.roomIssue = this.data.GetRoomIssue(this.roomID);
     if (this.roomIssue == null || this.roomIssue === undefined) {
@@ -86,6 +94,10 @@ export class AlertsComponent implements OnInit {
     if (this.roomIssue.roomIssueResponses == null) {
       this.roomIssue.roomIssueResponses = [];
     }
+
+    this.responseData = new MatTableDataSource(
+      this.roomIssue.roomIssueResponses
+    );
 
     this.data.issueEmitter.subscribe(changedIssue => {
       if (
@@ -231,7 +243,7 @@ export class AlertsComponent implements OnInit {
       this.roomIssue.notes =
         this.data.currentUsername +
         " (" +
-        now.toLocaleTimeString() +
+        now.toLocaleString() +
         ") | " +
         this.tempNotes;
       // this.roomIssue.notesLog.push(noteToAdd);
@@ -338,13 +350,98 @@ export class AlertsComponent implements OnInit {
     });
   }
 
-  openRespond() {
+  openRespond(arrive: boolean) {
     const ref = this.dialog.open(ResponseModalComponent, {
       width: "25vw",
       data: {
         issue: this.roomIssue,
-        responders: this.data.possibleResponders
+        responders: this.data.possibleResponders,
+        arrive: arrive
       }
     });
+  }
+
+  resetHelpArrived() {
+    this.helpArrivedSent = false;
+    this.helpArrivedError = false;
+    this.helpArrivedSuccess = false;
+  }
+
+  async helpArrived(resp: RoomIssueResponse) {
+    if (this.helpArrivedSent) {
+      return;
+    }
+
+    this.helpArrivedSent = true;
+    resp.helpArrivedAt = new Date();
+
+    try {
+      const response = await this.api.UpdateIssue(this.roomIssue);
+      if (response === "ok") {
+        this.helpArrivedSuccess = true;
+
+        setTimeout(() => {
+          this.resetHelpArrived();
+        }, 750);
+      } else {
+        this.helpArrivedError = true;
+        resp.helpArrivedAt = undefined;
+
+        setTimeout(() => {
+          this.resetHelpArrived();
+        }, 2000);
+      }
+    } catch (e) {
+      this.helpArrivedError = true;
+      resp.helpArrivedAt = undefined;
+      console.error("error updating issue", e);
+
+      setTimeout(() => {
+        this.resetHelpArrived();
+      }, 2000);
+    }
+  }
+
+  FinishResponse(): boolean {
+    if (
+      this.roomIssue == null ||
+      this.roomIssue.roomIssueResponses == null ||
+      this.roomIssue.roomIssueResponses.length === 0
+    ) {
+      return false;
+    }
+
+    const lastResponse = this.roomIssue.roomIssueResponses[
+      this.roomIssue.roomIssueResponses.length - 1
+    ];
+
+    if (lastResponse.helpSentAt != null && !lastResponse.SentIsZero()) {
+      if (lastResponse.helpArrivedAt != null && !lastResponse.ArrivedIsZero()) {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  RedirectToPi(endpoint: string, deviceID?: string) {
+    let hostname = "";
+
+    if (deviceID != null) {
+      hostname = deviceID + ".byu.edu";
+    } else if (this.deviceList != null) {
+      for (const device of this.deviceList) {
+        if (device.type.id === "Pi3") {
+          hostname = device.id + ".byu.edu";
+          break;
+        }
+      }
+    }
+
+    if (hostname.length > 0) {
+      window.open("http://" + hostname + endpoint, "_blank");
+    }
   }
 }

@@ -5,7 +5,7 @@ import (
 	"os"
 	"sort"
 
-	"github.com/byuoitav/common/servicenow"
+	"github.com/byuoitav/common/db"
 	"github.com/byuoitav/common/v2/auth"
 
 	"github.com/byuoitav/common/log"
@@ -109,7 +109,7 @@ func AddAlert(context echo.Context) error {
 
 // GetClosureCodes gets the list of closure codes for ServiceNow
 func GetClosureCodes(context echo.Context) error {
-	codes, err := servicenow.GetResolutionActions()
+	actualCodes, err := db.GetDB().GetClosureCodes()
 	if err != nil {
 		log.L.Errorf("failed to get closure codes: %s", err.Error())
 		//return context.JSON(http.StatusInternalServerError, err)
@@ -118,12 +118,12 @@ func GetClosureCodes(context echo.Context) error {
 		return context.JSON(http.StatusOK, actualCodes)
 	}
 
-	var actualCodes []string
-	for _, code := range codes.Result {
-		if !contains(actualCodes, code.UAction) {
-			actualCodes = append(actualCodes, code.UAction)
-		}
-	}
+	// var actualCodes []string
+	// for _, code := range codes.Result {
+	// 	if !contains(actualCodes, code.UAction) {
+	// 		actualCodes = append(actualCodes, code.UAction)
+	// 	}
+	// }
 
 	sort.Strings(actualCodes)
 

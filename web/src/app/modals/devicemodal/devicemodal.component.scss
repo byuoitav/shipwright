@@ -1,0 +1,62 @@
+.container {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    max-height: 60vh;
+    overflow-y: hidden;
+    /* width */
+    &::-webkit-scrollbar {
+        width: 5px;
+    }
+    /* Track */
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    &:hover {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+}
+
+.row {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: baseline;
+    &.full {
+        justify-content: space-evenly;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+}
+
+.port-field {
+    width: 30%;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.device-field {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.tags {
+    width: 97%;
+    // margin-left: 5px;
+    // margin-right: 5px;
+}

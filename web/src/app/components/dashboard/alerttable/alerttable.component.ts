@@ -23,9 +23,13 @@ import {
 } from "@angular/animations";
 import { ActivatedRoute } from "@angular/router";
 import { DataService } from "src/app/services/data.service";
-import { RoomIssue, Alert } from "src/app/objects/alerts";
+import { RoomIssue, Alert, ClassSchedule } from "src/app/objects/alerts";
 import { DashPanelTypes } from "src/app/services/dashpanel.service";
+import { stringify } from '@angular/core/src/util';
+import { APIService } from 'src/app/services/api.service';
+import { timeInterval } from 'rxjs/operators';
 
+declare var roomAvailability: string;
 @Component({
   selector: "app-alert-table",
   templateUrl: "./alerttable.component.html",
@@ -44,12 +48,14 @@ import { DashPanelTypes } from "src/app/services/dashpanel.service";
     ])
   ]
 })
+
 export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
   @Input() info: RoomIssue[] = [];
   @Input() chosenSeverity: DashPanelTypes;
   @Input() singleRoom = false;
   roomID: string;
   charCount = 40;
+  scheduleMap: Map<string, ClassSchedule[]>
 
   @Input() expIssue: RoomIssue | null;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -67,7 +73,9 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
     "severity",
     "count",
     "types",
-    "incident"
+    "incident",
+    //"availabilty",
+    "lastnote"
   ]; // , "help-sent", "help-arrived", "responders"];
   alertColumns: string[] = [
     "severity-color",
@@ -85,7 +93,8 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
   constructor(
     public text: StringsService,
     public data: DataService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    public api: APIService
   ) {
     if (this.data.finished) {
       this.Setup();
@@ -97,13 +106,13 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
   }
 
   ngOnInit() {
-    if (this.data.finished) {
-      this.Setup();
-    } else {
-      this.data.loaded.subscribe(() => {
-        this.Setup();
-      });
-    }
+    // if (this.data.finished) {
+    //   this.Setup();
+    // } else {
+    //   this.data.loaded.subscribe(() => {
+    //     this.Setup();
+    //   });
+    // }
   }
 
   ngAfterViewInit(): void {
@@ -128,21 +137,25 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
   }
 
   Setup() {
+    let issueList: RoomIssue[];
     // If the table is for a single room, get the room issues for that room
     if (this.singleRoom) {
       this.route.params.subscribe(par => {
         this.roomID = par["roomID"];
       });
+      issueList = this.data.GetRoomIssues(this.roomID);
       this.issueData = new MatTableDataSource(
-        this.data.GetRoomIssues(this.roomID)
+        issueList
       );
     } else {
       // Otherwise, get the issues by severity
-      this.issueData = new MatTableDataSource(
-        this.data.GetRoomIssuesBySeverity(
-          this.convertDashPanelTypeToSeverity(this.chosenSeverity)
-        )
+      issueList = this.data.GetRoomIssuesBySeverity(
+        this.convertDashPanelTypeToSeverity(this.chosenSeverity)
       );
+      this.issueData = new MatTableDataSource(
+        issueList
+      );
+      this.GetIssueAge(this.data.GetRoomIssue("BNSN-W005"));
     }
 
     this.data.issueEmitter.subscribe(changedIssue => {
@@ -155,9 +168,10 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
           this.issueData.data = [changedIssue];
         }
       } else {
-        this.issueData.data = this.data.GetRoomIssuesBySeverity(
+        issueList = this.data.GetRoomIssuesBySeverity(
           this.convertDashPanelTypeToSeverity(this.chosenSeverity)
         );
+        this.issueData.data = issueList;
       }
 
       if (this.sort.active === undefined || this.sort.active === "") {
@@ -176,6 +190,27 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
           return item[property];
       }
     };
+
+    // this.scheduleMap = new Map();
+    // console.log("here it is ", issueList);
+    // for (const issue of issueList) {
+    //   console.log("Here's the room ID ", issue.roomID);
+    //   this.api.GetClassSchedule(issue.roomID).then((schedule) => {
+    //     console.log("wait here's a message ", schedule);
+    //     const s = schedule as ClassSchedule[];
+    //     this.scheduleMap.set(issue.roomID, s);
+    //   })
+    // }
+    // console.log("I'm the map, I'm the map, I'm the map, I'm the map, I'm the map!", this.scheduleMap);
+
+    //this.api.GetClassSchedule("BNSN-W140").then((schedule) => {
+    //   this.api.GetClassSchedule("BNSN-W009").then((schedule) => {
+    //   console.log("Here is the schedule ", schedule)
+    //   console.log("can we get class time?", schedule[0].classTime)
+    // })
+
+    
+   // this.ExtractClassSchedule(this.roomID);
   }
 
   ExpandRow(issue: RoomIssue) {
@@ -213,18 +248,74 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
     return time.toISOString() === zero;
   }
 
-  GetReadableTimestamp(time: Date): string {
-    const diff = time.valueOf() - new Date().valueOf();
-    const duration = Math.abs(Math.trunc((diff / (1000 * 60 * 60)) % 24));
+  GetReadableTimestamp(time: Date, withTime: boolean): string {
+    const diff = new Date().valueOf() - time.valueOf();
+    // const duration = Math.abs(Math.trunc((diff / (1000 * 60 * 60)) % 24));
     let answer;
 
-    if (duration >= 1 && duration < 2) {
-      answer = duration + " hour ago (" + time.toLocaleTimeString() + ")";
+    const minutes = Math.abs(Math.floor(( diff / (1000 * 60)) % 60));
+    const hours   = Math.abs(Math.floor(( diff / (1000 * 60 * 60)) % 24));
+    const days = Math.abs(Math.floor((diff / (1000 * 60 * 60 * 24))));
+    // format age 1d 2h 3m
+    if (withTime) {
+      if (days == 0)
+      {
+        if (hours == 0) {
+          answer = minutes.toString() + "m ago (" + time.toLocaleTimeString() + ")";
+        }
+        else { 
+          answer = hours.toString() + "h " + minutes.toString() + "m ago (" + time.toLocaleTimeString() + ")";
+        }
+      }
+      else {
+        answer = days.toString() + "d " + hours.toString() + "h " + minutes.toString() + "m ago (" + time.toLocaleTimeString() + ")";
+      }
     } else {
-      answer = duration + " hours ago (" + time.toLocaleTimeString() + ")";
-    }
+      if (days == 0)
+      {
+        if (hours == 0) {
+          answer = minutes.toString() + "m";
+        }
+        else { 
+          answer = hours.toString() + "h " + minutes.toString() + "m ago";
+        }
+      }
+      else {
+        answer = days.toString() + "d " + hours.toString() + "h " + minutes.toString() + "m ago";
 
+      }
+    }
     return answer;
+  }
+
+  GetIssueAge(issue: RoomIssue) {
+    if (issue == null) {
+      return
+    }
+    // loop through each alert
+    let oldestalert = new Date();
+    // find oldest start time
+    for (const alert of issue.alerts) {
+      if (alert.startTime < oldestalert) {
+        oldestalert = alert.startTime;
+      }
+    }
+    return this.GetReadableTimestamp(oldestalert, false);
+  }
+
+  GetIssuecolor(issue: RoomIssue) {
+    // find oldest start time
+    const severitytypes = ["Critical", "Warning", "Low"];
+    let classname = "";
+    for (const sev of severitytypes) {
+      for (const severity of issue.activeAlertSeverities) {
+        if (severity === sev) {
+          classname += sev + "-";
+        }
+      }
+    }
+    classname += "indicator";
+    return classname;
   }
 
   OnDefaultTheme(): boolean {
@@ -239,6 +330,172 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
       this.pageSize = pageEvent.pageSize;
     }
   }
+
+  ExtractNoteInfo(note: string): string {
+    if (note == null) {
+      return "";
+    }
+    let s = note;
+    s = s.substring(s.indexOf("|") + 1);
+    if (s.length > 40) {
+      s = s.substring(0, 39);
+    }
+    return s;
+  }
+
+  // ExtractClassSchedule(room: string) {
+  //   //return "Available";
+  //   let schedule: ClassSchedule[];
+  //   //return "Available";
+  //   this.api.GetClassSchedule(room).then((response) => {
+  //     schedule = response;
+  //   })
+  //   console.log("is anything here", schedule);
+  //   // if (schedule == null) {
+  //   //   return "";
+  //   // }
+  //   // let d = new Date();
+  //   // let today = d.getDay();
+  //   // switch (today) {
+  //   //   case 1: {
+  //   //     for (let i =0; schedule.length; i++) {
+  //   //       if (schedule[i].days.includes("M") || schedule[i].days.includes("Daily")) {
+  //   //         let rn = "";
+  //   //         if (d.getHours() == 12) {
+  //   //           rn = d.getHours() + ":" + d.getMinutes() + "p";
+  //   //         }
+  //   //         else if (d.getHours() > 12) {
+  //   //           let stdhours = d.getHours() -12;
+  //   //           rn = stdhours + ":" + d.getMinutes() + "p";
+  //   //         }
+  //   //         else {
+  //   //           rn = d.getHours() + ":" + d.getMinutes() + "a";
+  //   //         }
+  //   //         let ct: string[] = schedule[i].classTime.split(" ");
+  //   //         let ctStart = ct[0];
+  //   //         let ctEnd = ct[2];
+  //   //         if (rn > ctStart && ctEnd > rn) {
+  //   //           return ctEnd;
+  //   //         }
+  //   //         else {
+  //   //           return "Available";
+  //   //         }
+  //   //       }
+  //   //     }
+  //   //     return "Available";
+  //   //   }
+  //   //   case 2: {
+  //   //     for (let i =0; schedule.length; i++) {
+  //   //       //figure out T/Th
+  //   //       if (schedule[i].days.includes("T") || schedule[i].days.includes("Daily")) {
+  //   //         let rn = "";
+  //   //         if (d.getHours() == 12) {
+  //   //           rn = d.getHours() + ":" + d.getMinutes() + "p";
+  //   //         }
+  //   //         else if (d.getHours() > 12) {
+  //   //           let stdhours = d.getHours() -12;
+  //   //           rn = stdhours + ":" + d.getMinutes() + "p";
+  //   //         }
+  //   //         else {
+  //   //           rn = d.getHours() + ":" + d.getMinutes() + "a";
+  //   //         }
+  //   //         let ct: string[] = schedule[i].classTime.split(" ");
+  //   //         let ctStart = ct[0];
+  //   //         let ctEnd = ct[2];
+  //   //         if (rn > ctStart && ctEnd > rn) {
+  //   //           return ctEnd;
+  //   //         }
+  //   //         else {
+  //   //           return "Available";
+  //   //         }
+  //   //       }
+  //   //     }
+  //   //     return "Available";
+  //   //   }
+  //   //   case 3: {
+  //   //     for (let i =0; schedule.length; i++) {
+  //   //       if (schedule[i].days.includes("W") || schedule[i].days.includes("Daily")) {
+  //   //         let rn = "";
+  //   //         if (d.getHours() == 12) {
+  //   //           rn = d.getHours() + ":" + d.getMinutes() + "p";
+  //   //         }
+  //   //         else if (d.getHours() > 12) {
+  //   //           let stdhours = d.getHours() -12;
+  //   //           rn = stdhours + ":" + d.getMinutes() + "p";
+  //   //         }
+  //   //         else {
+  //   //           rn = d.getHours() + ":" + d.getMinutes() + "a";
+  //   //         }
+  //   //         let ct: string[] = schedule[i].classTime.split(" ");
+  //   //         let ctStart = ct[0];
+  //   //         let ctEnd = ct[2];
+  //   //         if (rn > ctStart && ctEnd > rn) {
+  //   //           return ctEnd;
+  //   //         }
+  //   //         else {
+  //   //           return "Available";
+  //   //         }
+  //   //       }
+  //   //     }
+  //   //     return "Available";
+  //   //   }
+  //   //   case 4: {
+  //   //     for (let i =0; schedule.length; i++) {
+  //   //       //figure out T/Th
+  //   //       if (schedule[i].days.includes("Th") || schedule[i].days.includes("Daily")) {
+  //   //         let rn = "";
+  //   //         if (d.getHours() == 12) {
+  //   //           rn = d.getHours() + ":" + d.getMinutes() + "p";
+  //   //         }
+  //   //         else if (d.getHours() > 12) {
+  //   //           let stdhours = d.getHours() -12;
+  //   //           rn = stdhours + ":" + d.getMinutes() + "p";
+  //   //         }
+  //   //         else {
+  //   //           rn = d.getHours() + ":" + d.getMinutes() + "a";
+  //   //         }
+  //   //         let ct: string[] = schedule[i].classTime.split(" ");
+  //   //         let ctStart = ct[0];
+  //   //         let ctEnd = ct[2];
+  //   //         if (rn > ctStart && ctEnd > rn) {
+  //   //           return ctEnd;
+  //   //         }
+  //   //         else {
+  //   //           return "Available";
+  //   //         }
+  //   //       }
+  //   //     }
+  //   //     return "Available";
+  //   //   }
+  //   //   case 5: {
+  //   //     for (let i =0; schedule.length; i++) {
+  //   //       if (schedule[i].days.includes("F") || schedule[i].days.includes("Daily")) {
+  //   //         let rn = "";
+  //   //         if (d.getHours() == 12) {
+  //   //           rn = d.getHours() + ":" + d.getMinutes() + "p";
+  //   //         }
+  //   //         else if (d.getHours() > 12) {
+  //   //           let stdhours = d.getHours() -12;
+  //   //           rn = stdhours + ":" + d.getMinutes() + "p";
+  //   //         }
+  //   //         else {
+  //   //           rn = d.getHours() + ":" + d.getMinutes() + "a";
+  //   //         }
+  //   //         let ct: string[] = schedule[i].classTime.split(" ");
+  //   //         let ctStart = ct[0];
+  //   //         let ctEnd = ct[2];
+  //   //         if (rn > ctStart && ctEnd > rn) {
+  //   //           return ctEnd;
+  //   //         }
+  //   //         else {
+  //   //           return "Available";
+  //   //         }
+  //   //       }
+  //   //     }
+  //   //     return "Available";
+  //   //   }
+  //   // }
+  // }
 
   ShouldIExpand(issue: RoomIssue): boolean {
     if (this.expIssue === issue) {

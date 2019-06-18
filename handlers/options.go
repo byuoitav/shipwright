@@ -38,3 +38,18 @@ func GetTemplates(context echo.Context) error {
 	log.L.Debugf("%s Successfully got the templates from the database!", helpers.OptionsTag)
 	return context.JSON(http.StatusOK, templateList)
 }
+
+// GetMenuTree gets the fully built out menu tree
+func GetMenuTree(context echo.Context) error {
+	log.L.Debugf("%s Starting GetMenuTree...", helpers.OptionsTag)
+
+	menuTree, err := helpers.GetMenuTree()
+	if err != nil {
+		msg := fmt.Sprintf("failed to get the menu tree from the database : %s", err.Error())
+		log.L.Errorf("%s %s", helpers.OptionsTag, msg)
+		return context.JSON(http.StatusInternalServerError, err)
+	}
+
+	log.L.Debugf("%s Successfully got the menu tree from the database!", helpers.OptionsTag)
+	return context.JSON(http.StatusOK, menuTree)
+}

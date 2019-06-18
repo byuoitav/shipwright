@@ -126,6 +126,9 @@ func main() {
 	readconfig.GET("/rooms/configurations", handlers.GetRoomConfigurations)
 	readconfig.GET("/rooms/designations", handlers.GetRoomDesignations)
 	readconfig.GET("/rooms/:roomID/schedule", handlers.GetRoomClassSchedule)
+	readconfig.GET("/rooms/:roomID/attachments", handlers.GetRoomAttachments)
+
+	writeconfig.DELETE("/rooms/:roomID/nuke", handlers.NukeRoom)
 
 	// Device Endpoints
 	writeconfig.POST("/devices/:device", handlers.AddDevice)
@@ -154,6 +157,11 @@ func main() {
 	// Options Endpoints
 	readconfig.GET("/options/icons", handlers.GetIcons)
 	readconfig.GET("/options/templates", handlers.GetTemplates)
+	readconfig.GET("/options/menutree", handlers.GetMenuTree)
+
+	// Attributes Endpoints
+	readconfig.GET("/attributes", handlers.GetAllAttributeGroups)
+	readconfig.GET("/attributes/:groupID", handlers.GetAttributeGroup)
 
 	// Auth Endpoints
 	readconfig.GET("/users/current/username", handlers.GetUsername)
@@ -161,6 +169,7 @@ func main() {
 
 	// Static Record Endpoints
 	readconfig.GET("/static/devices", handlers.GetAllStaticDeviceRecords)
+	readconfig.GET("/static/devices/:device", handlers.GetStaticDeviceRecord)
 	readconfig.GET("/static/rooms", handlers.GetAllStaticRoomRecords)
 	readconfig.GET("/static/rooms/state", handlers.GetAllRoomCombinedStateRecords)
 	readconfig.GET("/static/rooms/:room/state", handlers.GetRoomCombinedStateRecord)
@@ -184,7 +193,7 @@ func main() {
 	// Websocket Endpoints
 	router.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))
 
-	router.Group("/", auth.CheckHeaderBasedAuth,
+	router.Use(auth.CheckHeaderBasedAuth,
 		auth.CheckHeaderBasedAuth,
 		echo.WrapMiddleware(auth.AuthenticateCASUser),
 		auth.AuthorizeRequest("read-config", "configuration", func(c echo.Context) string { return "all" }),

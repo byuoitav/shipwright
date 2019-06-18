@@ -13,24 +13,25 @@ import (
 
 // Action represents an action to be executed based on some conditions
 type Action struct {
+	atomicFields // must be first for 64-bit alignment
+
 	Name    string      `json:"name"`
 	Trigger string      `json:"trigger"`
 	If      iff.If      `json:"if"`
 	Then    []then.Then `json:"then"`
 
 	Log *zap.SugaredLogger `json:"-"`
-	atomicFields
 }
 
 type atomicFields struct {
 	// kill this action when runCount hits this number
 	PruneCount uint64 `json:"kill-after"`
 
-	// whether or not this action has been killed (will always be either 1 or 0)
-	prune uint32
-
 	// the total number of successful runs (successful means that the if checks passed)
 	runCount uint64
+
+	// whether or not this action has been killed (will always be either 1 or 0)
+	prune uint32
 }
 
 // Run checks the 'ifs' of the action and if they all pass, then it runs the 'thens'
@@ -42,6 +43,12 @@ func (a *Action) Run(ctx context.Context) {
 	if a.Log == nil {
 		a.Log = log.L.Named(a.Name)
 	}
+
+	defer func() {
+		if r := recover(); r != nil {
+			a.Log.Errorf("Caught panic: %s", r)
+		}
+	}()
 
 	a.Log.Debugf("Running if checks")
 	if ctx, passed := a.If.Check(ctx, a.Log); passed {

@@ -62,6 +62,22 @@ button {
     cursor: default;
 }
 
+.Critical-Warning-Low-indicator {
+    background: linear-gradient(to right, #f44336 33%, #fb8c00 33%, #ffd600 33%);
+}
+
+.Critical-Warning-indicator {
+    background: linear-gradient(to right, #f44336 50%, #fb8c00 50%);
+}
+
+.Critical-Low-indicator {
+    background: linear-gradient(to right, #f44336 50%, #ffd600 50%);
+}
+
+.Warning-Low-indicator {
+    background: linear-gradient(to right, #fb8c00 50%, #ffd600 50%);
+}
+
 .Critical-indicator {
     background-color: #f44336;
 }
@@ -116,6 +132,11 @@ button {
     overflow: hidden;
 }
 
+.maintenance {
+    margin-left: 10px;
+    color: #0288d1;
+}
+
 
 /* Column Widths */
 
@@ -131,8 +152,8 @@ button {
         width: 150px;
     }
     &.severity {
-        max-width: 120px;
-        width: 120px;
+        max-width: 2px;
+        width: 2px;
     }
     &.count {
         max-width: 100px;

@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, EventEmitter } from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { SettingsModalComponent } from "../modals/settings/settings.component";
 import { BuildingModalComponent } from "../modals/buildingmodal/buildingmodal.component";
@@ -21,14 +21,20 @@ import {
 } from "../objects/database";
 import { APIService } from "./api.service";
 import { HelpModalComponent } from "../modals/helpmodal/helpmodal.component";
-import { ResolveModalComponent } from "../modals/resolve/resolve.component";
-import { StaticRoom } from "../objects/static";
 
 @Injectable({
   providedIn: "root"
 })
 export class ModalService {
-  constructor(private dialog: MatDialog, private api: APIService) {}
+  buildingDone: EventEmitter<Building>;
+  roomDone: EventEmitter<Room>;
+  deviceDone: EventEmitter<Device>;
+
+  constructor(private dialog: MatDialog, private api: APIService) {
+    this.buildingDone = new EventEmitter();
+    this.roomDone = new EventEmitter();
+    this.deviceDone = new EventEmitter();
+  }
 
   OpenSettingsModal() {
     this.dialog.open(SettingsModalComponent);
@@ -40,7 +46,8 @@ export class ModalService {
       .afterClosed()
       .subscribe(resp => {
         if (resp != null) {
-          this.OpenNotifyModal(resp);
+          // this.OpenNotifyModal(resp);
+          this.buildingDone.emit(building);
         }
       });
   }
@@ -51,22 +58,33 @@ export class ModalService {
       .afterClosed()
       .subscribe(resp => {
         if (resp != null) {
-          this.OpenNotifyModal(resp);
+          // this.OpenNotifyModal(resp);
+          this.roomDone.emit(room);
         }
       });
   }
 
-  OpenDeviceModal(device: Device) {
-    this.dialog.open(DeviceModalComponent, { data: device });
+  OpenDeviceModal(device: Device, deviceList?: Device[]) {
+    console.log(device);
+    this.dialog.open(DeviceModalComponent, { data: {device: device, devicesInRoom: deviceList} })
+    .afterClosed()
+    .subscribe(resp => {
+      if (resp != null) {
+        if (resp === "deleted") {
+          deviceList.splice(deviceList.indexOf(device), 1);
+        }
+        this.deviceDone.emit(device);
+      }
+    });
   }
 
-  OpenNotifyModal(resp: DBResponse) {
+  OpenNotifyModal(resp: DBResponse[]) {
     this.dialog.open(NotifyModalComponent, { data: resp });
   }
 
-  OpenPresetModal(preset: Preset, cps: Panel[], config: UIConfig) {
+  OpenPresetModal(preset: Preset, cps: Panel[], config: UIConfig, deviceList?: Device[]) {
     this.dialog.open(PresetModalComponent, {
-      data: { preset: preset, currentPanels: cps, config: config }
+      data: { preset: preset, currentPanels: cps, config: config, devicesInRoom: deviceList }
     });
   }
 

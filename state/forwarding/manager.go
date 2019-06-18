@@ -62,6 +62,9 @@ func initManagers() {
 				i.Couch.DatabaseName,
 				time.Duration(i.Interval)*time.Second,
 			))
+		case config.WEBSOCKET:
+			log.L.Infof("Initializing Websocket manager %v", curName)
+			managerMap[curName] = append(managerMap[curName], managers.GetDefaultWebsocketForwarder())
 		}
 
 	}

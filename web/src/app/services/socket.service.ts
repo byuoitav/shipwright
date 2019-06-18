@@ -5,6 +5,7 @@ import {
 } from "angular2-websocket/angular2-websocket";
 import { JsonConvert } from "json2typescript";
 import { RoomIssue } from "../objects/alerts";
+import { StaticDevice } from "../objects/static";
 
 export const OPEN = "open";
 export const CLOSE = "close";
@@ -17,12 +18,21 @@ export class SocketService {
   private url: string;
 
   private socket: $WebSocket;
-  public listener: EventEmitter<any>;
+  public issues: EventEmitter<RoomIssue>;
+  public devices: EventEmitter<StaticDevice>;
   private webSocketConfig: WebSocketConfig = {
     initialTimeout: 100,
     maxTimeout: 500,
     reconnectIfNotNormalClose: true
   };
+
+  isRoomIssue(event: any): event is RoomIssue {
+    return event["id"] !== undefined;
+  }
+
+  isStaticDevice(event: any): event is StaticDevice {
+    return event["deviceID"] !== undefined;
+  }
 
   constructor() {
     if (location.protocol === "https:") {
@@ -34,16 +44,24 @@ export class SocketService {
     }
 
     this.socket = new $WebSocket(this.url, null, this.webSocketConfig);
-    this.listener = new EventEmitter();
+    this.issues = new EventEmitter();
+    this.devices = new EventEmitter();
 
     const jsonConvert = new JsonConvert();
     jsonConvert.ignorePrimitiveChecks = false;
 
     this.socket.onMessage(msg => {
       const data = JSON.parse(msg.data);
-      const a = jsonConvert.deserialize(data, RoomIssue);
-
-      this.listener.emit(a);
+      // console.log("Websocket data:", data);
+      if (this.isRoomIssue(data)) {
+        const a = jsonConvert.deserializeObject(data, RoomIssue);
+        this.issues.emit(a);
+      } else if (this.isStaticDevice(data)) {
+        const a = jsonConvert.deserializeObject(data, StaticDevice);
+        this.devices.emit(a);
+      } else {
+        console.warn("unknown websocket message", msg);
+      }
     });
 
     this.socket.onOpen(msg => {

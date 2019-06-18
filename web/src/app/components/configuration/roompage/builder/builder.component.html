@@ -1,54 +1,245 @@
-<!-- <p>Builder works</p> -->
-
 <div class="container">
-  <section class="container top">
-    <!-- <span class="fill-remaining-space"></span> -->
-  </section>
-  <section class="container bottom">
-    <div class="row">
-      <div
-        *ngFor="let device of filteredDevices"
-        class="device-box mat-elevation-z2 spacing"
-      >
-        <div class="row card">
-          <mat-icon>{{ text.DefaultIcons[device.type.id] }}</mat-icon>
-          <h3 class="mat-h3">{{ device.name }}</h3>
+    <span class="fill-remaining-space"></span>
+    <section class="container left" dnd-droppable [dropZones]="['pi']" (onDropSuccess)="AddNewPreset($event.dragData.id)">
+        <mat-card *ngFor="let preset of config?.presets" class="preset-card">
+            <mat-card-header dnd-droppable [dropZones]="['pi']" (onDropSuccess)="SetPresetOnPanel(preset, $event.dragData.id)">
+                <div mat-card-avatar [ngClass]="'uipath-' + GetPresetUIPath(preset.name, true)"></div>
+                <mat-card-title>{{ preset.name }}</mat-card-title>
+                <mat-card-subtitle>
+                    <ng-container *ngFor="let panel of config?.panels">
+                        <span *ngIf="panel.preset === preset.name" dnd-draggable [dropZones]="['pi']" [dragData]="GetDeviceByID(panel.hostname)" [dragEnabled]="true">
+                            {{ panel.hostname.split("-")[2] }}
+                        </span>
+                    </ng-container>
+                </mat-card-subtitle>
+                <span class="fill-remaining-space"></span>
+                <button mat-icon-button (click)="PrepPresetModal(preset)">
+                  <mat-icon>more_horiz</mat-icon>
+                </button>
+            </mat-card-header>
+            <mat-divider></mat-divider>
+            <mat-card-content class="content">
+                <div class="row lists">
+                    <div class="drop-container list" dnd-droppable [dropZones]="['display']" (onDropSuccess)="
+              AddItemToPresetList(preset.displays, $event.dragData.name); UpdateUIPathOnPanels(preset);
+            ">
+                        <mat-list class="preset-list">
+                            <h3 mat-subheader>Displays</h3>
+                            <ng-container *ngFor="let out of preset?.displays">
+                                <mat-list-item>
+                                    <div class="device-box mat-elevation-z2 spacing" dnd-draggable [dragEnabled]="true" [dropZones]="['display']" [dragData]="GetIOConfig(out)" (onDragSuccess)="
+                      RemoveItemFromPresetList(
+                        preset.displays,
+                        $event.dragData.name
+                      )
+                    ">
+                                        <div class="row card" matBadge="!" [matBadgeHidden]="PortsAreFine(out)" matBadgeColor="warn" matBadgeDescription="No ports set on this device" matBadgeSize="medium">
+                                            <mat-icon (click)="modal.OpenIconModal(GetIOConfig(out))">{{ GetIOConfig(out).icon }}
+                                            </mat-icon>
+                                            <span (click)="
+                          modal.OpenDeviceModal(GetDeviceByName(out), devicesInRoom)
+                        ">{{ out }}</span
+                      >
+                    </div>
+                  </div>
+                </mat-list-item>
+              </ng-container>
+            </mat-list>
+          </div>
+
+          <div
+            class="drop-container list"
+            dnd-droppable
+            [dropZones]="['input']"
+            (onDropSuccess)="
+              AddItemToPresetList(preset.inputs, $event.dragData.name)
+            "
+          >
+            <mat-list class="preset-list">
+              <h3 mat-subheader>Inputs</h3>
+              <ng-container *ngFor="let in of preset?.inputs">
+                <mat-list-item>
+                                            <div class="device-box mat-elevation-z2 spacing" dnd-draggable [dragEnabled]="true" [dropZones]="['input']" [dragData]="GetIOConfig(in)" (onDragSuccess)="
+                      RemoveItemFromPresetList(
+                        preset.inputs,
+                        $event.dragData.name
+                      )
+                    " >
+                                                <div class="row card" >
+                                                    <mat-icon (click)="modal.OpenIconModal(GetIOConfig(in))">{{ GetIOConfig(in).icon }}
+                                                    </mat-icon>
+                                                      <span (click)="
+                                                      modal.OpenDeviceModal(GetDeviceByName(in), devicesInRoom)
+                                                    " matTooltip="{{GetDeviceByName(in).displayName}}" [matTooltipPosition]="'right'">{{
+                                                      in === "ChromeCast"
+                                                        ? "CC1"
+                                                        : in === "AppleTV"
+                                                        ? "ATV1"
+                                                        : in
+                                                    }}</span
+                                                  > 
+                                                    
+                    </div>
+                  </div>
+                </mat-list-item>
+                            </ng-container>
+                        </mat-list>
+                        </div>
+
+                        <div class="drop-container list" dnd-droppable [dropZones]="['audio']" (onDropSuccess)="
+              AddItemToPresetList(
+                preset.independentAudioDevices,
+                $event.dragData.name
+              )
+            ">
+                            <mat-list class="preset-list">
+                                <h3 mat-subheader>Audio Devices</h3>
+                                <ng-container *ngFor="let out of preset?.independentAudioDevices">
+                                    <mat-list-item>
+                                        <div class="device-box mat-elevation-z2 spacing" dnd-draggable [dragEnabled]="true" [dropZones]="['audio']" [dragData]="GetIOConfig(out)" (onDragSuccess)="
+                      RemoveItemFromPresetList(
+                        preset.independentAudioDevices,
+                        $event.dragData.name
+                      )
+                    ">
+                                            <div class="row card">
+                                                <mat-icon *ngIf="GetIOConfig(out) != null" (click)="modal.OpenIconModal(GetIOConfig(out))">{{ GetIOConfig(out).icon }}
+                                                </mat-icon>
+                                                <span (click)="
+                          modal.OpenDeviceModal(GetDeviceByName(out), devicesInRoom)
+                        ">{{ out }}</span
+                      >
+                    </div>
+                  </div>
+                </mat-list-item>
+              </ng-container>
+            </mat-list>
+          </div>
         </div>
-      </div>
+      </mat-card-content>
+    </mat-card>
+  </section>
+  <mat-divider [vertical]="true"></mat-divider>
+  <aside class="container right">
+    <div class="searchbar devices mat-elevation-z0">
+      <mat-icon class="searchbar icon mat-elevation-z0">search</mat-icon>
+      <mat-form-field class="short">
+        <input
+          matInput
+          [(ngModel)]="deviceSearch"
+          (ngModelChange)="SearchDevices()"
+        />
+      </mat-form-field>
     </div>
-    <div class="menu">
-      <button mat-fab [matMenuTriggerFor]="classes">
+    <div
+      class="column"
+      dnd-droppable
+      [dropZones]="['pi', 'input', 'display', 'audio']"
+    >
+      <div class="row">
+        <div
+          *ngFor="let device of filteredDevices"
+          class="device-box mat-elevation-z2 spacing"
+          dnd-draggable
+          [dragEnabled]="true"
+          [dropZones]="GetValidDropZones(device)"
+          [dragData]="device"
+        >
+          <div class="row card">
+            <mat-icon>{{ GetDeviceIcon(device) }}</mat-icon>
+                                                <span (click)="
+                                                modal.OpenDeviceModal(device, devicesInRoom)
+                                              ">{{
+              device.name === "ChromeCast"
+                ? "CC1"
+                : device.name === "AppleTV"
+                ? "ATV1"
+                : device.name
+            }}</span>
+                                        </div>
+                                    </div>
+                    </div>
+                </div>
+                <span class="fill-remaining-space"></span>
+                <div class="menu" dir="rtl">
+                    <button mat-fab color="primary" [matMenuTriggerFor]="classes">
         <mat-icon>add</mat-icon>
       </button>
-
-      <mat-menu #classes class="switch-nested-menu-arrows">
-        <button mat-menu-item>
+                    <mat-menu #classes xPosition='before'>
+                        <button mat-menu-item (click)="AddNewDevice('Pi3')">
           <mat-icon>{{ text.DefaultIcons["Pi3"] }}</mat-icon>
           <span>Pi</span>
         </button>
-        <button mat-menu-item>
-          <mat-icon>{{ text.DefaultIcons["SonyXBR"] }}</mat-icon>
-          <span>TV</span>
+                        <button mat-menu-item [matMenuTriggerFor]="tvs">
+          TVs
         </button>
-        <button mat-menu-item [matMenuTriggerFor]="projectors">
+                        <button mat-menu-item [matMenuTriggerFor]="projectors">
           Projector
         </button>
-        <button mat-menu-item [matMenuTriggerFor]="inputs">Inputs</button>
-      </mat-menu>
+                        <button mat-menu-item [matMenuTriggerFor]="inputs">Inputs</button>
 
-      <mat-menu #projectors>
-        <button mat-menu-item *ngFor="let type of projectorTypes">
+                        <button mat-menu-item [matMenuTriggerFor]="audioDevices">Audio Devices</button>
+
+                        <button mat-menu-item [matMenuTriggerFor]="videoSwitchers">Video Switchers</button>
+
+                        <button mat-menu-item [matMenuTriggerFor]="others">Other</button>
+
+                        <button mat-menu-item [matMenuTriggerFor]="temps">Templates</button>
+                    </mat-menu>
+
+                    <mat-menu #tvs xPosition='after'>
+                        <button mat-menu-item *ngFor="let type of tvTypes" (click)="AddNewDevice(type.id)">
+                          <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
+                          <span>{{ type.displayName }}</span>
+                        </button>
+                    </mat-menu>
+
+                    <mat-menu #projectors xPosition='after'>
+                        <button mat-menu-item *ngFor="let type of projectorTypes" (click)="AddNewDevice(type.id)">
           <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
           <span>{{ type.displayName }}</span>
         </button>
-      </mat-menu>
+                    </mat-menu>
 
-      <mat-menu #inputs>
-        <button mat-menu-item *ngFor="let type of inputTypes">
+                    <mat-menu #inputs xPosition='after'>
+                        <button mat-menu-item *ngFor="let type of inputTypes" (click)="AddNewDevice(type.id)">
           <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
           <span>{{ type.displayName }}</span>
         </button>
-      </mat-menu>
-    </div>
-  </section>
+                    </mat-menu>
+
+                    <mat-menu #audioDevices xPosition='after'>
+                        <button mat-menu-item *ngFor="let type of audioTypes" (click)="AddNewDevice(type.id)">
+                            <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
+                            <span>{{ type.displayName }}</span>
+                          </button>
+                    </mat-menu>
+
+                    <mat-menu #videoSwitchers xPosition='after'>
+                        <button mat-menu-item *ngFor="let type of videoSwitcherTypes" (click)="AddNewDevice(type.id)">
+                            <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
+                            <span>{{ type.displayName }}</span>
+                          </button>
+                    </mat-menu>
+
+                    <mat-menu #others xPosition='after'>
+                        <button mat-menu-item *ngFor="let type of otherTypes" (click)="AddNewDevice(type.id)">
+                            <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
+                            <span>{{ type.displayName }}</span>
+                          </button>
+                    </mat-menu>
+
+                    <mat-menu #temps xPosition='after'>
+                        <button mat-menu-item *ngFor="let t of templates" (click)="AddTemplate(t)">
+                            {{t.id}}
+                          </button>
+                    </mat-menu>
+                </div>
+                <!-- <div class="row buttons"> -->
+                <button mat-raised-button class="button save" (click)="SavePageData()">Save Changes</button>
+                <button mat-raised-button class="button undo" color="accent" (click)="RevertChanges()">
+      Scrap Changes
+    </button>
+                <!-- </div> -->
+                </aside>
 </div>

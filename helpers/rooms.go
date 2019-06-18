@@ -4,14 +4,26 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/byuoitav/common/db"
+	"github.com/byuoitav/common/inputgraph"
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	sd "github.com/byuoitav/common/state/statedefinition"
 	"github.com/byuoitav/common/structs"
+	"github.com/byuoitav/shipwright/alertstore"
+	"github.com/byuoitav/shipwright/alertstore/alertcache"
+	"github.com/byuoitav/shipwright/config"
 	cache "github.com/byuoitav/shipwright/state/cache"
+	"github.com/byuoitav/shipwright/state/forwarding"
+	"github.com/byuoitav/shipwright/state/forwarding/managers"
 )
+
+type RoomWithGraph struct {
+	structs.Room
+	SignalPaths map[string]map[string][]string `json:"signal-paths"`
+}
 
 //Update the static rooms (putting them in and out of maintenance mode etc.)
 func UpdateStaticRoom(roomID string, room sd.StaticRoom) *nerr.E {
@@ -81,24 +93,52 @@ func UpdateRoom(roomID string, room structs.Room) (DBResponse, *nerr.E) {
 }
 
 // GetRoom gets a room from the database
-func GetRoom(roomID string) (structs.Room, *nerr.E) {
+func GetRoom(roomID string) (RoomWithGraph, *nerr.E) {
 	room, err := db.GetDB().GetRoom(roomID)
 	if err != nil {
 		dmpsList, ne := GetDMPSRooms()
 		if ne != nil {
-			return structs.Room{}, nerr.Translate(err).Addf("failed to get the room %s", roomID)
+			return RoomWithGraph{}, nerr.Translate(err).Addf("failed to get the room %s", roomID)
 		}
 
 		for _, r := range dmpsList {
 			if r.ID == roomID {
-				return r, nil
+				return RoomWithGraph{r, nil}, nil
 			}
 		}
 
-		return structs.Room{}, nerr.Translate(err).Addf("failed to get the room %s", roomID)
+		return RoomWithGraph{}, nerr.Translate(err).Addf("failed to get the room %s", roomID)
 	}
 
-	return room, nil
+	roomGraphs := map[string]map[string][]string{}
+
+	//build the video graph, in the future we'll do the same here for audio and network graphs
+	vg, err := inputgraph.BuildGraph(room.Devices, "video")
+	if err != nil {
+		log.L.Warnf("Couldn't build video input graph for room %v", room.ID)
+	}
+
+	if len(vg.AdjacencyMap) > 0 {
+		roomGraphs["video"] = vg.AdjacencyMap
+	}
+
+	ng, err := inputgraph.BuildGraph(room.Devices, "network")
+	if err != nil {
+		log.L.Warnf("Couldn't build network input graph for room %v", room.ID)
+	}
+	if len(ng.AdjacencyMap) > 0 {
+		roomGraphs["network"] = ng.AdjacencyMap
+	}
+
+	ag, err := inputgraph.BuildGraph(room.Devices, "audio")
+	if err != nil {
+		log.L.Warnf("Couldn't build audio input graph for room %v", room.ID)
+	}
+	if len(ag.AdjacencyMap) > 0 {
+		roomGraphs["audio"] = ag.AdjacencyMap
+	}
+
+	return RoomWithGraph{room, roomGraphs}, nil
 }
 
 // GetAllRooms gets a list of all rooms in the database
@@ -215,4 +255,53 @@ func getPICSRooms() ([]structs.Room, *nerr.E) {
 	}
 
 	return rooms, nil
+}
+
+func NukeRoom(id string) *nerr.E {
+
+	//resolve any outstanding issues
+	_, err := alertstore.GetRoomIssue(id)
+	if err != nil && err.Type != alertcache.NotFound {
+		return err.Addf("Couldn't nuke room %v", id)
+	}
+	if err == nil {
+		//we need to resolve it
+		err := alertstore.ResolveIssue(structs.ResolutionInfo{
+			Code:       "removed",
+			Notes:      "Room was removed",
+			ResolvedAt: time.Now(),
+		}, id)
+		if err != nil {
+			return err.Addf("Couldn't nuke room %v", id)
+		}
+	}
+
+	//not we can go nuke it from the cache
+	devs, err := cache.GetCache("default").NukeRoom(id)
+	if err != nil {
+		return err.Addf("Couldn't nuke room %v", id)
+	}
+
+	//nuke from ELK
+	list := forwarding.GetManagersForType("default", config.DEVICE, config.ALL)
+
+	for j := range list {
+		if v, ok := list[j].(*managers.ElkStaticDeviceForwarder); ok {
+			for i := range devs {
+				v.Delete(devs[i])
+			}
+		}
+	}
+
+	rmlist := forwarding.GetManagersForType("default", config.ROOM, config.ALL)
+
+	for j := range rmlist {
+		if v, ok := rmlist[j].(*managers.ElkStaticRoomForwarder); ok {
+			for i := range devs {
+				v.Delete(devs[i])
+			}
+		}
+	}
+
+	return nil
 }

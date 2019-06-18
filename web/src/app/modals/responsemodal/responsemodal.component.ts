@@ -43,12 +43,13 @@ export class ResponseModalComponent implements OnInit {
 
   response: RoomIssueResponse = new RoomIssueResponse();
   sentTime: string;
+  arrivedTime: string;
 
   constructor(
     public dialogRef: MatDialogRef<ResponseModalComponent>,
     private api: APIService,
     @Inject(MAT_DIALOG_DATA)
-    public data: { issue: RoomIssue; responders: Person[] }
+    public data: { issue: RoomIssue; responders: Person[]; arrive: boolean }
   ) {
     // set sent time to now
     const now = new Date();
@@ -56,6 +57,7 @@ export class ResponseModalComponent implements OnInit {
       return n < 10 ? "0" + n : n;
     };
     this.sentTime = pad(now.getHours()) + ":" + pad(now.getMinutes());
+    this.arrivedTime = pad(now.getHours()) + ":" + pad(now.getMinutes());
 
     this.respondersCtrl = new FormControl(this.data.responders, [
       Validators.required
@@ -67,6 +69,10 @@ export class ResponseModalComponent implements OnInit {
         filter ? this.respondersFilter(filter) : this.data.responders.slice()
       )
     );
+
+    if (this.data.arrive) {
+      this.response = this.data.issue.roomIssueResponses[this.data.issue.roomIssueResponses.length - 1];
+    }
   }
 
   ngOnInit() {}
@@ -157,18 +163,23 @@ export class ResponseModalComponent implements OnInit {
     this.resolving = true;
 
     // set the date
-    const split = this.sentTime.split(":");
-    this.response.helpSentAt = new Date();
-    this.response.helpSentAt.setHours(parseInt(split[0], 10));
-    this.response.helpSentAt.setMinutes(parseInt(split[1], 10));
 
-    this.data.issue.roomIssueResponses.push(this.response);
+    if (!this.data.arrive) {
+      const split = this.sentTime.split(":");
+      this.response.helpSentAt = new Date();
+      this.response.helpSentAt.setHours(parseInt(split[0], 10));
+      this.response.helpSentAt.setMinutes(parseInt(split[1], 10));
+      this.data.issue.roomIssueResponses.push(this.response);
+    } else {
+      const split = this.arrivedTime.split(":");
+      this.response.helpArrivedAt = new Date();
+      this.response.helpArrivedAt.setHours(parseInt(split[0], 10));
+      this.response.helpArrivedAt.setMinutes(parseInt(split[1], 10));
+    }
 
     try {
       const response = await this.api.UpdateIssue(this.data.issue);
-      console.log("response", response);
       if (response === "ok") {
-        console.log("here");
         this.resolved = true;
 
         setTimeout(() => {
@@ -176,7 +187,6 @@ export class ResponseModalComponent implements OnInit {
           this.dialogRef.close();
         }, 750);
       } else {
-        console.log("here2");
         this.error = true;
         this.data.issue.roomIssueResponses.pop();
 
