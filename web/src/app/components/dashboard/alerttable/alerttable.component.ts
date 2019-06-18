@@ -264,7 +264,7 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
           answer = minutes.toString() + "m ago (" + time.toLocaleTimeString() + ")";
         }
         else { 
-          answer = hours.toString() + "h ago " + minutes.toString() + "m ago (" + time.toLocaleTimeString() + ")";
+          answer = hours.toString() + "h " + minutes.toString() + "m ago (" + time.toLocaleTimeString() + ")";
         }
       }
       else {
@@ -277,11 +277,11 @@ export class AlertTableComponent implements OnInit, IDashPanel, AfterViewInit {
           answer = minutes.toString() + "m";
         }
         else { 
-          answer = hours.toString() + "h ago " + minutes.toString() + "m";
+          answer = hours.toString() + "h " + minutes.toString() + "m ago";
         }
       }
       else {
-        answer = days.toString() + "d " + hours.toString() + "h " + minutes.toString() + "m";
+        answer = days.toString() + "d " + hours.toString() + "h " + minutes.toString() + "m ago";
 
       }
     }
