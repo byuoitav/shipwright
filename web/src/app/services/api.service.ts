@@ -893,8 +893,7 @@ export class APIService {
     try {
 
       console.log("can you hear me")
-      const data: any = await this.http
-      .get("rooms/"+ roomID +"/attachments", { headers: this.headers }).toPromise();
+      const data: any = await this.http.get("rooms/"+ roomID +"/attachments", { headers: this.headers }).toPromise();
       console.log("here is the data", data);
       return data;
     } catch (e) {

@@ -193,16 +193,18 @@ func main() {
 	// Websocket Endpoints
 	router.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))
 
-	router.Group("/", auth.CheckHeaderBasedAuth,
-		auth.CheckHeaderBasedAuth,
-		echo.WrapMiddleware(auth.AuthenticateCASUser),
-		auth.AuthorizeRequest("read-config", "configuration", func(c echo.Context) string { return "all" }),
+	router.Use(auth.CheckHeaderBasedAuth,
+		// auth.CheckHeaderBasedAuth,
+		// echo.WrapMiddleware(auth.AuthenticateCASUser),
+		// auth.AuthorizeRequest("read-config", "configuration", func(c echo.Context) string { return "all" }),
 		middleware.StaticWithConfig(middleware.StaticConfig{
 			Root:   "web-dist",
 			Index:  "index.html",
 			HTML5:  true,
 			Browse: true,
 		}))
+
+	// router.Static("/", "web-dist/index.html")
 
 	server := http.Server{
 		Addr:           port,

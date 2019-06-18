@@ -288,7 +288,7 @@ func GetRoomAttachments(ectx echo.Context) error {
 	attachments, err := db.GetDB().GetRoomAttachments(roomID)
 
 	if err != nil {
-		return ectx.JSON(http.StatusInternalServerError, err)
+		return ectx.String(http.StatusInternalServerError, err.Error())
 	}
 
 	return ectx.JSON(http.StatusOK, attachments)

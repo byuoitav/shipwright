@@ -35,8 +35,16 @@
         </mat-card-header>
         <mat-divider></mat-divider>
         <mat-card-content>
-            <!-- <img src="https://couchdb-prd.avs.byu.edu:5984/room_attachments/BNSN-W002/bnsn-w012-1.jpg" class="images"> -->
-            <slideshow [imageUrls]="getPictures()"></slideshow>
+            <ng-container *ngIf="pics.length > 0">
+                <!-- <img src="https://couchdb-prd.avs.byu.edu:5984/room_attachments/BNSN-W002/bnsn-w012-1.jpg" class="images"> -->
+                <slideshow [imageUrls]="pics"></slideshow>
+            </ng-container>
+            <ng-container *ngIf="pics.length == 0">
+                    <img src="https://previews.123rf.com/images/belchonock/belchonock1706/belchonock170600034/79515543-funny-dogs-taking-selfie-on-white-background-.jpg" class="images">
+            </ng-container>
+            <!-- <ng-container>
+                <img src="https://previews.123rf.com/images/belchonock/belchonock1706/belchonock170600034/79515543-funny-dogs-taking-selfie-on-white-background-.jpg" class="images">
+            </ng-container> -->
         </mat-card-content>
     </mat-card>
     <mat-card class="detail-card">
@@ -67,3 +75,47 @@
     <button class="fab" *ngIf="data.mobile" mat-mini-fab color="primary" [matMenuTriggerFor]="menu.childMenu"><mat-icon>add</mat-icon></button>
     <app-menu-item #menu [subNodes]="data.menuTree.groups" [callback]="callbackFunc"></app-menu-item>
 </div>
+
+<!-- <table mat-table [dataSource]="issueData(?)"matSort multiTemplateDataRows class="container mat-elevation-z0">
+        <ng-container matColumnDef="icon">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="icon">icon</th>
+            <td mat-cell *matCellDef="let issue" (click)="ExpandRow(issue)">
+
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="roomID">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="roomID">Room ID</th>
+            <td mat-cell *matCellDef="let issue" (click)="ExpandRow(issue)">
+
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="displayName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="displayName">Display Name</th>
+            <td mat-cell *matCellDef="let issue" (click)="ExpandRow(issue)">
+                
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="attributes">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="attributes">Attributes</th>
+            <td mat-cell *matCellDef="let issue" (click)="ExpandRow(issue)">
+                
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="address">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="address">Address</th>
+            <td mat-cell *matCellDef="let issue" (click)="ExpandRow(issue)">
+
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="ipAddress">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="ipAddress">IP Address</th>
+            <td mat-cell *matCellDef="let issue" (click)="ExpandRow(issue)">
+
+            </td>
+        </ng-container>
+</table> -->

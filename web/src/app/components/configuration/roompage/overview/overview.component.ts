@@ -4,17 +4,47 @@ import { DataService } from "src/app/services/data.service";
 import { StringsService } from "src/app/services/strings.service";
 import { ModalService } from "src/app/services/modal.service";
 import { APIService } from "src/app/services/api.service";
+import {
+  MatTableDataSource,
+  MatPaginator
+} from "@angular/material";
+import { url } from 'inspector';
+
 
 @Component({
   selector: "room-overview",
   templateUrl: "./overview.component.html",
   styleUrls: ["./overview.component.scss"]
 })
+
+// This is to change the cards to a table
+// export class OverviewComponent implements OnInit, IDashPanel, AfterViewInit {
+//   @Input() info: RoomIssue[] = [];
+//   @Input() singleRoom = ture(?);
+//   roomID: string;
+//   charCount = 40;
+
+//   @Input() expIssue: RoomIssue | null;
+
+//   // Alert Table's Data
+//   issueData: MatTableDataSource<RoomIssue>;
+
+//   issueColumns: string[] = [
+//     "icon",
+//     "roomID",
+//     "displayName",
+//     "attributes",
+//     "address",
+//     "ipAddress",
+//   ];
+// }
+
 export class OverviewComponent implements OnInit {
   @Input() deviceList: Device[] = [];
   @Input() room: Room;
 
   roomOptions = ["Podium", "MMC", "Ceiling Box", "Cabinet Rack", "Closet Rack"];
+  pics: string[] = [];
 
   callbackFunc = (preset: AttributeSet) => {
     // console.log(preset);
@@ -68,9 +98,14 @@ export class OverviewComponent implements OnInit {
     this.modal.OpenDeviceModal(device, this.deviceList);
   };
 
-  constructor(public data: DataService, public text: StringsService, public modal: ModalService, public api: APIService) { }
+  constructor(public data: DataService,
+    public text: StringsService,
+    public modal: ModalService,
+    public api: APIService
+  ){}
 
   ngOnInit() {
+    this.getPictures();
   }
 
   GoBack() {
@@ -123,13 +158,17 @@ export class OverviewComponent implements OnInit {
     }
   }
 
-  async getPictures(): Promise<string[]> {
-    let pics: string[] = [];
-    
+  async getPictures() {
+    let pictures: string[] = [];
+    console.log("we are right here");
     await this.api.GetPictures(this.room.id).then((response)=> {
-      pics = response as string[];
+      pictures = response as string[];
     })
-    console.log("Here are the pics", pics);
-    return pics;
+    if (pictures.length < 1) {
+      pictures.push("https://previews.123rf.com/images/belchonock/belchonock1706/belchonock170600034/79515543-funny-dogs-taking-selfie-on-white-background-.jpg");
+    }
+    console.log("Here are the pics", pictures);
+    
+    this.pics = pictures;
   }
 }
