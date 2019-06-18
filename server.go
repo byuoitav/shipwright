@@ -193,7 +193,7 @@ func main() {
 	// Websocket Endpoints
 	router.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))
 
-	router.Group("/", auth.CheckHeaderBasedAuth,
+	router.Use(auth.CheckHeaderBasedAuth,
 		auth.CheckHeaderBasedAuth,
 		echo.WrapMiddleware(auth.AuthenticateCASUser),
 		auth.AuthorizeRequest("read-config", "configuration", func(c echo.Context) string { return "all" }),
