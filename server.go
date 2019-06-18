@@ -194,9 +194,15 @@ func main() {
 	router.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))
 
 	router.Use(auth.CheckHeaderBasedAuth,
+<<<<<<< HEAD
 		// auth.CheckHeaderBasedAuth,
 		// echo.WrapMiddleware(auth.AuthenticateCASUser),
 		// auth.AuthorizeRequest("read-config", "configuration", func(c echo.Context) string { return "all" }),
+=======
+		auth.CheckHeaderBasedAuth,
+		echo.WrapMiddleware(auth.AuthenticateCASUser),
+		auth.AuthorizeRequest("read-config", "configuration", func(c echo.Context) string { return "all" }),
+>>>>>>> 4f16d6ea983d867a5673f6e6ecda9761010c4139
 		middleware.StaticWithConfig(middleware.StaticConfig{
 			Root:   "web-dist",
 			Index:  "index.html",
