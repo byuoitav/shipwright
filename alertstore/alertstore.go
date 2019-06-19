@@ -335,17 +335,18 @@ func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue stri
 			v.Resolved = true
 			v.ResolutionInfo = resInfo
 
+			// close each of the alerts
+			for _, alert := range v.Alerts {
+				alert.Active = false
+				a.runAlertActions(alert)
+			}
+
 			//submit for persistence
 			v.CalculateAggregateInfo()
 
 			persist.GetElkAlertPersist().StoreIssue(v, true, true)
 			a.runIssueActions(v)
 			socket.GetManager().WriteToSockets(v)
-
-			// run all of the alert change actions for each alert
-			for _, alert := range v.Alerts {
-				a.runAlertActions(alert)
-			}
 		}
 	} else if err.Type == alertcache.NotFound {
 		log.L.Errorf("%v", nerr.Create("Unkown room issue "+roomIssue, "not-found"))
