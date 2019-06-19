@@ -160,7 +160,6 @@ func (a *alertStore) putAlert(alert structs.Alert) (string, *nerr.E) {
 }
 
 func (a *alertStore) resolveRoomIssue(resolutionInfo structs.ResolutionInfo, roomIssue string) *nerr.E {
-
 	a.resolutionChannel <- resolutionRequest{
 		RoomIssue:      roomIssue,
 		ResolutionInfo: resolutionInfo,
@@ -267,7 +266,6 @@ func (a *alertStore) editIssueInformation(issue structs.RoomIssue) *nerr.E {
 
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
 func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue string, partial bool, alertIDs []string) *nerr.E {
-
 	log.L.Infof("Resolving issue %v", roomIssue)
 	v, err := alertcache.GetAlertCache("default").GetIssue(roomIssue)
 	if err == nil {
@@ -343,6 +341,11 @@ func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue stri
 			persist.GetElkAlertPersist().StoreIssue(v, true, true)
 			a.runIssueActions(v)
 			socket.GetManager().WriteToSockets(v)
+
+			// run all of the alert change actions for each alert
+			for _, alert := range v.Alerts {
+				a.runAlertActions(alert)
+			}
 		}
 	} else if err.Type == alertcache.NotFound {
 		log.L.Errorf("%v", nerr.Create("Unkown room issue "+roomIssue, "not-found"))
