@@ -336,9 +336,9 @@ func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue stri
 			v.ResolutionInfo = resInfo
 
 			// close each of the alerts
-			for _, alert := range v.Alerts {
-				alert.Active = false
-				a.runAlertActions(alert)
+			for i := range v.Alerts {
+				v.Alerts[i].Active = false
+				a.runAlertActions(v.Alerts[i])
 			}
 
 			//submit for persistence
