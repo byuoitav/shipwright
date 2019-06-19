@@ -160,7 +160,6 @@ func (a *alertStore) putAlert(alert structs.Alert) (string, *nerr.E) {
 }
 
 func (a *alertStore) resolveRoomIssue(resolutionInfo structs.ResolutionInfo, roomIssue string) *nerr.E {
-
 	a.resolutionChannel <- resolutionRequest{
 		RoomIssue:      roomIssue,
 		ResolutionInfo: resolutionInfo,
@@ -267,7 +266,6 @@ func (a *alertStore) editIssueInformation(issue structs.RoomIssue) *nerr.E {
 
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
 func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue string, partial bool, alertIDs []string) *nerr.E {
-
 	log.L.Infof("Resolving issue %v", roomIssue)
 	v, err := alertcache.GetAlertCache("default").GetIssue(roomIssue)
 	if err == nil {
@@ -336,6 +334,12 @@ func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue stri
 			//it's there, lets get it, mark it as resolved.
 			v.Resolved = true
 			v.ResolutionInfo = resInfo
+
+			// close each of the alerts
+			for i := range v.Alerts {
+				v.Alerts[i].Active = false
+				a.runAlertActions(v.Alerts[i])
+			}
 
 			//submit for persistence
 			v.CalculateAggregateInfo()
