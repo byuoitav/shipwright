@@ -1,9 +1,8 @@
 import { Component, OnInit, Inject } from "@angular/core";
-import { StringsService } from "src/app/services/strings.service";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
-import { APIService} from "src/app/services/api.service";
-import { DataService} from "src/app/services/data.service";
-import { Room, DBResponse } from "src/app/objects/database";
+import { Room, DBResponse, RoomConfiguration } from "src/app/objects/database";
+import { APIService } from "src/app/services/api.service";
+import { TextService } from "src/app/services/text.service";
 
 @Component({
   selector: "room-modal",
@@ -11,35 +10,30 @@ import { Room, DBResponse } from "src/app/objects/database";
   styleUrls: ["./roommodal.component.scss"]
 })
 export class RoomModalComponent implements OnInit {
+  configurationList: RoomConfiguration[] = [];
+  designationList: string[] = [];
 
-  constructor(public text: StringsService,
-    public dialogRef: MatDialogRef<RoomModalComponent>, @Inject(MAT_DIALOG_DATA) public data: Room,
-    private api: APIService, public dataService: DataService) { }
+  newAttrKey: string;
+  newAttrValue: string;
+
+  constructor(
+    public dialogRef: MatDialogRef<RoomModalComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: Room,
+    private api: APIService,
+    public text: TextService
+  ) {
+    this.api.GetRoomConfigurations().then((answer) => {
+      this.configurationList = answer as RoomConfiguration[];
+    });
+    this.api.GetRoomDesignations().then((answer) => {
+      this.designationList = answer as string[];
+    });
+  }
 
   ngOnInit() {
   }
 
-  // AddRoom() {
-  //   if (this.data.id == null || this.data.name == null || this.data.configuration == null || this.data.designation == null) {
-  //     return;
-  //   }
-  //   this.api.AddRoom(this.data).then((resp) => {
-  //     this.dialogRef.close(resp);
-  //   });
-  // }
-
-  // UpdateRoom() {
-  //   this.api.UpdateRoom(this.data.id, this.data).then((resp) => {
-  //     this.dialogRef.close(resp);
-  //   });
-  // }
-
-  // CloseModal() {
-  //   this.dialogRef.close();
-  // }
-
   saveRoom = async (): Promise<boolean> => {
-    this.data.name = this.data.id;
     console.log("saving room", this.data);
     try {
       let resp: DBResponse;
@@ -51,48 +45,56 @@ export class RoomModalComponent implements OnInit {
         if (resp.success) {
           console.log("successfully updated the room", resp);
         } else {
-          console.error("failed to update the room", resp);
+          console.error("failed to update room", resp);
         }
       } else {
         resp = await this.api.AddRoom(this.data);
 
         if (resp.success) {
-          console.log("successfully added the room", resp);
+          console.log("successfully added room", resp);
           this.data.isNew = false;
         } else {
-          console.error("failed to add the room", resp);
+          console.error("failed to add room", resp);
         }
       }
 
       return resp.success;
     } catch (e) {
-      console.error("failed to update the room:", e);
+      console.error("failed to save room:", e);
       return false;
     }
-  };
+  }
 
   deleteRoom = async (): Promise<boolean> => {
     console.log("deleting room", this.data);
     try {
       if (!this.data.isNew) {
         let resp: DBResponse;
-        resp = await this.api.DeleteDevice(
+        resp = await this.api.DeleteRoom(
           this.data.id
         );
         if (resp.success) {
-          console.log("successfully deleted the room", resp);
+          console.log("successfully deleted room", resp);
         } else {
-          console.error("failed to delete the room", resp);
+          console.error("failed to delete room", resp);
         }
+
         return resp.success;
       }
     } catch (e) {
-      console.error("failed to delete the room:", e);
+      console.error("failed to save room:", e);
       return false;
     }
-  };
+  }
 
   close(result: any) {
     this.dialogRef.close(result);
+  }
+
+  addAttribute() {
+    if (this.text.addAttribute(this.newAttrKey, this.newAttrValue, this.data.attributes)) {
+      this.newAttrKey = "";
+      this.newAttrValue = "";
+    }
   }
 }

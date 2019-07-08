@@ -43,91 +43,48 @@ import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./components/app/app.component";
 import { HttpClientModule } from "@angular/common/http";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { DashboardComponent } from "./components/dashboard/dashboard.component";
-import { ConfigurationComponent } from "./components/configuration/configuration.component";
-import { SettingsModalComponent } from "./modals/settings/settings.component";
-import { ResolveModalComponent } from "./modals/resolve/resolve.component";
-import { BuildingModalComponent } from "./modals/buildingmodal/buildingmodal.component";
-import { RoomModalComponent } from "./modals/roommodal/roommodal.component";
-import { DeviceModalComponent } from "./modals/devicemodal/devicemodal.component";
 import { APIService } from "./services/api.service";
 import { SocketService } from "./services/socket.service";
-import { DataService } from "./services/data.service";
-import { ModalService } from "./services/modal.service";
-import { StringsService } from "./services/strings.service";
 import { OverlayContainer } from "@angular/cdk/overlay";
-import { DashPanelService } from "./services/dashpanel.service";
-import { NotifyModalComponent } from "./modals/notify/notify.component";
 import { DndModule } from "ng2-dnd";
-import { PresetModalComponent } from "./modals/presetmodal/presetmodal.component";
-import { IconModalComponent } from "./modals/iconmodal/iconmodal.component";
-import { DashPanelComponent } from "./components/dashboard/dashpanel/dashpanel.component";
-import { AlertTableComponent } from "./components/dashboard/alerttable/alerttable.component";
-import { BatteryReportComponent } from "./components/dashboard/batteryreport/batteryreport.component";
-import { BuildingListComponent } from "./components/configuration/buildinglist/buildinglist.component";
-import { RoomListComponent } from "./components/configuration/roomlist/roomlist.component";
-import { RoomPageComponent } from "./components/configuration/roompage/roompage.component";
-import { DeviceListComponent } from "./components/configuration/devicelist/devicelist.component";
-import { DashPanelDirective } from "./components/dashboard/dashpanel/dashpanel.directive";
-import { CampusStateComponent } from "./components/state/campus/campus-state.component";
-import { RoomStateComponent } from "./components/state/room/room-state.component";
-
 import { NotifierModule } from "angular-notifier";
-import { HelpModalComponent } from "./modals/helpmodal/helpmodal.component";
-import { DeviceStateComponent } from "./components/state/device-state/device-state.component";
-import { ResponseModalComponent } from "./modals/responsemodal/responsemodal.component";
-import { MaintenanceModalComponent } from "./modals/maintenancemodal/maintenancemodal.component";
-import { BuildingComponent } from "./components/configuration/buildinglist/building/building.component";
-import { RoomComponent } from "./components/configuration/roomlist/room/room.component";
-import { AlertsComponent } from "./components/configuration/roompage/alerts/alerts.component";
-import { BuilderComponent } from "./components/configuration/roompage/builder/builder.component";
-import { DeviceComponent } from "./components/configuration/devicelist/device/device.component";
-import { RoutingComponent } from "./components/configuration/roompage/routing/routing.component";
-import { InformationComponent } from "./components/information/information.component";
-import { PendingChangesGuard } from "./pending-changes.guard";
-import { OverviewComponent } from "./components/configuration/roompage/overview/overview.component";
-import { PartsListComponent } from "./components/configuration/roompage/partslist/partslist.component";
+import { CampusComponent } from "./components/campus/campus.component";
+import { BuildingModalComponent } from "./modals/buildingmodal/buildingmodal.component";
+import { TextService } from "./services/text.service";
 import { ActivityButtonComponent } from "./components/activity-button/activity-button.component";
-import { MenuItemComponent } from "./menu-item/menu-item.component";
+import { RoomListComponent } from "./components/room-list/room-list.component";
+import { RoomModalComponent } from "./modals/roommodal/roommodal.component";
+import { DashboardComponent } from "./components/dashboard/dashboard.component";
+import { DashpanelComponent } from "./components/dashpanel/dashpanel.component";
+import { AlertTableComponent } from "./components/alert-table/alert-table.component";
+import { DashpanelDirective } from "./components/dashpanel/dashpanel.directive";
+import { RoomPageComponent } from "./components/room-page/room-page.component";
+import { OverviewComponent } from "./components/room-page/overview/overview.component";
+import { MonitoringComponent } from "./components/room-page/monitoring/monitoring.component";
+import { BuilderComponent } from "./components/room-page/builder/builder.component";
+import { RoutingComponent } from "./components/room-page/routing/routing.component";
+import { PartsListComponent } from "./components/room-page/parts-list/parts-list.component";
+import { SlideshowModule } from "ng-simple-slideshow";
+
 
 @NgModule({
   declarations: [
     AppComponent,
-    DashboardComponent,
-    ConfigurationComponent,
-    DashPanelComponent,
-    AlertTableComponent,
-    BatteryReportComponent,
-    BuildingListComponent,
-    BuildingComponent,
-    RoomListComponent,
-    RoomComponent,
-    RoomPageComponent,
-    AlertsComponent,
-    BuilderComponent,
-    DeviceListComponent,
-    DeviceComponent,
-    SettingsModalComponent,
-    ResolveModalComponent,
+    CampusComponent,
     BuildingModalComponent,
-    RoomModalComponent,
-    DeviceModalComponent,
-    DashPanelDirective,
-    NotifyModalComponent,
-    PresetModalComponent,
-    IconModalComponent,
-    CampusStateComponent,
-    RoomStateComponent,
-    HelpModalComponent,
-    DeviceStateComponent,
-    ResponseModalComponent,
-    MaintenanceModalComponent,
-    RoutingComponent,
-    PartsListComponent,
-    InformationComponent,
-    OverviewComponent,
     ActivityButtonComponent,
-    MenuItemComponent
+    RoomListComponent,
+    RoomModalComponent,
+    DashboardComponent,
+    DashpanelComponent,
+    AlertTableComponent,
+    DashpanelDirective,
+    RoomPageComponent,
+    OverviewComponent,
+    MonitoringComponent,
+    BuilderComponent,
+    RoutingComponent,
+    PartsListComponent
   ],
   imports: [
     BrowserModule,
@@ -168,34 +125,21 @@ import { MenuItemComponent } from "./menu-item/menu-item.component";
       theme: "material"
     }),
     MatGridListModule,
-    MatBadgeModule
+    MatBadgeModule,
+    SlideshowModule
   ],
   entryComponents: [
-    SettingsModalComponent,
-    ResolveModalComponent,
     BuildingModalComponent,
     RoomModalComponent,
-    DeviceModalComponent,
-    AlertTableComponent,
-    BatteryReportComponent,
-    NotifyModalComponent,
-    PresetModalComponent,
-    IconModalComponent,
-    HelpModalComponent,
-    ResponseModalComponent,
-    MaintenanceModalComponent
+    AlertTableComponent
   ],
   providers: [
     APIService,
     SocketService,
-    DataService,
-    ModalService,
-    StringsService,
-    DashPanelService,
     CookieService,
+    TextService,
     { provide: DateAdapter, useClass: NativeDateAdapter },
-    { provide: MAT_DIALOG_DATA, useValue: {} },
-    PendingChangesGuard
+    { provide: MAT_DIALOG_DATA, useValue: {} }
   ],
   bootstrap: [AppComponent]
 })

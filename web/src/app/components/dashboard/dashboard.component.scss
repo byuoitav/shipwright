@@ -1,44 +1,44 @@
 .alignTop {
-  ::ng-deep {
-    .mat-figure {
-      align-items: flex-start !important;
-      justify-content: left;
+     ::ng-deep {
+        .mat-figure {
+            align-items: flex-start !important;
+            justify-content: left;
+        }
     }
-  }
 }
 
 .row {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: flex-end;
-  padding: 5px;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+    padding: 5px;
 }
 
 .settings {
-  margin: 5px;
+    margin: 5px;
 }
 
 .dashpanelClass {
-  height: 100%;
-  width: 100%;
-  margin: 0px 5px;
-  overflow: auto;
+    height: 100%;
+    width: 100%;
+    margin: 0px 5px;
+    overflow: auto;
 }
 
-::-webkit-scrollbar {
-  width: 0.4em;
+ ::-webkit-scrollbar {
+    width: 0.4em;
 }
 
-::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 1px grey;
-  border-radius: 0.2em;
+ ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 1px grey;
+    border-radius: 0.2em;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #757575;
-  border-radius: 0.2em;
+ ::-webkit-scrollbar-thumb {
+    background: #757575;
+    border-radius: 0.2em;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: darkgray;
+ ::-webkit-scrollbar-thumb:hover {
+    background: darkgray;
 }

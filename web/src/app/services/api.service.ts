@@ -21,7 +21,6 @@ import {
   ResolutionInfo,
   ClassHalfHourBlock
 } from "../objects/alerts";
-import { StringsService } from "./strings.service";
 import { CookieService } from "ngx-cookie-service";
 
 @Injectable({
@@ -38,8 +37,7 @@ export class APIService {
 
   constructor(
     public cookies: CookieService,
-    private http: HttpClient,
-    private text: StringsService
+    private http: HttpClient
   ) {
     this.themeSwitched = new EventEmitter<string[]>();
     this.converter = new JsonConvert();
@@ -71,7 +69,7 @@ export class APIService {
 
     window.history.replaceState(
       null,
-      this.text.WebsiteTitle,
+      "SMEE",
       window.location.pathname
     );
   }

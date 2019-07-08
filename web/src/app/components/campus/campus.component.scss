@@ -1,0 +1,56 @@
+$card-width: 325px;
+.action-container {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.filter-search {
+    margin-left: 2vw;
+    margin-right: 4vw;
+    width: 25vw;
+}
+
+.add-button {
+    margin-left: 4vw;
+}
+
+.list-container {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    margin-left: 3vw;
+    margin-right: 3vw;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+mat-card {
+    min-width: $card-width;
+    min-height: 310px;
+    width: $card-width;
+    margin-bottom: 1vh;
+    margin-top: 1vh;
+    margin-left: 1vw;
+    margin-right: 1vw;
+}
+
+.image {
+    height: 203px;
+    min-height: 203px;
+    width: $card-width;
+    min-width: $card-width;
+    margin: auto;
+}
+
+.row {
+    width: $card-width;
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.edit {
+    justify-self: flex-end;
+}

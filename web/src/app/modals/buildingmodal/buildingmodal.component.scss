@@ -1,25 +1,14 @@
-$save: #00c853;
-$cancel:#e53935;
 .column {
     display: flex;
     flex-flow: column nowrap;
 }
 
-.row {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-around;
-}
-
 mat-form-field {
-    min-width: 25em;
+    min-width: 22em;
 }
 
-.button {
-    &.save {
-        color: $save;
-    }
-    &.cancel {
-        color: $cancel;
-    }
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 }

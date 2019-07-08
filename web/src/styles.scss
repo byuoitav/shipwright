@@ -16,6 +16,10 @@ html {
     flex-grow: 1;
 }
 
+.fill-remaining-space {
+    flex: 1 1 auto;
+}
+
 @media print {
     .noprint {
         display: none;

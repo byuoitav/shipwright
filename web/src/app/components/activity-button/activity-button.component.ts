@@ -5,6 +5,7 @@ import { Component, Input, Output, EventEmitter } from "@angular/core";
   templateUrl: "./activity-button.component.html",
   styleUrls: ["./activity-button.component.scss"]
 })
+
 export class ActivityButtonComponent {
   _resolving: boolean;
   _resolved: boolean;

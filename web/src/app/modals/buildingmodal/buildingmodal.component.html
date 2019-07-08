@@ -1,29 +1,27 @@
 <div class="column">
     <mat-form-field>
         <mat-label>ID</mat-label>
-        <input matInput [type]="'text'" [(ngModel)]="data.id">
+        <input matInput type="text" [(ngModel)]="data.id">
     </mat-form-field>
     <mat-form-field>
         <mat-label>Name</mat-label>
-        <input matInput [type]="'text'" [(ngModel)]="data.name">
-    </mat-form-field>
-    <mat-form-field>
-        <mat-label>Description</mat-label>
-        <input matInput [type]="'text'" [(ngModel)]="data.description">
+        <input matInput type="text" [(ngModel)]="data.name">
     </mat-form-field>
     <mat-form-field>
         <mat-label>Tags</mat-label>
         <mat-chip-list #bldgTags>
-            <mat-chip *ngFor="let tag of data.tags" [selectable]="true" [removable]="true" (removed)="text.RemoveTag(tag, data)">
+            <mat-chip *ngFor="let tag of data.tags" [selectable]="true" [removable]="true" (removed)="text.removeChip(tag, data.tags)">
                 {{tag}}
                 <mat-icon matChipRemove>cancel</mat-icon>
             </mat-chip>
-            <input matInput type="text" [matChipInputFor]="bldgTags" [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="text.AddTag($event, data)">
+            <input matInput type="text" [matChipInputFor]="bldgTags" [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes" [matChipInputAddOnBlur]=true (matChipInputTokenEnd)="text.addChip($event, data.tags)">
         </mat-chip-list>
     </mat-form-field>
-    <section class="row">
-        <button mat-button class="button save" (click)="AddBuilding()" *ngIf="data.isNew">Add</button>
-        <button mat-button class="button save" (click)="UpdateBuilding()" *ngIf="!data.isNew">Update</button>
-        <button mat-button class="button cancel" (click)="CloseModal()">Cancel</button>
-    </section>
 </div>
+
+<ng-container>
+    <mat-dialog-actions class="actions">
+        <activity-button *ngIf="!data.isNew" [click]="deleteBuilding" type="mat-stroked-button" style="margin-right: 10px; color: red;" (success)="close('deleted')">Delete</activity-button>
+        <activity-button [click]="saveBuilding" type="mat-raised-button" (success)="close(true)">Save</activity-button>
+    </mat-dialog-actions>
+</ng-container>

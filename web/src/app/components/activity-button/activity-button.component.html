@@ -1,73 +1,34 @@
 <ng-container *ngIf="!type">
-  <button
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
-    [disabled]="disabled"
-    (click)="_click()"
-    mat-button
-  >
-    <ng-container *ngTemplateOutlet="inside"></ng-container>
-  </button>
+    <button class="container" [class.success]="_resolved" [class.error]="_error" [disabled]="disabled" (click)="_click()" mat-button>
+      <ng-container *ngTemplateOutlet="inside"></ng-container>
+    </button>
 </ng-container>
 <ng-container *ngIf="type === 'mat-raised-button'">
-  <button
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
-    [disabled]="disabled"
-    (click)="_click()"
-    mat-raised-button
-  >
-    <ng-container *ngTemplateOutlet="inside"></ng-container>
-  </button>
+    <button class="container" [class.success]="_resolved" [class.error]="_error" [disabled]="disabled" (click)="_click()" mat-raised-button>
+      <ng-container *ngTemplateOutlet="inside"></ng-container>
+    </button>
 </ng-container>
 <ng-container *ngIf="type === 'mat-stroked-button'">
-  <button
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
-    [disabled]="disabled"
-    (click)="_click()"
-    mat-stroked-button
-  >
-    <ng-container *ngTemplateOutlet="inside"></ng-container>
-  </button>
+    <button class="container" [class.success]="_resolved" [class.error]="_error" [disabled]="disabled" (click)="_click()" mat-stroked-button>
+      <ng-container *ngTemplateOutlet="inside"></ng-container>
+    </button>
 </ng-container>
 <ng-container *ngIf="type === 'mat-flat-button'">
-  <button
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
-    [disabled]="disabled"
-    (click)="_click()"
-    mat-flat-button
-  >
-    <ng-container *ngTemplateOutlet="inside"></ng-container>
-  </button>
+    <button class="container" [class.success]="_resolved" [class.error]="_error" [disabled]="disabled" (click)="_click()" mat-flat-button>
+      <ng-container *ngTemplateOutlet="inside"></ng-container>
+    </button>
 </ng-container>
 <ng-container *ngIf="type === 'mat-icon-button'">
-  <button
-    class="container"
-    [class.success]="_resolved"
-    [class.error]="_error"
-    [disabled]="disabled"
-    (click)="_click()"
-    mat-icon-button
-  >
-    <ng-container *ngTemplateOutlet="inside"></ng-container>
-  </button>
+    <button class="container" [class.success]="_resolved" [class.error]="_error" [disabled]="disabled" (click)="_click()" mat-icon-button>
+      <ng-container *ngTemplateOutlet="inside"></ng-container>
+    </button>
 </ng-container>
 
 <ng-template #inside>
-  <span [class.active]="!_resolving && !_resolved && !_error">
-    <ng-content></ng-content
-  ></span>
-  <mat-spinner
-    class="spinner"
-    [class.active]="_resolving && !_resolved && !_error"
-    diameter="20"
-  ></mat-spinner>
-  <mat-icon [class.active]="_resolved">check</mat-icon>
-  <mat-icon [class.active]="_error">close</mat-icon>
+    <span [class.active]="!_resolving && !_resolved && !_error">
+      <ng-content></ng-content
+    ></span>
+    <mat-spinner class="spinner" [class.active]="_resolving && !_resolved && !_error" diameter="20"></mat-spinner>
+    <mat-icon [class.active]="_resolved">check</mat-icon>
+    <mat-icon [class.active]="_error">close</mat-icon>
 </ng-template>

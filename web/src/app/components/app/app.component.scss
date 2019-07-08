@@ -1,6 +1,6 @@
 $matToolbarHeight: 64px;
-$wideSideNavWidth: 14em;
-$thinSideNavWidth: 4em;
+$wideSideNavWidth: 12em;
+$thinSideNavWidth: 4.2em;
 $buttonHeight: 6vh;
 .base {
     position: absolute;
@@ -13,8 +13,18 @@ $buttonHeight: 6vh;
     overflow: hidden;
 }
 
-.fill-remaining-space {
-    flex: 1 1 auto;
+.menu {
+    &.title {
+        font-style: 500 22px/34px Roboto, "Helvetica Neue", sans-serif;
+    }
+    &.item {
+        font-style: 450 16px/18px Roboto, "Helvetica Neue", sans-serif;
+    }
+}
+
+.hr {
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 $sidenavHeight: calc(100% - #{$matToolbarHeight});
@@ -70,33 +80,5 @@ $sidenavHeight: calc(100% - #{$matToolbarHeight});
     &::-webkit-scrollbar-track {
         background: #ddd;
         // border-radius: 0.5em;
-    }
-}
-
-.website-title {
-    font-style: 550 24px/36px Roboto, "Helvetica Neue", sans-serif;
-}
-
-.menu {
-    &.title {
-        font-style: 500 22px/34px Roboto, "Helvetica Neue", sans-serif;
-    }
-    &.item {
-        font-style: 450 16px/18px Roboto, "Helvetica Neue", sans-serif;
-    }
-}
-
-.hr {
-    margin-left: 5px;
-    margin-right: 5px;
-}
-
-.username {
-    width: 8ch;
-}
-
-@media print {
-    .noprint {
-        visibility: hidden;
     }
 }

@@ -1,0 +1,40 @@
+<div class="action-container">
+    <button mat-raised-button color="primary" class="add-button" (click)="createBuilding()">
+        <mat-icon>add</mat-icon> Add New
+    </button>
+    <mat-form-field class="filter-search">
+        <mat-label>Filters</mat-label>
+        <mat-chip-list #filterList>
+            <mat-chip *ngFor="let query of filterQueries" [selectable]=true [removable]=true (removed)="text.removeChip(query, filterQueries); filter()">
+                {{query}}
+                <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input type="text" matInput [matChipInputFor]="filterList" [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes" [matChipInputAddOnBlur]=true (matChipInputTokenEnd)="text.addChip($event, filterQueries); filter()">
+        </mat-chip-list>
+    </mat-form-field>
+</div>
+
+<div class="list-container">
+    <ng-container *ngFor="let b of filteredBuildings">
+        <mat-card>
+            <a routerLink="/campus/{{b.id}}/roomlist">
+                <mat-card-header>
+                    <mat-card-title>{{b.id}}</mat-card-title>
+                    <mat-card-subtitle>{{b.name}}</mat-card-subtitle>
+                </mat-card-header>
+                <img mat-card-image [src]="getImage(b.id)" alt="A cool image of the {{b.id}}" class="image">
+            </a>
+            <mat-card-actions>
+                <mat-action-row class="row">
+                    <a routerLink="/campus/{{b.id}}/roomlist">
+                        <span></span>
+                    </a>
+                    <span class="fill-remaining-space"></span>
+                    <button mat-icon-button class="edit" (click)="editBuilding(b)">
+                      <mat-icon>more_horiz</mat-icon>
+                    </button>
+                </mat-action-row>
+            </mat-card-actions>
+        </mat-card>
+    </ng-container>
+</div>

@@ -1,13 +1,9 @@
 import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
+import { CampusComponent } from "./components/campus/campus.component";
+import { RoomListComponent } from "./components/room-list/room-list.component";
 import { DashboardComponent } from "./components/dashboard/dashboard.component";
-import { ConfigurationComponent } from "./components/configuration/configuration.component";
-import { RoomListComponent } from "./components/configuration/roomlist/roomlist.component";
-import { RoomPageComponent } from "./components/configuration/roompage/roompage.component";
-import { RoomStateComponent } from "./components/state/room/room-state.component";
-import { DeviceStateComponent } from "./components/state/device-state/device-state.component";
-import { InformationComponent } from "./components/information/information.component";
-import { PendingChangesGuard } from "./pending-changes.guard";
+import { RoomPageComponent } from "./components/room-page/room-page.component";
 
 const routes: Routes = [
   {
@@ -20,32 +16,16 @@ const routes: Routes = [
     component: DashboardComponent
   },
   {
-    path: "configuration",
-    component: ConfigurationComponent
-  },
-  {
     path: "campus",
-    component: ConfigurationComponent
+    component: CampusComponent
   },
   {
-    path: "roomStatus",
-    component: RoomStateComponent
-  },
-  {
-    path: "deviceStatus",
-    component: DeviceStateComponent
-  },
-  {
-    path: "information",
-    component: InformationComponent
-  },
-  {
-    path: "configuration/:buildingID/roomlist",
+    path: "campus/:buildingID/roomlist",
     component: RoomListComponent
   },
   {
-    path: "configuration/:roomID/roompage/:tab",
-    component: RoomPageComponent,
+    path: "campus/:roomID/tab/:tabNum",
+    component: RoomPageComponent
   }
 ];
 

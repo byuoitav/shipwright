@@ -1,34 +1,31 @@
-$save: #00c853;
-$cancel:#e53935;
-.column {
-    display: flex;
-    flex-flow: column nowrap;
+mat-form-field {
+    min-width: 15em;
+    margin-left: 1vw;
+    margin-right: 1vw;
+    margin-top: 2vh;
 }
 
 .row {
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-evenly;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    align-items: baseline;
 }
 
-mat-form-field {
-    margin-left: 1vw;
-    margin-right: 1vw;
-}
-
-.button {
-    &.save {
-        color: $save;
-    }
-    &.cancel {
-        color: $cancel;
-    }
+.tags {
+    width: 60%;
+    justify-self: center;
 }
 
 .actions {
     display: flex;
     justify-content: flex-end;
     align-items: center;
+}
+
+.attributes {
+    margin-left: 1vw;
+    margin-right: 1vw;
+    margin-top: 2vh;
+    margin-bottom: 2vh;
 }

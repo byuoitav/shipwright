@@ -1,33 +1,17 @@
-<mat-grid-list
-  [cols]="panelCount > 1 ? 2 : 1"
-  [rowHeight]="panelCount > 2 ? '50%' : '100%'"
->
-  <mat-grid-tile class="alignTop">
-    <dashpanel
-      class="dashpanelClass"
-      [panelType]="GetDefaultPanels(0)"
-    ></dashpanel>
-  </mat-grid-tile>
-  <mat-grid-tile class="alignTop" *ngIf="panelCount >= 2">
-    <dashpanel
-      class="dashpanelClass"
-      [panelType]="GetDefaultPanels(1)"
-    ></dashpanel>
-  </mat-grid-tile>
-  <mat-grid-tile
-    class="alignTop"
-    *ngIf="panelCount >= 3"
-    [colspan]="panelCount == 3 ? 2 : 1"
-  >
-    <dashpanel
-      class="dashpanelClass"
-      [panelType]="GetDefaultPanels(2)"
-    ></dashpanel>
-  </mat-grid-tile>
-  <mat-grid-tile class="alignTop" *ngIf="panelCount >= 4">
-    <dashpanel
-      class="dashpanelClass"
-      [panelType]="GetDefaultPanels(3)"
-    ></dashpanel>
-  </mat-grid-tile>
+<p>
+    dashboard works!
+</p>
+<mat-grid-list [cols]="panelCount > 1 ? 2 : 1" [rowHeight]="panelCount > 2 ? '50%' : '100%'">
+    <mat-grid-tile class="alignTop">
+        <dashpanel class="dashpanelClass" [panelType]="getDefaultPanels(0)"></dashpanel>
+    </mat-grid-tile>
+    <mat-grid-tile class="alignTop" *ngIf="panelCount >= 2">
+        <dashpanel class="dashpanelClass" [panelType]="getDefaultPanels(1)"></dashpanel>
+    </mat-grid-tile>
+    <mat-grid-tile class="alignTop" *ngIf="panelCount >= 3" [colspan]="panelCount == 3 ? 2 : 1">
+        <dashpanel class="dashpanelClass" [panelType]="getDefaultPanels(2)"></dashpanel>
+    </mat-grid-tile>
+    <mat-grid-tile class="alignTop" *ngIf="panelCount >= 4">
+        <dashpanel class="dashpanelClass" [panelType]="getDefaultPanels(3)"></dashpanel>
+    </mat-grid-tile>
 </mat-grid-list>

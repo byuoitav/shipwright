@@ -1,71 +1,69 @@
-import { Injectable } from '@angular/core';
-import { AlertTableComponent } from '../components/dashboard/alerttable/alerttable.component';
+import { Injectable } from "@angular/core";
+import { AlertTableComponent } from "../components/alert-table/alert-table.component";
 
-export const enum DashPanelTypes {
+export const enum DashpanelTypes {
   AllAlerts,
   CriticalAlerts,
   WarningAlerts,
   LowSeverityAlerts,
   RecentlyResolvedAlerts,
   MaintenanceRoomAlerts,
-  StageDevAlerts,
-  //MicrophoneBatteries - someday
-  //SuppressedAlerts - someday
+  StageDevAlerts
 }
 
-export class DashPanelConfig {
-  dashPanelType: DashPanelTypes;
+export class DashpanelConfig {
+  dashPanelType: DashpanelTypes;
   component: any;
   title: string;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
-export class DashPanelService {
-   configs: DashPanelConfig[] = [
+export class DashpanelService {
+  configs: DashpanelConfig[] = [
     {
-      dashPanelType: DashPanelTypes.AllAlerts,
+      dashPanelType: DashpanelTypes.AllAlerts,
       component: AlertTableComponent,
       title: "All Alerts"
     },
     {
-      dashPanelType: DashPanelTypes.CriticalAlerts,
+      dashPanelType: DashpanelTypes.CriticalAlerts,
       component: AlertTableComponent,
       title: "Critical Alerts"
     },
     {
-      dashPanelType: DashPanelTypes.WarningAlerts,
+      dashPanelType: DashpanelTypes.WarningAlerts,
       component: AlertTableComponent,
       title: "Warning Alerts"
     },
     {
-      dashPanelType: DashPanelTypes.LowSeverityAlerts,
+      dashPanelType: DashpanelTypes.LowSeverityAlerts,
       component: AlertTableComponent,
       title: "Low Severity Alerts"
     },
     {
-      dashPanelType: DashPanelTypes.RecentlyResolvedAlerts,
+      dashPanelType: DashpanelTypes.RecentlyResolvedAlerts,
       component: AlertTableComponent,
       title: "Recently Resolved Alerts"
     },
     {
-      dashPanelType: DashPanelTypes.MaintenanceRoomAlerts,
+      dashPanelType: DashpanelTypes.MaintenanceRoomAlerts,
       component: AlertTableComponent,
       title: "Maintenance Room Alerts"
     },
     {
-      dashPanelType: DashPanelTypes.StageDevAlerts,
+      dashPanelType: DashpanelTypes.StageDevAlerts,
       component: AlertTableComponent,
       title: "Stage and Development Room Alerts"
-    },
-   ];
+    }
+  ];
 
-   getPanel(panelType: DashPanelTypes): DashPanelConfig {
+  getPanel(panelType: DashpanelTypes): DashpanelConfig {
     return this.configs.find(one => one.dashPanelType === panelType);
-   }
+  }
 
-   getAllPanelConfigs(): DashPanelConfig[] {
-     return this.configs;
-   }
+  getAllPanelConfigs(): DashpanelConfig[] {
+    return this.configs;
+  }
 }

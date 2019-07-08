@@ -1,0 +1,25 @@
+.full {
+    min-height: 100%;
+    height: 100%;
+}
+
+#wrapper {
+    min-height: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    /*new*/
+}
+
+#roomTabs {
+    height: 100%;
+}
+
+#roomTabs mat-tab-body {
+    flex-grow: 1;
+}
+
+.info-header {
+    display: flex;
+    justify-content: center;
+    padding: 15px;
+}

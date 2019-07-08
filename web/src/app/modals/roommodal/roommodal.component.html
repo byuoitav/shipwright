@@ -1,59 +1,75 @@
 <div class="column">
-    <section class="row">
-        <!-- ID -->
-        <mat-form-field #roomID>
-            <mat-label>ID</mat-label>
-            <input matInput type="text" [(ngModel)]="data.id" required>
-        </mat-form-field>
-        <!-- NAME -->
-        <!-- <mat-form-field #roomName>
+    <div class="row">
+        <mat-form-field>
             <mat-label>Name</mat-label>
-            <input matInput type="text" [(ngModel)]="data.name" required>
-        </mat-form-field> -->
-        <!-- DESCRIPTION -->
-        <mat-form-field #roomDescription>
+            <input matInput type="text" [(ngModel)]="data.name">
+        </mat-form-field>
+        <mat-form-field>
             <mat-label>Description</mat-label>
             <input matInput type="text" [(ngModel)]="data.description">
         </mat-form-field>
-    </section>
-    <section class="row">
-        <!-- CONFIGURATION -->
+    </div>
+    <div class="row">
         <mat-form-field>
             <mat-label>Configuration</mat-label>
             <mat-select required matInput [(ngModel)]="data.configuration.id">
-                <mat-option *ngFor="let c of dataService.roomConfigurations" [value]="c.id">{{c.id}}</mat-option>
+                <mat-option *ngFor="let c of configurationList" [value]="c.id">
+                    {{c.id}}
+                </mat-option>
             </mat-select>
         </mat-form-field>
-        <!-- DESIGNATION -->
+
         <mat-form-field>
             <mat-label>Designation</mat-label>
             <mat-select required matInput [(ngModel)]="data.designation">
-                <mat-option *ngFor="let d of dataService.roomDesignations" [value]="d">{{text.Title(d)}}</mat-option>
+                <mat-option *ngFor="let d of designationList" [value]="d">
+                    {{text.title(d)}}
+                </mat-option>
             </mat-select>
         </mat-form-field>
-        <!-- TAGS -->
-        <mat-form-field>
+    </div>
+    <div class="row">
+        <mat-form-field class="tags">
             <mat-label>Tags</mat-label>
             <mat-chip-list #roomTags>
-                <mat-chip *ngFor="let tag of data.tags" [selectable]="true" [removable]="true" (removed)="text.RemoveTag(tag, data)">
+                <mat-chip *ngFor="let tag of data.tags" [selectable]=true [removable]=true (removed)="text.removeChip(tag, data.tags)">
                     {{tag}}
                     <mat-icon matChipRemove>cancel</mat-icon>
                 </mat-chip>
-                <input matInput type="text" [matChipInputFor]="roomTags" [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="text.AddTag($event, data)">
+                <input matInput type="text" [matChipInputFor]="roomTags" [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes" [matChipInputAddOnBlur]=true (matChipInputTokenEnd)="text.addChip($event, data.tags)">
             </mat-chip-list>
         </mat-form-field>
-    </section>
-    <!-- BUTTONS -->
-    <!-- <section class="row">
-        <button mat-button class="button save" (click)="AddRoom()" *ngIf="data.isNew">Add</button>
-        <button mat-button class="button save" (click)="UpdateRoom()" *ngIf="!data.isNew">Update</button>
-        <button mat-button class="button cancel" (click)="CloseModal()">Cancel</button>
-    </section> -->
-
-    <ng-container>
-        <mat-dialog-actions class="actions">
-            <activity-button *ngIf="!data.isNew" [click]="deleteRoom" type="mat-stroked-button" style="margin-right: 10px; color: red;" (success)="close('deleted')">Delete</activity-button>
-            <activity-button [click]="saveRoom" type="mat-raised-button" (success)="close(true)">Save</activity-button>
-        </mat-dialog-actions>
-    </ng-container>
+    </div>
+    <div class="row">
+        <mat-expansion-panel class="mat-elevation-z2 attributes" [expanded]=false>
+            <mat-expansion-panel-header>
+                <mat-panel-title>Attributes</mat-panel-title>
+            </mat-expansion-panel-header>
+            <section *ngFor="let attribute of (data.attributes | keyvalue)" class="row">
+                <mat-form-field>
+                    <input matInput type="text" [(ngModel)]="attribute.key">
+                </mat-form-field>
+                <mat-form-field>
+                    <input matInput type="text" [ngModel]="attribute.value" (change)="data.attributes.set(attribute.key, $event.target.value)">
+                </mat-form-field>
+                <button mat-icon-button color="warn" (click)="text.removeAttribute(attribute.key, data.attributes)"><mat-icon>close</mat-icon></button>
+            </section>
+            <section class="row">
+                <mat-form-field>
+                    <input matInput type="text" [(ngModel)]="newAttrKey">
+                </mat-form-field>
+                <mat-form-field>
+                    <input matInput type="text" [(ngModel)]="newAttrValue" (keyup)="$event.keyCode == 13 ? addAttribute() : null">
+                </mat-form-field>
+                <button [disabled]="data?.attributes?.has(newAttrKey)" (click)="addAttribute()" mat-icon-button color="primary"><mat-icon>add</mat-icon></button>
+            </section>
+        </mat-expansion-panel>
+    </div>
 </div>
+
+<ng-container>
+    <mat-dialog-actions class="actions">
+        <activity-button *ngIf="!data.isNew" [click]="deleteRoom" type="mat-stroked-button" style="margin-right: 10px; color: red;" (success)="close('deleted')">Delete</activity-button>
+        <activity-button [click]="saveRoom" type="mat-raised-button" (success)="close(true)">Save</activity-button>
+    </mat-dialog-actions>
+</ng-container>
