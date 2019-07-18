@@ -3,105 +3,111 @@ $status-bad: #e53935;
 $status-warning: #ffd600;
 // $chip-width: 80px;
 .placeholder {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
 }
 
 .flexContainer {
-  height: 100%;
+    height: 100%;
 }
 
 table {
-  width: 100%;
+    width: 100%;
 }
 
 .display-on {
-  background-color: $status-good !important;
-  // width: $chip-width;
-  // margin-right: 1em;
+    background-color: $status-good !important;
+    // width: $chip-width;
+    // margin-right: 1em;
 }
 
 .display-standby {
-  background-color: lightslategray;
-  // width: $chip-width;
-  // margin-right: 1em;
+    background-color: lightslategray;
+    // width: $chip-width;
+    // margin-right: 1em;
 }
 
 .mic-good {
-  // width: $chip-width;
-  // margin-right: 1em;
-  .icon {
-    color: $status-good;
-  }
+    // width: $chip-width;
+    // margin-right: 1em;
+    .icon {
+        color: $status-good;
+    }
 }
 
 .mic-okay {
-  // background-color: $status-warning;
-  // width: $chip-width;
-  // margin-right: 1em;
-  &.icon {
-    color: $status-warning;
-  }
+    // background-color: $status-warning;
+    // width: $chip-width;
+    // margin-right: 1em;
+    &.icon {
+        color: $status-warning;
+    }
 }
 
 .mic-bad {
-  // background-color: $status-bad;
-  // width: $chip-width;
-  // margin-right: 1em;
-  &.icon {
-    color: $status-bad;
-  }
+    // background-color: $status-bad;
+    // width: $chip-width;
+    // margin-right: 1em;
+    &.icon {
+        color: $status-bad;
+    }
 }
 
 // .default-chip {
 //     width: $chip-width;
 //     // margin-right: 1em;
 // }
-
 .chipList {
-  display: inline-flex;
-  justify-content: space-evenly;
-  // margin-left: 1em;
-  margin-right: 1em;
-  margin-top: 5px;
-  margin-bottom: 5px;
-  // min-width: 100px;
+    display: inline-flex;
+    justify-content: space-evenly;
+    // margin-left: 1em;
+    margin-right: 1em;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    // min-width: 100px;
 }
 
 .mat-column-type {
-  max-width: 80px;
-  width: 80px;
-  text-align: center;
+    max-width: 80px;
+    width: 80px;
+    text-align: center;
 }
 
 .mat-column-roomID {
-  max-width: 100px;
-  width: 100px;
-  padding-left: 20px;
+    max-width: 100px;
+    width: 100px;
+    padding-left: 20px;
 }
 
 .mat-column-alerts {
-  max-width: 100px;
-  width: 100px;
-  text-align: center;
+    max-width: 100px;
+    width: 100px;
+    text-align: center;
 }
 
 .mat-column-devices {
-  padding-left: 20px;
+    padding-left: 20px;
 }
 
 .mat-form-field {
-  font-size: 14px;
-  width: 30%;
-  margin-left: 5px;
+    font-size: 14px;
+    width: 30%;
+    margin-left: 5px;
 }
 
 .button-row {
-  margin-left: 15px;
+    margin-left: 15px;
 }
 
 .button-filter {
-  margin-right: 8px;
+    margin-right: 8px;
+}
+
+.fake-hyperlink {
+    text-align: left;
+    color: #2196f3;
+    cursor: pointer;
+    width: 100px;
 }
