@@ -55,7 +55,7 @@ func RebootPi(ctx context.Context, with []byte, log *zap.SugaredLogger) *nerr.E 
 }
 
 func startRebootManager(rebootChan chan RebootInfo) {
-	log := log.L.Named("Reboot-Manager")
+	log := log.L.Named("reboot-manager")
 	log.Infof("Starting reboot manager. Attempting reboots every %v", RebootFrequency)
 
 	ticker := time.NewTicker(SlackMessageFrequency)
@@ -74,18 +74,6 @@ func startRebootManager(rebootChan chan RebootInfo) {
 				log.Infof("Attempting to Reboot: %s", rebootInfo.DeviceID)
 
 				go reboot(rebootInfo, log)
-				/*msg := &slack.WebhookMessage{
-					Attachments: attachments,
-				}
-
-				err := slack.PostWebhook(url, msg)
-				if err != nil {
-					log.Warnf("Failed to send slack messages to %v: %s", url, err)
-				} else {
-					log.Debugf("Successfully send slack messages to %v", url)
-					delete(messages, url) // clear out these messages
-				}
-				*/
 			}
 		}
 	}
