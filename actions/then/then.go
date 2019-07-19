@@ -36,6 +36,7 @@ func init() {
 	// declare then's here
 	thens.m["send-email"] = SendEmail
 	thens.m["send-slack"] = SendSlack
+	thens.m["reboot-pi"] = RebootPi
 
 	thens.Unlock()
 }
