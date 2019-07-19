@@ -29,12 +29,10 @@
         "LOG_LEVEL",
         "NET_ID",
         "NO_PULL",
-        "PROXY_ADDR",
         "RESPONDER_GROUP",
         "ROOM_SYSTEM",
         "SERVICENOW_WSO2_TOKEN",
         "SERVICE_CONFIG_LOCATION",
-        "SLACK_CHANNEL",
         "STOP_REPLICATION",
         "SYSTEM_ID",
         "TOKEN_REFRESH_URL"

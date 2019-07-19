@@ -17,7 +17,7 @@ const (
 
 // RebootInfo .
 type RebootInfo struct {
-	DeviceID   string
+	DeviceID   string `json:"deviceID"`
 	RebootTime time.Time
 }
 
@@ -71,7 +71,7 @@ func startRebootManager(rebootChan chan RebootInfo) {
 			}
 
 			for _, rebootInfo := range rebootList {
-				log.Infof("Attempting to Reboot: %s")
+				log.Infof("Attempting to Reboot: %s", rebootInfo.DeviceID)
 
 				go reboot(rebootInfo, log)
 				/*msg := &slack.WebhookMessage{
