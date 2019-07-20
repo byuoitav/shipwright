@@ -1,3 +1,142 @@
 <p>
-  alert-table works!
+    alert-table works!
 </p>
+
+<div class="action-container">
+    <mat-form-field class="filter-search">
+        <mat-label>Filters</mat-label>
+        <mat-chip-list #filterList>
+            <mat-chip *ngFor="let query of filterQueries" [selectable]=true [removable]=true (removed)="text.removeChip(query, filterQueries); filter()">
+                {{query}}
+                <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input type="text" matInput [matChipInputFor]="filterList" [matChipInputSeparatorKeyCodes]="text.separatorKeyCodes" [matChipInputAddOnBlur]=true (matChipInputTokenEnd)="text.addChip($event, filterQueries); filter()">
+        </mat-chip-list>
+    </mat-form-field>
+</div>
+
+<ng-container *ngIf="totalIssueList == null || totalIssueList?.length === 0">
+    <span>No room issues currently!</span>
+</ng-container>
+
+<ng-container *ngIf="totalIssueList?.length > 0">
+    <table mat-table [dataSource]="filteredRoomIssues" multiTemplateDataRows class="mat-elevation-z4">
+        <ng-container matColumnDef="severity">
+            <th mat-header-cell *matHeaderCellDef>Severity</th>
+            <td mat-cell *matCellDef="let issue" (click)="expandRow(issue)">{{issue.activeAlertSeverities}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="systemType">
+            <th mat-header-cell *matHeaderCellDef>System Type</th>
+            <td mat-cell *matCellDef="let issue" (click)="expandRow(issue)">
+                <mat-icon>{{text.systemTypeIcon[issue.systemType]}}</mat-icon>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="roomID">
+            <th mat-header-cell *matHeaderCellDef>RoomID</th>
+            <td mat-cell *matCellDef="let issue">
+                <button mat-stroked-button color="primary">{{issue.roomID}}</button>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="count">
+            <th mat-header-cell *matHeaderCellDef>Alert Count</th>
+            <td mat-cell *matCellDef="let issue" (click)="expandRow(issue)">
+                <span>{{issue.activeAlertCount}} / {{issue.alertCount}}</span>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="types">
+            <th mat-header-cell *matHeaderCellDef>Alert Types</th>
+            <td mat-cell *matCellDef="let issue" (click)="expandRow(issue)">{{issue.activeAlertTypes}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="incidentAge">
+            <th mat-header-cell *matHeaderCellDef>Incident(s)</th>
+            <td mat-cell *matCellDef="let issue" (click)="expandRow(issue)">
+                {{ getIssueAge(issue) }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="lastNote">
+            <th mat-header-cell *matHeaderCellDef>Last Note</th>
+            <td mat-cell *matCellDef="let issue" (click)="expandRow(issue)">{{ text.extractNoteInfo(issue.notesLog[issue.notesLog.length-1]) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="expandedDetail">
+            <td mat-cell *matCellDef="let issue" [attr.colspan]="issueColumns.length">
+                <div class="alert-detail" [@detailExpand]="shouldIExpand(issue) ? 'expanded' : 'collapsed'">
+                    <table mat-table [dataSource]="issue?.alerts.sort(text.sortByActiveAlerts)" class="mat-elevation-z0">
+                        <ng-container matColumnDef="severity-color">
+                            <th mat-header-cell *matHeaderCellDef></th>
+                            <td mat-cell *matCellDef="let alert" [ngClass]="alert.severity + '-indicator'"></td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="name">
+                            <th mat-header-cell *matHeaderCellDef>Device Name</th>
+                            <td mat-cell *matCellDef="let alert">
+                                {{ text.getDeviceNameFromID(alert.deviceID) }}
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="type">
+                            <th mat-header-cell *matHeaderCellDef>Type</th>
+                            <td mat-cell *matCellDef="let alert">
+                                {{ text.title(alert.type) }}
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="category">
+                            <th mat-header-cell *matHeaderCellDef>Category</th>
+                            <td mat-cell *matCellDef="let alert">
+                                <mat-chip-list>
+                                    <mat-chip color="warn">{{ text.title(alert.category) }}</mat-chip>
+                                </mat-chip-list>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="message">
+                            <th mat-header-cell *matHeaderCellDef>Message</th>
+                            <td mat-cell *matCellDef="let alert">{{ alert.message }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="start-time">
+                            <th mat-header-cell *matHeaderCellDef>Start Time</th>
+                            <td mat-cell *matCellDef="let alert">
+                                <ng-container *ngIf="!text.timeIsZero(alert.startTime)">
+                                    {{ text.getReadableTimestamp(alert.startTime, true) }}
+                                </ng-container>
+                                <ng-container *ngIf="text.timeIsZero(alert.startTime)">
+                                    --:-- --
+                                </ng-container>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="end-time">
+                            <th mat-header-cell *matHeaderCellDef>End Time</th>
+                            <td mat-cell *matCellDef="let alert">
+                                <ng-container *ngIf="!text.timeIsZero(alert.endTime) && !alert.active">
+                                    {{ text.getReadableTimestamp(alert.endTime, true) }}
+                                </ng-container>
+                                <ng-container *ngIf="text.timeIsZero(alert.endTime)">
+                                    --:-- --
+                                </ng-container>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="alertColumns"></tr>
+                        <tr mat-row *matRowDef="let alert; columns: alertColumns" [class.inactive-alert]="!alert.active"></tr>
+                    </table>
+                </div>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="issueColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let issue; columns: issueColumns" [class.expanded-row]="shouldIExpand(issue)"></tr>
+        <tr mat-row *matRowDef="let issue; columns: ['expandedDetail']" class="alert-detail-row"></tr>
+
+    </table>
+
+    <mat-paginator [pageSizeOptions]="pageOptions" [pageSize]="pageSize"></mat-paginator>
+</ng-container>

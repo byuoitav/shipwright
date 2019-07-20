@@ -3,6 +3,7 @@ import { MatChipInputEvent } from "@angular/material";
 import { COMMA, ENTER } from "@angular/cdk/keycodes";
 import { Device } from "../objects/database";
 import { strictEqual } from 'assert';
+import { Alert } from '../objects/alerts';
 
 export const PI_ICON = "video_label";
 export const DMPS_ICON = "dns";
@@ -120,5 +121,84 @@ export class TextService {
     } else {
         return aA > bA ? 1 : -1;
     }
+  }
+
+  public sortByActiveAlerts(a: Alert, b: Alert): number {
+    if (a.active && !b.active) {
+      return -1;
+    } else if (!a.active && b.active) {
+      return 1;
+    } else {
+      if (a.severity === "Critical" && b.severity !== "Critical") {
+        return -1;
+      } else if (a.severity !== "Critical" && b.severity === "Critical") {
+        return 1;
+      } else if (a.severity === "Warning" && b.severity === "Low") {
+        return -1;
+      } else if (a.severity === "Low" && b.severity === "Warning") {
+        return 1;
+      } else {
+        return a.deviceID.localeCompare(b.deviceID);
+      }
+    }
+  }
+
+  getReadableTimestamp = (time: Date, withTime: boolean): string  => {
+    const diff = new Date().valueOf() - time.valueOf();
+    // const duration = Math.abs(Math.trunc((diff / (1000 * 60 * 60)) % 24));
+    let answer;
+
+    const minutes = Math.abs(Math.floor(( diff / (1000 * 60)) % 60));
+    const hours   = Math.abs(Math.floor(( diff / (1000 * 60 * 60)) % 24));
+    const days = Math.abs(Math.floor((diff / (1000 * 60 * 60 * 24))));
+    // format age 1d 2h 3m
+    if (withTime) {
+      if (days === 0) {
+        if (hours === 0) {
+          answer = minutes.toString() + "m ago (" + time.toLocaleTimeString() + ")";
+        } else {
+          answer = hours.toString() + "h ago " + minutes.toString() + "m ago (" + time.toLocaleTimeString() + ")";
+        }
+      } else {
+        answer = days.toString() + "d " + hours.toString() + "h " + minutes.toString() + "m ago (" + time.toLocaleTimeString() + ")";
+      }
+    } else {
+      if (days === 0) {
+        if (hours === 0) {
+          answer = minutes.toString() + "m";
+        } else {
+          answer = hours.toString() + "h ago " + minutes.toString() + "m";
+        }
+      } else {
+        answer = days.toString() + "d " + hours.toString() + "h " + minutes.toString() + "m";
+
+      }
+    }
+    return answer;
+  }
+
+  timeIsZero(time: Date): boolean {
+    if (time === undefined) {
+      return true;
+    }
+    const zero = "0001-01-01T00:00:00.000Z";
+
+    return time.toISOString() === zero;
+  }
+
+  getDeviceNameFromID(deviceID: string): string {
+    return deviceID.split("-")[2];
+  }
+
+  extractNoteInfo = (note: string): string => {
+    if (note == null) {
+      return "";
+    }
+    let s = note;
+    s = s.substring(s.indexOf("|") + 1);
+    if (s.length > 40) {
+      s = s.substring(0, 39);
+    }
+    return s;
   }
 }
