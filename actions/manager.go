@@ -249,8 +249,8 @@ func (a *ActionManager) ManageAction(action *Action) *nerr.E {
 		a.matchActionsMu.Lock()
 		a.matchActions = append(a.matchActions, action)
 		a.matchActionsMu.Unlock()
-	case action.Trigger == "simple":
-		action.Run(a.ctx)
+	case action.Trigger == "oneshot":
+		go action.Run(a.ctx)
 	case strings.HasPrefix(action.Trigger, "interval:"):
 		go a.runActionOnInterval(action)
 	default:
