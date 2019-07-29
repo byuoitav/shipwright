@@ -750,6 +750,22 @@ export class APIService {
     }
   }
 
+  public async GetRoomIssue(roomID: string) {
+    try {
+      const data = await this.http
+        .get("issues/" + roomID, {
+          headers: this.headers
+        })
+        .toPromise();
+
+      const issue = this.converter.deserialize(data, RoomIssue);
+
+      return issue;
+    } catch (e) {
+      console.warn("error trying to get the issue for " + roomID + ": " + e);
+    }
+  }
+
   public async ResolveIssue(id: string, info: ResolutionInfo) {
     try {
       const data = await this.http

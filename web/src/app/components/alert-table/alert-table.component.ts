@@ -10,9 +10,10 @@ import {
   transition,
   trigger
 } from "@angular/animations";
+import { Router } from "@angular/router";
 
 @Component({
-  selector: "app-alert-table",
+  selector: "alert-table",
   templateUrl: "./alert-table.component.html",
   styleUrls: ["./alert-table.component.scss"],
   animations: [
@@ -31,6 +32,7 @@ import {
 })
 export class AlertTableComponent implements OnInit {
   @Input() singleRoom = false;
+  @Input() roomID: string;
   totalIssueList: RoomIssue[];
   filteredRoomIssues: RoomIssue[];
 
@@ -62,17 +64,27 @@ export class AlertTableComponent implements OnInit {
 
   constructor(
     public api: APIService,
-    public text: TextService
+    public text: TextService,
+    public router: Router
   ) { }
 
   ngOnInit() {
     if (this.singleRoom) {
-
+      if (this.roomID !== null) {
+        this.api.GetRoomIssue(this.roomID).then((answer) => {
+          if (answer !== undefined) {
+            this.totalIssueList = [];
+            this.totalIssueList.push(answer as RoomIssue);
+            this.filter();
+          }
+        });
+      }
+    } else {
+      this.api.GetAllIssues().then((answer) => {
+        this.totalIssueList = answer as RoomIssue[];
+        this.filter();
+      });
     }
-    this.api.GetAllIssues().then((answer) => {
-      this.totalIssueList = answer as RoomIssue[];
-      this.filter();
-    });
   }
 
   filter() {
@@ -129,5 +141,9 @@ export class AlertTableComponent implements OnInit {
         this.expIssue = issue;
       }
     }
+  }
+
+  goToAlerts(roomID: string) {
+    this.router.navigate(["/campus/" + roomID + "/tab/2"]);
   }
 }

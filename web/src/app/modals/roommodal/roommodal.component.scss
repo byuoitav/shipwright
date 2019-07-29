@@ -10,6 +10,9 @@ mat-form-field {
     flex-flow: row nowrap;
     justify-content: space-evenly;
     align-items: baseline;
+    &.left {
+        justify-content: flex-start;
+    }
 }
 
 .tags {
