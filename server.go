@@ -102,6 +102,9 @@ func main() {
 		)
 	*/
 
+	//Screenshots
+	router.POST("/screenshot", handlers.GetScreenshot)
+
 	router.GET("/actions", actions.DefaultActionManager().Info)
 	router.GET("/actions/trigger/:trigger", actions.DefaultActionManager().Config.ActionsByTrigger)
 
