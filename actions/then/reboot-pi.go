@@ -12,7 +12,7 @@ import (
 
 const (
 	// RebootFrequency .
-	RebootFrequency = 30 * time.Second
+	RebootFrequency = 5 * time.Second
 )
 
 // RebootInfo .
@@ -66,12 +66,12 @@ func startRebootManager(rebootChan chan RebootInfo) {
 		case info := <-rebootChan:
 			rebootList = append(rebootList, info)
 		case <-ticker.C:
-			if rebootList == nil || len(rebootList) == 0 {
+			if rebootList == nil || len(rebootList) == 0 || time.Now().Hour() > 14 {
 				continue
 			}
-
+			log.Infof("Time added")
 			for _, rebootInfo := range rebootList {
-				log.Infof("Attempting to Reboot: %s", rebootInfo.DeviceID)
+				log.Infof("Time version rebooting: %s", rebootInfo.DeviceID)
 
 				go reboot(rebootInfo, log)
 			}
