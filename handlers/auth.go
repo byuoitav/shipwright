@@ -16,7 +16,7 @@ func getUsernameString(context echo.Context) string {
 	username := context.Request().Context().Value("user")
 
 	if username == nil || len(username.(string)) == 0 {
-		username = "Derek"
+		username = "unknown"
 	}
 
 	return username.(string)
