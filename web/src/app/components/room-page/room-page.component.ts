@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { APIService } from "src/app/services/api.service";
 import { ActivatedRoute } from "@angular/router";
 import { TextService } from "src/app/services/text.service";
-import { Room } from 'src/app/objects/database';
+import { Room } from "src/app/objects/database";
 
 @Component({
   selector: "room-page",
