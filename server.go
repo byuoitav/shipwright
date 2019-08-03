@@ -78,13 +78,13 @@ func main() {
 	writeconfig := router.Group(
 		"",
 		auth.CheckHeaderBasedAuth,
-		echo.WrapMiddleware(auth.AuthenticateCASUser),
+		// echo.WrapMiddleware(auth.AuthenticateCASUser),
 		auth.AuthorizeRequest("write-config", "configuration", func(c echo.Context) string { return "all" }),
 	)
 	readconfig := router.Group(
 		"",
 		auth.CheckHeaderBasedAuth,
-		echo.WrapMiddleware(auth.AuthenticateCASUser),
+		// echo.WrapMiddleware(auth.AuthenticateCASUser),
 		auth.AuthorizeRequest("read-config", "configuration", func(c echo.Context) string { return "all" }),
 	)
 	/*
