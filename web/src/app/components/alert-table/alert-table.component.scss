@@ -1,3 +1,4 @@
+$ball-height: 1em;
 .action-container {
     padding-top: 10px;
     padding-bottom: 10px;
@@ -68,7 +69,15 @@ td.alert-detail-row {
     background: linear-gradient(to right, #f44336 50%, #fb8c00 50%);
 }
 
+.Warning-Critical-indicator {
+    background: linear-gradient(to right, #f44336 50%, #fb8c00 50%);
+}
+
 .Critical-Low-indicator {
+    background: linear-gradient(to right, #f44336 50%, #ffd600 50%);
+}
+
+.Low-Critical-indicator {
     background: linear-gradient(to right, #f44336 50%, #ffd600 50%);
 }
 
@@ -86,6 +95,40 @@ td.alert-detail-row {
 
 .Low-indicator {
     background-color: #ffd600;
+}
+
+.Critical-indicator-ball {
+    background-color: #f44336;
+    // height: $ball-height;
+            // width: $ball-height;
+            height: 36px;
+            width: 12px;
+            margin-right: 0.35em;
+            border-radius: 6px;
+            display: inline-block;
+            // margin: auto;
+}
+
+.Warning-indicator-ball {
+    background-color: #fb8c00;
+    // height: $ball-height;
+            // width:$ball-height;
+            height: 36px;
+            width: 12px;
+            margin-right: 0.35em;
+            border-radius: 6px;
+            display: inline-block;
+}
+
+.Low-indicator-ball {
+    background-color: #ffd600;
+    // height: $ball-height;
+            // width: $ball-height;
+            height: 36px;
+            width: 12px;
+            margin-right: 0.35em;
+            border-radius: 6px;
+            display: inline-block;
 }
 
 .fill-remaining-space {
@@ -131,48 +174,6 @@ td.alert-detail-row {
 }
 
 
-/* Column Widths */
-
-.mat-column {
-    padding-left: 10px;
-    &.icon {
-        max-width: 50px;
-        width: 50px;
-    }
-    &.roomID {
-        max-width: 150px;
-        width: 150px;
-    }
-    &.severity {
-        max-width: 2px;
-        width: 2px;
-    }
-    &.count {
-        max-width: 100px;
-        width: 100px;
-    }
-    &.types {
-        max-width: 120px;
-        width: 120px;
-        padding-left: 10px;
-    }
-    &.incident {
-        max-width: 150px;
-        width: 150px;
-    }
-    &.help-sent {
-        max-width: 70px;
-        width: 70px;
-    }
-    &.help-arrived {
-        max-width: 70px;
-        width: 70px;
-    }
-    &.responders {
-        max-width: 120px;
-        width: 120px;
-    }
-}
 
 .mat-column-name {
     padding-left: 10px;
@@ -190,4 +191,5 @@ td.alert-detail-row {
 .mat-column-severity-color {
     max-width: 2px;
     width: 2px;
+    padding-right: 10px;
 }
