@@ -1277,6 +1277,7 @@ export class UIConfig {
     if (roomID != null) {
       this.id = roomID;
     }
+    this.API = ["localhost"];
   }
 
   Equals(imposter: UIConfig): boolean {

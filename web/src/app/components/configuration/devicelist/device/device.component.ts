@@ -13,7 +13,7 @@ import { APIService } from "src/app/services/api.service";
 export class DeviceComponent implements OnInit, OnChanges {
   @Input() device: Device;
   rawIP = "";
-  devicesInRoom: Device[] = [];
+  @Input() devicesInRoom: Device[] = [];
 
   constructor(public text: StringsService, public modal: ModalService, public data: DataService, public api: APIService) {
     if (this.data.finished) {
@@ -41,8 +41,12 @@ export class DeviceComponent implements OnInit, OnChanges {
   doSetup() {
     if (this.device != null) {
       this.GetRawIP();
-      const roomID = this.device.id.substr(0, this.device.id.lastIndexOf("-"));
-      this.devicesInRoom = this.data.roomToDevicesMap.get(roomID);
+      if (this.devicesInRoom != null && this.devicesInRoom.length > 0) {
+        return;
+      } else {
+        const roomID = this.device.id.substr(0, this.device.id.lastIndexOf("-"));
+        this.devicesInRoom = this.data.roomToDevicesMap.get(roomID);
+      }
     }
   }
 

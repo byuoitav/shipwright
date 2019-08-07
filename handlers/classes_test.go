@@ -11,7 +11,7 @@ import (
 func TestClasses(t *testing.T) {
 	log.SetLevel("info")
 	roomID := "MARB-130"
-	now := time.Now()
+	now := time.Now().AddDate(0, 0, -14)
 	end := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 59, now.Location())
 
 	classes, err := schedule.GetClassScheduleForTimeBlock(roomID, now, end)

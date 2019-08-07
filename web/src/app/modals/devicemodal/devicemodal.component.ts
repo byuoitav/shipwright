@@ -74,6 +74,7 @@ export class DeviceModalComponent implements OnInit {
 
   FixMe() {
     this.AddMissingPorts(this.device);
+    console.log("the ports were 'fixed'...", this.device);
     for (const port of this.device.ports) {
       if (port.tags == null || port.tags.length === 0) {
         for (const typePort of this.CurrentType.ports) {
@@ -83,6 +84,12 @@ export class DeviceModalComponent implements OnInit {
             }
           }
         }
+      }
+      if (this.IsAnInPort(port)) {
+        port.destinationDevice = this.device.id;
+      }
+      if (!this.IsAnInPort(port)) {
+        port.sourceDevice = this.device.id;
       }
     }
   }
@@ -229,13 +236,17 @@ export class DeviceModalComponent implements OnInit {
         }
       }
     }
+
+    console.log("added the device ports", device);
   }
 
   RemoveExcessPorts(device: Device) {
+    console.log("what are these excess ports...", device);
     if (device.ports !== null && device.ports.length > 0) {
       const portsToKeep: Port[] = [];
 
       for (const port of device.ports) {
+        console.log("the port is: ", port);
         if (port.sourceDevice !== null && port.sourceDevice !== undefined
           && port.destinationDevice !== null && port.destinationDevice !== undefined) {
           portsToKeep.push(port);

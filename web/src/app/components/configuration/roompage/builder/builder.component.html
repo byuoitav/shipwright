@@ -165,7 +165,7 @@
                     <button mat-fab color="primary" [matMenuTriggerFor]="classes">
         <mat-icon>add</mat-icon>
       </button>
-                    <mat-menu #classes>
+                    <mat-menu #classes xPosition='before'>
                         <button mat-menu-item (click)="AddNewDevice('Pi3')">
           <mat-icon>{{ text.DefaultIcons["Pi3"] }}</mat-icon>
           <span>Pi</span>
@@ -187,49 +187,49 @@
                         <button mat-menu-item [matMenuTriggerFor]="temps">Templates</button>
                     </mat-menu>
 
-                    <mat-menu #tvs>
+                    <mat-menu #tvs xPosition='after'>
                         <button mat-menu-item *ngFor="let type of tvTypes" (click)="AddNewDevice(type.id)">
                           <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
                           <span>{{ type.displayName }}</span>
                         </button>
                     </mat-menu>
 
-                    <mat-menu #projectors>
+                    <mat-menu #projectors xPosition='after'>
                         <button mat-menu-item *ngFor="let type of projectorTypes" (click)="AddNewDevice(type.id)">
           <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
           <span>{{ type.displayName }}</span>
         </button>
                     </mat-menu>
 
-                    <mat-menu #inputs>
+                    <mat-menu #inputs xPosition='after'>
                         <button mat-menu-item *ngFor="let type of inputTypes" (click)="AddNewDevice(type.id)">
           <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
           <span>{{ type.displayName }}</span>
         </button>
                     </mat-menu>
 
-                    <mat-menu #audioDevices>
+                    <mat-menu #audioDevices xPosition='after'>
                         <button mat-menu-item *ngFor="let type of audioTypes" (click)="AddNewDevice(type.id)">
                             <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
                             <span>{{ type.displayName }}</span>
                           </button>
                     </mat-menu>
 
-                    <mat-menu #videoSwitchers>
+                    <mat-menu #videoSwitchers xPosition='after'>
                         <button mat-menu-item *ngFor="let type of videoSwitcherTypes" (click)="AddNewDevice(type.id)">
                             <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
                             <span>{{ type.displayName }}</span>
                           </button>
                     </mat-menu>
 
-                    <mat-menu #others>
+                    <mat-menu #others xPosition='after'>
                         <button mat-menu-item *ngFor="let type of otherTypes" (click)="AddNewDevice(type.id)">
                             <mat-icon>{{ text.DefaultIcons[type.id] }}</mat-icon>
                             <span>{{ type.displayName }}</span>
                           </button>
                     </mat-menu>
 
-                    <mat-menu #temps>
+                    <mat-menu #temps xPosition='after'>
                         <button mat-menu-item *ngFor="let t of templates" (click)="AddTemplate(t)">
                             {{t.id}}
                           </button>

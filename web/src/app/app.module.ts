@@ -1,6 +1,7 @@
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { NgModule } from "@angular/core";
+import {SlideshowModule} from 'ng-simple-slideshow';
 
 import { CookieService } from "ngx-cookie-service";
 
@@ -168,6 +169,7 @@ import { MenuItemComponent } from "./menu-item/menu-item.component";
       theme: "material"
     }),
     MatGridListModule,
+    SlideshowModule,
     MatBadgeModule
   ],
   entryComponents: [

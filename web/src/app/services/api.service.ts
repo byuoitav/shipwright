@@ -19,7 +19,7 @@ import {
   RoomIssue,
   Alert,
   ResolutionInfo,
-  ClassHalfHourBlock
+  ClassSchedule
 } from "../objects/alerts";
 import { StringsService } from "./strings.service";
 import { CookieService } from "ngx-cookie-service";
@@ -839,7 +839,7 @@ export class APIService {
 
       const schedule = this.converter.deserializeArray(
         data,
-        ClassHalfHourBlock
+        ClassSchedule
       );
       return schedule;
     } catch (e) {
@@ -887,5 +887,19 @@ export class APIService {
 
       throw new Error("error trying to get the attribute presets: " + e);
     }
+  }
+  
+  public async GetPictures(roomID: string) {
+    try {
+
+      console.log("can you hear me")
+      const data: any = await this.http
+      .get("rooms/"+ roomID +"/attachments", { headers: this.headers }).toPromise();
+      console.log("here is the data", data);
+      return data;
+    } catch (e) {
+      throw new Error("error getting the list of pictures: " + e);
+    }
+    
   }
 }

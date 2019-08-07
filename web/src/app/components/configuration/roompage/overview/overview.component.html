@@ -35,7 +35,8 @@
         </mat-card-header>
         <mat-divider></mat-divider>
         <mat-card-content>
-            <img src="https://st3.depositphotos.com/1177973/12633/i/950/depositphotos_126334676-stock-photo-funny-dogs-taking-selfie.jpg" class="images">
+            <!-- <img src="https://couchdb-prd.avs.byu.edu:5984/room_attachments/BNSN-W002/bnsn-w012-1.jpg" class="images"> -->
+            <slideshow [imageUrls]="getPictures()"></slideshow>
         </mat-card-content>
     </mat-card>
     <mat-card class="detail-card">

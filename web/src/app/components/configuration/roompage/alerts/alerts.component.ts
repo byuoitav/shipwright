@@ -6,7 +6,7 @@ import { ModalService } from "src/app/services/modal.service";
 import {
   RoomIssue,
   ResolutionInfo,
-  ClassHalfHourBlock
+  ClassSchedule
 } from "src/app/objects/alerts";
 import { Device, Person } from "src/app/objects/database";
 import { RoomIssueResponse } from "src/app/objects/alerts";
@@ -36,8 +36,8 @@ export class AlertsComponent implements OnInit {
   sentTime: string;
   arrivedTime: string;
 
-  classSchedule: ClassHalfHourBlock[] = [];
-  scheduleData: MatTableDataSource<ClassHalfHourBlock>;
+  classSchedule: ClassSchedule[] = [];
+  scheduleData: MatTableDataSource<ClassSchedule>;
   scheduleColumns: string[] = [
     "block",
     "className",
