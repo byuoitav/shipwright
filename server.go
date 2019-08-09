@@ -198,7 +198,7 @@ func main() {
 
 	router.Use(auth.CheckHeaderBasedAuth,
 		auth.CheckHeaderBasedAuth,
-		echo.WrapMiddleware(auth.AuthenticateCASUser),
+		// echo.WrapMiddleware(auth.AuthenticateCASUser),
 		auth.AuthorizeRequest("read-config", "configuration", func(c echo.Context) string { return "all" }),
 		middleware.StaticWithConfig(middleware.StaticConfig{
 			Root:   "web-dist",
