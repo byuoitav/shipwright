@@ -46,10 +46,12 @@ type issueResponse struct {
 	Alert      structs.Alert
 }
 
+//ZeroTime .
 var ZeroTime = time.Time{}
 
 var store *alertStore
 
+//InitializeAlertStore sets up the alertstore
 func InitializeAlertStore(a *actions.ActionManager) {
 	store = &alertStore{
 		inChannel:         make(chan structs.Alert, 1000),
@@ -86,10 +88,12 @@ func InitializeAlertStore(a *actions.ActionManager) {
 	log.L.Infof("Alert store initialized with %v issues", len(issues))
 }
 
+// Status .
 type Status struct {
 	QueueStatus map[string]ChannelStatus
 }
 
+// ChannelStatus is the status of the channel
 type ChannelStatus struct {
 	Cap int `json:"cap"`
 	Len int `json:"len"`
@@ -153,7 +157,7 @@ func (a *alertStore) putAlert(alert structs.Alert) (string, *nerr.E) {
 		alert.AlertID = GenerateAlertID(alert)
 	}
 
-	log.L.Infof("Adding alert %v for device %v", alert.AlertID, alert.DeviceID)
+	log.L.Debugf("Adding alert %v for device %v", alert.AlertID, alert.DeviceID)
 
 	a.inChannel <- alert
 	return alert.AlertID, nil
@@ -359,7 +363,7 @@ func (a *alertStore) resolveIssue(resInfo structs.ResolutionInfo, roomIssue stri
 
 //NOT SAFE FOR CONCURRENT ACCESS. DO NOT USE OUTSIDE OF run()
 func (a *alertStore) storeAlert(alert structs.Alert) {
-	log.L.Infof("Storing alert %v", alert.AlertID)
+	log.L.Debugf("Storing alert %v", alert.AlertID)
 
 	//get the issue associated with the alert
 	issueID := GetIssueIDFromAlertID(alert.AlertID)

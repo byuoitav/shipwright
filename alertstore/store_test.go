@@ -64,17 +64,3 @@ func TestStoreAlert(t *testing.T) {
 
 	time.Sleep(15 * time.Second)
 }
-
-func TestGetAllAlerts(t *testing.T) {
-
-	log.SetLevel("debug")
-
-	InitializeAlertStore(nil)
-
-	a, err := GetAllAlerts()
-	if err != nil {
-		log.L.Errorf("%v", err.Error())
-	}
-
-	log.L.Debugf("%v", a)
-}
