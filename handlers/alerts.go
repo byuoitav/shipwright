@@ -140,6 +140,7 @@ func GetResponders(context echo.Context) error {
 
 	toReturn, err := auth.GetUsersByGroup(os.Getenv("RESPONDER_GROUP"))
 	if err != nil {
+		log.L.Errorf("failed to get responders: %v", err)
 		return context.JSON(http.StatusInternalServerError, err)
 	}
 
