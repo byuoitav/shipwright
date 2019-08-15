@@ -31,8 +31,6 @@ var (
 
 // RebootPi reboots a given pi
 func RebootPi(ctx context.Context, with []byte, log *zap.SugaredLogger) *nerr.E {
-	log.Infof("Rebooting Pi")
-
 	// start the reboot manager
 	doce.Do(func() {
 		rebootChan = make(chan RebootInfo, 1000)
@@ -51,6 +49,7 @@ func RebootPi(ctx context.Context, with []byte, log *zap.SugaredLogger) *nerr.E 
 
 	select {
 	case rebootChan <- rebootStruct:
+		log.Debugf("Added %v to the reboot channel", rebootStruct.DeviceID)
 		return nil
 	case <-ctx.Done():
 		return nerr.Createf("error", "unable to reboot pi: rebootChan is full")
@@ -63,13 +62,12 @@ func startRebootManager(rebootChan chan RebootInfo) {
 
 	rebootMap := make(map[string]bool)
 
-	ticker := time.NewTicker(SlackMessageFrequency)
+	ticker := time.NewTicker(RebootFrequency)
 	var rebootList []RebootInfo
 
 	for {
 		select {
 		case info := <-rebootChan:
-			log.Infof("Hey at least I'm here: %v", info.DeviceID)
 			rebootList = append(rebootList, info)
 		case <-ticker.C:
 			if rebootList == nil || len(rebootList) == 0 {
@@ -83,8 +81,8 @@ func startRebootManager(rebootChan chan RebootInfo) {
 			}
 
 			for _, rebootInfo := range rebootList {
-				log.Infof("attempting to reboot: %s", rebootInfo.DeviceID)
 				if _, rebooted := rebootMap[rebootInfo.DeviceID]; !rebooted {
+					log.Infof("attempting to reboot: %s", rebootInfo.DeviceID)
 					go reboot(rebootInfo, log)
 				}
 				rebootMap[rebootInfo.DeviceID] = true
@@ -99,16 +97,26 @@ func reboot(r RebootInfo, log *zap.SugaredLogger) {
 
 	dev, err := db.GetDB().GetDevice(r.DeviceID)
 	if err != nil {
-		log.Warnf("Couldn't get device record: %v", err)
+		if err.Error() == "device not found" {
+			log.Infof("Device %v not in database", r.DeviceID)
+		} else {
+			log.Warnf("Couldn't get device record: %v", err)
+		}
 		return
 	}
+	if dev.Address == "" {
+		log.Warnf("error getting device: device address is nil")
+		return
+	}
+
+	log.Infof("Actually rebooting: %v", dev.ID)
+
 	req, err := http.NewRequest("PUT", fmt.Sprintf("http://%v:10000/device/reboot", dev.Address), nil)
 	if err != nil {
 		log.Warnf("Couldn't make request: %v", err)
 		return
 	}
-	client := &http.Client{}
-	_, err = client.Do(req)
+	_, err = http.DefaultClient.Do(req)
 	if err != nil {
 		log.Warnf("Couldn't reboot pi: %v", err)
 		return
