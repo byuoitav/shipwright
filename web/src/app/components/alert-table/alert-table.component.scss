@@ -4,6 +4,19 @@ $ball-height: 1em;
     padding-bottom: 10px;
 }
 
+.row {
+    display: flex;
+    flex-flow: row wrap;
+    width: 100%;
+    justify-content: flex-start;
+}
+
+.item {
+    padding: 5px;
+    margin-left: 2vw;
+    margin-right: 5vw;
+}
+
 .filter-search {
     margin-left: 2vw;
     margin-right: 4vw;
@@ -100,35 +113,35 @@ td.alert-detail-row {
 .Critical-indicator-ball {
     background-color: #f44336;
     // height: $ball-height;
-            // width: $ball-height;
-            height: 36px;
-            width: 12px;
-            margin-right: 0.35em;
-            border-radius: 6px;
-            display: inline-block;
-            // margin: auto;
+    // width: $ball-height;
+    height: 36px;
+    width: 12px;
+    margin-right: 0.35em;
+    border-radius: 6px;
+    display: inline-block;
+    // margin: auto;
 }
 
 .Warning-indicator-ball {
     background-color: #fb8c00;
     // height: $ball-height;
-            // width:$ball-height;
-            height: 36px;
-            width: 12px;
-            margin-right: 0.35em;
-            border-radius: 6px;
-            display: inline-block;
+    // width:$ball-height;
+    height: 36px;
+    width: 12px;
+    margin-right: 0.35em;
+    border-radius: 6px;
+    display: inline-block;
 }
 
 .Low-indicator-ball {
     background-color: #ffd600;
     // height: $ball-height;
-            // width: $ball-height;
-            height: 36px;
-            width: 12px;
-            margin-right: 0.35em;
-            border-radius: 6px;
-            display: inline-block;
+    // width: $ball-height;
+    height: 36px;
+    width: 12px;
+    margin-right: 0.35em;
+    border-radius: 6px;
+    display: inline-block;
 }
 
 .fill-remaining-space {
@@ -172,8 +185,6 @@ td.alert-detail-row {
     margin-left: 10px;
     color: #0288d1;
 }
-
-
 
 .mat-column-name {
     padding-left: 10px;

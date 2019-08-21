@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, forwardRef, Input, ComponentFactoryResolver } from "@angular/core";
 import { DashpanelDirective } from "./dashpanel.directive";
-import { DashpanelTypes, DashpanelConfig, DashpanelService } from "src/app/services/dashpanel.service";
-import { IDashPanel } from "./idashpanel";
+import { DashpanelConfig, DashpanelService } from "src/app/services/dashpanel.service";
+import { IDashPanel, DashpanelTypes } from "./idashpanel";
 
 @Component({
   selector: "dashpanel",

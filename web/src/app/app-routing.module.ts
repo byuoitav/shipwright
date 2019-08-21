@@ -4,6 +4,9 @@ import { CampusComponent } from "./components/campus/campus.component";
 import { RoomListComponent } from "./components/room-list/room-list.component";
 import { DashboardComponent } from "./components/dashboard/dashboard.component";
 import { RoomPageComponent } from "./components/room-page/room-page.component";
+import { RoomStateComponent } from './components/state/room/room-state.component';
+import { DeviceStateComponent } from './components/state/device/device-state.component';
+import { InformationComponent } from './components/information/information.component';
 
 const routes: Routes = [
   {
@@ -26,6 +29,18 @@ const routes: Routes = [
   {
     path: "campus/:roomID/tab/:tabNum",
     component: RoomPageComponent
+  },
+  {
+    path: "roomStatus",
+    component: RoomStateComponent
+  },
+  {
+    path: "deviceStatus",
+    component: DeviceStateComponent
+  },
+  {
+    path: "information",
+    component: InformationComponent
   }
 ];
 

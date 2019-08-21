@@ -65,6 +65,9 @@ import { BuilderComponent } from "./components/room-page/builder/builder.compone
 import { RoutingComponent } from "./components/room-page/routing/routing.component";
 import { PartsListComponent } from "./components/room-page/parts-list/parts-list.component";
 import { SlideshowModule } from "ng-simple-slideshow";
+import { RoomStateComponent } from "./components/state/room/room-state.component";
+import { DeviceStateComponent } from "./components/state/device/device-state.component";
+import { InformationComponent } from './components/information/information.component';
 
 
 @NgModule({
@@ -84,7 +87,10 @@ import { SlideshowModule } from "ng-simple-slideshow";
     MonitoringComponent,
     BuilderComponent,
     RoutingComponent,
-    PartsListComponent
+    PartsListComponent,
+    RoomStateComponent,
+    DeviceStateComponent,
+    InformationComponent
   ],
   imports: [
     BrowserModule,

@@ -1,15 +1,8 @@
 import { Injectable } from "@angular/core";
 import { AlertTableComponent } from "../components/alert-table/alert-table.component";
+import { DashpanelTypes } from '../components/dashpanel/idashpanel';
 
-export const enum DashpanelTypes {
-  AllAlerts,
-  CriticalAlerts,
-  WarningAlerts,
-  LowSeverityAlerts,
-  RecentlyResolvedAlerts,
-  MaintenanceRoomAlerts,
-  StageDevAlerts
-}
+
 
 export class DashpanelConfig {
   dashPanelType: DashpanelTypes;

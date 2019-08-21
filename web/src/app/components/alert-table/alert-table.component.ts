@@ -11,6 +11,7 @@ import {
   trigger
 } from "@angular/animations";
 import { Router } from "@angular/router";
+import { DashpanelTypes } from '../dashpanel/idashpanel';
 
 @Component({
   selector: "alert-table",
@@ -33,6 +34,7 @@ import { Router } from "@angular/router";
 export class AlertTableComponent implements OnInit {
   @Input() singleRoom = false;
   @Input() roomID: string;
+  @Input() chosenType: DashpanelTypes;
   totalIssueList: RoomIssue[];
   filteredRoomIssues: RoomIssue[];
 
@@ -82,8 +84,28 @@ export class AlertTableComponent implements OnInit {
     } else {
       this.api.GetAllIssues().then((answer) => {
         this.totalIssueList = answer as RoomIssue[];
+        console.log(this.totalIssueList);
         this.filter();
       });
+    }
+  }
+
+  filterByType() {
+    const newList: RoomIssue[] = [];
+
+    if (this.chosenType === DashpanelTypes.AllAlerts) {
+      // don't make any changes, just use the whole list of issues
+      return;
+    }
+
+    for (const i of this.totalIssueList) {
+      // if the severity matches
+      if (i.activeAlertSeverities.includes(DashpanelTypes.toString(this.chosenType))) {
+        newList.push(i);
+      }
+      // if the issue was recently resolved
+      // if the issue refers to a room in maintenance mode
+      // if the issue refers to a room in dev or stage
     }
   }
 
@@ -145,5 +167,25 @@ export class AlertTableComponent implements OnInit {
 
   goToAlerts(roomID: string) {
     this.router.navigate(["/campus/" + roomID + "/tab/2"]);
+  }
+
+  getTotalAlertCount() {
+    let count = 0;
+    for (const issue of this.totalIssueList) {
+      if (issue.alertCount !== undefined) {
+        count += issue.alertCount;
+      }
+    }
+    return count;
+  }
+
+  getTotalActiveAlertCount() {
+    let count = 0;
+    for (const issue of this.totalIssueList) {
+      if (issue.activeAlertCount !== undefined) {
+        count += issue.activeAlertCount;
+      }
+    }
+    return count;
   }
 }

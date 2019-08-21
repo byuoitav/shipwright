@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { DashpanelTypes } from "src/app/services/dashpanel.service";
+import { DashpanelTypes } from '../dashpanel/idashpanel';
 
 @Component({
   selector: "app-dashboard",
