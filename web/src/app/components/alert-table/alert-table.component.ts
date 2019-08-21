@@ -47,7 +47,8 @@ export class AlertTableComponent implements OnInit {
     "count",
     "types",
     "incidentAge",
-    "lastNote"
+    "lastNote",
+    "expand"
   ];
   alertColumns: string[] = [
     "severity-color",

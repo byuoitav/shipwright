@@ -1,9 +1,3 @@
-<!-- <p>
-    alert-table works!
-</p> -->
-
-
-
 <ng-container *ngIf="totalIssueList == null || totalIssueList?.length === 0">
     <span>No room issues currently!</span>
 </ng-container>
@@ -77,6 +71,16 @@
         <ng-container matColumnDef="lastNote">
             <th mat-header-cell *matHeaderCellDef>Last Note</th>
             <td mat-cell *matCellDef="let issue" (click)="expandRow(issue)">{{ text.extractNoteInfo(issue.notesLog[issue.notesLog.length-1]) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="expand">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let issue" (click)="expandRow(issue)">
+                <button mat-icon-button [disableRipple]=true>
+                    <mat-icon *ngIf="shouldIExpand(issue)">keyboard_arrow_up</mat-icon>
+                    <mat-icon *ngIf="!shouldIExpand(issue)">keyboard_arrow_down</mat-icon>
+                </button>
+            </td>
         </ng-container>
 
         <ng-container matColumnDef="expandedDetail">

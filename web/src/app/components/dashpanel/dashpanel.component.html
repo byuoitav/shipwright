@@ -1,5 +1,5 @@
 <div class="container">
-    <mat-form-field>
+    <mat-form-field class="choose">
         <mat-select [(ngModel)]="selectedPanel" (ngModelChange)="choosePanel()">
             <mat-option *ngFor="let panel of possiblePanels" [value]="panel">
                 {{panel.title}}
