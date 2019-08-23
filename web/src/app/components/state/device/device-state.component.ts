@@ -9,15 +9,15 @@ import {
 
 import { SocketService } from "../../../services/socket.service";
 import { StaticDevice } from "../../../objects/static";
-import { APIService } from 'src/app/services/api.service';
+import { APIService } from "src/app/services/api.service";
 
-enum FilterType {
+export enum FilterType {
   For,
   Out,
   General
 }
 
-class Filter {
+export class Filter {
   ftype: FilterType;
   key: string;
   val: string;
@@ -108,7 +108,7 @@ export class DeviceStateComponent implements OnInit {
   }
 
   private load() {
-    this.api.GetAllStaticDeviceRecords().then((answer) => {
+    this.api.GetAllStaticDeviceRecords().then(answer => {
       this.staticDeviceList = answer as StaticDevice[];
 
       this.dataSource = new MatTableDataSource(this.staticDeviceList);
@@ -124,7 +124,7 @@ export class DeviceStateComponent implements OnInit {
             return false;
           }
         }
-  
+
         return true;
       };
 
@@ -140,12 +140,12 @@ export class DeviceStateComponent implements OnInit {
         const idx = this.staticDeviceList.findIndex(
           d => d.deviceID === device.deviceID
         );
-  
+
         if (idx >= 0) {
           this.staticDeviceList[idx] = device;
         }
         this.dataSource.data = this.staticDeviceList;
-    });
+      });
     });
   }
 
