@@ -182,6 +182,37 @@ export class RoomIssue {
   @JsonProperty("alerts", [Alert], true)
   alerts: Alert[] = Array<Alert>();
 
+  get oldestActiveAlert(): Alert {
+    if (!this.alerts || this.alerts.length === 0) {
+      return undefined;
+    }
+
+    let oldest = this.alerts[0];
+    for (const alert of this.alerts) {
+      if (alert.startTime < oldest.startTime) {
+        oldest = alert;
+      }
+    }
+
+    return oldest;
+  }
+
+  get severity(): string {
+    if (!this.alerts) {
+      return undefined;
+    }
+
+    if (this.alerts.some(a => a.severity.toLowerCase() === "critical")) {
+      return "critical";
+    }
+
+    if (this.alerts.some(a => a.severity.toLowerCase() === "warning")) {
+      return "warning";
+    }
+
+    return "low";
+  }
+
   ResolvedAtIsZero(): boolean {
     if (this.resolutionInfo.resolvedAt === undefined) {
       return true;

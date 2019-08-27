@@ -26,10 +26,7 @@ import { DashpanelTypes } from "../dashpanel/idashpanel";
   styleUrls: ["./alert-table.component.scss"],
   animations: [
     trigger("detailExpand", [
-      state(
-        "collapsed",
-        style({ height: "0px", minHeight: "0", display: "none" })
-      ),
+      state("collapsed", style({ height: "0px", minHeight: "0" })),
       state("expanded", style({ height: "*" })),
       transition(
         "expanded <=> collapsed",
@@ -47,30 +44,14 @@ export class AlertTableComponent implements OnInit {
   @Input() chosenType: DashpanelTypes;
 
   issues: RoomIssue[];
+  expandedIssue: RoomIssue | null;
 
   dataSource: MatTableDataSource<RoomIssue>;
   filters: Filter[] = [];
 
-  issueCols = [
-    // "severity",
-    "systemType"
-    //  "roomID",
-    //  "count",
-    //  "types",
-    //  "incidentAge",
-    //  "lastNote",
-    //  "expand"
-  ];
+  issueCols = ["systemType", "roomID", "count", "age", "lastNote"];
 
-  alertCols = [
-    "severity-color",
-    "name",
-    "type",
-    "category",
-    "message",
-    "start-time",
-    "end-time"
-  ];
+  alertCols = ["deviceID", "type", "message", "startTime"];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -80,12 +61,26 @@ export class AlertTableComponent implements OnInit {
   ngOnInit() {
     this.api.GetAllIssues().then(answer => {
       this.issues = answer as RoomIssue[];
+      console.log("issues", this.issues);
       this.dataSource = new MatTableDataSource(this.issues);
 
       // because of the ngIf on the parent container
       setTimeout(() => {
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
+        this.dataSource.sortingDataAccessor = (
+          data: RoomIssue,
+          headerID: string
+        ) => {
+          switch (headerID) {
+            case "age":
+              return data.oldestActiveAlert.startTime;
+            case "count":
+              return data.activeAlertCount;
+            default:
+              return data[headerID];
+          }
+        };
       });
 
       this.dataSource.filterPredicate = (
@@ -151,102 +146,13 @@ export class AlertTableComponent implements OnInit {
     }
   }
 
-  /*
-  filterByType() {
-    const newList: RoomIssue[] = [];
-
-    if (this.chosenType === DashpanelTypes.AllAlerts) {
-      // don't make any changes, just use the whole list of issues
-      return;
-    }
-
-    for (const i of this.totalIssueList) {
-      // if the severity matches
-      if (
-        i.activeAlertSeverities.includes(
-          DashpanelTypes.toString(this.chosenType)
-        )
-      ) {
-        newList.push(i);
-      }
-      // if the issue was recently resolved
-      // if the issue refers to a room in maintenance mode
-      // if the issue refers to a room in dev or stage
-    }
-  }
-
-  filter() {
-    this.filteredRoomIssues = [];
-
-    if (this.filterQueries.length === 0) {
-      this.filteredRoomIssues = this.totalIssueList;
-      return;
-    }
-
-    for (const i of this.totalIssueList) {
-      for (const q of this.filterQueries) {
-        if (
-          i.buildingID.toLowerCase().includes(q.toLowerCase()) &&
-          !this.filteredRoomIssues.includes(i)
-        ) {
-          this.filteredRoomIssues.push(i);
-        }
-        if (
-          i.roomID.toLowerCase().includes(q.toLowerCase()) &&
-          !this.filteredRoomIssues.includes(i)
-        ) {
-          this.filteredRoomIssues.push(i);
-        }
-        if (
-          i.systemType.toLowerCase().includes(q.toLowerCase()) &&
-          !this.filteredRoomIssues.includes(i)
-        ) {
-          this.filteredRoomIssues.push(i);
-        }
-      }
-    }
-  }
-
-  getIssueAge = (issue: RoomIssue) => {
-    if (issue == null) {
-      return;
-    }
-    // loop through each alert
-    let oldestalert = new Date();
-    // find oldest start time
-    for (const alert of issue.alerts) {
-      if (alert.startTime < oldestalert) {
-        oldestalert = alert.startTime;
-      }
-    }
-    return this.text.getReadableTimestamp(oldestalert, false);
-  };
-
-  shouldIExpand = (issue: RoomIssue): boolean => {
-    if (this.expIssue === issue) {
-      return true;
-    } else {
-      return this.singleRoom;
-    }
-  };
-
-  expandRow = (issue: RoomIssue) => {
-    if (!this.singleRoom) {
-      if (this.expIssue === issue) {
-        this.expIssue = null;
-      } else {
-        this.expIssue = issue;
-      }
-    }
-  };
-  */
-
   goToAlerts(roomID: string) {
     this.router.navigate(["/campus/" + roomID + "/tab/2"]);
   }
 
   getTotalAlertCount() {
-    let count = 0;
+    const count = 0;
+
     for (const issue of this.issues) {
       if (issue.alertCount !== undefined) {
         count += issue.alertCount;
@@ -257,6 +163,7 @@ export class AlertTableComponent implements OnInit {
 
   getTotalActiveAlertCount() {
     let count = 0;
+
     for (const issue of this.issues) {
       if (issue.activeAlertCount !== undefined) {
         count += issue.activeAlertCount;

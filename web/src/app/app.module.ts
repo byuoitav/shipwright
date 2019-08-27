@@ -68,6 +68,7 @@ import { SlideshowModule } from "ng-simple-slideshow";
 import { RoomStateComponent } from "./components/state/room/room-state.component";
 import { DeviceStateComponent } from "./components/state/device/device-state.component";
 import { InformationComponent } from './components/information/information.component';
+import { DateAgoPipe } from './pipes/date-ago.pipe';
 
 
 @NgModule({
@@ -90,7 +91,8 @@ import { InformationComponent } from './components/information/information.compo
     PartsListComponent,
     RoomStateComponent,
     DeviceStateComponent,
-    InformationComponent
+    InformationComponent,
+    DateAgoPipe
   ],
   imports: [
     BrowserModule,
