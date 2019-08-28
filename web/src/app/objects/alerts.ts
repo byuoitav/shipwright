@@ -182,6 +182,45 @@ export class RoomIssue {
   @JsonProperty("alerts", [Alert], true)
   alerts: Alert[] = Array<Alert>();
 
+  alertTypesOverview = (): string => {
+    const ret = [];
+    for (const t of this.activeAlertTypes) {
+      const str =
+        t +
+        " (" +
+        this.alerts
+          .filter(a => a.type === t)
+          .map(a => {
+            const split = a.deviceID.split("-");
+            if (split.length === 3) {
+              return split[2];
+            }
+
+            return a.deviceID;
+          })
+          .reduce((prev, cur) => prev + ", " + cur) +
+        ")";
+      ret.push(str);
+    }
+
+    return ret.join(", ");
+  };
+
+  get icon(): string {
+    switch (this.systemType) {
+      case "pi":
+        return "video_label";
+      case "dmps":
+        return "dns";
+      case "scheduling":
+        return "today";
+      case "timeclock":
+        return "schedule";
+      default:
+        return "";
+    }
+  }
+
   get oldestActiveAlert(): Alert {
     if (!this.alerts || this.alerts.length === 0) {
       return undefined;

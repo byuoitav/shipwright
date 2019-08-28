@@ -68,9 +68,7 @@
     <ng-container matColumnDef="systemType">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>System Type</th>
       <td mat-cell *matCellDef="let issue">
-        <mat-icon>{{
-          issue?.systemType === "dmps" ? "dns" : "video_label"
-        }}</mat-icon>
+        <mat-icon>{{ issue?.icon }}</mat-icon>
       </td>
     </ng-container>
 
@@ -85,6 +83,13 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Alert Count</th>
       <td mat-cell *matCellDef="let issue">
         <span>{{ issue?.activeAlertCount }} / {{ issue?.alertCount }}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="alert-types">
+      <th mat-header-cell *matHeaderCellDef>Alert Types</th>
+      <td mat-cell *matCellDef="let issue">
+        <span>{{ issue?.alertTypesOverview() }}</span>
       </td>
     </ng-container>
 

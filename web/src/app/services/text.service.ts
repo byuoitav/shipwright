@@ -2,13 +2,8 @@ import { Injectable } from "@angular/core";
 import { MatChipInputEvent } from "@angular/material";
 import { COMMA, ENTER } from "@angular/cdk/keycodes";
 import { Device } from "../objects/database";
-import { strictEqual } from 'assert';
-import { Alert } from '../objects/alerts';
-
-export const PI_ICON = "video_label";
-export const DMPS_ICON = "dns";
-export const SCHEDULING_ICON = "today";
-export const TIMECLOCK_ICON = "schedule";
+import { strictEqual } from "assert";
+import { Alert } from "../objects/alerts";
 
 @Injectable({
   providedIn: "root"
@@ -22,16 +17,9 @@ export class TextService {
     false: "Sharing disabled"
   };
 
-  public systemTypeIcon = {
-    "dmps": DMPS_ICON,
-    "pi": PI_ICON,
-    "scheduling": SCHEDULING_ICON,
-    "timeclock": TIMECLOCK_ICON
-  };
-
   public readonly separatorKeyCodes: number[] = [ENTER, COMMA];
 
-  constructor() { }
+  constructor() {}
 
   public title(word: string): string {
     if (word === undefined || word == null) {
@@ -64,7 +52,11 @@ export class TextService {
     }
   }
 
-  public addAttribute(key: string, value: string, attributes: Map<string, any>): boolean {
+  public addAttribute(
+    key: string,
+    value: string,
+    attributes: Map<string, any>
+  ): boolean {
     if (attributes == null) {
       attributes = new Map<string, any>();
     }
@@ -98,11 +90,11 @@ export class TextService {
     const bA = b.id.replace(reA, "");
 
     if (aA === bA) {
-        const aN = parseInt(a.id.replace(reN, ""), 10);
-        const bN = parseInt(b.id.replace(reN, ""), 10);
-        return aN === bN ? 0 : aN > bN ? 1 : -1;
+      const aN = parseInt(a.id.replace(reN, ""), 10);
+      const bN = parseInt(b.id.replace(reN, ""), 10);
+      return aN === bN ? 0 : aN > bN ? 1 : -1;
     } else {
-        return aA > bA ? 1 : -1;
+      return aA > bA ? 1 : -1;
     }
   }
 
@@ -115,11 +107,11 @@ export class TextService {
     const bA = b.id.replace(reA, "");
 
     if (aA === bA) {
-        const aN = parseInt(a.id.replace(reN, ""), 10);
-        const bN = parseInt(b.id.replace(reN, ""), 10);
-        return aN === bN ? 0 : aN > bN ? 1 : -1;
+      const aN = parseInt(a.id.replace(reN, ""), 10);
+      const bN = parseInt(b.id.replace(reN, ""), 10);
+      return aN === bN ? 0 : aN > bN ? 1 : -1;
     } else {
-        return aA > bA ? 1 : -1;
+      return aA > bA ? 1 : -1;
     }
   }
 
@@ -143,24 +135,39 @@ export class TextService {
     }
   }
 
-  getReadableTimestamp = (time: Date, withTime: boolean): string  => {
+  getReadableTimestamp = (time: Date, withTime: boolean): string => {
     const diff = new Date().valueOf() - time.valueOf();
     // const duration = Math.abs(Math.trunc((diff / (1000 * 60 * 60)) % 24));
     let answer;
 
-    const minutes = Math.abs(Math.floor(( diff / (1000 * 60)) % 60));
-    const hours   = Math.abs(Math.floor(( diff / (1000 * 60 * 60)) % 24));
-    const days = Math.abs(Math.floor((diff / (1000 * 60 * 60 * 24))));
+    const minutes = Math.abs(Math.floor((diff / (1000 * 60)) % 60));
+    const hours = Math.abs(Math.floor((diff / (1000 * 60 * 60)) % 24));
+    const days = Math.abs(Math.floor(diff / (1000 * 60 * 60 * 24)));
     // format age 1d 2h 3m
     if (withTime) {
       if (days === 0) {
         if (hours === 0) {
-          answer = minutes.toString() + "m ago (" + time.toLocaleTimeString() + ")";
+          answer =
+            minutes.toString() + "m ago (" + time.toLocaleTimeString() + ")";
         } else {
-          answer = hours.toString() + "h ago " + minutes.toString() + "m ago (" + time.toLocaleTimeString() + ")";
+          answer =
+            hours.toString() +
+            "h ago " +
+            minutes.toString() +
+            "m ago (" +
+            time.toLocaleTimeString() +
+            ")";
         }
       } else {
-        answer = days.toString() + "d " + hours.toString() + "h " + minutes.toString() + "m ago (" + time.toLocaleTimeString() + ")";
+        answer =
+          days.toString() +
+          "d " +
+          hours.toString() +
+          "h " +
+          minutes.toString() +
+          "m ago (" +
+          time.toLocaleTimeString() +
+          ")";
       }
     } else {
       if (days === 0) {
@@ -170,12 +177,17 @@ export class TextService {
           answer = hours.toString() + "h ago " + minutes.toString() + "m";
         }
       } else {
-        answer = days.toString() + "d " + hours.toString() + "h " + minutes.toString() + "m";
-
+        answer =
+          days.toString() +
+          "d " +
+          hours.toString() +
+          "h " +
+          minutes.toString() +
+          "m";
       }
     }
     return answer;
-  }
+  };
 
   timeIsZero(time: Date): boolean {
     if (time === undefined) {
@@ -200,5 +212,5 @@ export class TextService {
       s = s.substring(0, 39);
     }
     return s;
-  }
+  };
 }

@@ -50,7 +50,14 @@ export class AlertTableComponent implements OnInit {
   filters: FilterSet<RoomIssue>;
   // filters: Filter[] = [];
 
-  issueCols = ["systemType", "roomID", "count", "age", "lastNote"];
+  issueCols = [
+    "systemType",
+    "roomID",
+    "count",
+    "alert-types",
+    "age",
+    "lastNote"
+  ];
 
   alertCols = ["deviceID", "type", "message", "startTime"];
 
