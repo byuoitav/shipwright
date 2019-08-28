@@ -1,15 +1,15 @@
-<ng-container *ngIf="!issues || issues?.length === 0">
-  <span>No room issues currently!</span>
-</ng-container>
-
-<ng-container *ngIf="issues?.length > 0">
+<ng-container>
   <div class="action-container">
     <div class="row">
-      <span class="mat-h2 item">Total Issues: {{ issues?.length }}</span>
+      <span class="mat-h2 item"
+        >Total Issues:
+        {{
+          dataSource?.filteredData ? dataSource?.filteredData?.length : 0
+        }}</span
+      >
       <span class="mat-h2 item"
         >Total Active Alerts: {{ getTotalActiveAlertCount() }}</span
       >
-      <span class="mat-h2 item">Total Alerts: {{ getTotalAlertCount() }}</span>
     </div>
 
     <mat-divider></mat-divider>
@@ -19,10 +19,10 @@
         <mat-label>Filters</mat-label>
         <mat-chip-list #filterChips>
           <mat-chip
-            *ngFor="let filter of filters"
+            *ngFor="let filter of filters?.filters"
             [selectable]="true"
             [removable]="true"
-            (removed)="removeFilter(filter)"
+            (removed)="filters?.remove(filter?.ftype, filter?.key, filter?.val)"
           >
             {{ filter?.key ? filter.key + ":" : "" }} {{ filter.val }}
             <mat-icon matChipRemove>cancel</mat-icon>
@@ -32,10 +32,29 @@
             [matChipInputFor]="filterChips"
             [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
             [matChipInputAddOnBlur]="false"
-            (matChipInputTokenEnd)="addChip($event)"
+            (matChipInputTokenEnd)="filters?.addChip($event)"
           />
         </mat-chip-list>
       </mat-form-field>
+
+      <!-- addable filters -->
+      <mat-chip-list selectable multiple>
+        <mat-chip
+          [selected]="filters?.exists(filterType.For, 'severity', 'critical')"
+          (click)="filters?.toggle(filterType.For, 'severity', 'critical')"
+          >Critical</mat-chip
+        >
+        <mat-chip
+          [selected]="filters?.exists(filterType.For, 'severity', 'warning')"
+          (click)="filters?.toggle(filterType.For, 'severity', 'warning')"
+          >Warning</mat-chip
+        >
+        <mat-chip
+          [selected]="filters?.exists(filterType.For, 'severity', 'low')"
+          (click)="filters?.toggle(filterType.For, 'severity', 'low')"
+          >Low</mat-chip
+        >
+      </mat-chip-list>
     </div>
   </div>
 

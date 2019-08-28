@@ -7,80 +7,10 @@ import {
   MatChipInputEvent
 } from "@angular/material";
 
+import { FilterType, Filter } from "../../../objects/filter";
 import { SocketService } from "../../../services/socket.service";
 import { StaticDevice } from "../../../objects/static";
 import { APIService } from "src/app/services/api.service";
-
-export enum FilterType {
-  For,
-  Out,
-  General
-}
-
-export class Filter {
-  ftype: FilterType;
-  key: string;
-  val: string;
-
-  filter = (data: any): boolean => {
-    switch (this.ftype) {
-      case FilterType.General: {
-        const datastr = Object.keys(data)
-          .reduce((currentTerm: string, key: string) => {
-            if (!data[key]) {
-              return currentTerm;
-            }
-
-            return currentTerm + (data as { [key: string]: any })[key] + "◬";
-          }, "")
-          .toLowerCase();
-
-        return datastr.includes(this.val);
-      }
-      case FilterType.For: {
-        if (!data[this.key]) {
-          if (!this.val) {
-            return true;
-          }
-
-          return false;
-        }
-
-        const datastr = (data as { [k: string]: any })[this.key]
-          .toString()
-          .toLowerCase();
-        return datastr.includes(this.val);
-      }
-      case FilterType.Out: {
-        if (!data[this.key]) {
-          if (!this.val) {
-            return false;
-          }
-
-          return true;
-        }
-
-        const datastr = (data as { [k: string]: any })[this.key]
-          .toString()
-          .toLowerCase();
-        return !datastr.includes(this.val);
-      }
-      default:
-        break;
-    }
-  };
-
-  constructor(ftype: FilterType, key: string, val: string) {
-    this.ftype = ftype;
-    this.key = key;
-    this.val = val
-      ? val
-          .toString()
-          .trim()
-          .toLowerCase()
-      : val;
-  }
-}
 
 @Component({
   selector: "app-device-state",

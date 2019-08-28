@@ -17,7 +17,7 @@ import {
   MatChipInputEvent
 } from "@angular/material";
 
-import { Filter, FilterType } from "../state/device/device-state.component";
+import { FilterType, Filter, FilterSet } from "../../objects/filter";
 import { DashpanelTypes } from "../dashpanel/idashpanel";
 
 @Component({
@@ -41,13 +41,14 @@ export class AlertTableComponent implements OnInit {
 
   @Input() singleRoom = false;
   @Input() roomID: string;
-  @Input() chosenType: DashpanelTypes;
+  // @Input() chosenType: DashpanelTypes;
 
   issues: RoomIssue[];
   expandedIssue: RoomIssue | null;
 
   dataSource: MatTableDataSource<RoomIssue>;
-  filters: Filter[] = [];
+  filters: FilterSet<RoomIssue>;
+  // filters: Filter[] = [];
 
   issueCols = ["systemType", "roomID", "count", "age", "lastNote"];
 
@@ -81,94 +82,27 @@ export class AlertTableComponent implements OnInit {
               return data[headerID];
           }
         };
+
+        this.filters = new FilterSet(this.dataSource);
       });
-
-      this.dataSource.filterPredicate = (
-        data: RoomIssue,
-        filter: string
-      ): boolean => {
-        for (const f of this.filters) {
-          if (!f.filter(data)) {
-            return false;
-          }
-        }
-
-        return true;
-      };
     });
-  }
-
-  addFilter(ftype: FilterType, key: string, val: string) {
-    const f = new Filter(ftype, key, val);
-    this.filters.push(f);
-
-    this.forceFilter();
-  }
-
-  removeFilter(filter: Filter) {
-    const index = this.filters.indexOf(filter);
-
-    if (index >= 0) {
-      this.filters.splice(index, 1);
-    }
-
-    this.forceFilter();
-  }
-
-  addChip(event: MatChipInputEvent): void {
-    const value = event.value.trim();
-
-    let split = value.split(/:(.*)/);
-    split = split.filter(s => s); // filter out blank ones
-    split = split.map(s => s.trim()); // trim each string
-
-    if (split.length === 2 && this.issueCols.includes(split[0])) {
-      this.addFilter(FilterType.For, split[0], split[1]);
-    } else {
-      this.addFilter(FilterType.General, undefined, value);
-    }
-
-    if (event.input) {
-      event.input.value = ""; // reset the input
-    }
-  }
-
-  public forceFilter() {
-    if (!this.dataSource.filter && this.filters.length > 0) {
-      this.dataSource.filter = "◬";
-    }
-
-    this.dataSource._filterData(this.dataSource.data);
-    this.dataSource._updateChangeSubscription();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
   }
 
   goToAlerts(roomID: string) {
     this.router.navigate(["/campus/" + roomID + "/tab/2"]);
   }
 
-  getTotalAlertCount() {
-    const count = 0;
-
-    for (const issue of this.issues) {
-      if (issue.alertCount !== undefined) {
-        count += issue.alertCount;
-      }
-    }
-    return count;
-  }
-
   getTotalActiveAlertCount() {
     let count = 0;
 
-    for (const issue of this.issues) {
-      if (issue.activeAlertCount !== undefined) {
-        count += issue.activeAlertCount;
+    if (this.dataSource && this.dataSource.filteredData) {
+      for (const issue of this.dataSource.filteredData) {
+        if (issue.activeAlertCount) {
+          count += issue.activeAlertCount;
+        }
       }
     }
+
     return count;
   }
 }
