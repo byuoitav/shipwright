@@ -156,7 +156,10 @@ export class FilterSet<T> {
     split = split.filter(s => s); // filter out blank ones
     split = split.map(s => s.trim()); // trim each string
 
-    if (split.length === 2 && Object.keys(T).includes(split[0])) {
+    if (
+      split.length === 2 &&
+      Object.keys(this._dataSource.data[0]).includes(split[0])
+    ) {
       this.add(FilterType.For, split[0], split[1]);
     } else {
       this.add(FilterType.General, undefined, value);
