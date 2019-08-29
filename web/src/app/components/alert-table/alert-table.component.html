@@ -65,6 +65,19 @@
     multiTemplateDataRows
     matSort
   >
+    <ng-container matColumnDef="expand">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+      <td mat-cell *matCellDef="let issue" class="expand-column">
+        <button
+          mat-icon-button
+          (click)="expandedIssue = expandedIssue === issue ? null : issue"
+        >
+          <mat-icon *ngIf="issue != expandedIssue">arrow_drop_up</mat-icon>
+          <mat-icon *ngIf="issue == expandedIssue">arrow_drop_down</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
     <ng-container matColumnDef="systemType">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>System Type</th>
       <td mat-cell *matCellDef="let issue">
@@ -75,7 +88,9 @@
     <ng-container matColumnDef="roomID">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Room</th>
       <td mat-cell *matCellDef="let issue">
-        <span>{{ issue?.roomID }}</span>
+        <button mat-button color="primary" (click)="goToAlerts(issue?.roomID)">
+          {{ issue?.roomID }}
+        </button>
       </td>
     </ng-container>
 
@@ -172,7 +187,6 @@
       class="severity"
       [class.warning]="issue?.severity === 'warning'"
       [class.critical]="issue?.severity === 'critical'"
-      (click)="expandedIssue = expandedIssue === issue ? null : issue"
     ></tr>
     <tr
       mat-row

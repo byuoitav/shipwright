@@ -1,11 +1,96 @@
-<!-- <p>
-    monitoring works!
-</p> -->
+<div class="container">
+  <span class="title mat-h1"> {{ roomID }} Monitoring</span>
 
-<div class="row title">
-    <span class="mat-h1">{{roomID}} Monitoring</span>
-</div>
+  <div class="alerts">
+    <mat-card>
+      <table mat-table matSort [dataSource]="dataSource">
+        <ng-container matColumnDef="deviceID">
+          <th mat-header-cell *matHeaderCellDef>
+            Device Name
+          </th>
+          <td mat-cell *matCellDef="let alert">
+            <span>{{ alert?.deviceID }}</span>
+          </td>
+        </ng-container>
 
-<div>
-    <alert-table [singleRoom]=true [roomID]="roomID"></alert-table>
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>
+            Alert Type
+          </th>
+          <td mat-cell *matCellDef="let alert">
+            <span>{{ alert?.type }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="message">
+          <th mat-header-cell *matHeaderCellDef>
+            Message
+          </th>
+          <td mat-cell *matCellDef="let alert">
+            <span>{{ alert?.message }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="startTime">
+          <th mat-header-cell *matHeaderCellDef>
+            Start Time
+          </th>
+          <td mat-cell *matCellDef="let alert">
+            <span>{{ alert?.startTime | date: "short" }}</span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="cols"></tr>
+        <tr mat-row *matRowDef="let alert; columns: cols"></tr>
+      </table>
+    </mat-card>
+  </div>
+
+  <div class="notes-and-visits">
+    <mat-card class="notes">
+      <mat-card-header>
+        <mat-card-title>Notes</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngFor="let note of issue?.notesLog" class="note">
+          <span class="info"
+            >{{ noteInfo(note)?.user }} commented on
+            {{ noteInfo(note)?.time | date: "medium" }}
+          </span>
+          <span class="content">
+            {{ noteInfo(note)?.content }}
+          </span>
+        </div>
+
+        <mat-divider inset></mat-divider>
+
+        <div class="new-note">
+          <mat-form-field appearance="outline">
+            <mat-label>Add a comment</mat-label>
+            <textarea
+              matInput
+              matTextareaAutosize
+              matAutosizeMinRows="4"
+              matAutosizeMaxRows="6"
+              [(ngModel)]="comment"
+            ></textarea>
+            <mat-hint>TODO username</mat-hint>
+          </mat-form-field>
+
+          <div class="comment-button">
+            <button
+              mat-raised-button
+              color="primary"
+              [disabled]="!comment"
+              (click)="makeComment(comment); comment = ''"
+            >
+              Comment
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="visits"> </mat-card>
+  </div>
 </div>

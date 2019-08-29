@@ -39,8 +39,6 @@ export class AlertTableComponent implements OnInit {
   readonly separatorKeyCodes: number[] = [ENTER, COMMA]; // delimate filters with these keys
   readonly filterType: typeof FilterType = FilterType; // so the component can use them
 
-  @Input() singleRoom = false;
-  @Input() roomID: string;
   // @Input() chosenType: DashpanelTypes;
 
   issues: RoomIssue[];
@@ -48,9 +46,9 @@ export class AlertTableComponent implements OnInit {
 
   dataSource: MatTableDataSource<RoomIssue>;
   filters: FilterSet<RoomIssue>;
-  // filters: Filter[] = [];
 
   issueCols = [
+    "expand",
     "systemType",
     "roomID",
     "count",

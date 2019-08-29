@@ -35,10 +35,7 @@ export class APIService {
 
   private headers: HttpHeaders;
 
-  constructor(
-    public cookies: CookieService,
-    private http: HttpClient
-  ) {
+  constructor(public cookies: CookieService, private http: HttpClient) {
     this.themeSwitched = new EventEmitter<string[]>();
     this.converter = new JsonConvert();
     this.converter.ignorePrimitiveChecks = false;
@@ -67,11 +64,7 @@ export class APIService {
 
     this.themeSwitched.emit([oldTheme, newTheme]);
 
-    window.history.replaceState(
-      null,
-      "SMEE",
-      window.location.pathname
-    );
+    window.history.replaceState(null, "SMEE", window.location.pathname);
   }
 
   // Building Functions
@@ -759,7 +752,6 @@ export class APIService {
         .toPromise();
 
       const issue = this.converter.deserialize(data, RoomIssue);
-
       return issue;
     } catch (e) {
       console.warn("error trying to get the issue for " + roomID + ": " + e);
