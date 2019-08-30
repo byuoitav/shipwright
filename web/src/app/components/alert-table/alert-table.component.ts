@@ -89,7 +89,7 @@ export class AlertTableComponent implements OnInit {
         this.dataSource.data = issues;
       });
     } catch (e) {
-      alert("unable to get issues" + e);
+      alert("unable to get issues:" + e);
       window.location.reload();
     }
   }

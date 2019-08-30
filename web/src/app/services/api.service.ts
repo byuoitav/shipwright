@@ -936,7 +936,7 @@ export class APIService {
       );
       const subject = new BehaviorSubject<RoomIssue[]>(issues);
 
-      const endpoint = "ws://" + window.location.host + "/ws/";
+      const endpoint = "wss://" + window.location.host + "/ws/";
       const ws = new WebSocket(endpoint);
 
       const ref = new IssueRef(subject, () => {
