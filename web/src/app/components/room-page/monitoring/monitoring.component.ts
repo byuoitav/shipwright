@@ -13,6 +13,7 @@ import { RoomIssue, Alert } from "../../../objects/alerts";
 export class MonitoringComponent implements OnInit {
   roomID: string;
   issue: RoomIssue;
+  comment: string;
 
   dataSource: MatTableDataSource<Alert>;
 

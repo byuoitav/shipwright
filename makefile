@@ -64,13 +64,14 @@ clean:
 	rm -f $(NAME)-bin
 	rm -f $(NAME)-arm
 	rm -rf $(NG1)-dist
+	rm -rf vendor/
 
 run: $(NAME)-bin $(NG1)-dist
 	./$(NAME)-bin
 
 deps:
-	npm config set unsafe-perm true
-	$(NPM_INSTALL) -g @angular/cli@latest
+	# npm config set unsafe-perm true
+	# $(NPM_INSTALL) -g @angular/cli@latest
 	$(GOGET) -d -v
 ifneq "$(BRANCH)" "master"
 	# put vendored packages in here
