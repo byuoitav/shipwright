@@ -95,7 +95,7 @@ export class AlertTableComponent implements OnInit {
   }
 
   goToAlerts(roomID: string) {
-    this.router.navigate(["/campus/" + roomID + "/tab/2"]);
+    this.router.navigate(["/campus/" + roomID + "/tab/1"]);
   }
 
   getTotalActiveAlertCount() {
