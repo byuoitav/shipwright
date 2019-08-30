@@ -18,7 +18,6 @@ import {
 } from "@angular/material";
 
 import { FilterType, Filter, FilterSet } from "../../objects/filter";
-import { DashpanelTypes } from "../dashpanel/idashpanel";
 
 @Component({
   selector: "alert-table",
@@ -38,8 +37,6 @@ import { DashpanelTypes } from "../dashpanel/idashpanel";
 export class AlertTableComponent implements OnInit {
   readonly separatorKeyCodes: number[] = [ENTER, COMMA]; // delimate filters with these keys
   readonly filterType: typeof FilterType = FilterType; // so the component can use them
-
-  // @Input() chosenType: DashpanelTypes;
 
   issues: RoomIssue[];
   expandedIssue: RoomIssue | null;
@@ -64,33 +61,37 @@ export class AlertTableComponent implements OnInit {
 
   constructor(public api: APIService, public router: Router) {}
 
-  ngOnInit() {
-    this.api.GetAllIssues().then(answer => {
-      this.issues = answer as RoomIssue[];
-      console.log("issues", this.issues);
-      this.dataSource = new MatTableDataSource(this.issues);
+  async ngOnInit() {
+    try {
+      const issueRef = await this.api.getIssues();
 
-      // because of the ngIf on the parent container
-      setTimeout(() => {
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-        this.dataSource.sortingDataAccessor = (
-          data: RoomIssue,
-          headerID: string
-        ) => {
-          switch (headerID) {
-            case "age":
-              return data.oldestActiveAlert.startTime;
-            case "count":
-              return data.activeAlertCount;
-            default:
-              return data[headerID];
-          }
-        };
+      this.dataSource = new MatTableDataSource(issueRef.issues);
 
-        this.filters = new FilterSet(this.dataSource);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      this.dataSource.sortingDataAccessor = (
+        data: RoomIssue,
+        headerID: string
+      ) => {
+        switch (headerID) {
+          case "age":
+            return data.oldestActiveAlert.startTime;
+          case "count":
+            return data.activeAlertCount;
+          default:
+            return data[headerID];
+        }
+      };
+
+      this.filters = new FilterSet(this.dataSource);
+
+      issueRef.subject.subscribe(issues => {
+        this.dataSource.data = issues;
       });
-    });
+    } catch (e) {
+      alert("unable to get issues" + e);
+      window.location.reload();
+    }
   }
 
   goToAlerts(roomID: string) {

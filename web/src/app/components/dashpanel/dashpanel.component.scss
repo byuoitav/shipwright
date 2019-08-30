@@ -1,15 +1,11 @@
 .container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: flex-start;
-    .table {
-        flex-grow: 1;
-        width: 100%;
-    }
-}
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start;
 
-.choose {
-    margin-left: 2vw;
-    margin-top: 2vh;
+  .table {
+    flex-grow: 1;
+    width: 100%;
+  }
 }

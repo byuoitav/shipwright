@@ -54,7 +54,7 @@
     "changeOrigin": true
   },
   "/ws": {
-    "target": "wss://smee-stg.avs.byu.edu",
+    "target": "wss://smee.avs.byu.edu",
     "secure": true,
     "logLevel": "debug",
     "changeOrigin": true,

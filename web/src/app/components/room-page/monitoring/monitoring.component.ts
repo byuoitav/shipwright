@@ -70,4 +70,14 @@ export class MonitoringComponent implements OnInit {
       alert("unable to add comment: " + e);
     }
   };
+
+  openControlUI = () => {
+    const url = "http://" + this.roomID + "-CP1.byu.edu:8888/";
+    window.open(url, "_blank");
+  };
+
+  openZPattern = () => {
+    const url = "http://" + this.roomID + "-CP1.byu.edu:10000/dashboard";
+    window.open(url, "_blank");
+  };
 }

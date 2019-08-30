@@ -5,17 +5,8 @@
   [selectedIndex]="selectedTab"
   (selectedTabChange)="tabChange($event.index)"
 >
-  <mat-tab label="Overview">
-    <room-overview [room]="room"></room-overview>
-  </mat-tab>
   <mat-tab label="Monitoring">
     <room-monitoring></room-monitoring>
-  </mat-tab>
-  <mat-tab label="Builder">
-    <room-builder></room-builder>
-  </mat-tab>
-  <mat-tab label="Routing">
-    <room-routing></room-routing>
   </mat-tab>
   <mat-tab label="Parts List">
     <room-parts-list></room-parts-list>

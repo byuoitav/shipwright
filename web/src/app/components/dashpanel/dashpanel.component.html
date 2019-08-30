@@ -1,13 +1,5 @@
 <div class="container">
-    <mat-form-field class="choose">
-        <mat-select [(ngModel)]="selectedPanel" (ngModelChange)="choosePanel()">
-            <mat-option *ngFor="let panel of possiblePanels" [value]="panel">
-                {{panel.title}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-
-    <div class="table">
-        <ng-template dashDirect></ng-template>
-    </div>
+  <div class="table">
+    <ng-template dashDirect></ng-template>
+  </div>
 </div>

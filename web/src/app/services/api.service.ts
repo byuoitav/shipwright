@@ -22,6 +22,36 @@ import {
   ClassHalfHourBlock
 } from "../objects/alerts";
 import { CookieService } from "ngx-cookie-service";
+import { BehaviorSubject, Observable, throwError } from "rxjs";
+
+export class IssueRef {
+  private _issues: BehaviorSubject<RoomIssue[]>;
+  private _done: () => void;
+
+  get issues() {
+    if (this._issues) {
+      return this._issues.value;
+    }
+
+    return undefined;
+  }
+
+  get subject() {
+    return this._issues;
+  }
+
+  constructor(issues: BehaviorSubject<RoomIssue[]>, _done: () => void) {
+    this._issues = issues;
+  }
+
+  done = () => {
+    if (this._done) {
+      return this._done();
+    }
+
+    return;
+  };
+}
 
 @Injectable({
   providedIn: "root"
@@ -894,4 +924,62 @@ export class APIService {
       throw new Error("error trying to get the attribute presets: " + e);
     }
   }
+
+  getIssues = async (): Promise<IssueRef> => {
+    try {
+      const data: any = await this.http
+        .get("issues/", { headers: this.headers })
+        .toPromise();
+      const issues: RoomIssue[] = this.converter.deserializeArray(
+        data,
+        RoomIssue
+      );
+      const subject = new BehaviorSubject<RoomIssue[]>(issues);
+
+      const endpoint = "ws://" + window.location.host + "/ws/";
+      const ws = new WebSocket(endpoint);
+
+      const ref = new IssueRef(subject, () => {
+        console.log("closing websocket");
+
+        ws.close();
+        subject.complete();
+      });
+
+      ws.onmessage = event => {
+        const parsed = JSON.parse(event.data);
+        if (parsed["id"]) {
+          const issue = this.converter.deserializeObject(parsed, RoomIssue);
+
+          const idx = issues.findIndex(i => i.issueID === issue.issueID);
+          if (idx < 0) {
+            // new issue
+            issues.push(issue);
+          } else if (issue.resolved) {
+            // this issue has been deleted
+            issues.splice(idx, 1);
+          } else {
+            // this issue has been updated
+            issues[idx] = issue;
+          }
+
+          subject.next(issues);
+        }
+      };
+
+      ws.onerror = event => {
+        console.error("websocket error", event);
+        subject.error("websocket error " + event);
+
+        alert(
+          "something went wrong with the websocket. click ok to refresh the page"
+        );
+        window.location.reload();
+      };
+
+      return ref;
+    } catch (e) {
+      throw new Error("unable to get all issues " + e);
+    }
+  };
 }
