@@ -22,23 +22,21 @@ export class RoomPageComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.roomID = params["roomID"];
       this.selectedTab = +params["tabNum"] - 1;
-      this.api.GetRoom(this.roomID).then((answer) => {
+
+      /*
+      this.api.GetRoom(this.roomID).then(answer => {
         this.room = answer as Room;
+        console.log("room", this.room);
       });
+      */
     });
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   tabChange(tabIndex: number) {
     const currentURL = window.location.pathname;
-    const newURL = currentURL.substr(0, (currentURL.length - 1)) + (tabIndex + 1);
-    window.history.replaceState(
-      null,
-      this.text.websiteTitle,
-      newURL
-    );
+    const newURL = currentURL.substr(0, currentURL.length - 1) + (tabIndex + 1);
+    window.history.replaceState(null, this.text.websiteTitle, newURL);
   }
-
 }

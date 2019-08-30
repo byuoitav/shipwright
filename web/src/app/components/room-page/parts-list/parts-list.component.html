@@ -1,3 +1,96 @@
-<p>
-  parts-list works!
-</p>
+<div class="container">
+  <span class="title mat-h1">{{ roomID }} Parts List </span>
+
+  <div class="parts-list">
+    <!-- devices table -->
+    <mat-card class="devices">
+      <mat-card-header class="card-header-center">
+        <mat-card-title>Devices</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <table mat-table [dataSource]="devicesDataSource">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>
+              Device Name
+            </th>
+            <td mat-cell *matCellDef="let device">
+              <span>{{ device?.name }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>
+              Type
+            </th>
+            <td mat-cell *matCellDef="let device">
+              <span>{{ device?.type?.id }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="address">
+            <th mat-header-cell *matHeaderCellDef>
+              Address
+            </th>
+            <td mat-cell *matCellDef="let device">
+              <span>{{ device?.address }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="ip">
+            <th mat-header-cell *matHeaderCellDef>
+              IP
+            </th>
+            <td mat-cell *matCellDef="let device">
+              <span>{{ ips[(device?.address)] }}</span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="deviceCols"></tr>
+          <tr mat-row *matRowDef="let device; columns: deviceCols"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- ports table -->
+    <mat-card class="ports">
+      <mat-card-header class="card-header-center">
+        <mat-card-title>Ports</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <table mat-table [dataSource]="portsDataSource">
+          <ng-container matColumnDef="destination">
+            <th mat-header-cell *matHeaderCellDef>
+              Device (Destination)
+            </th>
+            <td mat-cell *matCellDef="let port">
+              <span>{{ port?.destinationDevice }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>
+              Port
+            </th>
+            <td mat-cell *matCellDef="let port">
+              <span>{{ port?.friendlyName }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="source">
+            <th mat-header-cell *matHeaderCellDef>
+              Source
+            </th>
+            <td mat-cell *matCellDef="let port">
+              <span>{{ port?.sourceDevice }}</span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="portCols"></tr>
+          <tr mat-row *matRowDef="let port; columns: portCols"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

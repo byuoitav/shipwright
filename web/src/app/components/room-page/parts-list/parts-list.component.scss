@@ -1,0 +1,41 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  margin: 1.5vh 0;
+}
+
+.card-header-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.parts-list {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 95%;
+  margin: 1em 0 2em;
+
+  .devices {
+    width: 45%;
+    height: 100%;
+
+    table {
+      width: 100%;
+    }
+  }
+
+  .ports {
+    width: 45%;
+    height: 100%;
+
+    table {
+      width: 100%;
+    }
+  }
+}
