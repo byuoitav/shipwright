@@ -36,34 +36,6 @@ export class MonitoringComponent implements OnInit {
     });
   }
 
-  noteInfo = (note: string): { user: string; time: Date; content: string } => {
-    const info = {
-      user: undefined,
-      time: undefined,
-      content: undefined
-    };
-
-    if (!note) {
-      return info;
-    }
-
-    const split = note.split("|");
-    if (split.length !== 2) {
-      info.content = note;
-      return info;
-    }
-
-    info.content = split[1];
-    const time = split[0].substring(
-      split[0].indexOf("(") + 1,
-      split[0].indexOf(")")
-    );
-    info.time = new Date(time);
-    info.user = split[0].substring(0, split[0].indexOf(" ("));
-
-    return info;
-  };
-
   makeComment = async (comment: string) => {
     if (!this.issue.notesLog) {
       this.issue.notesLog = [];
@@ -73,6 +45,7 @@ export class MonitoringComponent implements OnInit {
     const fullComment =
       "username (" + new Date().toISOString() + ")|" + comment.trim();
 
+    this.issue.notes = fullComment;
     this.issue.notesLog.push(fullComment);
 
     // TODO i hate doing this
@@ -87,12 +60,14 @@ export class MonitoringComponent implements OnInit {
       const resp = await this.api.UpdateIssue(this.issue);
 
       if (resp !== "ok") {
+        alert("unable to add comment: " + resp);
         console.warn("unexpected response adding a comment: ", resp);
       } else {
         console.log("successfully updated note");
       }
     } catch (e) {
       console.warn("unable to add comment", e);
+      alert("unable to add comment: " + e);
     }
   };
 }

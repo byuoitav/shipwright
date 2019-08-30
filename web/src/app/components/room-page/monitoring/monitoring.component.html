@@ -54,11 +54,11 @@
       <mat-card-content>
         <div *ngFor="let note of issue?.notesLog" class="note">
           <span class="info"
-            >{{ noteInfo(note)?.user }} commented on
-            {{ noteInfo(note)?.time | date: "medium" }}
+            >{{ issue?.noteInfo(note)?.user }} commented on
+            {{ issue?.noteInfo(note)?.time | date: "medium" }}
           </span>
           <span class="content">
-            {{ noteInfo(note)?.content }}
+            {{ issue?.noteInfo(note)?.content }}
           </span>
         </div>
 

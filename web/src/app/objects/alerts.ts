@@ -206,6 +206,34 @@ export class RoomIssue {
     return ret.join(", ");
   };
 
+  noteInfo = (note: string): { user: string; time: Date; content: string } => {
+    const info = {
+      user: undefined,
+      time: undefined,
+      content: undefined
+    };
+
+    if (!note) {
+      return info;
+    }
+
+    const split = note.split("|");
+    if (split.length !== 2) {
+      info.content = note;
+      return info;
+    }
+
+    info.content = split[1];
+    const time = split[0].substring(
+      split[0].indexOf("(") + 1,
+      split[0].indexOf(")")
+    );
+    info.time = new Date(time);
+    info.user = split[0].substring(0, split[0].indexOf(" ("));
+
+    return info;
+  };
+
   get icon(): string {
     switch (this.systemType) {
       case "pi":

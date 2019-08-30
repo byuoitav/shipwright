@@ -66,7 +66,7 @@
     matSort
   >
     <ng-container matColumnDef="expand">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+      <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let issue" class="expand-column">
         <button
           mat-icon-button
@@ -116,10 +116,9 @@
     </ng-container>
 
     <ng-container matColumnDef="lastNote">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Note</th>
+      <th mat-header-cell *matHeaderCellDef>Last Note</th>
       <td mat-cell *matCellDef="let issue">
-        <!-- TODO the text thing to get this note -->
-        <span>{{ (issue?.notesLog)[-1] }}</span>
+        <span>{{ issue?.noteInfo(issue?.notes)?.content }}</span>
       </td>
     </ng-container>
 
