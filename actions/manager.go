@@ -10,7 +10,6 @@ import (
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/v2/events"
 	"github.com/byuoitav/shipwright/actions/actionctx"
-	"github.com/byuoitav/shipwright/state/cache"
 )
 
 // An ActionManager manages executing a set of actions
@@ -118,12 +117,12 @@ func (a *ActionManager) Start(ctx context.Context) *nerr.E {
 						log.L.Warnf("action manager event stream closed")
 						return
 					}
-
-					if len(a.EventCache) > 0 {
-						//get the cache and submit for persistence
-						cache.GetCache(a.EventCache).StoreAndForwardEvent(event)
-					}
-
+					/*
+						if len(a.EventCache) > 0 {
+							//get the cache and submit for persistence
+							cache.GetCache(a.EventCache).StoreAndForwardEvent(event)
+						}
+					*/
 					// a new context for this action
 					actx := actionctx.PutEvent(ctx, event)
 
