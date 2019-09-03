@@ -37,7 +37,6 @@ func init() {
 }
 
 func main() {
-	log.SetLevel("info")
 	figure.NewFigure("SMEE", "univers", true).Print()
 
 	port := ":9999"

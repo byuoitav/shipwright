@@ -67,9 +67,10 @@ import { PartsListComponent } from "./components/room-page/parts-list/parts-list
 import { SlideshowModule } from "ng-simple-slideshow";
 import { RoomStateComponent } from "./components/state/room/room-state.component";
 import { DeviceStateComponent } from "./components/state/device/device-state.component";
-import { InformationComponent } from './components/information/information.component';
-import { DateAgoPipe } from './pipes/date-ago.pipe';
-
+import { InformationComponent } from "./components/information/information.component";
+import { DateAgoPipe } from "./pipes/date-ago.pipe";
+import { SettingsModal } from "./modals/settingsmodal/settings.modal";
+import { HelpModal } from "./modals/helpmodal/help.modal";
 
 @NgModule({
   declarations: [
@@ -92,7 +93,9 @@ import { DateAgoPipe } from './pipes/date-ago.pipe';
     RoomStateComponent,
     DeviceStateComponent,
     InformationComponent,
-    DateAgoPipe
+    DateAgoPipe,
+    SettingsModal,
+    HelpModal
   ],
   imports: [
     BrowserModule,
@@ -139,7 +142,9 @@ import { DateAgoPipe } from './pipes/date-ago.pipe';
   entryComponents: [
     BuildingModalComponent,
     RoomModalComponent,
-    AlertTableComponent
+    AlertTableComponent,
+    SettingsModal,
+    HelpModal
   ],
   providers: [
     APIService,

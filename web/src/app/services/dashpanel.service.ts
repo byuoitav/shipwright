@@ -1,8 +1,6 @@
 import { Injectable } from "@angular/core";
 import { AlertTableComponent } from "../components/alert-table/alert-table.component";
-import { DashpanelTypes } from '../components/dashpanel/idashpanel';
-
-
+import { DashpanelTypes } from "../components/dashpanel/idashpanel";
 
 export class DashpanelConfig {
   dashPanelType: DashpanelTypes;

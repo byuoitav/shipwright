@@ -936,8 +936,13 @@ export class APIService {
       );
       const subject = new BehaviorSubject<RoomIssue[]>(issues);
 
-      const endpoint = "wss://" + window.location.host + "/ws/";
-      const ws = new WebSocket(endpoint);
+      let protocol = "ws:";
+      if (window.location.protocol === "https:") {
+        protocol = "wss:";
+      }
+
+      const url = protocol + "//" + window.location.host + "/ws/";
+      const ws = new WebSocket(url);
 
       const ref = new IssueRef(subject, () => {
         console.log("closing websocket");
