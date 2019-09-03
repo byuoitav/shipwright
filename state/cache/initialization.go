@@ -9,7 +9,6 @@ import (
 	"github.com/byuoitav/common/state/statedefinition"
 	"github.com/byuoitav/shipwright/config"
 	"github.com/byuoitav/shipwright/elk"
-	"github.com/byuoitav/shipwright/state/cache/memorycache"
 	"github.com/byuoitav/shipwright/state/cache/rediscache"
 	"github.com/byuoitav/shipwright/state/cache/shared"
 )
@@ -125,8 +124,6 @@ func GetElkStaticRooms(index, url string) ([]statedefinition.StaticRoom, *nerr.E
 
 func makeCache(devices []statedefinition.StaticDevice, rooms []statedefinition.StaticRoom, config config.Cache) (shared.Cache, *nerr.E) {
 	switch config.CacheType {
-	case "memory":
-		return memorycache.MakeMemoryCache(devices, rooms, pushCron, config)
 	case "redis":
 		return rediscache.MakeRedisCache(devices, rooms, pushCron, config)
 	}
