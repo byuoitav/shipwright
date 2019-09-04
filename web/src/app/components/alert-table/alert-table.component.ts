@@ -14,7 +14,8 @@ import {
   MatPaginator,
   MatSort,
   MatTableDataSource,
-  MatChipInputEvent
+  MatChipInputEvent,
+  MatSortable
 } from "@angular/material";
 
 import { FilterType, Filter, FilterSet } from "../../objects/filter";
@@ -38,7 +39,6 @@ export class AlertTableComponent implements OnInit {
   readonly separatorKeyCodes: number[] = [ENTER, COMMA]; // delimate filters with these keys
   readonly filterType: typeof FilterType = FilterType; // so the component can use them
 
-  issues: RoomIssue[];
   expandedIssue: RoomIssue | null;
 
   dataSource: MatTableDataSource<RoomIssue>;
@@ -64,10 +64,12 @@ export class AlertTableComponent implements OnInit {
   async ngOnInit() {
     try {
       const issueRef = await this.api.getIssues();
-
       this.dataSource = new MatTableDataSource(issueRef.issues);
 
       this.dataSource.paginator = this.paginator;
+
+      // default sort by age
+      this.sort.sort({ id: "age", start: "desc" } as MatSortable);
       this.dataSource.sort = this.sort;
       this.dataSource.sortingDataAccessor = (
         data: RoomIssue,
@@ -75,7 +77,11 @@ export class AlertTableComponent implements OnInit {
       ) => {
         switch (headerID) {
           case "age":
-            return data.oldestActiveAlert.startTime;
+            if (data.oldestActiveAlert) {
+              return data.oldestActiveAlert.startTime;
+            }
+
+            return undefined;
           case "count":
             return data.activeAlertCount;
           default:
@@ -85,8 +91,28 @@ export class AlertTableComponent implements OnInit {
 
       this.filters = new FilterSet(this.dataSource);
 
+      // TODO remove
       issueRef.subject.subscribe(issues => {
-        this.dataSource.data = issues;
+        this.dataSource.data = issues
+          .map(i => {
+            const issue = i;
+            issue.alerts = i.alerts.filter(a => {
+              const now = new Date();
+              if (
+                a.type === "Device Communication Error" &&
+                now.getTime() - a.startTime.getTime() < 30000
+              ) {
+                return false;
+              }
+
+              return true;
+            });
+
+            return issue;
+          })
+          .filter(i => {
+            return i.alerts.length > 0;
+          });
       });
     } catch (e) {
       alert("unable to get issues:" + e);

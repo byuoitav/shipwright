@@ -24,7 +24,7 @@ export class HelpModal implements OnInit {
   ngOnInit() {}
 
   submit = () => {
-    const alert = new Alert();
+    const a = new Alert();
 
     let room = this.roomFormControl.value as string;
     const requester = this.requesterFormControl.value as string;
@@ -33,27 +33,27 @@ export class HelpModal implements OnInit {
       room = room.replace(" ", "-");
     }
 
-    alert.buildingID = room.substring(0, room.indexOf("-"));
-    alert.roomID = room;
-    alert.requester = requester;
-    alert.message = this.comment ? this.comment : "";
-    alert.active = true;
-    alert.type = "Help Request";
-    alert.category = "Help Request";
-    alert.deviceID = room + "-HR1";
-    alert.severity = "Critical";
-    alert.manualResolve = true;
+    a.buildingID = room.substring(0, room.indexOf("-"));
+    a.roomID = room;
+    a.requester = requester;
+    a.message = this.comment ? this.comment : "";
+    a.active = true;
+    a.type = "Help Request";
+    a.category = "Help Request";
+    a.deviceID = room + "-HR1";
+    a.severity = "Critical";
+    a.manualResolve = true;
 
-    console.log("alert", alert);
+    console.log("alert", a);
 
     this.api
-      .AddAlert(alert)
+      .AddAlert(a)
       .then(val => {
         console.log("successfully added alert", val);
         this.ref.close();
       })
       .catch(err => {
-        alert("unable to create alert", err);
+        alert("unable to create alert: " + err);
       });
   };
 }

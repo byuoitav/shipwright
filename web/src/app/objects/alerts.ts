@@ -185,21 +185,18 @@ export class RoomIssue {
   alertTypesOverview = (): string => {
     const ret = [];
     for (const t of this.activeAlertTypes) {
-      const str =
-        t +
-        " (" +
-        this.alerts
-          .filter(a => a.type === t)
-          .map(a => {
-            const split = a.deviceID.split("-");
-            if (split.length === 3) {
-              return split[2];
-            }
+      const ids = this.alerts
+        .filter(a => a.type === t)
+        .map(a => {
+          const split = a.deviceID.split("-");
+          if (split.length === 3) {
+            return split[2];
+          }
 
-            return a.deviceID;
-          })
-          .reduce((prev, cur) => prev + ", " + cur) +
-        ")";
+          return a.deviceID;
+        });
+
+      const str = t + " (" + ids.join(", ") + ")";
       ret.push(str);
     }
 
@@ -262,6 +259,24 @@ export class RoomIssue {
     }
 
     return oldest;
+  }
+
+  get sortedAlerts(): Alert[] {
+    return this.alerts.sort((a, b) => {
+      if (a.active && b.active) {
+        return b.startTime.getTime() - a.startTime.getTime();
+      }
+
+      if (!a.active && !b.active) {
+        return a.endTime.getTime() - b.endTime.getTime();
+      }
+
+      if (a.active) {
+        return -1;
+      }
+
+      return 1;
+    });
   }
 
   get severity(): string {
