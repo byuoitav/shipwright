@@ -2,12 +2,10 @@ package statequery
 
 import (
 	"sync"
-	"time"
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	sd "github.com/byuoitav/common/state/statedefinition"
-	"github.com/byuoitav/shipwright/state/cache"
 )
 
 var (
@@ -15,30 +13,30 @@ var (
 	deviceRecordsMu sync.RWMutex
 )
 
-func init() {
-	// update the deviceRecords every 10 seconds
-	updateCache := func(cacheType string) {
-		d, err := cache.GetCache(cacheType).GetAllDeviceRecords()
-		if err != nil {
-			log.L.Errorf("problem getting all devices from the cache: %v", err.Error())
-			return
-		}
+// func init() {
+// 	// update the deviceRecords every 10 seconds
+// 	updateCache := func(cacheType string) {
+// 		d, err := cache.GetCache(cacheType).GetAllDeviceRecords()
+// 		if err != nil {
+// 			log.L.Errorf("problem getting all devices from the cache: %v", err.Error())
+// 			return
+// 		}
 
-		deviceRecordsMu.Lock()
-		deviceRecords = d
-		deviceRecordsMu.Unlock()
-	}
+// 		deviceRecordsMu.Lock()
+// 		deviceRecords = d
+// 		deviceRecordsMu.Unlock()
+// 	}
 
-	go func() {
-		ticker := time.NewTicker(10 * time.Second)
+// 	go func() {
+// 		ticker := time.NewTicker(10 * time.Second)
 
-		for range ticker.C {
-			updateCache("default")
-		}
+// 		for range ticker.C {
+// 			updateCache("default")
+// 		}
 
-		log.L.Fatalf("caches are no longer being updated.")
-	}()
-}
+// 		log.L.Fatalf("caches are no longer being updated.")
+// 	}()
+// }
 
 /*
 Run is a job that will query the state of the static cache and generate events.

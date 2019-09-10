@@ -6,6 +6,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/byuoitav/common/servicenow"
+
 	"github.com/byuoitav/central-event-system/hub/base"
 	"github.com/byuoitav/central-event-system/messenger"
 	"github.com/byuoitav/common"
@@ -14,9 +16,7 @@ import (
 	"github.com/byuoitav/common/v2/auth"
 	"github.com/byuoitav/common/v2/events"
 	"github.com/byuoitav/shipwright/actions"
-	"github.com/byuoitav/shipwright/alertstore"
 	"github.com/byuoitav/shipwright/couch"
-	"github.com/byuoitav/shipwright/state/roomsync"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
@@ -42,10 +42,10 @@ func main() {
 	port := ":9999"
 	router := common.NewRouter()
 
-	go actions.DefaultActionManager().Start(context.TODO())
-	alertstore.InitializeAlertStore(actions.DefaultActionManager())
+	// go actions.DefaultActionManager().Start(context.TODO())
+	// alertstore.InitializeAlertStore(actions.DefaultActionManager())
 
-	go roomsync.StartRoomSync(24*time.Hour, context.Background())
+	// go roomsync.StartRoomSync(24*time.Hour, context.Background())
 
 	// connect to the hub
 	messenger, err := messenger.BuildMessenger(os.Getenv("HUB_ADDRESS"), base.Messenger, 5000)
@@ -59,6 +59,15 @@ func main() {
 
 		for {
 			processEvent(messenger.ReceiveEvent())
+		}
+	}()
+
+	//Get users from service now
+	go func() {
+		servicenow.QueryAllUsersAndSetList()
+		ticker := time.NewTicker(1 * time.Hour)
+		for range ticker.C {
+			servicenow.QueryAllUsersAndSetList()
 		}
 	}()
 

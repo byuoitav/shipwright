@@ -28,7 +28,7 @@ func SyncRoomIssueWithServiceNow(ctx context.Context, with []byte, log *zap.Suga
 	//The business logic is this:
 	// if someone has been dispatched an incident ticket will be created for that room
 	// if the room issue contains any alerts that are tagged "manual resolve" a ticket should be made
-	//If the user clicks the "create icnident button" it will make one too.
+	//If the user clicks the "create incident button" it will make one too.
 
 	//This business logic is not going to be handled here, they will be handled in the config
 	//All we are doing here is the following:
@@ -37,6 +37,8 @@ func SyncRoomIssueWithServiceNow(ctx context.Context, with []byte, log *zap.Suga
 	//If there isn't one, then we need to make it.
 
 	//see if we already have an incident to sync with
+	criticalIncidentID := ""
+	var criticalAlerts []structs.Alert
 	for _, incidentID := range roomIssue.IncidentID {
 		if strings.Contains(incidentID, "INC") {
 			criticalIncidentID = incidentID
@@ -44,8 +46,16 @@ func SyncRoomIssueWithServiceNow(ctx context.Context, with []byte, log *zap.Suga
 		}
 	}
 
-	//go ahead and sync
-	newIncidentID, err := syncRoomIssueWithIncident(roomIssue, criticalIncidentID, criticalAlerts)
+	//IF we want to go ahead and sync WITH notes
+	newIncidentID, err := syncRoomIssueWithIncidentWithNotes(roomIssue, criticalIncidentID, criticalAlerts)
+	if err != nil {
+		log.Errorf("Unable to sync room issue with incident")
+		return err
+	}
+	log.Infof("existing %v new %v", criticalIncidentID, newIncidentID)
+
+	//IF we want to go ahead and sync WITHOUT notes
+	newIncidentID, err = syncRoomIssueWithIncidentWithoutNotes(roomIssue, criticalIncidentID, criticalAlerts)
 	if err != nil {
 		log.Errorf("Unable to sync room issue with incident")
 		return err
@@ -218,7 +228,7 @@ func syncRoomIssueWithRepair(roomIssue structs.RoomIssue, repairID string, warni
 	return newIncident.Number, nil
 }
 
-func syncRoomIssueWithIncident(roomIssue structs.RoomIssue, incidentID string, criticalAlerts []structs.Alert) (string, *nerr.E) {
+func syncRoomIssueWithIncidentWithNotes(roomIssue structs.RoomIssue, incidentID string, criticalAlerts []structs.Alert) (string, *nerr.E) {
 	var existingIncident structs.IncidentResponse
 	var err error
 
@@ -348,6 +358,111 @@ func syncRoomIssueWithIncident(roomIssue structs.RoomIssue, incidentID string, c
 
 		InternalNotes: internalNotes,
 		WorkLog:       workLog,
+
+		ClosureCode:       resolutionClosureCode,
+		ResolutionService: resolutionService,
+		ResolutionAction:  resolutionAction,
+	}
+
+	if roomIssue.Resolved {
+		input.State = servicenow.IncidentClosedState
+	}
+
+	if len(existingIncident.Number) > 0 {
+		//modify
+		updatedIncident, err := servicenow.ModifyIncident(input, existingIncident.SysID)
+
+		if err != nil {
+			log.Errorf("Unable to modify incident: %v", err.Error())
+			return "", nerr.Translate(err)
+		}
+
+		return updatedIncident.Number, nil
+	}
+
+	//create
+	newIncident, err := servicenow.CreateIncident(input)
+
+	if err != nil {
+		log.Errorf("Unable to create incident: %v", err.Error())
+		return "", nerr.Translate(err)
+	}
+
+	return newIncident.Number, nil
+}
+
+func syncRoomIssueWithIncidentWithoutNotes(roomIssue structs.RoomIssue, incidentID string, criticalAlerts []structs.Alert) (string, *nerr.E) {
+	var existingIncident structs.IncidentResponse
+	var err error
+
+	if len(incidentID) == 0 {
+		//see if there is already one in service now
+		existingIncidents, err := servicenow.QueryIncidentsByRoom(roomIssue.RoomID)
+		if err != nil {
+			log.Errorf("Unable to check for existing incident")
+			return "", nerr.Translate(err)
+		}
+
+		if len(existingIncidents) > 0 {
+			existingIncident = existingIncidents[0]
+		}
+	} else {
+		existingIncident, err = servicenow.GetIncident(incidentID)
+		if err != nil {
+			log.Errorf("Unable to retrieve existing incident")
+			return "", nerr.Translate(err)
+		}
+	}
+
+	alertTypes := []structs.AlertType{}
+	for _, alert := range criticalAlerts {
+		exists := false
+		for _, alertType := range alertTypes {
+			if alertType == alert.Type {
+				exists = true
+				break
+			}
+		}
+
+		if !exists {
+			alertTypes = append(alertTypes, alert.Type)
+		}
+	}
+
+	shortDescription := fmt.Sprintf("%s is alerting with %v Alerts of type %s.", roomIssue.RoomID, len(criticalAlerts), alertTypes)
+
+	resolutionClosureCode := ""
+	resolutionService := ""
+	resolutionAction := ""
+
+	roomIDreplaced := strings.Replace(roomIssue.RoomID, "-", " ", -1)
+
+	requester := ""
+
+	for _, alert := range criticalAlerts {
+		if len(alert.Requester) > 0 {
+			requester = alert.Requester
+		}
+	}
+
+	if len(requester) == 0 {
+		requester = servicenow.IncidentDefaultRequestor
+	}
+
+	input := structs.IncidentRequest{
+		Service:       servicenow.IncidentService,
+		CallerID:      requester,
+		ContactNumber: servicenow.IncidentDefaultContactNumber,
+
+		AssignmentGroup: servicenow.IncidentAssignmentGroup,
+		Room:            roomIDreplaced,
+
+		ShortDescription: shortDescription,
+
+		Severity:    servicenow.IncidentSeverity,
+		Reach:       servicenow.IncidentReach,
+		WorkStatus:  servicenow.IncidentWorkStatus,
+		Sensitivity: servicenow.IncidentSensitivity,
 
 		ClosureCode:       resolutionClosureCode,
 		ResolutionService: resolutionService,
