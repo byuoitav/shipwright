@@ -2,14 +2,20 @@
 
 <div mat-dialog-content>
   <div>
+    <!-------------------------------------------------->
     <mat-form-field class="space-after">
       <mat-label>Caller <mat-icon>phone</mat-icon></mat-label>
-      <input matInput [formControl]="requesterFormControl" />
+      <input type="text" placeholder="Pick one" aria-label="Number" matInput [formControl]="requesterFormControl" [matAutocomplete]="auto">
+      <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+        <mat-option *ngFor="let option of filteredOptions | async" [value]="option.name">
+          {{option.name}} | {{option.userName}}
+        </mat-option>
+      </mat-autocomplete>
       <mat-error *ngIf="requesterFormControl.hasError('required')">
         Caller is <strong>required</strong>
       </mat-error>
     </mat-form-field>
-
+    <!-------------------------------------------------->
     <mat-form-field>
       <mat-label>Room</mat-label>
       <input matInput [formControl]="roomFormControl" placeholder="BLDG ROOM" />
