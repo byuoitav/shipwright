@@ -26,126 +26,58 @@ func SyncRoomIssueWithServiceNow(ctx context.Context, with []byte, log *zap.Suga
 	}
 
 	//The business logic is this:
-	//If there are any Critical Alerts, then an INC ticket should be created or updated
-	//If there are any Warning Alerts, then an RPR ticket should be created or updated
+	// if someone has been dispatched an incident ticket will be created for that room
+	// if the room issue contains any alerts that are tagged "manual resolve" a ticket should be made
+	//If the user clicks the "create icnident button" it will make one too.
 
-	//We know to create or update based on the presence of the incident/repair ID on the
-	//room issue in the incidentID array
+	//This business logic is not going to be handled here, they will be handled in the config
+	//All we are doing here is the following:
+	//An room issue needs to sync with serviceNow. does it already have one?
+	//	if it already has one, jsut update and sync that one
+	//If there isn't one, then we need to make it.
 
-	//Messages go onto the tickets only from the applicable alerts (those with matching severity)
-
-	//Notes from the room issue go on both tickets
-
-	//Room Issue Resolution information applies to both tickets
-	//If If the room issue is partially resolved, a new room issue is created with the appropriate
-	//Incident ID, so once it gets to this point, it is the same
-
-	//determine if we have any critical alerts
-	var criticalAlerts []structs.Alert
-	var warningAlerts []structs.Alert
-	for _, alert := range roomIssue.Alerts {
-		if alert.Severity == structs.Critical {
-			criticalAlerts = append(criticalAlerts, alert)
-			continue
-		} else if alert.Severity == structs.Warning {
-			warningAlerts = append(warningAlerts, alert)
-			continue
+	//see if we already have an incident to sync with
+	for _, incidentID := range roomIssue.IncidentID {
+		if strings.Contains(incidentID, "INC") {
+			criticalIncidentID = incidentID
+			break
 		}
 	}
 
-	if len(criticalAlerts) > 0 {
-		criticalIncidentID := ""
-
-		//see if we already have an incident to sync with
-		for _, incidentID := range roomIssue.IncidentID {
-			if strings.Contains(incidentID, "INC") {
-				criticalIncidentID = incidentID
-				break
-			}
-		}
-
-		//go ahead and sync
-		newIncidentID, err := syncRoomIssueWithIncident(roomIssue, criticalIncidentID, criticalAlerts)
-
-		if err != nil {
-			log.Errorf("Unable to sync room issue with incident")
-			return err
-		}
-		log.Infof("Crit %v new %v", criticalIncidentID, newIncidentID)
-
-		if newIncidentID != criticalIncidentID {
-			log.Errorf("Resubmitting to the alert store for critical alerts")
-			if newIncidentID != "" {
-				roomIssue.IncidentID = append(roomIssue.IncidentID, newIncidentID)
-			}
-			//if the old one isn't blank we need to remove it
-			if criticalIncidentID != "" {
-				for i := range roomIssue.IncidentID {
-					if roomIssue.IncidentID[i] == criticalIncidentID {
-						//remove it
-						roomIssue.IncidentID[i] = roomIssue.IncidentID[len(roomIssue.IncidentID)-1]
-						roomIssue.IncidentID = roomIssue.IncidentID[:len(roomIssue.IncidentID)-1]
-
-						break
-					}
-
-				}
-			}
-
-			log.Infof("IncidentID in service Iow: %v", roomIssue.IncidentID)
-
-			roomIssueError := alertstore.UpdateRoomIssue(roomIssue)
-			if roomIssueError != nil {
-				log.Errorf("Unable to update Room Issue in persistence store")
-				return nerr.Translate(roomIssueError)
-			}
-		}
-
+	//go ahead and sync
+	newIncidentID, err := syncRoomIssueWithIncident(roomIssue, criticalIncidentID, criticalAlerts)
+	if err != nil {
+		log.Errorf("Unable to sync room issue with incident")
+		return err
 	}
-	if len(warningAlerts) > 0 {
-		warningIncidentID := ""
+	log.Infof("existing %v new %v", criticalIncidentID, newIncidentID)
 
-		//see if we already have an incident to sync with
-		for _, incidentID := range roomIssue.IncidentID {
-			if strings.Contains(incidentID, "RPR") {
-				warningIncidentID = incidentID
-				break
-			}
+	if newIncidentID != criticalIncidentID {
+		log.Errorf("Resubmitting to the alert store for critical alerts")
+		if newIncidentID != "" {
+			roomIssue.IncidentID = append(roomIssue.IncidentID, newIncidentID)
 		}
+		//if the old one isn't blank we need to remove it
+		if criticalIncidentID != "" {
+			for i := range roomIssue.IncidentID {
+				if roomIssue.IncidentID[i] == criticalIncidentID {
+					//remove it
+					roomIssue.IncidentID[i] = roomIssue.IncidentID[len(roomIssue.IncidentID)-1]
+					roomIssue.IncidentID = roomIssue.IncidentID[:len(roomIssue.IncidentID)-1]
 
-		//go ahead and sync
-		newIncidentID, err := syncRoomIssueWithRepair(roomIssue, warningIncidentID, warningAlerts)
-
-		if err != nil {
-			log.Errorf("Unable to sync room issue with repair")
-			return err
-		}
-
-		if newIncidentID != warningIncidentID {
-			log.Debugf("Resubmitting to the alert store for warnings")
-			if newIncidentID != "" {
-				roomIssue.IncidentID = append(roomIssue.IncidentID, newIncidentID)
-			}
-			//remove the old one
-			if warningIncidentID != "" {
-				for i := range roomIssue.IncidentID {
-					if roomIssue.IncidentID[i] == warningIncidentID {
-						//remove it
-						roomIssue.IncidentID[i] = roomIssue.IncidentID[len(roomIssue.IncidentID)-1]
-						roomIssue.IncidentID = roomIssue.IncidentID[:len(roomIssue.IncidentID)-1]
-
-					}
 					break
 				}
-			}
-			roomIssueError := alertstore.UpdateRoomIssue(roomIssue)
 
-			if roomIssueError != nil {
-				log.Errorf("Unable to update Room Issue in persistence store")
-				return nerr.Translate(roomIssueError)
 			}
 		}
 
+		log.Infof("IncidentID in service Iow: %v", roomIssue.IncidentID)
+
+		roomIssueError := alertstore.UpdateRoomIssue(roomIssue)
+		if roomIssueError != nil {
+			log.Errorf("Unable to update Room Issue in persistence store")
+			return nerr.Translate(roomIssueError)
+		}
 	}
 
 	return nil
