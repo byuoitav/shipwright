@@ -28,29 +28,9 @@ export class IssueRef {
   private _issues: BehaviorSubject<RoomIssue[]>;
   private _done: () => void;
 
-  // TODO remove
   get issues() {
     if (this._issues) {
-      return this._issues.value
-        .map(i => {
-          const issue = i;
-          issue.alerts = i.alerts.filter(a => {
-            const now = new Date();
-            if (
-              a.type === "Device Communication Error" &&
-              now.getTime() - a.startTime.getTime() < 30000
-            ) {
-              return false;
-            }
-
-            return true;
-          });
-
-          return issue;
-        })
-        .filter(i => {
-          return i.alerts.length > 0;
-        });
+      return this._issues.value;
     }
 
     return undefined;

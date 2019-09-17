@@ -62,9 +62,29 @@ export class AlertTableComponent implements OnInit {
   constructor(public api: APIService, public router: Router) {}
 
   async ngOnInit() {
+    const filter = (i: RoomIssue): boolean => {
+      if (i.roomID === "ITB-1108P") {
+        return false;
+      }
+
+      if (i.alerts.some(a => a.type !== "Device Communication Error")) {
+        // at least one that isn't a device comm error
+        return true;
+      }
+
+      const now = new Date();
+      const time = 5 * 60 * 1000;
+      if (i.alerts.some(a => now.getTime() - a.startTime.getTime() > time)) {
+        // at least one is greater than <time> old
+        return true;
+      }
+
+      return false;
+    };
+
     try {
       const issueRef = await this.api.getIssues();
-      this.dataSource = new MatTableDataSource(issueRef.issues);
+      this.dataSource = new MatTableDataSource(issueRef.issues.filter(filter));
 
       this.dataSource.paginator = this.paginator;
 
@@ -91,28 +111,8 @@ export class AlertTableComponent implements OnInit {
 
       this.filters = new FilterSet(this.dataSource);
 
-      // TODO remove
       issueRef.subject.subscribe(issues => {
-        this.dataSource.data = issues
-          .map(i => {
-            const issue = i;
-            issue.alerts = i.alerts.filter(a => {
-              const now = new Date();
-              if (
-                a.type === "Device Communication Error" &&
-                now.getTime() - a.startTime.getTime() < 30000
-              ) {
-                return false;
-              }
-
-              return true;
-            });
-
-            return issue;
-          })
-          .filter(i => {
-            return i.alerts.length > 0;
-          });
+        this.dataSource.data = issues.filter(filter);
       });
     } catch (e) {
       alert("unable to get issues:" + e);

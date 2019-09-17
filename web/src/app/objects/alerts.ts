@@ -185,18 +185,31 @@ export class RoomIssue {
   alertTypesOverview = (): string => {
     const ret = [];
     for (const t of this.activeAlertTypes) {
-      const ids = this.alerts
-        .filter(a => a.type === t)
-        .map(a => {
-          const split = a.deviceID.split("-");
-          if (split.length === 3) {
-            return split[2];
-          }
+      const str =
+        t +
+        " (" +
+        this.alerts
+          .filter(a => a.type === t)
+          .map(a => {
+            let name = a.deviceID;
+            const split = a.deviceID.split("-");
+            if (split.length === 3) {
+              name = split[2];
+            }
 
-          return a.deviceID;
-        });
+            if (a.deviceID.includes("MIC")) {
+              const mins = a.message
+                .replace(a.deviceID, "")
+                .replace("is reporting", "")
+                .replace("remaining", "")
+                .trim();
+              return name + " - " + mins;
+            }
 
-      const str = t + " (" + ids.join(", ") + ")";
+            return name;
+          })
+          .reduce((prev, cur) => prev + ", " + cur) +
+        ")";
       ret.push(str);
     }
 
