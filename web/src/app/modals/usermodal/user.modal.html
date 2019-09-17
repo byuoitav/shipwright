@@ -1,0 +1,54 @@
+<h1 mat-dialog-title>User Details</h1>
+<div *ngIf="isLoading" class="loading">
+    <mat-spinner diameter="75"></mat-spinner>
+    <p>Loading User Details</p>
+</div>
+
+<div *ngIf="!isLoading" mat-dialog-content id="test">
+  <mat-grid-list cols="2" rowHeight="7:1">
+    <mat-grid-tile>
+        <p class="details"><b>Employee Number:</b> {{user[0].employeeNumber.value}}</p>
+    </mat-grid-tile>
+    <mat-grid-tile>
+        <p class="details"><b>Gender:</b> {{user[0].gender.value}}</p>
+    </mat-grid-tile>
+    <mat-grid-tile>
+        <p class="details"><b>Name:</b> {{user[0].name.value}}</p>
+    </mat-grid-tile>
+    <mat-grid-tile>
+        <p class="details"><b>Slack Username:</b> {{user[0].slackUsername.value}}</p>
+    </mat-grid-tile>
+    <mat-grid-tile>
+        <p class="details"><b>NetID:</b> {{user[0].userName.value}}</p>
+    </mat-grid-tile>
+    <mat-grid-tile>
+        <p class="details"><b>Title:</b> {{user[0].title.value}}</p>
+    </mat-grid-tile>
+    <mat-grid-tile>
+        <p class="details"><b>Email:</b> {{user[0].email.value}}</p>
+    </mat-grid-tile>
+    <mat-grid-tile>
+        <p class="details"><b>Primary Group:</b> {{user[0].primaryGroup.value}}</p>
+    </mat-grid-tile>
+    <mat-grid-tile>
+        <p class="details"><b>Home Phone:</b> {{user[0].homePhone.value}}</p>
+    </mat-grid-tile>
+    <mat-grid-tile>
+        <p class="details"><b>Department:</b> {{user[0].department.value}}</p>
+    </mat-grid-tile>
+    <mat-grid-tile>
+        <p class="details"><b>Mobile Phone:</b> {{user[0].mobilePhone.value}}</p>
+    </mat-grid-tile>
+    <mat-grid-tile>
+        <p class="details"><b>Manager:</b> {{user[0].manager.value}}</p>
+    </mat-grid-tile>
+    <mat-grid-tile>
+        <p class="details"><b>Primary Role:</b> {{user[0].primaryRole.value}}</p>
+    </mat-grid-tile>
+    <mat-grid-tile></mat-grid-tile>
+  </mat-grid-list>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button (click)="ref.close()">Close</button>
+</div>

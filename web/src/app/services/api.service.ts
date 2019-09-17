@@ -1,6 +1,7 @@
 import { Injectable, EventEmitter } from "@angular/core";
 import { JsonConvert, Any } from "json2typescript";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { User, DetailedUser, DetailedUserWrapper } from "../objects/users";
 import {
   Building,
   DBResponse,
@@ -801,7 +802,7 @@ export class APIService {
         })
         .toPromise();
 
-      const issue = this.converter.deserialize(data, RoomIssue);
+      const issue = this.converter.deserializeObject(data, RoomIssue);
       return issue;
     } catch (e) {
       console.warn("error trying to get the issue for " + roomID + ": " + e);
@@ -836,6 +837,32 @@ export class APIService {
       return data;
     } catch (e) {
       throw new Error("error trying to get the closure codes: " + e);
+    }
+  }
+
+  public async GetUsers(param: Observable<any>) {
+    try {
+      const data: any = await this.http
+        .get("users/" + param, { headers: this.headers })
+        .toPromise();
+      const users = this.converter.deserializeArray(data, User);
+      return users;
+    } catch (e) {
+      console.log(e)
+      throw new Error("error trying to get the users: " + e);
+    }
+  }
+  public async GetUserDetails(netId: string) {
+    try {
+      const data: any = await this.http
+        .get("user/" + netId + "/details", { headers: this.headers })
+        .toPromise();
+        const user = this.converter.deserializeObject(data, DetailedUserWrapper);
+        console.log(user);
+      return user;
+    } catch (e) {
+      console.log(e)
+      throw new Error("error trying to get the users: " + e);
     }
   }
 

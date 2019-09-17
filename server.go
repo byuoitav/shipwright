@@ -6,8 +6,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/byuoitav/common/servicenow"
-
 	"github.com/byuoitav/central-event-system/hub/base"
 	"github.com/byuoitav/central-event-system/messenger"
 	"github.com/byuoitav/common"
@@ -59,15 +57,6 @@ func main() {
 
 		for {
 			processEvent(messenger.ReceiveEvent())
-		}
-	}()
-
-	//Get users from service now
-	go func() {
-		servicenow.QueryAllUsersAndSetList()
-		ticker := time.NewTicker(1 * time.Hour)
-		for range ticker.C {
-			servicenow.QueryAllUsersAndSetList()
 		}
 	}()
 
@@ -201,7 +190,8 @@ func main() {
 	router.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))
 
 	// User Endpoints
-	readconfig.GET("/users", handlers.GetUsers)
+	readconfig.GET("/users/:param", handlers.GetUsers)
+	readconfig.GET("/user/:netId/details", handlers.GetUserDetails)
 
 	router.Use(
 		auth.CheckHeaderBasedAuth,

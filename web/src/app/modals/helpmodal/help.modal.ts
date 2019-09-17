@@ -5,7 +5,9 @@ import { APIService } from "../../services/api.service";
 import { Alert } from "../../objects/alerts";
 import { User } from "../../objects/users";
 import {Observable} from 'rxjs';
-import {map, startWith} from 'rxjs/operators';
+import {debounceTime, switchMap, tap, distinctUntilChanged} from 'rxjs/operators';
+import { MatDialog } from "@angular/material";
+import { UserModal } from '../usermodal/user.modal';
 
 @Component({
   selector: "helpmodal",
@@ -13,6 +15,7 @@ import {map, startWith} from 'rxjs/operators';
   styleUrls: ["./help.modal.scss"]
 })
 export class HelpModal implements OnInit {
+  
   roomFormControl = new FormControl("", [
     Validators.required,
     Validators.pattern(/[A-z0-9]{2,5}(-| )[A-z0-9]+/)
@@ -21,68 +24,36 @@ export class HelpModal implements OnInit {
   requesterFormControl = new FormControl("", [Validators.required]);
   comment = "";
   myControl = new FormControl();
-  options: User[] = [
-    {
-      userName : "andreaf",
-      email : "afroberg@yahoo.com",
-      homePhone: "(801) 371-2451",
-      name : "Andrea Ashmore",
-      employeeNumber : "92-152-4960"
-    },
-    {
-      userName : "rrm27",
-      email : "rrm27@email.byu.edu",
-      homePhone: "(801) 371-2451",
-      name : "Ryan Manning",
-      employeeNumber : "362554249"
-    },
-    {
-      userName : "sms263",
-      email : "schow_may2000@netzero.com",
-      homePhone : "(801) 796-3849",
-      name : "Shane Schow",
-      employeeNumber : "283180414"
-    },
-  ];
+  options: User[] = [];
   filteredOptions: Observable<User[]>;
+  isLoading: boolean;
 
-  constructor(public ref: MatDialogRef<HelpModal>, private api: APIService) {}
-
-  ngOnInit() {
-    this.filteredOptions = this.requesterFormControl.valueChanges
+  constructor(public ref: MatDialogRef<HelpModal>, private api: APIService, private dialog: MatDialog) {
+    this.filteredOptions = this.requesterFormControl
+      .valueChanges
       .pipe(
-        startWith(''),
-        map(value => this._filter(value))
+        debounceTime(2000),
+        distinctUntilChanged(),
+        tap((value) => (value.toString().length > 3? this.isLoading = true: this.isLoading = false)),
+        switchMap(value => (value.toString().length > 3? this.api.GetUsers(value).finally(() => this.isLoading = false): this.filteredOptions)
+        )
       );
   }
 
-  private _filter(value: string): User[] {
-    const filterValue = value.toLowerCase();
-    var filteredUsers: User[] = []
-    this.options.map(user => {
-      if (user.name.toLowerCase().includes(filterValue)) {
-        if (filteredUsers.includes(user) != true) {
-          filteredUsers.push(user)
-        } 
-      }
-      if (user.userName.toLowerCase().includes(filterValue)) {
-        if (filteredUsers.includes(user) != true) {
-          filteredUsers.push(user)
-        }
-      }
-      if (user.email.toLowerCase().includes(filterValue)) {
-        if (filteredUsers.includes(user) != true) {
-          filteredUsers.push(user)
-        }
-      }
-      if (user.employeeNumber.toLowerCase().includes(filterValue)) {
-        if (filteredUsers.includes(user) != true) {
-          filteredUsers.push(user)
-        }
-      }
-    })
-    return filteredUsers
+  ngOnInit() {
+    
+  }
 
+  getUserDetails(userName: string) {
+    console.log("lets see if this works: ", userName);
+    this.dialog.open(UserModal, {
+      data: { netId: userName },
+    });
+  }
+
+  //This function changes the vlaue that is displayed on the caller autocomplete
+  displayFn(user?: User): string | undefined {
+    return user ? user.name : undefined;
   }
 
   submit = () => {

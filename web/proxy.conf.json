@@ -48,7 +48,13 @@
     "changeOrigin": true
   },
   "/users": {
-    "target": "https://smee.avs.byu.edu",
+    "target": "http://localhost:9999",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
+  },
+  "/user": {
+    "target": "http://localhost:9999",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true

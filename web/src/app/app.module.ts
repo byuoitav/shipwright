@@ -71,6 +71,7 @@ import { InformationComponent } from "./components/information/information.compo
 import { DateAgoPipe } from "./pipes/date-ago.pipe";
 import { SettingsModal } from "./modals/settingsmodal/settings.modal";
 import { HelpModal } from "./modals/helpmodal/help.modal";
+import { UserModal } from "./modals/usermodal/user.modal";
 
 @NgModule({
   declarations: [
@@ -95,7 +96,8 @@ import { HelpModal } from "./modals/helpmodal/help.modal";
     InformationComponent,
     DateAgoPipe,
     SettingsModal,
-    HelpModal
+    HelpModal,
+    UserModal
   ],
   imports: [
     BrowserModule,
@@ -144,7 +146,8 @@ import { HelpModal } from "./modals/helpmodal/help.modal";
     RoomModalComponent,
     AlertTableComponent,
     SettingsModal,
-    HelpModal
+    HelpModal,
+    UserModal
   ],
   providers: [
     APIService,

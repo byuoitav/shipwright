@@ -3,18 +3,35 @@
 <div mat-dialog-content>
   <div>
     <!-------------------------------------------------->
-    <mat-form-field class="space-after">
-      <mat-label>Caller <mat-icon>phone</mat-icon></mat-label>
-      <input type="text" placeholder="Pick one" aria-label="Number" matInput [formControl]="requesterFormControl" [matAutocomplete]="auto">
-      <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-        <mat-option *ngFor="let option of filteredOptions | async" [value]="option.name">
-          {{option.name}} | {{option.userName}}
-        </mat-option>
-      </mat-autocomplete>
-      <mat-error *ngIf="requesterFormControl.hasError('required')">
-        Caller is <strong>required</strong>
-      </mat-error>
-    </mat-form-field>
+    <span class="space-after">
+      <mat-form-field>
+        <mat-label>Caller <mat-icon>phone</mat-icon></mat-label>
+        <div>
+          <input type="text" placeholder="Pick one" aria-label="Number" matInput [formControl]="requesterFormControl" [matAutocomplete]="auto">
+        </div>
+        <mat-autocomplete autoActiveFirstOption panelWidth="40%"#auto="matAutocomplete" [displayWith]="displayFn">
+          <mat-option *ngIf="isLoading" id="searching">Searching...</mat-option>
+          <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+            {{option.name}}<small> | ID: {{option.userName}} | {{option.title}}</small>
+          </mat-option>
+        </mat-autocomplete>
+        <mat-error *ngIf="requesterFormControl.hasError('required')">
+          Caller is <strong>required</strong>
+        </mat-error>
+        <mat-hint *ngIf="requesterFormControl.value">
+          NetID: {{requesterFormControl.value?.userName}} 
+        </mat-hint>
+      </mat-form-field>
+      <button mat-icon-button
+      (click)="getUserDetails(requesterFormControl.value?.userName)"
+      *ngIf="requesterFormControl.value?.userName"
+      >
+        <mat-icon class="material-icons">
+          info
+        </mat-icon>
+      </button>
+     
+    </span>
     <!-------------------------------------------------->
     <mat-form-field>
       <mat-label>Room</mat-label>
