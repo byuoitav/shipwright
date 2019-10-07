@@ -9,7 +9,7 @@ import (
 	sd "github.com/byuoitav/common/state/statedefinition"
 	"github.com/byuoitav/common/structs"
 	"github.com/byuoitav/shipwright/helpers"
-	schedule "github.com/byuoitav/wso2services/classschedules/registar"
+	schedule "github.com/byuoitav/wso2services/classschedules/registrar"
 	"github.com/labstack/echo"
 )
 
