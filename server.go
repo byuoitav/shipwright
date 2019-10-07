@@ -198,7 +198,7 @@ func main() {
 	// Websocket Endpoints
 	router.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))
 
-	router.Use(
+	router.Group("",
 		auth.CheckHeaderBasedAuth,
 		echo.WrapMiddleware(client.AuthCodeMiddleware),
 		auth.AuthorizeRequest("read-config", "configuration", func(c echo.Context) string { return "all" }),
