@@ -1,0 +1,49 @@
+<h1 mat-dialog-title>Help Request</h1>
+
+<div mat-dialog-content>
+  <div>
+    <mat-form-field class="space-after">
+      <mat-label>Caller <mat-icon>phone</mat-icon></mat-label>
+      <input matInput [formControl]="requesterFormControl" />
+      <mat-error *ngIf="requesterFormControl.hasError('required')">
+        Caller is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Room</mat-label>
+      <input matInput [formControl]="roomFormControl" placeholder="BLDG ROOM" />
+      <mat-error
+        *ngIf="roomFormControl.hasError('pattern') && !roomFormControl.hasError('required')"
+        >Room must match <strong>'BLDG ROOM'</strong> or
+        <strong>BLDG-ROOM</strong>
+      </mat-error>
+      <mat-error *ngIf="roomFormControl.hasError('required')">
+        Room is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <mat-form-field class="full-width" appearance="outline">
+    <mat-label>Comment</mat-label>
+    <textarea
+      matInput
+      matTextareaAutosize
+      matAutosizeMinRows="4"
+      matAutosizeMaxRows="4"
+      [(ngModel)]="comment"
+    ></textarea>
+  </mat-form-field>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button color="warn" (click)="ref.close()">Cancel</button>
+  <button
+    mat-button
+    color="primary"
+    (click)="submit()"
+    [disabled]="!requesterFormControl.valid || !roomFormControl.valid"
+  >
+    Submit
+  </button>
+</div>

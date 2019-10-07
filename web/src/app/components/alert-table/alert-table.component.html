@@ -129,7 +129,7 @@
           class="alert-detail"
           [@detailExpand]="issue === expandedIssue ? 'expanded' : 'collapsed'"
         >
-          <table mat-table [dataSource]="issue?.alerts">
+          <table mat-table [dataSource]="issue?.sortedAlerts">
             <ng-container matColumnDef="deviceID">
               <th mat-header-cell *matHeaderCellDef>
                 Device Name
@@ -173,6 +173,7 @@
               class="severity"
               [class.warning]="alert?.severity?.toLowerCase() === 'warning'"
               [class.critical]="alert?.severity?.toLowerCase() === 'critical'"
+              [class.resolved-alert]="!alert.active"
             ></tr>
           </table>
         </div>

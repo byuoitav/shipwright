@@ -14,7 +14,8 @@ import {
   MatPaginator,
   MatSort,
   MatTableDataSource,
-  MatChipInputEvent
+  MatChipInputEvent,
+  MatSortable
 } from "@angular/material";
 
 import { FilterType, Filter, FilterSet } from "../../objects/filter";
@@ -38,7 +39,6 @@ export class AlertTableComponent implements OnInit {
   readonly separatorKeyCodes: number[] = [ENTER, COMMA]; // delimate filters with these keys
   readonly filterType: typeof FilterType = FilterType; // so the component can use them
 
-  issues: RoomIssue[];
   expandedIssue: RoomIssue | null;
 
   dataSource: MatTableDataSource<RoomIssue>;
@@ -62,12 +62,34 @@ export class AlertTableComponent implements OnInit {
   constructor(public api: APIService, public router: Router) {}
 
   async ngOnInit() {
+    const filter = (i: RoomIssue): boolean => {
+      if (i.roomID === "ITB-1108P") {
+        return false;
+      }
+
+      if (i.alerts.some(a => a.type !== "Comm")) {
+        // at least one that isn't a device comm error
+        return true;
+      }
+
+      const now = new Date();
+      const time = 5 * 60 * 1000;
+      if (i.alerts.some(a => now.getTime() - a.startTime.getTime() > time)) {
+        // at least one is greater than <time> old
+        return true;
+      }
+
+      return false;
+    };
+
     try {
       const issueRef = await this.api.getIssues();
-
-      this.dataSource = new MatTableDataSource(issueRef.issues);
+      this.dataSource = new MatTableDataSource(issueRef.issues.filter(filter));
 
       this.dataSource.paginator = this.paginator;
+
+      // default sort by age
+      this.sort.sort({ id: "age", start: "desc" } as MatSortable);
       this.dataSource.sort = this.sort;
       this.dataSource.sortingDataAccessor = (
         data: RoomIssue,
@@ -75,7 +97,11 @@ export class AlertTableComponent implements OnInit {
       ) => {
         switch (headerID) {
           case "age":
-            return data.oldestActiveAlert.startTime;
+            if (data.oldestActiveAlert) {
+              return data.oldestActiveAlert.startTime;
+            }
+
+            return undefined;
           case "count":
             return data.activeAlertCount;
           default:
@@ -86,7 +112,7 @@ export class AlertTableComponent implements OnInit {
       this.filters = new FilterSet(this.dataSource);
 
       issueRef.subject.subscribe(issues => {
-        this.dataSource.data = issues;
+        this.dataSource.data = issues.filter(filter);
       });
     } catch (e) {
       alert("unable to get issues:" + e);

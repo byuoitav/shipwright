@@ -1,36 +1,36 @@
 {
   "/buildings": {
-    "target": "https://smee-stg.avs.byu.edu",
+    "target": "https://smee.avs.byu.edu",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true
   },
   "/rooms": {
-    "target": "https://smee-stg.avs.byu.edu",
+    "target": "https://smee.avs.byu.edu",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true
   },
   "/devices": {
-    "target": "https://smee-stg.avs.byu.edu",
+    "target": "https://smee.avs.byu.edu",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true
   },
   "/uiconfigs": {
-    "target": "https://smee-stg.avs.byu.edu",
+    "target": "https://smee.avs.byu.edu",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true
   },
   "/options": {
-    "target": "https://smee-stg.avs.byu.edu",
+    "target": "https://smee.avs.byu.edu",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true
   },
   "/alerts": {
-    "target": "https://smee-stg.avs.byu.edu",
+    "target": "https://smee.avs.byu.edu",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true
@@ -42,13 +42,13 @@
     "changeOrigin": true
   },
   "/static": {
-    "target": "https://smee-stg.avs.byu.edu",
+    "target": "https://smee.avs.byu.edu",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true
   },
   "/users": {
-    "target": "https://smee-stg.avs.byu.edu",
+    "target": "https://smee.avs.byu.edu",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true

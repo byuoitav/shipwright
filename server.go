@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/byuoitav/auth/wso2"
 	"github.com/byuoitav/central-event-system/hub/base"
 	"github.com/byuoitav/central-event-system/messenger"
 	"github.com/byuoitav/common"
@@ -37,7 +38,6 @@ func init() {
 }
 
 func main() {
-	log.SetLevel("info")
 	figure.NewFigure("SMEE", "univers", true).Print()
 
 	port := ":9999"
@@ -75,16 +75,22 @@ func main() {
 		return ctx.String(http.StatusOK, "processing event")
 	})
 
+	client := wso2.Client{
+		CallbackURL:  os.Getenv("CALLBACK_URL"),
+		ClientID:     os.Getenv("CLIENT_ID"),
+		ClientSecret: os.Getenv("CLIENT_SECRET"),
+		GatewayURL:   os.Getenv("GATEWAY_URL"),
+	}
 	writeconfig := router.Group(
 		"",
 		auth.CheckHeaderBasedAuth,
-		echo.WrapMiddleware(auth.AuthenticateCASUser),
+		echo.WrapMiddleware(client.AuthCodeMiddleware),
 		auth.AuthorizeRequest("write-config", "configuration", func(c echo.Context) string { return "all" }),
 	)
 	readconfig := router.Group(
 		"",
 		auth.CheckHeaderBasedAuth,
-		echo.WrapMiddleware(auth.AuthenticateCASUser),
+		echo.WrapMiddleware(client.AuthCodeMiddleware),
 		auth.AuthorizeRequest("read-config", "configuration", func(c echo.Context) string { return "all" }),
 	)
 	/*

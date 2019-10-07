@@ -191,14 +191,34 @@ export class RoomIssue {
         this.alerts
           .filter(a => a.type === t)
           .map(a => {
-            const split = a.deviceID.split("-");
-            if (split.length === 3) {
-              return split[2];
+            if (!a.active) {
+              return "";
             }
 
-            return a.deviceID;
+            let name = a.deviceID;
+            const split = a.deviceID.split("-");
+            if (split.length === 3) {
+              name = split[2];
+            }
+
+            if (a.deviceID.includes("MIC")) {
+              const mins = a.message
+                .replace(a.deviceID, "")
+                .replace("is reporting", "")
+                .replace("remaining", "")
+                .trim();
+              return name + " - " + mins;
+            }
+
+            return name;
           })
-          .reduce((prev, cur) => prev + ", " + cur) +
+          .reduce((prev, cur) => {
+            if (cur) {
+              return prev + ", " + cur;
+            }
+
+            return prev;
+          }) +
         ")";
       ret.push(str);
     }
@@ -262,6 +282,32 @@ export class RoomIssue {
     }
 
     return oldest;
+  }
+
+  get sortedAlerts(): Alert[] {
+    return this.alerts.sort((a, b) => {
+      if (a.active && b.active) {
+        return b.startTime.getTime() - a.startTime.getTime();
+      }
+
+      if (!a.active && !b.active) {
+        if (!b.endTime) {
+          return 1;
+        }
+
+        if (!a.endTime) {
+          return 0;
+        }
+
+        return a.endTime.getTime() - b.endTime.getTime();
+      }
+
+      if (a.active) {
+        return -1;
+      }
+
+      return 1;
+    });
   }
 
   get severity(): string {
