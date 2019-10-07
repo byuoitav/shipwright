@@ -191,6 +191,10 @@ export class RoomIssue {
         this.alerts
           .filter(a => a.type === t)
           .map(a => {
+            if (!a.active) {
+              return "";
+            }
+
             let name = a.deviceID;
             const split = a.deviceID.split("-");
             if (split.length === 3) {
@@ -208,7 +212,13 @@ export class RoomIssue {
 
             return name;
           })
-          .reduce((prev, cur) => prev + ", " + cur) +
+          .reduce((prev, cur) => {
+            if (cur) {
+              return prev + ", " + cur;
+            }
+
+            return prev;
+          }) +
         ")";
       ret.push(str);
     }
@@ -281,6 +291,14 @@ export class RoomIssue {
       }
 
       if (!a.active && !b.active) {
+        if (!b.endTime) {
+          return 1;
+        }
+
+        if (!a.endTime) {
+          return 0;
+        }
+
         return a.endTime.getTime() - b.endTime.getTime();
       }
 

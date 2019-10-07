@@ -67,7 +67,7 @@ export class AlertTableComponent implements OnInit {
         return false;
       }
 
-      if (i.alerts.some(a => a.type !== "Device Communication Error")) {
+      if (i.alerts.some(a => a.type !== "Comm")) {
         // at least one that isn't a device comm error
         return true;
       }
