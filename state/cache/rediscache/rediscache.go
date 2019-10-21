@@ -195,13 +195,19 @@ func (rc *RedisCache) GetAllDeviceRecords() ([]sd.StaticDevice, *nerr.E) {
 	var toReturn []sd.StaticDevice
 
 	for i := range result {
-		var tmp sd.StaticDevice
+		switch v := result[i].(type) {
+		case string:
+			var tmp sd.StaticDevice
+			err := json.Unmarshal([]byte(v), &tmp)
+			if err != nil {
+				return []sd.StaticDevice{}, nerr.Translate(err).Addf("Couldn't get all device records")
+			}
 
-		err := json.Unmarshal([]byte(result[i].(string)), &tmp)
-		if err != nil {
-			return []sd.StaticDevice{}, nerr.Translate(err).Addf("Couldn't get all device records")
+			toReturn = append(toReturn, tmp)
+		default:
+			log.L.Warnf("Unexpected type when getting device records: %T: %+v", v, v)
 		}
-		toReturn = append(toReturn, tmp)
+
 	}
 
 	return toReturn, nil
@@ -221,13 +227,19 @@ func (rc *RedisCache) GetAllRoomRecords() ([]sd.StaticRoom, *nerr.E) {
 	var toReturn []sd.StaticRoom
 
 	for i := range result {
-		var tmp sd.StaticRoom
+		switch v := result[i].(type) {
+		case string:
+			var tmp sd.StaticRoom
+			err := json.Unmarshal([]byte(v), &tmp)
+			if err != nil {
+				return []sd.StaticRoom{}, nerr.Translate(err).Addf("Couldn't get all device records")
+			}
 
-		err := json.Unmarshal([]byte(result[i].(string)), &tmp)
-		if err != nil {
-			return []sd.StaticRoom{}, nerr.Translate(err).Addf("Couldn't get all device records")
+			toReturn = append(toReturn, tmp)
+		default:
+			log.L.Warnf("Unexpected type when getting room records: %T: %+v", v, v)
 		}
-		toReturn = append(toReturn, tmp)
+
 	}
 
 	return toReturn, nil
@@ -293,7 +305,6 @@ func (rc *RedisCache) StoreDeviceEvent(toSave sd.State) (bool, sd.StaticDevice, 
 	}
 
 	err = rc.putDevice(merged)
-
 	return changes, merged, err
 }
 
