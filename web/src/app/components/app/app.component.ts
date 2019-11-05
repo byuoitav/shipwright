@@ -18,9 +18,9 @@ export class AppComponent implements OnInit {
     public cookies: CookieService,
     private dialog: MatDialog
   ) {
-    this.api.GetCurrentUsername().then(answer => {
-      this.currentUsername = answer;
-    });
+    // this.api.GetCurrentUsername().then(answer => {
+    //   this.currentUsername = answer;
+    // });
   }
 
   ngOnInit() {}

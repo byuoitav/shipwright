@@ -1,63 +1,103 @@
 {
-  "/buildings": {
-    "target": "https://smee.avs.byu.edu",
-    "secure": false,
-    "logLevel": "debug",
-    "changeOrigin": true
-  },
-  "/rooms": {
-    "target": "https://smee.avs.byu.edu",
-    "secure": false,
-    "logLevel": "debug",
-    "changeOrigin": true
-  },
-  "/devices": {
-    "target": "https://smee.avs.byu.edu",
-    "secure": false,
-    "logLevel": "debug",
-    "changeOrigin": true
-  },
-  "/uiconfigs": {
-    "target": "https://smee.avs.byu.edu",
-    "secure": false,
-    "logLevel": "debug",
-    "changeOrigin": true
-  },
-  "/options": {
-    "target": "https://smee.avs.byu.edu",
-    "secure": false,
-    "logLevel": "debug",
-    "changeOrigin": true
-  },
-  "/alerts": {
-    "target": "https://smee.avs.byu.edu",
-    "secure": false,
-    "logLevel": "debug",
-    "changeOrigin": true
-  },
-  "/issues": {
-    "target": "https://smee.avs.byu.edu",
-    "secure": false,
-    "logLevel": "debug",
-    "changeOrigin": true
-  },
-  "/static": {
-    "target": "https://smee.avs.byu.edu",
-    "secure": false,
-    "logLevel": "debug",
-    "changeOrigin": true
-  },
-  "/users": {
-    "target": "https://smee.avs.byu.edu",
-    "secure": false,
-    "logLevel": "debug",
-    "changeOrigin": true
-  },
-  "/ws": {
-    "target": "wss://smee.avs.byu.edu",
-    "secure": true,
-    "logLevel": "debug",
-    "changeOrigin": true,
-    "ws": true
-  }
+    "/buildings": {
+        "target": "https://smee-stg.avs.byu.edu",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true,
+        "headers": {
+            "x-av-user": "service",
+            "x-av-access-key": "shipwrightsarethebest"
+        }
+    },
+    "/rooms": {
+        "target": "https://smee-stg.avs.byu.edu",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true,
+        "headers": {
+            "x-av-user": "service",
+            "x-av-access-key": "shipwrightsarethebest"
+        }
+    },
+    "/devices": {
+        "target": "https://smee-stg.avs.byu.edu",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true,
+        "headers": {
+            "x-av-user": "service",
+            "x-av-access-key": "shipwrightsarethebest"
+        }
+    },
+    "/uiconfigs": {
+        "target": "https://smee-stg.avs.byu.edu",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true,
+        "headers": {
+            "x-av-user": "service",
+            "x-av-access-key": "shipwrightsarethebest"
+        }
+    },
+    "/options": {
+        "target": "https://smee-stg.avs.byu.edu",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true,
+        "headers": {
+            "x-av-user": "service",
+            "x-av-access-key": "shipwrightsarethebest"
+        }
+    },
+    "/alerts": {
+        "target": "https://smee-stg.avs.byu.edu",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true,
+        "headers": {
+            "x-av-user": "service",
+            "x-av-access-key": "shipwrightsarethebest"
+        }
+    },
+    "/issues": {
+        "target": "https://smee-stg.avs.byu.edu",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true,
+        "headers": {
+            "x-av-user": "service",
+            "x-av-access-key": "shipwrightsarethebest"
+        }
+    },
+    "/static": {
+        "target": "https://smee-stg.avs.byu.edu",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true,
+        "headers": {
+            "x-av-user": "service",
+            "x-av-access-key": "shipwrightsarethebest"
+        }
+    },
+    "/users": {
+        "target": "https://smee-stg.avs.byu.edu",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true,
+        "headers": {
+            "x-av-user": "service",
+            "x-av-access-key": "shipwrightsarethebest"
+        }
+    },
+    "/ws": {
+        "target": "wss://smee-stg.avs.byu.edu",
+        "secure": true,
+        "logLevel": "debug",
+        "changeOrigin": true,
+        "ws": true,
+        "headers": {
+            "x-av-user": "service",
+            "x-av-access-key": "shipwrightsarethebest"
+        }
+    }
 }

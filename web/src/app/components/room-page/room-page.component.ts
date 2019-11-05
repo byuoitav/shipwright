@@ -23,12 +23,10 @@ export class RoomPageComponent implements OnInit {
       this.roomID = params["roomID"];
       this.selectedTab = +params["tabNum"] - 1;
 
-      /*
       this.api.GetRoom(this.roomID).then(answer => {
         this.room = answer as Room;
         console.log("room", this.room);
       });
-      */
     });
   }
 

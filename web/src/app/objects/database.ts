@@ -436,6 +436,12 @@ export class DeviceType {
   @JsonProperty("display_name", String, true)
   displayName: string = undefined;
 
+  @JsonProperty("default-name", String, true)
+  defaultName: string = undefined;
+
+  @JsonProperty("default-icon", String, true)
+  defaultIcon: string = undefined;
+
   @JsonProperty("input", Boolean, true)
   input: boolean = undefined;
 
@@ -1070,7 +1076,7 @@ export class Panel {
   uiPath: string = undefined;
 
   @JsonProperty("preset", String, true)
-  preset: string = undefined;
+  controlGroup: string = undefined;
 
   @JsonProperty("features", [String], true)
   features: string[] = Array<string>();
@@ -1079,6 +1085,10 @@ export class Panel {
     if (id !== null) {
       this.hostname = id;
     }
+  }
+
+  GetDeviceName() {
+    return this.hostname.substring(this.hostname.lastIndexOf("-") + 1);
   }
 
   Equals(imposter: Panel): boolean {
@@ -1091,7 +1101,7 @@ export class Panel {
     if (this.uiPath !== imposter.uiPath) {
       return false;
     }
-    if (this.preset !== imposter.preset) {
+    if (this.controlGroup !== imposter.controlGroup) {
       return false;
     }
     if (this.features == null && imposter.features != null) {
@@ -1115,8 +1125,8 @@ export class Panel {
   }
 }
 
-@JsonObject("Preset")
-export class Preset {
+@JsonObject("ControlGroup")
+export class ControlGroup {
   @JsonProperty("name", String)
   name: string = undefined;
 
@@ -1140,7 +1150,7 @@ export class Preset {
 
   constructor() {}
 
-  Equals(imposter: Preset): boolean {
+  Equals(imposter: ControlGroup): boolean {
     if (imposter == null) {
       return false;
     }
@@ -1261,8 +1271,8 @@ export class UIConfig {
   @JsonProperty("panels", [Panel], true)
   panels: Panel[] = Array<Panel>();
 
-  @JsonProperty("presets", [Preset], true)
-  presets: Preset[] = Array<Preset>();
+  @JsonProperty("presets", [ControlGroup], true)
+  controlGroups: ControlGroup[] = Array<ControlGroup>();
 
   @JsonProperty("inputConfiguration", [IOConfiguration], true)
   inputConfiguration: IOConfiguration[] = Array<IOConfiguration>();
@@ -1327,19 +1337,19 @@ export class UIConfig {
         }
       }
     }
-    if (this.presets == null && imposter.presets != null) {
+    if (this.controlGroups == null && imposter.controlGroups != null) {
       return false;
     }
-    if (this.presets != null && imposter.presets == null) {
+    if (this.controlGroups != null && imposter.controlGroups == null) {
       return false;
     }
-    if (this.presets != null && imposter.presets != null) {
-      if (this.presets.length !== imposter.presets.length) {
+    if (this.controlGroups != null && imposter.controlGroups != null) {
+      if (this.controlGroups.length !== imposter.controlGroups.length) {
         return false;
       }
-      for (const preset of this.presets) {
+      for (const preset of this.controlGroups) {
         let found = false;
-        for (const impPreset of imposter.presets) {
+        for (const impPreset of imposter.controlGroups) {
           if (preset.name === impPreset.name) {
             found = true;
             if (!preset.Equals(impPreset)) {

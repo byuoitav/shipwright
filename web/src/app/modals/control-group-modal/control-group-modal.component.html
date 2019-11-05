@@ -1,0 +1,15 @@
+<div>
+    <mat-form-field>
+        <input matInput type="text" placeholder="Group Name" [(ngModel)]="tempName">
+    </mat-form-field>
+    <mat-divider></mat-divider>
+    <section class="config-section">
+        <span class="mat-h3">Which touchpanels are using this group?</span>
+        <div class="row">
+            <ng-container *ngFor="let p of data.uiConfig.panels">
+                <mat-checkbox class="example-margin" [checked]="p.controlGroup === data.cg.name" color="primary" (change)="togglePanel(p)">{{p.GetDeviceName()}}</mat-checkbox>
+            </ng-container>
+        </div>
+    </section>
+
+</div>
