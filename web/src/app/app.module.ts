@@ -72,6 +72,8 @@ import { DateAgoPipe } from "./pipes/date-ago.pipe";
 import { SettingsModal } from "./modals/settingsmodal/settings.modal";
 import { HelpModal } from "./modals/helpmodal/help.modal";
 import { ControlGroupModalComponent } from './modals/control-group-modal/control-group-modal.component';
+import { DevicesComponent } from './components/room-page/devices/devices.component';
+import { UiComponent } from './components/room-page/ui/ui.component';
 
 @NgModule({
   declarations: [
@@ -97,7 +99,9 @@ import { ControlGroupModalComponent } from './modals/control-group-modal/control
     DateAgoPipe,
     SettingsModal,
     HelpModal,
-    ControlGroupModalComponent
+    ControlGroupModalComponent,
+    DevicesComponent,
+    UiComponent
   ],
   imports: [
     BrowserModule,
