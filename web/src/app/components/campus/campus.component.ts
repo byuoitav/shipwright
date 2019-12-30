@@ -4,6 +4,7 @@ import { Building } from "src/app/objects/database";
 import { TextService } from "src/app/services/text.service";
 import { MatDialog } from "@angular/material";
 import { BuildingModalComponent } from "src/app/modals/buildingmodal/buildingmodal.component";
+import { Router } from '@angular/router';
 
 @Component({
   selector: "campus",
@@ -18,7 +19,8 @@ export class CampusComponent implements OnInit {
   constructor(
     public api: APIService,
     public text: TextService,
-    public dialog: MatDialog) {
+    public dialog: MatDialog,
+    private router: Router) {
     this.api.GetAllBuildings().then((resp) => {
       this.buildingList = resp as Building[];
       this.filteredBuildings = this.buildingList;
@@ -87,5 +89,9 @@ export class CampusComponent implements OnInit {
         this.filter();
       }
     });
+  }
+
+  goToRoomList(buildingID: string) {
+    this.router.navigate(["/campus/" + buildingID + "/roomlist"]);
   }
 }

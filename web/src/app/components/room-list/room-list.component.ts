@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { APIService } from "../../services/api.service";
 import { TextService } from "../../services/text.service";
 import { Room } from "../../objects/database";
@@ -21,7 +21,8 @@ export class RoomListComponent implements OnInit {
     public api: APIService,
     public text: TextService,
     private route: ActivatedRoute,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router
   ) {
     this.route.params.subscribe(params => {
       this.buildingID = params["buildingID"];
@@ -112,5 +113,9 @@ export class RoomListComponent implements OnInit {
         }
       }
     }
+  }
+
+  goToRoomPage(roomID: string) {
+    this.router.navigate(["/campus/" + roomID + "/tab/1"])
   }
 }

@@ -17,22 +17,15 @@
 <div class="list-container">
     <ng-container *ngFor="let r of filteredRooms">
         <mat-card>
-            <a routerLink="/campus/{{r.id}}/tab/1">
-                <mat-card-header>
-                    <mat-card-title>{{r.id}}</mat-card-title>
-                    <mat-card-subtitle>{{r.name}}</mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content></mat-card-content>
-            </a>
-            <mat-card-actions class="row">
-                <a routerLink="/campus/{{r.id}}/tab/1">
-                    <span></span>
-                </a>
-                <span class="fill-remaining-space"></span>
+            <mat-card-header>
+                <mat-card-title (click)="goToRoomPage(r.id)">{{r.id}}</mat-card-title>
+                <mat-card-subtitle (click)="goToRoomPage(r.id)">{{r.name}}</mat-card-subtitle>
+                <span class="fill-remaining-space" (click)="goToRoomPage(r.id)"></span>
                 <button mat-icon-button class="edit" (click)="editRoom(r)">
-                    <mat-icon>more_horiz</mat-icon>
-                  </button>
-            </mat-card-actions>
+                        <mat-icon>more_horiz</mat-icon>
+                    </button>
+            </mat-card-header>
+            <mat-card-content></mat-card-content>
         </mat-card>
     </ng-container>
 </div>

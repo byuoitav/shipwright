@@ -54,7 +54,7 @@ export class AlertTableComponent implements OnInit {
     "lastNote"
   ];
 
-  alertCols = ["deviceID", "type", "message", "startTime"];
+  alertCols = ["severity", "deviceID", "type", "message", "startTime"];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;

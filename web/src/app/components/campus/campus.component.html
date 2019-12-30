@@ -17,24 +17,15 @@
 <div class="list-container">
     <ng-container *ngFor="let b of filteredBuildings">
         <mat-card>
-            <a routerLink="/campus/{{b.id}}/roomlist">
-                <mat-card-header>
-                    <mat-card-title>{{b.id}}</mat-card-title>
-                    <mat-card-subtitle>{{b.name}}</mat-card-subtitle>
-                </mat-card-header>
-                <img mat-card-image [src]="getImage(b.id)" alt="A cool image of the {{b.id}}" class="image">
-            </a>
-            <mat-card-actions>
-                <mat-action-row class="row">
-                    <a routerLink="/campus/{{b.id}}/roomlist">
-                        <span></span>
-                    </a>
-                    <span class="fill-remaining-space"></span>
-                    <button mat-icon-button class="edit" (click)="editBuilding(b)">
+            <mat-card-header>
+                <mat-card-title (click)="goToRoomList(b.id)">{{b.id}}</mat-card-title>
+                <mat-card-subtitle (click)="goToRoomList(b.id)">{{b.name}}</mat-card-subtitle>
+                <span class="fill-remaining-space" (click)="goToRoomList(b.id)"></span>
+                <button mat-icon-button class="edit" (click)="editBuilding(b)">
                       <mat-icon>more_horiz</mat-icon>
                     </button>
-                </mat-action-row>
-            </mat-card-actions>
+            </mat-card-header>
+            <img mat-card-image [src]="getImage(b.id)" alt="A cool image of the {{b.id}}" class="image" (click)="goToRoomList(b.id)">
         </mat-card>
     </ng-container>
 </div>
