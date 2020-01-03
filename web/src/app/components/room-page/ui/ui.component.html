@@ -1,3 +1,109 @@
-<p>
-  ui works!
-</p>
+<div class="base-container">
+    <mat-card class="devices-container">
+        <mat-card-header class="header">
+            <mat-card-title>Devices</mat-card-title>
+            <button mat-raised-button color="primary" class="header-button">Add New Device <mat-icon>add</mat-icon></button>
+        </mat-card-header>
+        <mat-divider></mat-divider>
+        <div class="test">
+            <table mat-table [dataSource]="deviceDataSource" class="table">
+                <ng-container matColumnDef="warning">
+                    <th mat-header-cell *matHeaderCellDef></th>
+                    <td mat-cell *matCellDef="let d">
+                        <mat-icon color="warn" *ngIf="missingPorts(d)">warning</mat-icon>
+                    </td>
+
+                </ng-container>
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef>Name</th>
+                    <td mat-cell *matCellDef="let d">
+                        <span>{{d?.name}}</span>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="type">
+                    <th mat-header-cell *matHeaderCellDef>Type</th>
+                    <td mat-cell *matCellDef="let d">
+                        {{d?.type.displayName}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="address">
+                    <th mat-header-cell *matHeaderCellDef>Address</th>
+                    <td mat-cell *matCellDef="let d">
+                        {{d?.address}}
+                    </td>
+                </ng-container>
+                <!-- <ng-container matColumnDef="description">
+                <th mat-header-cell *matHeaderCellDef>Description</th>
+                <td mat-cell *matCellDef="let d">
+                    {{d?.description}}
+                </td>
+            </ng-container> -->
+                <tr mat-header-row *matHeaderRowDef="deviceColumns; sticky: true"></tr>
+                <tr mat-row *matRowDef="let device; columns: deviceColumns"></tr>
+            </table>
+        </div>
+
+    </mat-card>
+    <mat-card class="uiconfig-container">
+        <mat-card-header class="header">
+            <mat-card-title>Control Groups</mat-card-title>
+            <button mat-raised-button color="primary" class="header-button">Add New Group <mat-icon>add</mat-icon></button>
+        </mat-card-header>
+        <mat-divider></mat-divider>
+        <!-- <div class="test">
+        <div class="row groups">
+            <ng-container *ngFor="let cg of config.controlGroups">
+                <mat-card class="cg-card">
+                    <mat-card-header class="cg-header">
+                        <img mat-card-avatar [src]="getUIPathIcon(cg)" alt="">
+                        <mat-card-title>{{cg?.name}}</mat-card-title>
+                        <mat-card-subtitle>{{getPanelsForControlGroup(cg)}}</mat-card-subtitle>
+                        <span class="fill-remaining-space"></span>
+                        <button mat-icon-button class="header-button" (click)="openControlGroupModal(cg)"><mat-icon>more_horiz</mat-icon></button>
+                    </mat-card-header>
+                    <mat-divider></mat-divider>
+                    <mat-card-content class="row">
+                        <div class="column">
+                            <div class="column-title">
+                                <span class="mat-h3">Displays</span>
+                                <hr>
+                            </div>
+                            <ng-container *ngFor="let d of cg?.displays">
+                                <span class="device-card mat-elevation-z1">
+                                    <mat-icon>{{getOutputIcon(d)}}</mat-icon>
+                                    <span style="padding-top: 3px;">{{d}}</span>
+                                </span>
+                            </ng-container>
+                        </div>
+                        <div class="column">
+                            <div class="column-title">
+                                <span class="mat-h3">Inputs</span>
+                                <hr>
+                            </div>
+                            <ng-container *ngFor="let d of cg?.inputs">
+                                <span class="device-card mat-elevation-z1">
+                                    <mat-icon>{{getInputIcon(d)}}</mat-icon>
+                                    <span style="padding-top: 3px;">{{d}}</span>
+                                </span>
+                            </ng-container>
+                        </div>
+                        <div class="column">
+                            <div class="column-title">
+                                <span class="mat-h3">Mics</span>
+                                <hr>
+                            </div>
+                            <ng-container *ngFor="let d of cg?.independentAudioDevices">
+                                <span class="device-card mat-elevation-z1">
+                                    <mat-icon>{{getOutputIcon(d)}}</mat-icon>
+                                    <span style="padding-top: 3px;">{{d}}</span>
+                                </span>
+                            </ng-container>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            </ng-container>
+        </div>
+
+    </div> -->
+    </mat-card>
+</div>

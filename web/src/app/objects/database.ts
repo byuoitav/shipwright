@@ -327,6 +327,14 @@ export class Port {
     return copy;
   }
 
+  isAnInPort(): boolean {
+    return this.tags.includes("port-in");
+  }
+
+  isAnOutPort(): boolean {
+    return this.tags.includes("port-out");
+  }
+
   Equals(imposter: Port, logMismatch?: boolean): boolean {
     if (imposter == null) {
       if (logMismatch) {
@@ -441,6 +449,12 @@ export class DeviceType {
 
   @JsonProperty("default-icon", String, true)
   defaultIcon: string = undefined;
+
+  @JsonProperty("default-address", String, true)
+  defaultAddress: string = undefined;
+
+  @JsonProperty("default-ui-name", String, true)
+  defaultUIName: string = undefined;
 
   @JsonProperty("input", Boolean, true)
   input: boolean = undefined;
@@ -761,6 +775,14 @@ export class Device {
         this.attributes.set(k, v);
       }
     }
+  }
+
+  HasRole = (roleID: string) => {
+    const x = this.roles.find((r) => {
+      return r.id === roleID;
+    });
+
+    return x !== undefined;
   }
 
   Equals(imposter: Device): boolean {

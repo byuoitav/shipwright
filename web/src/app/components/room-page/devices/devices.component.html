@@ -1,8 +1,8 @@
 <div class="base-container">
     <mat-card class="devices-container">
         <mat-card-header class="header">
-            <mat-card-title>Devices</mat-card-title>
-            <button mat-raised-button color="primary" class="header-button">Add New Device <mat-icon>add</mat-icon></button>
+            <mat-card-title>Devices List</mat-card-title>
+            <button mat-raised-button color="primary" class="header-button" [matMenuTriggerFor]="main">Add New Device <mat-icon>add</mat-icon></button>
         </mat-card-header>
         <mat-divider></mat-divider>
         <div class="test">
@@ -12,7 +12,6 @@
                     <td mat-cell *matCellDef="let d">
                         <mat-icon color="warn" *ngIf="missingPorts(d)">warning</mat-icon>
                     </td>
-
                 </ng-container>
                 <ng-container matColumnDef="name">
                     <th mat-header-cell *matHeaderCellDef>Name</th>
@@ -32,78 +31,87 @@
                         {{d?.address}}
                     </td>
                 </ng-container>
-                <!-- <ng-container matColumnDef="description">
-                  <th mat-header-cell *matHeaderCellDef>Description</th>
-                  <td mat-cell *matCellDef="let d">
-                      {{d?.description}}
-                  </td>
-              </ng-container> -->
                 <tr mat-header-row *matHeaderRowDef="deviceColumns; sticky: true"></tr>
                 <tr mat-row *matRowDef="let device; columns: deviceColumns"></tr>
             </table>
         </div>
-
     </mat-card>
-    <mat-card class="uiconfig-container">
+    <mat-card class="portconfig-container">
         <mat-card-header class="header">
-            <mat-card-title>Control Groups</mat-card-title>
-            <button mat-raised-button color="primary" class="header-button">Add New Group <mat-icon>add</mat-icon></button>
+            <mat-card-title>Port Configuration</mat-card-title>
         </mat-card-header>
         <mat-divider></mat-divider>
-        <!-- <div class="test">
-          <div class="row groups">
-              <ng-container *ngFor="let cg of config.controlGroups">
-                  <mat-card class="cg-card">
-                      <mat-card-header class="cg-header">
-                          <img mat-card-avatar [src]="getUIPathIcon(cg)" alt="">
-                          <mat-card-title>{{cg?.name}}</mat-card-title>
-                          <mat-card-subtitle>{{getPanelsForControlGroup(cg)}}</mat-card-subtitle>
-                          <span class="fill-remaining-space"></span>
-                          <button mat-icon-button class="header-button" (click)="openControlGroupModal(cg)"><mat-icon>more_horiz</mat-icon></button>
-                      </mat-card-header>
-                      <mat-divider></mat-divider>
-                      <mat-card-content class="row">
-                          <div class="column">
-                              <div class="column-title">
-                                  <span class="mat-h3">Displays</span>
-                                  <hr>
-                              </div>
-                              <ng-container *ngFor="let d of cg?.displays">
-                                  <span class="device-card mat-elevation-z1">
-                                      <mat-icon>{{getOutputIcon(d)}}</mat-icon>
-                                      <span style="padding-top: 3px;">{{d}}</span>
-                                  </span>
-                              </ng-container>
-                          </div>
-                          <div class="column">
-                              <div class="column-title">
-                                  <span class="mat-h3">Inputs</span>
-                                  <hr>
-                              </div>
-                              <ng-container *ngFor="let d of cg?.inputs">
-                                  <span class="device-card mat-elevation-z1">
-                                      <mat-icon>{{getInputIcon(d)}}</mat-icon>
-                                      <span style="padding-top: 3px;">{{d}}</span>
-                                  </span>
-                              </ng-container>
-                          </div>
-                          <div class="column">
-                              <div class="column-title">
-                                  <span class="mat-h3">Mics</span>
-                                  <hr>
-                              </div>
-                              <ng-container *ngFor="let d of cg?.independentAudioDevices">
-                                  <span class="device-card mat-elevation-z1">
-                                      <mat-icon>{{getOutputIcon(d)}}</mat-icon>
-                                      <span style="padding-top: 3px;">{{d}}</span>
-                                  </span>
-                              </ng-container>
-                          </div>
-                      </mat-card-content>
-                  </mat-card>
-              </ng-container>
-          </div>
-
-      </div> -->
+        <div class="test">
+            <div class="row">
+                <ng-container *ngFor="let device of room?.devices">
+                    <mat-card *ngIf="device?.ports?.length > 0" class="mat-elevation-z0 port-card" [class.wide]="hasInPorts(device) && hasOutPorts(device)">
+                        <mat-card-header>
+                            <mat-card-title>{{device.name}}</mat-card-title>
+                        </mat-card-header>
+                        <mat-divider></mat-divider>
+                        <mat-card-content>
+                            <div class="row">
+                                <div *ngIf="hasInPorts(device)" class="info-column">
+                                    <ng-container *ngFor="let port of device?.ports">
+                                        <div class="port-info" *ngIf="port?.isAnInPort() || checkTypePort(device, port, false)">
+                                            <div>What's plugged into the port {{port.friendlyName}}? </div>
+                                            <mat-form-field class="port-select">
+                                                <mat-select [ngModel]="port.sourceDevice" (selectionChange)="setPortConnection(port, $event.value)">
+                                                    <!-- <mat-optgroup *ngFor="let d of room?.devices" [label]="d.name">
+                                                        <mat-option *ngIf="d.type.source" [value]="d.id">{{d.name}}</mat-option>
+                                                    </mat-optgroup> -->
+                                                    <ng-container *ngFor="let d of room?.devices">
+                                                        <ng-container *ngIf="d?.ports?.length > 0">
+                                                            <mat-optgroup *ngIf="d?.type.source" [label]="d.name">
+                                                                <mat-option *ngFor="let p of d?.ports" [value]="d.id">{{p.friendlyName}}</mat-option>
+                                                            </mat-optgroup>
+                                                        </ng-container>
+                                                        <ng-container *ngIf="d?.type.source && (!d?.ports || d?.ports?.length == 0)">
+                                                            <mat-option #other_options [value]="d.id">{{d.name}}</mat-option>
+                                                        </ng-container>
+                                                    </ng-container>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                                <div *ngIf="hasOutPorts(device)" class="info-column">
+                                    <ng-container *ngFor="let port of device?.ports">
+                                        <div class="port-info" *ngIf="port?.isAnOutPort() || checkTypePort(device, port, true)">
+                                            <div>What's plugged into the port {{port.friendlyName}}? </div>
+                                            <mat-form-field class="port-select">
+                                                <mat-select [ngModel]="port.destinationDevice" (selectionChange)="setPortConnection(port, $event.value)">
+                                                    <ng-container *ngFor="let d of room?.devices">
+                                                        <mat-option *ngIf="d.type.destination" [value]="d.id">{{d.name}}</mat-option>
+                                                    </ng-container>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </ng-container>
+            </div>
+        </div>
     </mat-card>
 </div>
+
+<!-- MENU STUFF -->
+
+<mat-menu #main="matMenu">
+    <ng-container *ngFor="let group of menuTree?.groups">
+        <button mat-menu-item [matMenuTriggerFor]="sub_menu"><mat-icon>{{group?.icon}}</mat-icon>{{group?.name}}</button>
+        <mat-menu #sub_menu="matMenu">
+            <ng-container *ngFor="let sg of group?.subgroups">
+                <button mat-menu-item [matMenuTriggerFor]="sub_menu">{{sg?.name}}</button>
+                <mat-menu #sub_menu="matMenu">
+                    <button mat-menu-item *ngFor="let x of sg?.subgroups">{{x?.name}}</button>
+                    <button mat-menu-item *ngFor="let y of sg?.presets" (click)="addNewDevice(y)">{{y?.name}}</button>
+                </mat-menu>
+            </ng-container>
+            <button mat-menu-item *ngFor="let p of group?.presets" (click)="addNewDevice(p)">{{p?.name}}</button>
+        </mat-menu>
+    </ng-container>
+</mat-menu>
