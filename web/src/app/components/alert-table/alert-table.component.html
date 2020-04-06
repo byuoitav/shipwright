@@ -1,16 +1,15 @@
 <ng-container>
     <div class="action-container">
         <div class="row">
-            <span class="mat-h2 item">Total Issues:
-        {{
-          dataSource?.filteredData ? dataSource?.filteredData?.length : 0
-        }}</span
-      >
-      <span class="mat-h2 item"
-        >Total Active Alerts: {{ getTotalActiveAlertCount() }}</span
-      >
+          <div class="total issues">
+            <span class="mat-h2 item">Total Issues: {{dataSource?.filteredData ? dataSource?.filteredData?.length : 0}}</span>
+          </div>
+          <div class="total alerts">
+            <span class="mat-h2 item">Total Active Alerts: {{ getTotalActiveAlertCount() }}</span>
+          </div>  
     </div>
 
+    <mat-progress-bar *ngIf="loadingIssues" mode="indeterminate"></mat-progress-bar>
     <mat-divider></mat-divider>
 
     <div class="row">

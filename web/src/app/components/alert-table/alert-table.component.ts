@@ -44,6 +44,8 @@ export class AlertTableComponent implements OnInit {
   dataSource: MatTableDataSource<RoomIssue>;
   filters: FilterSet<RoomIssue>;
 
+  loadingIssues = false;
+
   issueCols = [
     "expand",
     "systemType",
@@ -83,8 +85,10 @@ export class AlertTableComponent implements OnInit {
     };
 
     try {
+      this.loadingIssues = true;
       const issueRef = await this.api.getIssues();
       this.dataSource = new MatTableDataSource(issueRef.issues.filter(filter));
+      this.loadingIssues = false;
 
       this.dataSource.paginator = this.paginator;
 

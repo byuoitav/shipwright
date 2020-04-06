@@ -1,6 +1,6 @@
 .action-container {
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .row {
@@ -12,9 +12,7 @@
 }
 
 .item {
-    padding: 5px;
-    margin-left: 2vw;
-    margin-right: 5vw;
+    margin-top: 10px;
 }
 
 .filter-search {
@@ -36,30 +34,21 @@ table {
     height: 0;
 }
 
-// .severity {
-//   background: linear-gradient(
-//     90deg,
-//     #ffd600 0%,
-//     rgba(255, 214, 0, 1) 1%,
-//     rgba(0, 0, 0, 0) 4%
-//   );
-//   &.warning {
-//     background: linear-gradient(
-//       90deg,
-//       rgba(251, 140, 0, 1) 0%,
-//       rgba(251, 140, 0, 1) 1%,
-//       rgba(0, 0, 0, 0) 4%
-//     );
-//   }
-//   &.critical {
-//     background: linear-gradient(
-//       90deg,
-//       rgba(244, 67, 54, 1) 0%,
-//       rgba(244, 67, 54, 1) 1%,
-//       rgba(0, 0, 0, 0) 4%
-//     );
-//   }
-// }
+.total {
+    display: flex;
+    flex-flow: row wrap;
+    // height: 6vh;
+    min-width: 15%;
+    margin: 15px 25px;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    border-radius: 4px; 
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+    background-color: white;
+    padding: 2px 10px;
+}
+
 .severity {
     display: flex;
     flex-flow: column nowrap;

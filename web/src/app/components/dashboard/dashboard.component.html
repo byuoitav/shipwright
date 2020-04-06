@@ -1,4 +1,4 @@
-<mat-grid-list [cols]="panelCount > 1 ? 2 : 1" [rowHeight]="panelCount > 2 ? '50%' : '100%'">
+<!-- <mat-grid-list [cols]="panelCount > 1 ? 2 : 1" [rowHeight]="panelCount > 2 ? '50%' : '100%'">
     <mat-grid-tile class="alignTop">
         <dashpanel class="dashpanelClass" [panelType]="getDefaultPanels(0)"></dashpanel>
     </mat-grid-tile>
@@ -11,4 +11,31 @@
     <mat-grid-tile class="alignTop" *ngIf="panelCount >= 4">
         <dashpanel class="dashpanelClass" [panelType]="getDefaultPanels(3)"></dashpanel>
     </mat-grid-tile>
-</mat-grid-list>
+</mat-grid-list> -->
+<div class="settings-bar mat-elevation-z1">
+    <div class="row adjusted">
+        <span class="mat-h3">Dashboard Settings</span>
+    </div>
+        <mat-divider [vertical]="true" class="divide"></mat-divider>
+    <div class="row">
+        <span class="mat-h3">Panel Count: </span>
+        <button mat-icon-button [disableRipple]="true" (click)="removePanel()"><mat-icon>remove</mat-icon></button>
+        <span class="mat-h3">{{panels.length}}</span>
+        <button mat-icon-button [disableRipple]="true" (click)="addPanel()"><mat-icon>add</mat-icon></button>
+    </div>
+    <div class="row">
+        <span class="mat-h3">Layout: </span>
+        <ng-container *ngFor="let layout of layouts">
+            <button mat-icon-button [disableRipple]="true" class="layout" [class.selected]="selectedLayout === layout" (click)="chooseLayout(layout)"><mat-icon>{{layout}}</mat-icon></button>
+        </ng-container>
+    </div>
+    
+</div>
+<div class="table-row">
+    <div class="panel-container" [ngClass]="selectedLayout">
+        <ng-container *ngFor="let p of panels">
+            <dashpanel class="dashpanelClass" [panelType]="getDefaultPanels(0)"></dashpanel>
+        </ng-container>
+    </div>
+</div>
+

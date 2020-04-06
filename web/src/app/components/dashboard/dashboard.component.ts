@@ -8,6 +8,9 @@ import { DashpanelTypes } from '../dashpanel/idashpanel';
 })
 export class DashboardComponent implements OnInit {
   panelCount: number;
+  panels = [0];
+  layouts = ["view_stream", "view_column", "view_module"];
+  selectedLayout = this.layouts[0];
 
   constructor() {
   }
@@ -25,5 +28,19 @@ export class DashboardComponent implements OnInit {
     } else if (index === 3) {
       return DashpanelTypes.RecentlyResolvedAlerts;
     }
+  }
+
+  addPanel() {
+    this.panels.push(0);
+  }
+
+  removePanel() {
+    if (this.panels.length > 1) {
+      this.panels.pop();
+    }
+  }
+
+  chooseLayout(layout: string) {
+    this.selectedLayout = layout;
   }
 }
