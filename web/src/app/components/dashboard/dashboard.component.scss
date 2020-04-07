@@ -5,6 +5,7 @@
             justify-content: left;
         }
     }
+    background-color: white;
 }
 
 .row {
@@ -30,7 +31,7 @@
     justify-content: flex-start;
     align-content: center;
     // align-items: baseline;
-    padding: 6px;
+    // padding: 6px;
     width: 100%;
     min-height: 20px;
     max-height: 43px;
@@ -80,7 +81,7 @@
 .dashpanelClass {
     height: 100%;
     width: 100%;
-    margin: 0px 5px;
+    // margin: 0px 5px;
     overflow: auto;
 }
 

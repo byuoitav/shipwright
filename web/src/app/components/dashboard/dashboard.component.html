@@ -1,41 +1,33 @@
-<!-- <mat-grid-list [cols]="panelCount > 1 ? 2 : 1" [rowHeight]="panelCount > 2 ? '50%' : '100%'">
-    <mat-grid-tile class="alignTop">
-        <dashpanel class="dashpanelClass" [panelType]="getDefaultPanels(0)"></dashpanel>
-    </mat-grid-tile>
-    <mat-grid-tile class="alignTop" *ngIf="panelCount >= 2">
-        <dashpanel class="dashpanelClass" [panelType]="getDefaultPanels(1)"></dashpanel>
-    </mat-grid-tile>
-    <mat-grid-tile class="alignTop" *ngIf="panelCount >= 3" [colspan]="panelCount == 3 ? 2 : 1">
-        <dashpanel class="dashpanelClass" [panelType]="getDefaultPanels(2)"></dashpanel>
-    </mat-grid-tile>
-    <mat-grid-tile class="alignTop" *ngIf="panelCount >= 4">
-        <dashpanel class="dashpanelClass" [panelType]="getDefaultPanels(3)"></dashpanel>
-    </mat-grid-tile>
-</mat-grid-list> -->
-<div class="settings-bar mat-elevation-z1">
-    <div class="row adjusted">
-        <span class="mat-h3">Dashboard Settings</span>
-    </div>
-        <mat-divider [vertical]="true" class="divide"></mat-divider>
-    <div class="row">
-        <span class="mat-h3">Panel Count: </span>
-        <button mat-icon-button [disableRipple]="true" (click)="removePanel()"><mat-icon>remove</mat-icon></button>
-        <span class="mat-h3">{{panels.length}}</span>
-        <button mat-icon-button [disableRipple]="true" (click)="addPanel()"><mat-icon>add</mat-icon></button>
-    </div>
-    <div class="row">
-        <span class="mat-h3">Layout: </span>
-        <ng-container *ngFor="let layout of layouts">
-            <button mat-icon-button [disableRipple]="true" class="layout" [class.selected]="selectedLayout === layout" (click)="chooseLayout(layout)"><mat-icon>{{layout}}</mat-icon></button>
-        </ng-container>
+    <div class="settings-bar mat-elevation-z0">
+        <div class="row adjusted">
+            <span class="mat-h3">Dashboard Settings</span>
+        </div>
+            <mat-divider [vertical]="true" class="divide"></mat-divider>
+        <div class="row">
+            <span class="mat-h3">Panel Count: </span>
+            <button mat-icon-button [disableRipple]="true" (click)="removePanel()"><mat-icon>remove</mat-icon></button>
+            <span class="mat-h3">{{panels.length}}</span>
+            <button mat-icon-button [disableRipple]="true" (click)="addPanel()"><mat-icon>add</mat-icon></button>
+        </div>
     </div>
     
-</div>
-<div class="table-row">
-    <div class="panel-container" [ngClass]="selectedLayout">
-        <ng-container *ngFor="let p of panels">
+    <mat-grid-list [cols]="panels.length > 1 ? 2 : 1" [rowHeight]="panels.length > 2 ? '50%' : '100%'" [gutterSize]="10">
+        <!-- <mat-grid-tile class="alignTop mat-elevation-z2">
             <dashpanel class="dashpanelClass" [panelType]="getDefaultPanels(0)"></dashpanel>
+        </mat-grid-tile>
+        <mat-grid-tile class="alignTop mat-elevation-z2" *ngIf="panels.length >= 2">
+            <dashpanel class="dashpanelClass" [panelType]="getDefaultPanels(1)"></dashpanel>
+        </mat-grid-tile>
+        <mat-grid-tile class="alignTop mat-elevation-z2" *ngIf="panels.length >= 3" [colspan]="panels.length == 3 ? 2 : 1">
+            <dashpanel class="dashpanelClass" [panelType]="getDefaultPanels(2)"></dashpanel>
+        </mat-grid-tile>
+        <mat-grid-tile class="alignTop mat-elevation-z2" *ngIf="panels.length >= 4">
+            <dashpanel class="dashpanelClass" [panelType]="getDefaultPanels(3)"></dashpanel>
+        </mat-grid-tile> -->
+        <ng-container *ngFor="let panel of panels; let i = index">
+            <mat-grid-tile class="alignTop mat-elevation-z2" [colspan]="panels.length > 1 && panels.length % 2 === 1 && i === panels.length-1 ? 2 : 1">
+                <dashpanel class="dashpanelClass" [panelType]="getDefaultPanels(0)"></dashpanel>
+            </mat-grid-tile>
         </ng-container>
-    </div>
-</div>
+    </mat-grid-list>    
 
