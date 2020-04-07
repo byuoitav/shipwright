@@ -98,15 +98,34 @@
         </mat-card-header>
 
         <mat-card-content>
-          <button mat-raised-button color="primary" (click)="openControlUI()">
-            Control UI
-            <mat-icon>open_in_new</mat-icon>
+          <button mat-raised-button class="resolve" (click)="openResolveModal()">
+            Resolve Room Issue
+            <mat-icon>check</mat-icon>
           </button>
 
-          <button mat-raised-button color="primary" (click)="openZPattern()">
-            Z-Pattern
-            <mat-icon>open_in_new</mat-icon>
-          </button>
+          <div class="split-button mat-elevation-z2">
+            <div class="main" (click)="openControlUI()">{{selectedUIDevice}} Control UI<mat-icon>open_in_new</mat-icon></div>
+            <mat-divider [vertical]="true" class="divide"></mat-divider>
+            <div class="side" [matMenuTriggerFor]="uiMenu"><mat-icon>arrow_drop_down</mat-icon></div>
+          </div>
+
+          <mat-menu #uiMenu="matMenu">
+            <ng-container *ngFor="let p of piList">
+              <button mat-menu-item (click)="selectedUIDevice = p.name">{{p?.name}}</button>
+            </ng-container>
+          </mat-menu>
+
+          <div class="split-button mat-elevation-z2">
+            <div class="main" (click)="openZPattern()">{{selectedZpatternDevice}} Z-Pattern<mat-icon>open_in_new</mat-icon></div>
+            <mat-divider [vertical]="true" class="divide"></mat-divider>
+            <div class="side" [matMenuTriggerFor]="zMenu"><mat-icon>arrow_drop_down</mat-icon></div>
+          </div>
+
+          <mat-menu #zMenu="matMenu">
+            <ng-container *ngFor="let p of piList">
+              <button mat-menu-item (click)="selectedZpatternDevice = p.name">{{p?.name}}</button>
+            </ng-container>
+          </mat-menu>
         </mat-card-content>
       </mat-card>
 

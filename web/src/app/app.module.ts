@@ -74,6 +74,7 @@ import { HelpModal } from "./modals/helpmodal/help.modal";
 import { ControlGroupModalComponent } from './modals/control-group-modal/control-group-modal.component';
 import { DevicesComponent } from './components/room-page/devices/devices.component';
 import { UiComponent } from './components/room-page/ui/ui.component';
+import { ResolveModalComponent } from './modals/resolvemodal/resolvemodal.component';
 
 @NgModule({
   declarations: [
@@ -101,7 +102,8 @@ import { UiComponent } from './components/room-page/ui/ui.component';
     HelpModal,
     ControlGroupModalComponent,
     DevicesComponent,
-    UiComponent
+    UiComponent,
+    ResolveModalComponent
   ],
   imports: [
     BrowserModule,
@@ -151,7 +153,8 @@ import { UiComponent } from './components/room-page/ui/ui.component';
     AlertTableComponent,
     SettingsModal,
     HelpModal,
-    ControlGroupModalComponent
+    ControlGroupModalComponent,
+    ResolveModalComponent
   ],
   providers: [
     APIService,

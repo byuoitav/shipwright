@@ -1,9 +1,11 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { MatSort, MatTableDataSource } from "@angular/material";
+import { MatSort, MatTableDataSource, MatDialog } from "@angular/material";
 
 import { APIService } from "../../../services/api.service";
 import { RoomIssue, Alert } from "../../../objects/alerts";
+import { ResolveModalComponent } from 'src/app/modals/resolvemodal/resolvemodal.component';
+import { Device } from 'src/app/objects/database';
 
 @Component({
   selector: "room-monitoring",
@@ -15,13 +17,17 @@ export class MonitoringComponent implements OnInit {
   issue: RoomIssue;
   comment: string;
 
+  piList: Device[] = [];
+  selectedUIDevice: string = "";
+  selectedZpatternDevice: string = "";
+
   dataSource: MatTableDataSource<Alert>;
 
   cols = ["deviceID", "type", "message", "startTime"];
 
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(private api: APIService, private route: ActivatedRoute) {}
+  constructor(private api: APIService, private route: ActivatedRoute, private dialog: MatDialog) {}
 
   ngOnInit() {
     this.route.params.subscribe(async params => {
@@ -33,6 +39,12 @@ export class MonitoringComponent implements OnInit {
         this.dataSource.sort = this.sort;
 
         console.log("this.issue", this.issue);
+
+        this.api.GetDevicesByRoomAndRole(this.roomID, "ControlProcessor").then((devs) => {
+          this.piList = devs as Device[];
+          this.selectedUIDevice = this.piList[0].name;
+          this.selectedZpatternDevice = this.piList[0].name;
+        });
       }
     });
   }
@@ -73,12 +85,16 @@ export class MonitoringComponent implements OnInit {
   };
 
   openControlUI = () => {
-    const url = "http://" + this.roomID + "-CP1.byu.edu:8888/";
+    const url = "http://" + this.roomID + "-" + this.selectedUIDevice + ".byu.edu/";
     window.open(url, "_blank");
   };
 
   openZPattern = () => {
-    const url = "http://" + this.roomID + "-CP1.byu.edu:10000/dashboard";
+    const url = "http://" + this.roomID + "-" + this.selectedZpatternDevice + ".byu.edu:10000/dashboard";
     window.open(url, "_blank");
   };
+
+  openResolveModal = () => {
+    this.dialog.open(ResolveModalComponent, {data: this.issue})
+  }
 }

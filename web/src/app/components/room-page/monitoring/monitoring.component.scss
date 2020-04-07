@@ -105,6 +105,10 @@
         button {
           width: 50%;
           margin: 0.4em 0;
+          &.resolve {
+            background-color: #43a047;
+            color: white;
+          }
         }
       }
     }
@@ -114,4 +118,42 @@
       margin: 1em 0;
     }
   }
+}
+
+.split-button {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-content: center;
+  margin: 0.4em 0;
+  // align-items: center;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 50%;
+  min-height: 35px;
+  height: 40px;
+  background-color: #0d47a1;
+  color: white;
+  .main {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-evenly;
+    align-content: center;
+    align-items: center;
+    height: 100%;
+    width: 75%;
+  }
+  .side {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    height: 100%;
+    width: 25%;
+  }
+}
+
+::ng-deep mat-divider {
+  border-right-width: 2px !important;
 }

@@ -10,6 +10,9 @@ import { DateConverter } from "./date";
 
 @JsonObject("ResolutionInfo")
 export class ResolutionInfo {
+  @JsonProperty("resolution-service", String, true)
+  service: string = undefined;
+
   @JsonProperty("resolution-code", String, true)
   code: string = undefined;
 

@@ -1,0 +1,33 @@
+  <div class="container">
+    <div class="mat-dialog-title row">Resolve Room Issue</div>
+    <mat-dialog-content class="row">
+      <mat-form-field appearance="outline" class="text">
+        <mat-label>Resolution Notes</mat-label>
+          <textarea class="text" matInput [(ngModel)]="resolutionNotes" [matTextareaAutosize]="false" [rows]="5" [cols]="20"></textarea>
+      </mat-form-field>
+      <div class="column">
+        <mat-form-field>
+          <mat-label>Resolution Service</mat-label>
+          <mat-select [(ngModel)]="resolutionService">
+            <ng-container *ngFor="let code of possibleCodes">
+              <mat-option [value]="code">{{code}}</mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Resolution Code</mat-label>
+          <mat-select [(ngModel)]="resolutionCode">
+            <ng-container *ngFor="let code of possibleCodes">
+              <mat-option [value]="code">{{code}}</mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      
+  </mat-dialog-content>
+  <mat-dialog-actions class="row">
+    <button mat-raised-button color="warn" (click)="cancel()">Cancel</button>
+    <button mat-raised-button class="resolve" (click)="resolve()">Resolve</button>
+  </mat-dialog-actions>
+  </div>
+  
