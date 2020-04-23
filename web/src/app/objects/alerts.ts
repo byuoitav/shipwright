@@ -362,3 +362,33 @@ export class ClassHalfHourBlock {
   @JsonProperty("class-end-time", DateConverter, true)
   classEndTime: Date = undefined;
 }
+
+export enum EventType {
+  AlertStart = 1,
+  AlertEnd,
+  Note,
+  PersonSent,
+  PersonArrived,
+  ChangedSeverity
+}
+
+export enum Severity {
+  Incident = 1,
+  Critical,
+  Warning,
+  Low
+}
+
+export class Event {
+  type: EventType;
+  at: Date;
+  alertID?: string;
+  note?: string;
+  personID?: string;
+  personName?: string;
+  personLink?: string;
+  from?: Severity;
+  to?: Severity;
+
+  
+}

@@ -2,10 +2,12 @@
     <div class="action-container">
         <div class="row">
           <div class="total issues">
-            <span class="mat-h2 item">Total Issues: {{dataSource?.filteredData ? dataSource?.filteredData?.length : 0}}</span>
+            <span class="mat-h2 item">Total Issues: </span>
+            <span class="mat-h2 count">{{dataSource?.filteredData ? dataSource?.filteredData?.length : 0}}</span>
           </div>
           <div class="total alerts">
-            <span class="mat-h2 item">Total Active Alerts: {{ getTotalActiveAlertCount() }}</span>
+            <span class="mat-h2 item">Total Active Alerts: </span>
+            <span class="mat-h2 count">{{ getTotalActiveAlertCount() }}</span>
           </div>  
     </div>
 

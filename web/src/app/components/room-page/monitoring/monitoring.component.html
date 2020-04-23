@@ -47,7 +47,7 @@
   </div>
 
   <div class="notes-and-visits">
-    <mat-card class="notes">
+    <!-- <mat-card class="notes">
       <mat-card-header>
         <mat-card-title>Notes</mat-card-title>
       </mat-card-header>
@@ -88,6 +88,42 @@
             </button>
           </div>
         </div>
+      </mat-card-content>
+    </mat-card> -->
+
+    <mat-card class="notes">
+      <mat-card-header>
+        <mat-card-title>Events</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="new-note">
+          <mat-form-field appearance="outline">
+            <mat-label>Add a comment</mat-label>
+            <textarea
+              matInput
+              matTextareaAutosize
+              matAutosizeMinRows="4"
+              matAutosizeMaxRows="6"
+              [(ngModel)]="comment"
+            ></textarea>
+          </mat-form-field>
+
+          <div class="comment-button">
+            <button
+              mat-raised-button
+              color="primary"
+              [disabled]="!comment"
+              (click)="makeComment(comment); comment = ''"
+            >
+              Comment
+            </button>
+          </div>
+        </div>
+        <div *ngFor="let event of tempEvents.reverse(); let i = index" class="note">
+          <app-event  [eventData]="event"></app-event>
+          <div *ngIf="i < tempEvents.length - 1" class="connector"></div>
+        </div>
+        
       </mat-card-content>
     </mat-card>
 

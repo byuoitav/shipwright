@@ -75,6 +75,7 @@ import { ControlGroupModalComponent } from './modals/control-group-modal/control
 import { DevicesComponent } from './components/room-page/devices/devices.component';
 import { UiComponent } from './components/room-page/ui/ui.component';
 import { ResolveModalComponent } from './modals/resolvemodal/resolvemodal.component';
+import { EventComponent } from './components/event/event.component';
 
 @NgModule({
   declarations: [
@@ -103,7 +104,8 @@ import { ResolveModalComponent } from './modals/resolvemodal/resolvemodal.compon
     ControlGroupModalComponent,
     DevicesComponent,
     UiComponent,
-    ResolveModalComponent
+    ResolveModalComponent,
+    EventComponent
   ],
   imports: [
     BrowserModule,

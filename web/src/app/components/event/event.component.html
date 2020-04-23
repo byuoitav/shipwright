@@ -1,0 +1,12 @@
+<div class="box">
+  <div class="row darker">
+    <mat-hint class="name">{{eventData?.personName ? eventData.personName : 'System'}}</mat-hint><mat-hint> at {{eventData?.at.toLocaleTimeString()}} on {{eventData?.at.toLocaleDateString()}}</mat-hint>
+  </div>
+  <div class="row">
+    <mat-icon>{{eventTypeIcons.get(eventData.type)}}</mat-icon>
+    <span class="text">{{eventToString()}}</span>
+  </div>
+  
+</div>
+
+
