@@ -36,7 +36,10 @@ func initializecaches() {
 		switch c[i].Type {
 		case config.Redis:
 			caches[c[i].Name] = getRedisAlertCache(c[i])
-
+		case config.Memory:
+			caches[c[i].Name] = &MemoryAlertCache{
+				m: &sync.Map{},
+			}
 		}
 	}
 }
