@@ -6,6 +6,7 @@ import { APIService } from "../../../services/api.service";
 import { RoomIssue, Alert, Event, EventType, Severity } from "../../../objects/alerts";
 import { ResolveModalComponent } from 'src/app/modals/resolvemodal/resolvemodal.component';
 import { Device } from 'src/app/objects/database';
+import { isNumber } from 'util';
 
 @Component({
   selector: "room-monitoring",
@@ -23,9 +24,12 @@ export class MonitoringComponent implements OnInit {
 
   dataSource: MatTableDataSource<Alert>;
 
-  cols = ["deviceID", "type", "message", "startTime"];
+  cols = ["severity", "deviceID", "type", "message", "startTime"];
 
   tempEvents: Event[] = [];
+  eventTypeNames: string[] = [];
+  eventTypeFilters: string[] = [];
+  filteredEvents: Event[] = [];
 
   @ViewChild(MatSort) sort: MatSort;
 
@@ -49,6 +53,13 @@ export class MonitoringComponent implements OnInit {
         });
 
         this.makeTempEvents();
+        for (const t in EventType) {
+          if (parseInt(t, 10) >= 0) {
+            this.eventTypeNames.push(EventType[t]);
+            this.eventTypeFilters.push(EventType[t]);
+          }
+        }
+        this.filterEvents();
       }
     });
   }
@@ -111,6 +122,29 @@ export class MonitoringComponent implements OnInit {
     this.dialog.open(ResolveModalComponent, {data: this.issue})
   }
 
+  toggleFilters(t: string) {
+    if (this.eventTypeFilters.includes(t)) {
+      this.eventTypeFilters.splice(this.eventTypeFilters.indexOf(t), 1);
+    } else {
+      this.eventTypeFilters.push(t);
+    }
+    this.filterEvents();
+  }
+
+  filterEvents() {
+    this.filteredEvents = [];
+    for (const e of this.tempEvents) {
+      if (this.includedInFilters(e)) {
+        this.filteredEvents.push(e);
+      }
+    }
+  }
+
+  includedInFilters(event: Event) {
+    const typeString = EventType[event.type];
+    return this.eventTypeFilters.includes(typeString);
+  }
+
   private makeTempEvents() {
     const e1: Event = {
       type: EventType.AlertStart,
@@ -128,7 +162,7 @@ export class MonitoringComponent implements OnInit {
     }
 
     const e3: Event = {
-      type: EventType.PersonSent,
+      type: EventType.Acknowledged,
       at: new Date(),
       personID: "derek420",
       personName: "Derek Burgermeister",
@@ -136,6 +170,14 @@ export class MonitoringComponent implements OnInit {
     }
 
     const e4: Event = {
+      type: EventType.PersonSent,
+      at: new Date(),
+      personID: "derek420",
+      personName: "Derek Burgermeister",
+      personLink: "https://christmas-specials.fandom.com/wiki/Burgermeister_Meisterburger"
+    }
+
+    const e5: Event = {
       type: EventType.PersonArrived,
       at: new Date(),
       personID: "derek420",
@@ -143,20 +185,20 @@ export class MonitoringComponent implements OnInit {
       personLink: "https://christmas-specials.fandom.com/wiki/Burgermeister_Meisterburger" 
     }
 
-    const e5: Event = {
+    const e6: Event = {
       type: EventType.ChangedSeverity,
       at: new Date(),
       from: Severity.Critical,
       to: Severity.Low
     }
 
-    const e6: Event = {
+    const e7: Event = {
       type: EventType.AlertEnd,
       at: new Date(),
       alertID: "8675309"
     }
 
-    const e7: Event = {
+    const e8: Event = {
       type: EventType.Note,
       at: new Date(),
       note: "Voilà! In view, a humble vaudevillian veteran, cast vicariously as both victim and villain by the vicissitudes of Fate. This visage, no mere veneer of vanity, is a vestige of the vox populi, now vacant, vanished. However, this valourous visitation of a bygone vexation stands vivified, and has vowed to vanquish these venal and virulent vermin vanguarding vice and vouchsafing the violently vicious and voracious violation of volition! The only verdict is vengeance; a vendetta held as a votive, not in vain, for the value and veracity of such shall one day vindicate the vigilant and the virtuous. Verily, this vichyssoise of verbiage veers most verbose, so let me simply add that it's my very good honour to meet you and you may call me V.",
@@ -165,6 +207,6 @@ export class MonitoringComponent implements OnInit {
       personLink: "https://images-na.ssl-images-amazon.com/images/G/01/digital/video/hero/Movies/Top250/B000I186FW_vforvendetta_UXWB1._SX1080_.jpg"
     }
 
-    this.tempEvents = [e1, e2, e3, e4, e5, e6, e7];
+    this.tempEvents = [e1, e2, e3, e4, e5, e6, e7, e8];
   }
 }

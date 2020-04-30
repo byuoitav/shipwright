@@ -1,4 +1,4 @@
-<div class="box">
+<div class="box" [class.person]="isHumanNote()">
   <div class="row darker">
     <mat-hint class="name">{{eventData?.personName ? eventData.personName : 'System'}}</mat-hint><mat-hint> at {{eventData?.at.toLocaleTimeString()}} on {{eventData?.at.toLocaleDateString()}}</mat-hint>
   </div>

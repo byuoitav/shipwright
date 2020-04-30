@@ -18,6 +18,7 @@ export class EventComponent implements OnInit {
     this.eventTypeIcons.set(EventType.PersonSent, "flight_takeoff");
     this.eventTypeIcons.set(EventType.PersonArrived, "flight_land");
     this.eventTypeIcons.set(EventType.ChangedSeverity, "assessment");
+    this.eventTypeIcons.set(EventType.Acknowledged, "done");
 
     // console.log(this.eventData.toString());
   }
@@ -46,10 +47,19 @@ export class EventComponent implements OnInit {
       case EventType.ChangedSeverity:
         toReturn = "Issue severity changed from " + Severity[this.eventData.from] + " to " + Severity[this.eventData.to] + ".";
         break;
+      case EventType.Acknowledged:
+        toReturn = this.eventData.personName + " has acknowledged this issue.";
       default:
         break;
     }
-    console.log(toReturn);
     return toReturn;
+  }
+
+  isHumanNote() {
+    if (this.eventData.type === EventType.Note) {
+      return true;
+    }
+
+    return false;
   }
 }

@@ -369,7 +369,8 @@ export enum EventType {
   Note,
   PersonSent,
   PersonArrived,
-  ChangedSeverity
+  ChangedSeverity,
+  Acknowledged
 }
 
 export enum Severity {

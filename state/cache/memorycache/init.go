@@ -17,7 +17,7 @@ func MakeMemoryCache(devices []statedefinition.StaticDevice, rooms []statedefini
 
 	log.L.Infof("adding the cron push")
 	//build our push cron
-	er := toReturn.pushCron.AddFunc(pushCron, toReturn.PushAllDevices)
+	_, er := toReturn.pushCron.AddFunc(pushCron, toReturn.PushAllDevices)
 	if er != nil {
 		log.L.Errorf("Couldn't add the push all devices cron job to the cache")
 
