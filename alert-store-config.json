@@ -1,0 +1,24 @@
+{
+	"caches": [
+		{
+			"type": "memory",
+			"name": "default"
+		}
+	],
+	"persist": {
+		"persist-resolved-alerts": {
+			"elk": {
+				"index": "oit-av-alerts-resolved"
+			}
+		},
+		"persist-active-alerts": {
+			"elk": {
+				"index": "oit-av-alerts-active"
+			}
+		},
+		"addr": "http://10.208.7.36:9200",
+		"user": "",
+		"pass": "",
+		"update-interval": "5s"
+	}
+}

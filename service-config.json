@@ -1,0 +1,10 @@
+{
+	"caches": [
+		{
+			"name": "default",
+			"storage-type": "memory",
+			"cache-type": "memory"
+		}
+	],
+	"forwarders": []
+}
