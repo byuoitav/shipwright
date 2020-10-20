@@ -206,7 +206,7 @@ func main() {
 	router.GET("/ws", socket.UpgradeToWebsocket(socket.GetManager()))
 
 	router.Group("",
-		echo.WrapMiddleware(client.AuthCodeMiddleware),
+		echo.WrapMiddleware(wso2Client.AuthCodeMiddleware(sessionStore, _sessionName)),
 		o.Authorize,
 		middleware.StaticWithConfig(middleware.StaticConfig{
 			Root:   "web-dist",
