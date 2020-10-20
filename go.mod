@@ -3,7 +3,7 @@ module github.com/byuoitav/shipwright
 go 1.14
 
 require (
-	github.com/byuoitav/auth v0.1.2
+	github.com/byuoitav/auth v0.3.3
 	github.com/byuoitav/central-event-system v0.0.0-20200121172633-64fd9d467249
 	github.com/byuoitav/common v0.0.0-20191210190714-e9b411b3cc0d
 	github.com/byuoitav/endpoint-authorization-controller v0.0.0-20190306172901-dd51e868d6df // indirect
@@ -21,6 +21,7 @@ require (
 	github.com/sevenNt/echo-pprof v0.1.0 // indirect
 	github.com/spf13/pflag v1.0.5
 	go.uber.org/zap v1.15.0
+	golang.org/x/crypto v0.0.0-20191002192127-34f69633bfdc // indirect
 	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
 	gopkg.in/ldap.v2 v2.5.1 // indirect
 	gopkg.in/oleiade/reflections.v1 v1.0.0

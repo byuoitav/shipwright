@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/byuoitav/auth/middleware"
 	"github.com/byuoitav/common/log"
 	"github.com/labstack/echo"
 )
@@ -30,6 +31,7 @@ type opaRequest struct {
 }
 
 type requestData struct {
+	APIKey string `json:"api_key"`
 	User   string `json:"user"`
 	Path   string `json:"path"`
 	Method string `json:"method"`
@@ -37,16 +39,25 @@ type requestData struct {
 
 func (client *Client) Authorize(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		// Prep the request
-		oReq, err := json.Marshal(
-			opaRequest{
-				Input: requestData{
-					User:   c.Request().Context().Value("user").(string),
-					Path:   c.Path(),
-					Method: c.Request().Method,
-				},
+
+		// Initial data
+		opaData := opaRequest{
+			Input: requestData{
+				Path:   c.Path(),
+				Method: c.Request().Method,
 			},
-		)
+		}
+
+		// use either the user netid for the authorization request or an
+		// API key if one was used instead
+		if user, ok := c.Request().Context().Value("user").(string); ok {
+			opaData.Input.User = user
+		} else if apiKey, ok := middleware.GetAVAPIKey(c.Request().Context()); ok {
+			opaData.Input.APIKey = apiKey
+		}
+
+		// Prep the request
+		oReq, err := json.Marshal(opaData)
 		if err != nil {
 			log.L.Errorf("Error trying to create request to OPA: %s\n", err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "Error while contacting authorization server")

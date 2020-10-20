@@ -6,6 +6,8 @@ import (
 	"os"
 	"time"
 
+	authMiddleware "github.com/byuoitav/auth/middleware"
+	"github.com/byuoitav/auth/session/cookiestore"
 	"github.com/byuoitav/auth/wso2"
 	"github.com/byuoitav/central-event-system/hub/base"
 	"github.com/byuoitav/central-event-system/messenger"
@@ -37,6 +39,8 @@ func init() {
 		}
 	}
 }
+
+const _sessionName = "shipwright"
 
 func main() {
 	var opaURL string
@@ -85,12 +89,14 @@ func main() {
 		return ctx.String(http.StatusOK, "processing event")
 	})
 
-	client := wso2.Client{
-		CallbackURL:  os.Getenv("CALLBACK_URL"),
-		ClientID:     os.Getenv("CLIENT_ID"),
-		ClientSecret: os.Getenv("CLIENT_SECRET"),
-		GatewayURL:   os.Getenv("GATEWAY_URL"),
-	}
+	wso2Client := wso2.New(
+		os.Getenv("CLIENT_ID"),
+		os.Getenv("CLIENT_SECRET"),
+		os.Getenv("GATEWAY_URL"),
+		os.Getenv("CALLBACK_URL"),
+	)
+
+	sessionStore := cookiestore.NewStore()
 
 	authRouter := router.Group("")
 	o := opa.Client{
@@ -104,7 +110,8 @@ func main() {
 			os.Exit(1)
 		}
 
-		authRouter.Use(echo.WrapMiddleware(client.AuthCodeMiddleware))
+		authRouter.Use(echo.WrapMiddleware(authMiddleware.AVAPIKeyMiddleware()))
+		authRouter.Use(echo.WrapMiddleware(wso2Client.AuthCodeMiddleware(sessionStore, _sessionName)))
 		authRouter.Use(o.Authorize)
 	}
 
